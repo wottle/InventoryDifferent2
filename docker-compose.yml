@@ -1,0 +1,103 @@
+# version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: invdifferent2-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"  # Exposed for migration scripts - can remove after migration
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: inventory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - inv_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: invdifferent2-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:password@postgres:5432/inventory
+      PORT: 4000
+    volumes:
+      - ./uploads:/app/uploads
+      - ./category.sql:/app/category.sql:ro
+      - ./device_templates.sql:/app/device_templates.sql:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - inv_network
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: invdifferent2-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:4000/graphql 
+      API_URL: http://api:4000
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      # Note: Client-side calls need public URL, Server-side calls use internal API_URL
+    depends_on:
+      - api
+    networks:
+      - inv_network
+
+  storefront:
+    build:
+      context: ./storefront
+      dockerfile: Dockerfile
+    container_name: invdifferent2-storefront
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+    depends_on:
+      - api
+    networks:
+      - inv_network
+
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    container_name: invdifferent2-mcp
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:password@postgres:5432/inventory
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - inv_network
+
+networks:
+  inv_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

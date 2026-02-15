@@ -1,0 +1,712 @@
+import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
+
+const exifr: any = require('exifr');
+const sharp: any = require('sharp');
+
+function decimalToNumber(value: any) {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+        const n = parseFloat(value);
+        return Number.isFinite(n) ? n : 0;
+    }
+    if (typeof value === 'object' && typeof value.toNumber === 'function') {
+        const n = value.toNumber();
+        return Number.isFinite(n) ? n : 0;
+    }
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function parseExifDateString(value: string) {
+    const m = value.match(/^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+    if (!m) return null;
+    const [, y, mo, d, h, mi, s] = m;
+    const dt = new Date(Number(y), Number(mo) - 1, Number(d), Number(h), Number(mi), Number(s));
+    return Number.isNaN(dt.getTime()) ? null : dt;
+}
+
+async function getExifDateTaken(filePath: string) {
+    try {
+        const data: any = await exifr.parse(filePath, {
+            translateValues: true,
+        });
+
+        const candidate =
+            data?.DateTimeOriginal ??
+            data?.CreateDate ??
+            data?.ModifyDate ??
+            data?.DateTimeDigitized;
+
+        if (candidate instanceof Date && !Number.isNaN(candidate.getTime())) return candidate;
+        if (typeof candidate === 'string') return parseExifDateString(candidate);
+        return null;
+    } catch (_err) {
+        return null;
+    }
+}
+
+async function generateThumbnailForUpload(imagePath: string) {
+    try {
+        if (typeof imagePath !== 'string' || !imagePath.startsWith('/uploads/')) return null;
+
+        const relative = imagePath.replace('/uploads/', '');
+        const sourceFilePath = path.join('/app/uploads', relative);
+        if (!sourceFilePath.startsWith('/app/uploads') || !fs.existsSync(sourceFilePath)) return null;
+
+        const dir = path.posix.dirname(imagePath);
+        const base = path.posix.basename(imagePath, path.posix.extname(imagePath));
+        const thumbDir = `${dir}/thumbs`;
+        const thumbPath = `${thumbDir}/${base}.webp`;
+
+        const thumbDiskDir = path.join('/app/uploads', thumbDir.replace('/uploads/', ''));
+        fs.mkdirSync(thumbDiskDir, { recursive: true });
+        const thumbDiskPath = path.join('/app/uploads', thumbPath.replace('/uploads/', ''));
+
+        await sharp(sourceFilePath)
+            .rotate()
+            .resize({ width: 320, height: 320, fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 70 })
+            .toFile(thumbDiskPath);
+
+        return thumbPath;
+    } catch (_err) {
+        return null;
+    }
+}
+
+export const resolvers = {
+    Query: {
+        devices: async (_parent: any, args: any, context: { prisma: PrismaClient }) => {
+            const whereClause: any = {};
+
+            // Handle deleted filter
+            if (args.where?.deleted?.equals !== undefined) {
+                whereClause.deleted = args.where.deleted.equals;
+            }
+
+            // Handle category filters
+            if (args.where?.category) {
+                whereClause.category = {};
+                if (args.where.category.id?.equals !== undefined) {
+                    whereClause.category.id = args.where.category.id.equals;
+                }
+                if (args.where.category.id?.in !== undefined) {
+                    whereClause.category.id = { in: args.where.category.id.in };
+                }
+                if (args.where.category.type?.equals !== undefined) {
+                    whereClause.category.type = args.where.category.type.equals;
+                }
+                if (args.where.category.type?.in !== undefined) {
+                    whereClause.category.type = { in: args.where.category.type.in };
+                }
+            }
+
+            // Handle status filter
+            if (args.where?.status?.equals !== undefined) {
+                whereClause.status = args.where.status.equals;
+            }
+            if (args.where?.status?.in !== undefined) {
+                whereClause.status = { in: args.where.status.in };
+            }
+
+            // Handle functionalStatus filter
+            if (args.where?.functionalStatus?.equals !== undefined) {
+                whereClause.functionalStatus = args.where.functionalStatus.equals;
+            }
+            if (args.where?.functionalStatus?.in !== undefined) {
+                whereClause.functionalStatus = { in: args.where.functionalStatus.in };
+            }
+
+            const devices = await context.prisma.device.findMany({
+                where: whereClause,
+                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+            });
+
+            // Add searchText field as concatenation of searchable fields
+            return devices.map(device => ({
+                ...device,
+                searchText: [
+                    device.name,
+                    device.additionalName,
+                    device.manufacturer,
+                    device.modelNumber,
+                    device.serialNumber,
+                    device.cpu,
+                    device.ram,
+                    device.graphics,
+                    device.storage,
+                    device.info,
+                    ...device.tags.map(tag => tag.name),
+                    ...device.notes.map(note => note.content),
+                    ...device.maintenanceTasks.map(task => task.label + ' ' + task.notes)
+                ].filter(Boolean).join(' ').toLowerCase()
+            }));
+        },
+        device: async (_parent: any, args: { where?: { id?: number, serialNumber?: { equals?: string }, deleted?: { equals?: boolean } } }, context: { prisma: PrismaClient }) => {
+            const whereClause: any = {};
+            if (args.where?.id !== undefined) {
+                whereClause.id = args.where.id;
+            }
+            if (args.where?.serialNumber?.equals !== undefined) {
+                whereClause.serialNumber = args.where.serialNumber.equals;
+            }
+            if (args.where?.deleted?.equals !== undefined) {
+                whereClause.deleted = args.where.deleted.equals;
+            }
+            
+            // If searching by serialNumber, use findFirst since it's not unique
+            if (args.where?.serialNumber?.equals !== undefined) {
+                return context.prisma.device.findFirst({
+                    where: whereClause,
+                    include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                });
+            }
+            
+            return context.prisma.device.findUnique({
+                where: whereClause,
+                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+            });
+        },
+        categories: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+            return (context.prisma as any).category.findMany({
+                orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+            });
+        },
+        tags: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+            return context.prisma.tag.findMany();
+        },
+        maintenanceTaskLabels: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+            const tasks = await context.prisma.maintenanceTask.findMany({
+                select: { label: true },
+                distinct: ['label'],
+                orderBy: { label: 'asc' },
+            });
+            return tasks.map((t: { label: string }) => t.label);
+        },
+        templates: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+            return (context.prisma as any).template.findMany({
+                orderBy: { name: 'asc' },
+                include: { category: true },
+            });
+        },
+        financialOverview: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+            const baseWhere: any = { deleted: false };
+
+            const spentAgg = await context.prisma.device.aggregate({
+                where: baseWhere,
+                _sum: { priceAcquired: true },
+            });
+
+            const receivedAgg = await context.prisma.device.aggregate({
+                where: {
+                    ...baseWhere,
+                    status: 'SOLD' as any,
+                },
+                _sum: { soldPrice: true },
+            });
+
+            const ownedValueAgg = await context.prisma.device.aggregate({
+                where: {
+                    ...baseWhere,
+                    status: { notIn: ['SOLD', 'DONATED'] as any },
+                },
+                _sum: { estimatedValue: true },
+            });
+
+            // Calculate profit: sum of (soldPrice - priceAcquired) for sold devices
+            const soldDevices = await context.prisma.device.findMany({
+                where: {
+                    ...baseWhere,
+                    status: 'SOLD' as any,
+                    soldPrice: { not: null },
+                },
+                select: {
+                    soldPrice: true,
+                    priceAcquired: true,
+                },
+            });
+
+            const totalProfit = soldDevices.reduce((sum, d) => {
+                const soldPrice = decimalToNumber((d as any).soldPrice) || 0;
+                const priceAcquired = decimalToNumber((d as any).priceAcquired) || 0;
+                return sum + (soldPrice - priceAcquired);
+            }, 0);
+
+            const totalSpent = -decimalToNumber(spentAgg?._sum?.priceAcquired);
+            const totalReceived = decimalToNumber(receivedAgg?._sum?.soldPrice);
+            const netCash = totalReceived + totalSpent;
+            const estimatedValueOwned = decimalToNumber(ownedValueAgg?._sum?.estimatedValue);
+            const netPosition = estimatedValueOwned + netCash;
+
+            return {
+                totalSpent,
+                totalReceived,
+                netCash,
+                estimatedValueOwned,
+                netPosition,
+                totalProfit,
+            };
+        },
+        financialTransactions: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+            const acquisitions = await context.prisma.device.findMany({
+                where: {
+                    deleted: false,
+                    OR: [
+                        { priceAcquired: { not: null } },
+                        { dateAcquired: { not: null } },
+                    ],
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    additionalName: true,
+                    dateAcquired: true,
+                    priceAcquired: true,
+                    estimatedValue: true,
+                },
+            });
+
+            const sales = await context.prisma.device.findMany({
+                where: {
+                    deleted: false,
+                    status: 'SOLD' as any,
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    additionalName: true,
+                    soldDate: true,
+                    soldPrice: true,
+                    estimatedValue: true,
+                },
+            });
+
+            const donations = await context.prisma.device.findMany({
+                where: {
+                    deleted: false,
+                    status: 'DONATED' as any,
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    additionalName: true,
+                    soldDate: true,
+                    estimatedValue: true,
+                },
+            });
+
+            const acquisitionRows = acquisitions.map((d) => ({
+                type: 'ACQUISITION',
+                deviceId: d.id,
+                deviceName: d.name,
+                additionalName: d.additionalName,
+                date: d.dateAcquired,
+                amount: -(decimalToNumber((d as any).priceAcquired) ?? 0),
+                estimatedValue: decimalToNumber((d as any).estimatedValue) ?? 0,
+            }));
+
+            const saleRows = sales.map((d) => ({
+                type: 'SALE',
+                deviceId: d.id,
+                deviceName: d.name,
+                additionalName: d.additionalName,
+                date: (d as any).soldDate,
+                amount: decimalToNumber((d as any).soldPrice) ?? 0,
+                estimatedValue: -(decimalToNumber((d as any).estimatedValue) ?? 0),
+            }));
+
+            const donationRows = donations.map((d) => ({
+                type: 'DONATION',
+                deviceId: d.id,
+                deviceName: d.name,
+                additionalName: d.additionalName,
+                date: (d as any).soldDate,
+                amount: 0,
+                estimatedValue: -(decimalToNumber((d as any).estimatedValue) ?? 0),
+            }));
+
+            const rows = [...acquisitionRows, ...saleRows, ...donationRows];
+            rows.sort((a, b) => {
+                const at = a.date ? new Date(a.date).getTime() : -Infinity;
+                const bt = b.date ? new Date(b.date).getTime() : -Infinity;
+                if (at !== bt) return bt - at;
+                if (a.deviceId !== b.deviceId) return b.deviceId - a.deviceId;
+                return String(a.type).localeCompare(String(b.type));
+            });
+
+            return rows;
+        },
+        systemUsage: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+            const [deviceCount, noteCount, taskCount, imageCount, categoryCount, templateCount, tagCount] = await Promise.all([
+                context.prisma.device.count({ where: { deleted: false } }),
+                context.prisma.note.count(),
+                context.prisma.maintenanceTask.count(),
+                context.prisma.image.count(),
+                (context.prisma as any).category.count(),
+                (context.prisma as any).template.count(),
+                (context.prisma as any).tag.count(),
+            ]);
+
+            // Calculate storage size from images
+            const images = await context.prisma.image.findMany({
+                select: { path: true, thumbnailPath: true },
+            });
+
+            let totalStorageBytes = 0;
+            const fs = await import('fs');
+            const pathModule = await import('path');
+
+            for (const img of images) {
+                try {
+                    // Image paths are stored as /uploads/devices/... so we need to map to /app/uploads/devices/...
+                    const filePath = pathModule.join('/app/uploads', img.path.replace('/uploads/', ''));
+                    const stats = fs.statSync(filePath);
+                    totalStorageBytes += stats.size;
+
+                    // Also count thumbnail if it exists
+                    const thumbPath = (img as any).thumbnailPath;
+                    if (thumbPath) {
+                        const thumbFilePath = pathModule.join('/app/uploads', thumbPath.replace('/uploads/', ''));
+                        if (fs.existsSync(thumbFilePath)) {
+                            const thumbStats = fs.statSync(thumbFilePath);
+                            totalStorageBytes += thumbStats.size;
+                        }
+                    }
+                } catch {
+                    // File may not exist, skip
+                }
+            }
+
+            return {
+                deviceCount,
+                noteCount,
+                taskCount,
+                imageCount,
+                categoryCount,
+                templateCount,
+                tagCount,
+                totalStorageBytes,
+            };
+        },
+    },
+    Mutation: {
+        createCategory: async (
+            _parent: any,
+            args: { name: string; type: any; sortOrder?: number | null },
+            context: { prisma: PrismaClient }
+        ) => {
+            return (context.prisma as any).category.create({
+                data: {
+                    name: args.name,
+                    type: args.type,
+                    sortOrder: args.sortOrder ?? 0,
+                },
+            });
+        },
+        updateCategory: async (
+            _parent: any,
+            args: { id: number; name?: string; type?: any; sortOrder?: number | null },
+            context: { prisma: PrismaClient }
+        ) => {
+            const { id, ...data } = args;
+            const cleanData = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== undefined));
+            return (context.prisma as any).category.update({
+                where: { id },
+                data: cleanData as any,
+            });
+        },
+        createTemplate: async (
+            _parent: any,
+            args: { input: any },
+            context: { prisma: PrismaClient }
+        ) => {
+            const { input } = args;
+            return (context.prisma as any).template.create({
+                data: {
+                    ...input,
+                },
+                include: { category: true },
+            });
+        },
+        updateTemplate: async (
+            _parent: any,
+            args: { input: any },
+            context: { prisma: PrismaClient }
+        ) => {
+            const { id, ...data } = args.input;
+            const cleanData = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== undefined));
+            return (context.prisma as any).template.update({
+                where: { id },
+                data: cleanData as any,
+                include: { category: true },
+            });
+        },
+        deleteTemplate: async (
+            _parent: any,
+            args: { id: number },
+            context: { prisma: PrismaClient }
+        ) => {
+            await (context.prisma as any).template.delete({
+                where: { id: args.id },
+            });
+            return true;
+        },
+        addDeviceTag: async (_parent: any, args: { deviceId: number; tagName: string }, context: { prisma: PrismaClient }) => {
+            const name = (args.tagName ?? '').trim();
+            if (!name) {
+                throw new Error('tagName is required');
+            }
+
+            const tag = await context.prisma.tag.upsert({
+                where: { name },
+                update: {},
+                create: { name },
+            });
+
+            return context.prisma.device.update({
+                where: { id: args.deviceId },
+                data: {
+                    tags: {
+                        connect: { id: tag.id },
+                    },
+                },
+                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+            });
+        },
+        removeDeviceTag: async (_parent: any, args: { deviceId: number; tagId: number }, context: { prisma: PrismaClient }) => {
+            return context.prisma.device.update({
+                where: { id: args.deviceId },
+                data: {
+                    tags: {
+                        disconnect: { id: args.tagId },
+                    },
+                },
+                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+            });
+        },
+        createDevice: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+            const { input } = args;
+            return context.prisma.device.create({
+                data: {
+                    ...input,
+                },
+                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+            });
+        },
+        updateDevice: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+            const { id, ...data } = args.input;
+            // Remove undefined values to avoid overwriting with null
+            const cleanData = Object.fromEntries(
+                Object.entries(data).filter(([_, v]) => v !== undefined)
+            );
+            return context.prisma.device.update({
+                where: { id },
+                data: cleanData,
+                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+            });
+        },
+        deleteDevice: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+            await context.prisma.device.update({
+                where: { id: args.id },
+                data: { deleted: true },
+            });
+            return true;
+        },
+        restoreDevice: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+            return context.prisma.device.update({
+                where: { id: args.id },
+                data: { deleted: false },
+                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+            });
+        },
+        permanentlyDeleteDevice: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+            // Get the device with its images
+            const device = await context.prisma.device.findUnique({
+                where: { id: args.id },
+                include: { images: true },
+            });
+
+            if (!device) {
+                throw new Error('Device not found');
+            }
+
+            // Delete image files from the filesystem
+            const deviceUploadDir = path.join('/app/uploads/devices', String(args.id));
+            if (fs.existsSync(deviceUploadDir)) {
+                fs.rmSync(deviceUploadDir, { recursive: true, force: true });
+            }
+
+            // Delete related records first (due to foreign key constraints)
+            await context.prisma.image.deleteMany({ where: { deviceId: args.id } });
+            await context.prisma.note.deleteMany({ where: { deviceId: args.id } });
+            await context.prisma.maintenanceTask.deleteMany({ where: { deviceId: args.id } });
+
+            // Delete the device
+            await context.prisma.device.delete({ where: { id: args.id } });
+
+            return true;
+        },
+        createImage: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+            const { deviceId, path: imagePath, caption, isThumbnail, isShopImage } = args.input;
+
+            // If this is set as thumbnail, unset other thumbnails for this device
+            if (isThumbnail) {
+                await context.prisma.image.updateMany({
+                    where: { deviceId, isThumbnail: true },
+                    data: { isThumbnail: false },
+                });
+            }
+
+            let dateTaken: Date | undefined;
+            if (typeof imagePath === 'string' && imagePath.startsWith('/uploads/')) {
+                const relative = imagePath.replace('/uploads/', '');
+                const filePath = path.join('/app/uploads', relative);
+                if (filePath.startsWith('/app/uploads') && fs.existsSync(filePath)) {
+                    const exifDate = await getExifDateTaken(filePath);
+                    if (exifDate) dateTaken = exifDate;
+                }
+            }
+
+            const thumbnailPath = await generateThumbnailForUpload(imagePath);
+
+            // Check if this is the first image for the device - if so, make it the thumbnail
+            const existingImages = await context.prisma.image.count({
+                where: { deviceId },
+            });
+            const shouldBeThumbnail = isThumbnail || existingImages === 0;
+
+            return (context.prisma as any).image.create({
+                data: {
+                    deviceId,
+                    path: imagePath,
+                    ...(thumbnailPath ? { thumbnailPath } : {}),
+                    ...(dateTaken ? { dateTaken } : {}),
+                    caption: caption || null,
+                    isThumbnail: shouldBeThumbnail,
+                    isShopImage: isShopImage || false,
+                },
+            });
+        },
+        updateImage: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+            const { id, caption, isThumbnail, isShopImage, isListingImage } = args.input;
+
+            // If setting as thumbnail, unset other thumbnails for this device
+            if (isThumbnail) {
+                const image = await context.prisma.image.findUnique({ where: { id } });
+                if (image) {
+                    await context.prisma.image.updateMany({
+                        where: { deviceId: image.deviceId, isThumbnail: true },
+                        data: { isThumbnail: false },
+                    });
+                }
+            }
+
+            // If setting as listing image, unset other listing images for this device (only one allowed)
+            if (isListingImage) {
+                const image = await context.prisma.image.findUnique({ where: { id } });
+                if (image) {
+                    await context.prisma.image.updateMany({
+                        where: { deviceId: image.deviceId, isListingImage: true },
+                        data: { isListingImage: false },
+                    });
+                }
+            }
+
+            const updateData: any = {};
+            if (caption !== undefined) updateData.caption = caption;
+            if (isThumbnail !== undefined) updateData.isThumbnail = isThumbnail;
+            if (isShopImage !== undefined) updateData.isShopImage = isShopImage;
+            if (isListingImage !== undefined) updateData.isListingImage = isListingImage;
+
+            return context.prisma.image.update({
+                where: { id },
+                data: updateData,
+            });
+        },
+        deleteImage: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+            const image = await (context.prisma as any).image.findUnique({
+                where: { id: args.id },
+            });
+
+            if (!image) {
+                return false;
+            }
+
+            // Delete the file from disk
+            const filePath = path.join('/app/uploads', image.path.replace('/uploads/', ''));
+            try {
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            } catch (err) {
+                console.error('Error deleting file:', err);
+                // Continue with DB deletion even if file deletion fails
+            }
+
+            const thumbnailPath = image.thumbnailPath as string | null | undefined;
+            if (thumbnailPath) {
+                const thumbFilePath = path.join('/app/uploads', thumbnailPath.replace('/uploads/', ''));
+                try {
+                    if (fs.existsSync(thumbFilePath)) {
+                        fs.unlinkSync(thumbFilePath);
+                    }
+                } catch (err) {
+                    console.error('Error deleting thumbnail file:', err);
+                }
+            }
+
+            // Delete from database
+            await (context.prisma as any).image.delete({
+                where: { id: args.id },
+            });
+
+            return true;
+        },
+        createMaintenanceTask: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+            const { deviceId, label, dateCompleted, notes } = args.input;
+            return context.prisma.maintenanceTask.create({
+                data: {
+                    deviceId,
+                    label,
+                    dateCompleted: new Date(dateCompleted),
+                    notes: notes || null,
+                },
+            });
+        },
+        deleteMaintenanceTask: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+            await context.prisma.maintenanceTask.delete({
+                where: { id: args.id },
+            });
+            return true;
+        },
+        createNote: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+            const { deviceId, content, date } = args.input;
+            return context.prisma.note.create({
+                data: {
+                    deviceId,
+                    content,
+                    date: new Date(date),
+                },
+            });
+        },
+        updateNote: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+            const { id, content, date } = args.input;
+            return context.prisma.note.update({
+                where: { id },
+                data: {
+                    content,
+                    date: new Date(date),
+                },
+            });
+        },
+        deleteNote: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+            await context.prisma.note.delete({
+                where: { id: args.id },
+            });
+            return true;
+        },
+    },
+};

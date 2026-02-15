@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Environment files (contain secrets)
+.env
+nas.env
+
+# Build outputs
+dist/
+.next/
+build/
+
+# Uploads (user data)
+uploads/
+
+# macOS
+.DS_Store
+
+# IDE/Editor
+.vscode/
+.idea/
+
+# Local Claude Code settings
+.claude/
+
+# Database backups (may contain real data)
+*.backup.sql
+inventory-backup.sql
+
+# Logs
+*.log
+npm-debug.log*
+
+# iOS
+ios/.build/
+ios/DerivedData/
+*.xcuserstate

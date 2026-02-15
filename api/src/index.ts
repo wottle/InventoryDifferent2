@@ -1,0 +1,985 @@
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { PrismaClient } from '@prisma/client';
+import cors from 'cors';
+import express from 'express';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import fs from 'fs';
+import { typeDefs } from './typeDefs';
+import { resolvers } from './resolvers';
+
+const JSZip = require('jszip');
+const sharp = require('sharp');
+const unzipper = require('unzipper');
+
+const prisma = new PrismaClient();
+
+// Import progress tracking
+interface ImportProgress {
+    id: string;
+    status: 'extracting' | 'processing' | 'complete' | 'error';
+    totalDevices: number;
+    processedDevices: number;
+    currentDevice: string;
+    results: any[];
+    error?: string;
+    startTime: number;
+}
+
+const importJobs = new Map<string, ImportProgress>();
+
+// Export progress tracking
+interface ExportProgress {
+    id: string;
+    status: 'preparing' | 'processing' | 'zipping' | 'complete' | 'error';
+    totalDevices: number;
+    processedDevices: number;
+    totalImages: number;
+    processedImages: number;
+    currentDevice: string;
+    error?: string;
+    startTime: number;
+    zipPaths: string[];  // Multiple ZIP parts
+    currentPart: number;
+    totalParts: number;
+    deviceIds: number[];
+    includeImages: boolean;
+    compressImages: boolean;
+}
+
+const exportJobs = new Map<string, ExportProgress>();
+
+// Clean up old jobs after 1 hour
+setInterval(() => {
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    for (const [id, job] of importJobs.entries()) {
+        if (job.startTime < oneHourAgo) {
+            importJobs.delete(id);
+        }
+    }
+    for (const [id, job] of exportJobs.entries()) {
+        if (job.startTime < oneHourAgo) {
+            // Clean up export zip files if they exist
+            if (job.zipPaths && job.zipPaths.length > 0) {
+                for (const zipPath of job.zipPaths) {
+                    if (fs.existsSync(zipPath)) {
+                        try { fs.unlinkSync(zipPath); } catch (e) {}
+                    }
+                }
+            }
+            exportJobs.delete(id);
+        }
+    }
+}, 5 * 60 * 1000);
+
+interface Context {
+    prisma: PrismaClient;
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const deviceId = req.query.deviceId as string;
+        const uploadDir = path.join('/app/uploads/devices', deviceId);
+
+        // Create directory if it doesn't exist
+        fs.mkdirSync(uploadDir, { recursive: true });
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const filename = `${uuidv4()}${ext}`;
+        cb(null, filename);
+    }
+});
+
+const fileFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.'));
+    }
+};
+
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB limit
+    }
+});
+
+async function startServer() {
+    const app = express();
+
+    // CORS configuration
+    app.use(cors());
+
+    app.use(express.json({ limit: '50mb' }));
+
+    // Serve static files from uploads directory
+    app.use('/uploads', express.static('/app/uploads'));
+
+    // File upload endpoint
+    app.post('/upload', upload.single('image'), (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const deviceId = req.query.deviceId as string;
+        if (!deviceId) {
+            // Delete the uploaded file if deviceId is missing
+            fs.unlinkSync(req.file.path);
+            return res.status(400).json({ error: 'deviceId query parameter is required' });
+        }
+
+        // Return the path that can be used to access the image
+        const imagePath = `/uploads/devices/${deviceId}/${req.file.filename}`;
+        res.json({ path: imagePath });
+    });
+
+    // Import endpoint for ZIP files - now with streaming extraction
+    // Store uploads to disk instead of memory for large files
+    const importStorage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            const tempDir = '/tmp/imports';
+            fs.mkdirSync(tempDir, { recursive: true });
+            cb(null, tempDir);
+        },
+        filename: (req, file, cb) => {
+            cb(null, `import-${uuidv4()}.zip`);
+        }
+    });
+
+    const importUpload = multer({
+        storage: importStorage,
+        limits: { fileSize: 2 * 1024 * 1024 * 1024 }, // 2GB limit for imports
+    });
+
+    // Progress endpoint for polling import status
+    app.get('/import/progress/:jobId', (req, res) => {
+        const job = importJobs.get(req.params.jobId);
+        if (!job) {
+            return res.status(404).json({ error: 'Import job not found' });
+        }
+        
+        const response: any = {
+            id: job.id,
+            status: job.status,
+            totalDevices: job.totalDevices,
+            processedDevices: job.processedDevices,
+            currentDevice: job.currentDevice,
+            progress: job.totalDevices > 0 ? Math.round((job.processedDevices / job.totalDevices) * 100) : 0,
+        };
+        
+        if (job.error) {
+            response.error = job.error;
+        }
+        
+        // Always include results when complete or if there are any results
+        if (job.status === 'complete' || job.status === 'error') {
+            response.results = job.results;
+        }
+        
+        res.json(response);
+    });
+
+    app.post('/admin/wipe', async (req, res) => {
+        const adminToken = process.env.ADMIN_TOKEN;
+        if (!adminToken) {
+            return res.status(404).json({ error: 'Not found' });
+        }
+
+        const providedToken = (req.header('x-admin-token') || req.header('X-Admin-Token') || '').trim();
+        if (!providedToken || providedToken !== adminToken) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        const confirm = req.body?.confirm;
+        if (confirm !== 'WIPE_DEVICES') {
+            return res.status(400).json({
+                error: 'Confirmation required',
+                required: { confirm: 'WIPE_DEVICES' },
+            });
+        }
+
+        const clearUploads = req.body?.clearUploads === true;
+
+        try {
+            // Wipe device-related tables and reset identities
+            await prisma.$executeRawUnsafe(`
+TRUNCATE TABLE
+  "Image",
+  "Note",
+  "MaintenanceTask",
+  "_DeviceToTag",
+  "Device"
+RESTART IDENTITY CASCADE;
+`);
+
+            if (clearUploads) {
+                const devicesDir = path.join('/app/uploads/devices');
+                if (fs.existsSync(devicesDir)) {
+                    const entries = fs.readdirSync(devicesDir);
+                    for (const entry of entries) {
+                        fs.rmSync(path.join(devicesDir, entry), { recursive: true, force: true });
+                    }
+                }
+            }
+
+            return res.json({ ok: true, wiped: 'devices', clearedUploads: clearUploads });
+        } catch (e: any) {
+            return res.status(500).json({ error: e?.message || 'Wipe failed' });
+        }
+    });
+
+    // Helper function to process a single device
+    async function processDevice(
+        deviceData: any,
+        extractDir: string,
+        idMapping: Record<number, number>
+    ): Promise<any> {
+        const desiredDeviceId = Number(deviceData.id);
+        if (!Number.isInteger(desiredDeviceId) || desiredDeviceId <= 0) {
+            throw new Error(`Invalid device id: ${deviceData.id}`);
+        }
+        // Find or create category
+        let category = await prisma.category.findFirst({
+            where: { name: deviceData.category.name }
+        });
+        
+        if (!category) {
+            category = await (prisma.category as any).create({
+                data: {
+                    name: deviceData.category.name,
+                    type: deviceData.category.type || 'OTHER',
+                    sortOrder: deviceData.category.sortOrder || 0,
+                }
+            });
+        }
+
+        // Check if device with this ID already exists
+        const existingDevice = await prisma.device.findUnique({
+            where: { id: desiredDeviceId }
+        });
+
+        let newDevice;
+        const deviceCreateData = {
+            name: deviceData.name,
+            additionalName: deviceData.additionalName,
+            manufacturer: deviceData.manufacturer,
+            modelNumber: deviceData.modelNumber,
+            serialNumber: deviceData.serialNumber,
+            releaseYear: deviceData.releaseYear,
+            location: deviceData.location,
+            info: deviceData.info,
+            isFavorite: deviceData.isFavorite || false,
+            externalUrl: deviceData.externalUrl,
+            status: deviceData.status || 'AVAILABLE',
+            functionalStatus: deviceData.functionalStatus || 'YES',
+            hasOriginalBox: deviceData.hasOriginalBox || false,
+            isAssetTagged: deviceData.isAssetTagged || false,
+            dateAcquired: deviceData.dateAcquired ? new Date(deviceData.dateAcquired) : null,
+            whereAcquired: deviceData.whereAcquired,
+            priceAcquired: deviceData.priceAcquired,
+            estimatedValue: deviceData.estimatedValue,
+            listPrice: deviceData.listPrice,
+            soldPrice: deviceData.soldPrice,
+            soldDate: deviceData.soldDate ? new Date(deviceData.soldDate) : null,
+            cpu: deviceData.cpu,
+            ram: deviceData.ram,
+            graphics: deviceData.graphics,
+            storage: deviceData.storage,
+            operatingSystem: deviceData.operatingSystem,
+            isWifiEnabled: deviceData.isWifiEnabled,
+            isPramBatteryRemoved: deviceData.isPramBatteryRemoved,
+            lastPowerOnDate: deviceData.lastPowerOnDate ? new Date(deviceData.lastPowerOnDate) : null,
+            categoryId: category!.id,
+        };
+
+        if (existingDevice) {
+            // If a prior import already created this device (or it already exists), keep the ID and refresh data.
+            // Also clear related rows so re-import doesn't duplicate children.
+            await prisma.image.deleteMany({ where: { deviceId: desiredDeviceId } });
+            await prisma.note.deleteMany({ where: { deviceId: desiredDeviceId } });
+            await prisma.maintenanceTask.deleteMany({ where: { deviceId: desiredDeviceId } });
+            await prisma.device.update({
+                where: { id: desiredDeviceId },
+                data: {
+                    ...deviceCreateData,
+                    tags: { set: [] },
+                },
+            });
+
+            newDevice = await prisma.device.findUnique({ where: { id: desiredDeviceId } });
+            idMapping[desiredDeviceId] = desiredDeviceId;
+        } else {
+            // Prefer preserving ID via normal Prisma create (lets Postgres enforce constraints cleanly)
+            try {
+                newDevice = await prisma.device.create({
+                    data: {
+                        id: desiredDeviceId,
+                        ...deviceCreateData,
+                    },
+                });
+                await prisma.$executeRaw`SELECT setval('"Device_id_seq"', (SELECT GREATEST(MAX(id), 1) FROM "Device"))`;
+                idMapping[desiredDeviceId] = desiredDeviceId;
+            } catch (insertError) {
+                // Fallback: create with auto-generated ID if there's a conflict or the DB rejects explicit id.
+                newDevice = await prisma.device.create({
+                    data: deviceCreateData,
+                });
+                idMapping[desiredDeviceId] = newDevice.id;
+            }
+        }
+
+        if (!newDevice) {
+            throw new Error('Failed to create device');
+        }
+
+        const actualDeviceId = idMapping[desiredDeviceId];
+
+        // Import images from extracted directory
+        if (deviceData.images && deviceData.images.length > 0) {
+            const deviceUploadDir = path.join('/app/uploads/devices', String(actualDeviceId));
+            fs.mkdirSync(deviceUploadDir, { recursive: true });
+            const thumbsDir = path.join(deviceUploadDir, 'thumbs');
+            fs.mkdirSync(thumbsDir, { recursive: true });
+
+            const hasExportedThumbnail = deviceData.images.some((img: any) => img.isThumbnail === true);
+
+            for (let i = 0; i < deviceData.images.length; i++) {
+                const imageData = deviceData.images[i];
+                const exportedFilename = imageData.exportedFilename;
+                
+                if (exportedFilename) {
+                    const extractedImagePath = path.join(extractDir, exportedFilename);
+                    if (fs.existsSync(extractedImagePath)) {
+                        const originalFilename = path.basename(exportedFilename);
+                        const newFilename = `${uuidv4()}${path.extname(originalFilename)}`;
+                        const imagePath = path.join(deviceUploadDir, newFilename);
+                        
+                        // Copy file instead of reading into memory
+                        fs.copyFileSync(extractedImagePath, imagePath);
+
+                        // Generate thumbnail
+                        let thumbnailPath = null;
+                        try {
+                            const thumbFilename = `${path.basename(newFilename, path.extname(newFilename))}.webp`;
+                            const thumbPath = path.join(thumbsDir, thumbFilename);
+                            await sharp(imagePath)
+                                .rotate()
+                                .resize({ width: 320, height: 320, fit: 'inside', withoutEnlargement: true })
+                                .webp({ quality: 70 })
+                                .toFile(thumbPath);
+                            thumbnailPath = `/uploads/devices/${actualDeviceId}/thumbs/${thumbFilename}`;
+                        } catch (thumbErr) {
+                            console.error('Error generating thumbnail:', thumbErr);
+                        }
+
+                        const shouldBeThumbnail = hasExportedThumbnail 
+                            ? (imageData.isThumbnail === true)
+                            : (i === 0);
+
+                        await (prisma.image as any).create({
+                            data: {
+                                deviceId: actualDeviceId,
+                                path: `/uploads/devices/${actualDeviceId}/${newFilename}`,
+                                thumbnailPath,
+                                caption: imageData.caption,
+                                dateTaken: imageData.dateTaken ? new Date(imageData.dateTaken) : new Date(),
+                                isThumbnail: shouldBeThumbnail,
+                                isShopImage: imageData.isShopImage || false,
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        // Import notes
+        if (deviceData.notes && deviceData.notes.length > 0) {
+            for (const noteData of deviceData.notes) {
+                await prisma.note.create({
+                    data: {
+                        deviceId: actualDeviceId,
+                        content: noteData.content,
+                        date: noteData.date ? new Date(noteData.date) : new Date(),
+                    }
+                });
+            }
+        }
+
+        // Import maintenance tasks
+        if (deviceData.maintenanceTasks && deviceData.maintenanceTasks.length > 0) {
+            for (const taskData of deviceData.maintenanceTasks) {
+                await prisma.maintenanceTask.create({
+                    data: {
+                        deviceId: actualDeviceId,
+                        label: taskData.label,
+                        dateCompleted: taskData.dateCompleted ? new Date(taskData.dateCompleted) : new Date(),
+                        notes: taskData.notes,
+                    }
+                });
+            }
+        }
+
+        // Import tags
+        if (deviceData.tags && deviceData.tags.length > 0) {
+            for (const tagData of deviceData.tags) {
+                const tag = await prisma.tag.upsert({
+                    where: { name: tagData.name },
+                    update: {},
+                    create: { name: tagData.name },
+                });
+                await prisma.device.update({
+                    where: { id: actualDeviceId },
+                    data: {
+                        tags: { connect: { id: tag.id } }
+                    }
+                });
+            }
+        }
+
+        return {
+            originalId: desiredDeviceId,
+            newId: actualDeviceId,
+            name: deviceData.name,
+            status: 'success',
+            idPreserved: desiredDeviceId === actualDeviceId,
+        };
+    }
+
+    // Helper to clean up temp files
+    function cleanupTempFiles(zipPath: string, extractDir: string) {
+        try {
+            if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+            if (fs.existsSync(extractDir)) fs.rmSync(extractDir, { recursive: true, force: true });
+        } catch (err) {
+            console.error('Error cleaning up temp files:', err);
+        }
+    }
+
+    app.post('/import', importUpload.single('file'), async (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const jobId = uuidv4();
+        const zipPath = req.file.path;
+        const extractDir = path.join('/tmp/imports', `extract-${jobId}`);
+
+        // Initialize progress tracking
+        const job: ImportProgress = {
+            id: jobId,
+            status: 'extracting',
+            totalDevices: 0,
+            processedDevices: 0,
+            currentDevice: '',
+            results: [],
+            startTime: Date.now(),
+        };
+        importJobs.set(jobId, job);
+
+        // Return job ID immediately so client can poll for progress
+        res.json({ jobId, message: 'Import started' });
+
+        // Process in background
+        (async () => {
+            try {
+                // Extract ZIP using streaming
+                fs.mkdirSync(extractDir, { recursive: true });
+                
+                await new Promise<void>((resolve, reject) => {
+                    fs.createReadStream(zipPath)
+                        .pipe(unzipper.Extract({ path: extractDir }))
+                        .on('close', resolve)
+                        .on('error', reject);
+                });
+
+                // Read devices.json
+                const devicesJsonPath = path.join(extractDir, 'devices.json');
+                if (!fs.existsSync(devicesJsonPath)) {
+                    throw new Error('Invalid import file: devices.json not found');
+                }
+
+                const devicesJsonContent = fs.readFileSync(devicesJsonPath, 'utf-8');
+                const exportData = JSON.parse(devicesJsonContent);
+
+                if (!exportData.devices || !Array.isArray(exportData.devices)) {
+                    throw new Error('Invalid import file: no devices array found');
+                }
+
+                job.status = 'processing';
+                job.totalDevices = exportData.devices.length;
+
+                const idMapping: Record<number, number> = {};
+                const CHUNK_SIZE = 5; // Process 5 devices at a time
+
+                // Process devices in chunks
+                for (let i = 0; i < exportData.devices.length; i += CHUNK_SIZE) {
+                    const chunk = exportData.devices.slice(i, i + CHUNK_SIZE);
+                    
+                    // Process chunk sequentially (to avoid DB conflicts)
+                    for (const deviceData of chunk) {
+                        job.currentDevice = deviceData.name || `Device ${deviceData.id}`;
+                        
+                        try {
+                            const result = await processDevice(deviceData, extractDir, idMapping);
+                            job.results.push(result);
+                        } catch (deviceError: any) {
+                            job.results.push({
+                                originalId: deviceData.id,
+                                name: deviceData.name,
+                                status: 'error',
+                                error: deviceError.message,
+                            });
+                        }
+                        
+                        job.processedDevices++;
+                    }
+
+                    // Small delay between chunks to prevent overwhelming the system
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                job.status = 'complete';
+                job.currentDevice = '';
+
+                // Clean up temp files
+                cleanupTempFiles(zipPath, extractDir);
+
+            } catch (error: any) {
+                console.error('Import error:', error);
+                job.status = 'error';
+                job.error = error.message || 'Import failed';
+                
+                // Clean up temp files on error
+                cleanupTempFiles(zipPath, extractDir);
+            }
+        })();
+    });
+
+    // ============== EXPORT ENDPOINTS ==============
+    
+    const MAX_PART_SIZE = 500 * 1024 * 1024; // 500MB per part
+    
+    // Start export job
+    app.post('/export/start', express.json(), async (req, res) => {
+        const { deviceIds, includeImages = true, compressImages = false } = req.body;
+        
+        if (!deviceIds || !Array.isArray(deviceIds) || deviceIds.length === 0) {
+            return res.status(400).json({ error: 'deviceIds array is required' });
+        }
+
+        const jobId = uuidv4();
+        
+        // Count total images for progress tracking
+        const devices = await prisma.device.findMany({
+            where: { id: { in: deviceIds } },
+            include: { images: true }
+        });
+        
+        const totalImages = includeImages 
+            ? devices.reduce((acc, d) => acc + d.images.length, 0) 
+            : 0;
+
+        const job: ExportProgress = {
+            id: jobId,
+            status: 'preparing',
+            totalDevices: deviceIds.length,
+            processedDevices: 0,
+            totalImages,
+            processedImages: 0,
+            currentDevice: '',
+            startTime: Date.now(),
+            zipPaths: [],
+            currentPart: 1,
+            totalParts: 1,
+            deviceIds,
+            includeImages,
+            compressImages,
+        };
+        exportJobs.set(jobId, job);
+
+        res.json({ jobId, message: 'Export started', totalImages });
+
+        // Process in background
+        (async () => {
+            try {
+                const exportDir = path.join('/tmp/exports', jobId);
+                fs.mkdirSync(exportDir, { recursive: true });
+                
+                if (includeImages) {
+                    fs.mkdirSync(path.join(exportDir, 'images'), { recursive: true });
+                }
+
+                job.status = 'processing';
+
+                // Fetch all device data with relations
+                const allDevices = await prisma.device.findMany({
+                    where: { id: { in: deviceIds } },
+                    include: {
+                        category: true,
+                        images: true,
+                        notes: true,
+                        maintenanceTasks: true,
+                        tags: true,
+                    }
+                });
+
+                const exportData: any = {
+                    exportDate: new Date().toISOString(),
+                    exportVersion: "2.0",
+                    deviceCount: allDevices.length,
+                    includesImages: includeImages,
+                    compressedImages: compressImages,
+                    devices: [],
+                };
+
+                let currentPartSize = 0;
+                let currentPartDevices: any[] = [];
+                const partExportDirs: string[] = [];
+                let partNumber = 1;
+
+                // Helper to finalize a part
+                const finalizePart = async (isLast: boolean) => {
+                    if (currentPartDevices.length === 0) return;
+
+                    const partDir = path.join('/tmp/exports', `${jobId}-part${partNumber}`);
+                    fs.mkdirSync(partDir, { recursive: true });
+
+                    // Copy images for this part's devices
+                    if (includeImages) {
+                        const imagesDir = path.join(partDir, 'images');
+                        fs.mkdirSync(imagesDir, { recursive: true });
+                        
+                        for (const deviceExport of currentPartDevices) {
+                            if (deviceExport.images && deviceExport.images.length > 0) {
+                                const srcDir = path.join(exportDir, 'images', String(deviceExport.id));
+                                const destDir = path.join(imagesDir, String(deviceExport.id));
+                                if (fs.existsSync(srcDir)) {
+                                    fs.cpSync(srcDir, destDir, { recursive: true });
+                                }
+                            }
+                        }
+                    }
+
+                    // Write part's devices.json
+                    const partData = {
+                        ...exportData,
+                        partNumber,
+                        totalParts: 0, // Will be updated
+                        deviceCount: currentPartDevices.length,
+                        devices: currentPartDevices,
+                    };
+                    fs.writeFileSync(
+                        path.join(partDir, 'devices.json'),
+                        JSON.stringify(partData, null, 2)
+                    );
+
+                    partExportDirs.push(partDir);
+                    currentPartDevices = [];
+                    currentPartSize = 0;
+                    partNumber++;
+                    job.currentPart = partNumber;
+                };
+
+                // Process each device
+                for (const device of allDevices) {
+                    job.currentDevice = device.name || `Device ${device.id}`;
+
+                    const deviceExport: any = {
+                        id: device.id,
+                        name: device.name,
+                        additionalName: device.additionalName,
+                        manufacturer: device.manufacturer,
+                        modelNumber: device.modelNumber,
+                        serialNumber: device.serialNumber,
+                        releaseYear: device.releaseYear,
+                        location: device.location,
+                        info: device.info,
+                        isFavorite: device.isFavorite,
+                        externalUrl: device.externalUrl,
+                        status: device.status,
+                        functionalStatus: device.functionalStatus,
+                        hasOriginalBox: device.hasOriginalBox,
+                        isAssetTagged: device.isAssetTagged,
+                        dateAcquired: device.dateAcquired,
+                        whereAcquired: device.whereAcquired,
+                        priceAcquired: device.priceAcquired,
+                        estimatedValue: device.estimatedValue,
+                        listPrice: device.listPrice,
+                        soldPrice: device.soldPrice,
+                        soldDate: device.soldDate,
+                        cpu: device.cpu,
+                        ram: device.ram,
+                        graphics: device.graphics,
+                        storage: device.storage,
+                        operatingSystem: device.operatingSystem,
+                        isWifiEnabled: device.isWifiEnabled,
+                        isPramBatteryRemoved: device.isPramBatteryRemoved,
+                        lastPowerOnDate: device.lastPowerOnDate,
+                        category: {
+                            id: device.category.id,
+                            name: device.category.name,
+                            type: device.category.type,
+                            sortOrder: (device.category as any).sortOrder,
+                        },
+                        images: [],
+                        notes: device.notes.map(n => ({
+                            id: n.id,
+                            content: n.content,
+                            date: n.date,
+                        })),
+                        maintenanceTasks: device.maintenanceTasks.map(t => ({
+                            id: t.id,
+                            label: t.label,
+                            dateCompleted: t.dateCompleted,
+                            notes: t.notes,
+                        })),
+                        tags: device.tags.map(t => ({
+                            id: t.id,
+                            name: t.name,
+                        })),
+                    };
+
+                    let deviceImageSize = 0;
+
+                    // Process images
+                    if (includeImages && device.images.length > 0) {
+                        const deviceImagesDir = path.join(exportDir, 'images', String(device.id));
+                        fs.mkdirSync(deviceImagesDir, { recursive: true });
+
+                        for (const image of device.images) {
+                            const sourcePath = path.join('/app/uploads', image.path.replace('/uploads/', ''));
+                            const filename = path.basename(image.path);
+                            let destPath = path.join(deviceImagesDir, filename);
+                            let exportFilename = filename;
+
+                            if (fs.existsSync(sourcePath)) {
+                                const stats = fs.statSync(sourcePath);
+                                
+                                // Optionally compress images
+                                if (compressImages && /\.(jpg|jpeg|png)$/i.test(filename)) {
+                                    try {
+                                        const compressedFilename = `${path.basename(filename, path.extname(filename))}.jpg`;
+                                        const compressedPath = path.join(deviceImagesDir, compressedFilename);
+                                        await sharp(sourcePath)
+                                            .rotate()
+                                            .resize({ width: 2048, height: 2048, fit: 'inside', withoutEnlargement: true })
+                                            .jpeg({ quality: 80 })
+                                            .toFile(compressedPath);
+                                        destPath = compressedPath;
+                                        exportFilename = compressedFilename;
+                                        const compressedStats = fs.statSync(compressedPath);
+                                        deviceImageSize += compressedStats.size;
+                                    } catch (compressErr) {
+                                        // Fall back to copy
+                                        fs.copyFileSync(sourcePath, destPath);
+                                        deviceImageSize += stats.size;
+                                    }
+                                } else {
+                                    fs.copyFileSync(sourcePath, destPath);
+                                    deviceImageSize += stats.size;
+                                }
+                            }
+
+                            deviceExport.images.push({
+                                id: image.id,
+                                path: image.path,
+                                thumbnailPath: (image as any).thumbnailPath,
+                                caption: image.caption,
+                                dateTaken: image.dateTaken,
+                                isThumbnail: image.isThumbnail,
+                                isShopImage: image.isShopImage,
+                                exportedFilename: `images/${device.id}/${exportFilename}`,
+                            });
+
+                            job.processedImages++;
+                        }
+                    } else {
+                        deviceExport.images = device.images.map(img => ({
+                            id: img.id,
+                            path: img.path,
+                            thumbnailPath: (img as any).thumbnailPath,
+                            caption: img.caption,
+                            dateTaken: img.dateTaken,
+                            isThumbnail: img.isThumbnail,
+                            isShopImage: img.isShopImage,
+                            exportedFilename: null,
+                        }));
+                    }
+
+                    // Check if we need to start a new part
+                    if (currentPartSize + deviceImageSize > MAX_PART_SIZE && currentPartDevices.length > 0) {
+                        await finalizePart(false);
+                    }
+
+                    currentPartDevices.push(deviceExport);
+                    currentPartSize += deviceImageSize;
+                    job.processedDevices++;
+                }
+
+                // Finalize last part
+                await finalizePart(true);
+
+                job.status = 'zipping';
+                job.currentDevice = '';
+                job.totalParts = partExportDirs.length;
+
+                // Create ZIP files for each part
+                const archiver = require('archiver');
+                
+                for (let i = 0; i < partExportDirs.length; i++) {
+                    job.currentPart = i + 1;
+                    const partDir = partExportDirs[i];
+                    
+                    // Update totalParts in the JSON
+                    const jsonPath = path.join(partDir, 'devices.json');
+                    const partData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+                    partData.totalParts = partExportDirs.length;
+                    fs.writeFileSync(jsonPath, JSON.stringify(partData, null, 2));
+                    
+                    const zipPath = path.join('/tmp/exports', `${jobId}-part${i + 1}.zip`);
+                    const output = fs.createWriteStream(zipPath);
+                    const archive = archiver('zip', { zlib: { level: 5 } });
+
+                    await new Promise<void>((resolve, reject) => {
+                        output.on('close', resolve);
+                        archive.on('error', reject);
+                        
+                        archive.pipe(output);
+                        archive.directory(partDir, false);
+                        archive.finalize();
+                    });
+
+                    job.zipPaths.push(zipPath);
+                    
+                    // Clean up part directory
+                    fs.rmSync(partDir, { recursive: true, force: true });
+                }
+
+                job.status = 'complete';
+                job.currentDevice = '';
+
+                // Clean up main export directory
+                fs.rmSync(exportDir, { recursive: true, force: true });
+
+            } catch (error: any) {
+                console.error('Export error:', error);
+                job.status = 'error';
+                job.error = error.message || 'Export failed';
+            }
+        })();
+    });
+
+    // Get export progress
+    app.get('/export/progress/:jobId', (req, res) => {
+        const job = exportJobs.get(req.params.jobId);
+        if (!job) {
+            return res.status(404).json({ error: 'Export job not found' });
+        }
+
+        const deviceProgress = job.totalDevices > 0 
+            ? Math.round((job.processedDevices / job.totalDevices) * 100) 
+            : 0;
+        const imageProgress = job.totalImages > 0 
+            ? Math.round((job.processedImages / job.totalImages) * 100) 
+            : 100;
+
+        res.json({
+            id: job.id,
+            status: job.status,
+            totalDevices: job.totalDevices,
+            processedDevices: job.processedDevices,
+            totalImages: job.totalImages,
+            processedImages: job.processedImages,
+            currentDevice: job.currentDevice,
+            currentPart: job.currentPart,
+            totalParts: job.totalParts,
+            deviceProgress,
+            imageProgress,
+            overallProgress: job.includeImages 
+                ? Math.round((deviceProgress * 0.3) + (imageProgress * 0.7))
+                : deviceProgress,
+            error: job.error,
+            downloadReady: job.status === 'complete',
+            parts: job.status === 'complete' ? job.zipPaths.length : undefined,
+        });
+    });
+
+    // Download completed export (specific part)
+    app.get('/export/download/:jobId/:partNumber?', (req, res) => {
+        const job = exportJobs.get(req.params.jobId);
+        if (!job) {
+            return res.status(404).json({ error: 'Export job not found' });
+        }
+
+        if (job.status !== 'complete' || job.zipPaths.length === 0) {
+            return res.status(400).json({ error: 'Export not ready for download' });
+        }
+
+        const partNumber = parseInt(req.params.partNumber || '1', 10);
+        const partIndex = partNumber - 1;
+
+        if (partIndex < 0 || partIndex >= job.zipPaths.length) {
+            return res.status(400).json({ error: `Invalid part number. Available parts: 1-${job.zipPaths.length}` });
+        }
+
+        const zipPath = job.zipPaths[partIndex];
+        if (!fs.existsSync(zipPath)) {
+            return res.status(404).json({ error: 'Export file not found' });
+        }
+
+        const timestamp = new Date(job.startTime).toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const partSuffix = job.zipPaths.length > 1 ? `-part${partNumber}of${job.zipPaths.length}` : '';
+        res.download(zipPath, `inventory-export-${timestamp}${partSuffix}.zip`);
+    });
+
+    // Error handling for multer
+    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ error: 'File too large. Maximum size is 10MB.' });
+            }
+            return res.status(400).json({ error: err.message });
+        }
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        next();
+    });
+
+    // Create Apollo Server
+    const server = new ApolloServer<Context>({
+        typeDefs,
+        resolvers,
+    });
+
+    await server.start();
+
+    // Apply Apollo middleware
+    app.use(
+        '/graphql',
+        express.json(),
+        expressMiddleware(server, {
+            context: async () => ({
+                prisma,
+            }),
+        })
+    );
+
+    const PORT = process.env.PORT || 4000;
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`);
+        console.log(`📁 File uploads at http://localhost:${PORT}/upload`);
+        console.log(`🖼️  Static files at http://localhost:${PORT}/uploads`);
+    });
+}
+
+startServer();

@@ -1,0 +1,143 @@
+version: '3.8'
+
+# Production docker-compose for NAS deployment with Traefik
+# 
+# Usage:
+#   1. Copy .env.example to .env and configure
+#   2. Deploy via Portainer or: docker compose -f docker-compose.prod.yml up -d
+#
+# Prerequisites:
+#   - Traefik running with network "traefik" (adjust TRAEFIK_NETWORK if different)
+#   - DNS configured for your subdomain
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: inventory-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-inventory}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password required}
+      POSTGRES_DB: ${POSTGRES_DB:-inventory}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-inventory}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: inventory-api:latest
+    container_name: inventory-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
+      PORT: 4000
+    volumes:
+      - ${UPLOADS_PATH:-./uploads}:/app/uploads
+      - /var/services/homes/wottle/docker/InvDifferent2/category.sql:/app/category.sql:ro
+      - /var/services/homes/wottle/docker/InvDifferent2/device_templates.sql:/app/device_templates.sql:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+      - web
+    labels:
+      - "traefik.enable=true"
+      # API routes - adjust DOMAIN in .env
+      - "traefik.http.routers.inventory-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/graphql`, `/upload`, `/uploads`, `/import`, `/export`)"
+      - "traefik.http.routers.inventory-api.entrypoints=websecure"
+      - "traefik.http.routers.inventory-api.tls=true"
+      - "traefik.http.routers.inventory-api.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.inventory-api.loadbalancer.server.port=4000"
+      # CORS middleware for API
+      - "traefik.http.middlewares.inventory-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.inventory-cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
+      - "traefik.http.middlewares.inventory-cors.headers.accesscontrolalloworiginlist=https://${DOMAIN}"
+      - "traefik.http.routers.inventory-api.middlewares=inventory-cors"
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://${DOMAIN}
+    image: inventory-web:latest
+    container_name: inventory-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - api
+    networks:
+      - internal
+      - web
+    labels:
+      - "traefik.enable=true"
+      # Web frontend - catches all other routes
+      - "traefik.http.routers.inventory-web.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.inventory-web.entrypoints=websecure"
+      - "traefik.http.routers.inventory-web.tls=true"
+      - "traefik.http.routers.inventory-web.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.inventory-web.loadbalancer.server.port=3000"
+      # Lower priority than API routes
+      - "traefik.http.routers.inventory-web.priority=1"
+      - "traefik.http.routers.inventory-api.priority=2"
+
+  storefront:
+    build:
+      context: ./storefront
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://${DOMAIN}
+    image: inventory-storefront:latest
+    container_name: inventory-storefront
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - api
+    networks:
+      - internal
+      - web
+    labels:
+      - "traefik.enable=true"
+      # Storefront - uses SHOP_DOMAIN for separate subdomain
+      - "traefik.http.routers.inventory-storefront.rule=Host(`${SHOP_DOMAIN}`)"
+      - "traefik.http.routers.inventory-storefront.entrypoints=websecure"
+      - "traefik.http.routers.inventory-storefront.tls=true"
+      - "traefik.http.routers.inventory-storefront.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.inventory-storefront.loadbalancer.server.port=3001"
+
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    image: inventory-mcp:latest
+    container_name: inventory-mcp
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+  web:
+    external: true
+
+volumes:
+  postgres_data:
