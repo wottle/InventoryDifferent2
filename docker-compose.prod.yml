@@ -42,8 +42,8 @@ services:
       PORT: 4000
     volumes:
       - ${UPLOADS_PATH:-./uploads}:/app/uploads
-      - /var/services/homes/wottle/docker/InvDifferent2/category.sql:/app/category.sql:ro
-      - /var/services/homes/wottle/docker/InvDifferent2/device_templates.sql:/app/device_templates.sql:ro
+      - ${SQL_PATH:-./}category.sql:/app/category.sql:ro
+      - ${SQL_PATH:-./}device_templates.sql:/app/device_templates.sql:ro
     depends_on:
       postgres:
         condition: service_healthy
