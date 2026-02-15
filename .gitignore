@@ -27,6 +27,14 @@ uploads/
 *.backup.sql
 inventory-backup.sql
 
+# Personal deployment configs
+docker-compose.nas.yml
+build-and-push.sh
+nas.env
+
+# Migration exports (one-time use)
+api/migration/exports/
+
 # Logs
 *.log
 npm-debug.log*
