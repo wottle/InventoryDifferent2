@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_BASE_URL</key>
+	<string>http://localhost:4000</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is needed to scan barcodes and QR codes to quickly find devices.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Saving to the Photo library is needed to save asset tags to photo library</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>AccentColor</string>
+	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>EBGaramond-Bold.ttf</string>
+		<string>EBGaramond-Regular.ttf</string>
+		<string>EBGaramond-Medium.ttf</string>
+		<string>EBGaramond.ttf</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.wottle.InventoryDifferent</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>inventorydifferent</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

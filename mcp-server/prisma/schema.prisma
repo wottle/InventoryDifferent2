@@ -1,0 +1,147 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Device {
+  id                  Int       @id @default(autoincrement())
+  name                String
+  additionalName      String?
+  manufacturer        String?
+  modelNumber         String?
+  serialNumber        String?
+  releaseYear         Int?
+  location            String?
+  info                String?   @db.Text
+  isFavorite          Boolean   @default(false)
+
+  status              Status    @default(AVAILABLE)
+  functionalStatus    FunctionalStatus @default(YES)
+  lastPowerOnDate     DateTime?
+  hasOriginalBox      Boolean   @default(false)
+  isAssetTagged       Boolean   @default(false)
+
+  dateAcquired        DateTime?
+  whereAcquired       String?
+  priceAcquired       Decimal?  @db.Decimal(10, 2)
+  estimatedValue      Decimal?  @db.Decimal(10, 2)
+
+  listPrice           Decimal?  @db.Decimal(10, 2)
+  soldPrice           Decimal?  @db.Decimal(10, 2)
+  soldDate            DateTime?
+
+  cpu                 String?
+  ram                 String?
+  graphics            String?
+  storage             String?
+  operatingSystem     String?
+  isWifiEnabled       Boolean?
+  isPramBatteryRemoved Boolean?
+  deleted             Boolean   @default(false)
+
+  externalUrl         String?
+
+  categoryId          Int
+  category            Category  @relation(fields: [categoryId], references: [id])
+  
+  images              Image[]
+  notes               Note[]
+  maintenanceTasks    MaintenanceTask[]
+  tags                Tag[]
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  type    CategoryType
+  sortOrder Int    @default(0)
+  
+  devices Device[]
+  templates Template[]
+}
+
+model Image {
+  id          Int      @id @default(autoincrement())
+  deviceId    Int
+  device      Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  
+  path        String
+  thumbnailPath String?
+  dateTaken   DateTime @default(now())
+  caption     String?
+  isShopImage Boolean  @default(false)
+  isThumbnail Boolean  @default(false)
+  isListingImage Boolean @default(false)
+}
+
+model Note {
+  id          Int      @id @default(autoincrement())
+  deviceId    Int
+  device      Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  
+  content     String   @db.Text
+  date        DateTime @default(now())
+}
+
+model MaintenanceTask {
+  id            Int      @id @default(autoincrement())
+  deviceId      Int
+  device        Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  
+  label         String
+  dateCompleted DateTime
+  notes         String?  @db.Text
+}
+
+model Tag {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  devices Device[]
+}
+
+model Template {
+  id      Int    @id @default(autoincrement())
+  name    String
+  additionalName  String?
+  manufacturer    String?
+  modelNumber     String?
+  releaseYear     Int?
+  estimatedValue  Decimal?  @db.Decimal(10, 2)
+  cpu             String?
+  ram             String?
+  graphics        String?
+  storage         String?
+  operatingSystem String?
+  externalUrl     String?
+  isWifiEnabled       Boolean?
+  isPramBatteryRemoved Boolean?
+
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+}
+
+enum Status {
+  AVAILABLE
+  FOR_SALE
+  PENDING_SALE
+  SOLD
+  DONATED
+}
+
+enum FunctionalStatus {
+  YES
+  PARTIAL
+  NO
+}
+
+enum CategoryType {
+  COMPUTER
+  PERIPHERAL
+  ACCESSORY
+  OTHER
+}

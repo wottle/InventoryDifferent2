@@ -1,0 +1,114 @@
+version: '3.8'
+
+# NAS deployment using pre-built images from Docker Hub
+# 
+# Usage:
+#   1. Copy .env.nas to .env and configure
+#   2. Deploy: docker compose -f docker-compose.nas.yml up -d
+#
+# To update: docker compose -f docker-compose.nas.yml pull && docker compose -f docker-compose.nas.yml up -d
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: inventory2-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-inventory}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password required}
+      POSTGRES_DB: ${POSTGRES_DB:-inventory}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-inventory}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ${DOCKERHUB_USER:-wottle}/inventory-api:latest
+    container_name: inventory2-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
+      PORT: 4000
+    volumes:
+      - ${UPLOADS_PATH:-./uploads}:/app/uploads
+      - ${SQL_PATH}/category.sql:/app/category.sql:ro
+      - ${SQL_PATH}/device_templates.sql:/app/device_templates.sql:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:inventorydifferent.com,inventory.wottle.com;PathPrefix:/graphql,/upload,/uploads,/import,/export"
+      - "traefik.port=4000"
+      - "traefik.frontend.priority=2"
+      - "traefik.docker.network=web"
+
+  web:
+    image: ${DOCKERHUB_USER:-wottle}/inventory-web:latest
+    container_name: inventory2-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: https://inventorydifferent.com/graphql
+      API_URL: http://api:4000
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?OpenAI API key required}
+    depends_on:
+      - api
+    networks:
+      - internal
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:inventorydifferent.com,inventory.wottle.com"
+      - "traefik.port=3000"
+      - "traefik.frontend.priority=1"
+      - "traefik.docker.network=web"
+
+  storefront:
+    image: ${DOCKERHUB_USER:-wottle}/inventory-storefront:latest
+    container_name: inventory2-storefront
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - api
+    networks:
+      - internal
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${SHOP_DOMAIN:-shop.wottle.com}"
+      - "traefik.port=3001"
+      - "traefik.frontend.priority=1"
+      - "traefik.docker.network=web"
+
+  mcp-server:
+    image: ${DOCKERHUB_USER:-wottle}/inventory-mcp:latest
+    container_name: inventory2-mcp
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+  web:
+    external: true
+
+volumes:
+  postgres_data:
