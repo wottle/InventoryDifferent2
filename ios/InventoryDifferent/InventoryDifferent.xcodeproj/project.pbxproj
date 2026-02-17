@@ -30,46 +30,12 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		AA717C9E2F31A3CB002D041E /* Exceptions for "InventoryDifferent" folder in "InventoryDifferent" target */ = {
+		AA717CAA2F31A3CB002D041E /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = AA717C722F31A3C9002D041E /* InventoryDifferent */;
-		};
-		AAA778A22F426AE900BFE676 /* Exceptions for "InventoryDifferent" folder in "InventoryDifferentTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Fonts/EBGaramond-Bold.ttf",
-				"Fonts/EBGaramond-BoldItalic.ttf",
-				"Fonts/EBGaramond-ExtraBold.ttf",
-				"Fonts/EBGaramond-ExtraBoldItalic.ttf",
-				"Fonts/EBGaramond-Italic.ttf",
-				"Fonts/EBGaramond-Medium.ttf",
-				"Fonts/EBGaramond-MediumItalic.ttf",
-				"Fonts/EBGaramond-Regular.ttf",
-				"Fonts/EBGaramond-SemiBold.ttf",
-				"Fonts/EBGaramond-SemiBoldItalic.ttf",
-				Fonts/EBGaramond.ttf,
-			);
-			target = AA717C8B2F31A3CB002D041E /* InventoryDifferentTests */;
-		};
-		AAA778A32F426AE900BFE676 /* Exceptions for "InventoryDifferent" folder in "InventoryDifferentUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Fonts/EBGaramond-Bold.ttf",
-				"Fonts/EBGaramond-BoldItalic.ttf",
-				"Fonts/EBGaramond-ExtraBold.ttf",
-				"Fonts/EBGaramond-ExtraBoldItalic.ttf",
-				"Fonts/EBGaramond-Italic.ttf",
-				"Fonts/EBGaramond-Medium.ttf",
-				"Fonts/EBGaramond-MediumItalic.ttf",
-				"Fonts/EBGaramond-Regular.ttf",
-				"Fonts/EBGaramond-SemiBold.ttf",
-				"Fonts/EBGaramond-SemiBoldItalic.ttf",
-				Fonts/EBGaramond.ttf,
-			);
-			target = AA717C952F31A3CB002D041E /* InventoryDifferentUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -77,9 +43,7 @@
 		AA717C752F31A3C9002D041E /* InventoryDifferent */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				AA717C9E2F31A3CB002D041E /* Exceptions for "InventoryDifferent" folder in "InventoryDifferent" target */,
-				AAA778A22F426AE900BFE676 /* Exceptions for "InventoryDifferent" folder in "InventoryDifferentTests" target */,
-				AAA778A32F426AE900BFE676 /* Exceptions for "InventoryDifferent" folder in "InventoryDifferentUITests" target */,
+				AA717CAA2F31A3CB002D041E /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
 			);
 			path = InventoryDifferent;
 			sourceTree = "<group>";
@@ -327,7 +291,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XLY3EERM8Z;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = InventoryDifferent/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -359,7 +323,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XLY3EERM8Z;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = InventoryDifferent/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

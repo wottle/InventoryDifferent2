@@ -11,21 +11,34 @@ import SwiftUI
 struct InventoryDifferentApp: App {
     @StateObject private var deviceStore = DeviceStore()
     @StateObject private var appSettings = AppSettings.shared
+    @StateObject private var authService = AuthService.shared
     @State private var showSplash = true
     @State private var deepLinkDeviceId: Int?
-    
+
     var body: some Scene {
         WindowGroup {
             ZStack {
-                if appSettings.isConfigured {
+                if !appSettings.isConfigured {
+                    // Server not configured - show login/setup view
+                    LoginView()
+                        .environmentObject(authService)
+                        .environmentObject(appSettings)
+                } else if authService.isLoading {
+                    // Still checking auth status
+                    Color(.systemBackground)
+                } else if authService.authRequired && !authService.isAuthenticated {
+                    // Auth required but not logged in - show login view
+                    LoginView()
+                        .environmentObject(authService)
+                        .environmentObject(appSettings)
+                } else {
+                    // Ready to show main content
                     ContentView(deepLinkDeviceId: $deepLinkDeviceId)
                         .environmentObject(deviceStore)
                         .environmentObject(appSettings)
-                } else {
-                    ServerSetupView()
-                        .environmentObject(appSettings)
+                        .environmentObject(authService)
                 }
-                
+
                 // Splash screen overlay
                 if showSplash {
                     SplashScreenView()

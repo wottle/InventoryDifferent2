@@ -60,6 +60,9 @@ iOS App / Web / Storefront → GraphQL API (port 4000) → PostgreSQL
 - `/upload`: File upload (multer, 10MB limit)
 - `/imports`: ZIP bulk import/export (2GB limit)
 - `/uploads`: Static file serving
+- `/auth/login`: POST - Admin login (returns JWT tokens)
+- `/auth/refresh`: POST - Refresh access token
+- `/auth/status`: GET - Check authentication status
 
 ### Web App Structure (web/)
 - Uses Next.js 14 App Router
@@ -101,12 +104,34 @@ All CRUD operations follow pattern: `createX`, `updateX`, `deleteX`
 - Sharp generates thumbnails on import
 - EXIF date extraction from images
 
+## Authentication
+
+Single-user JWT-based authentication protects sensitive inventory data while allowing public browsing.
+
+### Configuration
+- `AUTH_PASSWORD`: Admin password (required for auth to be enabled)
+- `JWT_SECRET`: Secret for signing JWTs (auto-generated if not set)
+
+### Behavior
+- If `AUTH_PASSWORD` is not set, authentication is disabled (backwards compatible)
+- When enabled, unauthenticated users can view devices but not see prices, notes, or acquisition info
+- All mutations and admin pages (financials, categories, templates, trash) require authentication
+- Storefront remains fully public
+
+### Auth Flow
+1. Client calls `POST /auth/login` with password
+2. API returns access token (1h) and refresh token (7d)
+3. Client includes `Authorization: Bearer <token>` header on requests
+4. Client refreshes token before expiry via `POST /auth/refresh`
+
 ## Environment Configuration
 
 Key variables (see `.env.example`):
 - `DATABASE_URL`: PostgreSQL connection string
 - `OPENAI_API_KEY`: Required for AI chat features
 - `DOMAIN` / `SHOP_DOMAIN`: Production domains
+- `AUTH_PASSWORD`: Admin password for authentication
+- `JWT_SECRET`: Secret for JWT signing
 
 ## Deployment
 

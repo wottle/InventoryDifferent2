@@ -1,6 +1,7 @@
 "use client";
 
 import { HttpLink, ApolloLink } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 import {
     ApolloNextAppProvider,
     NextSSRApolloClient,
@@ -9,9 +10,27 @@ import {
 } from "@apollo/experimental-nextjs-app-support/ssr";
 import { GRAPHQL_URL } from "./config";
 
+// Token storage key (matches auth-context.tsx)
+const ACCESS_TOKEN_KEY = 'inv_access_token';
+
 function makeClient() {
     const httpLink = new HttpLink({
         uri: GRAPHQL_URL,
+    });
+
+    // Auth link that adds the Authorization header
+    const authLink = setContext((_, { headers }) => {
+        // Get the authentication token from localStorage
+        const token = typeof window !== 'undefined'
+            ? localStorage.getItem(ACCESS_TOKEN_KEY)
+            : null;
+
+        return {
+            headers: {
+                ...headers,
+                authorization: token ? `Bearer ${token}` : '',
+            },
+        };
     });
 
     return new NextSSRApolloClient({
@@ -24,7 +43,7 @@ function makeClient() {
                     }),
                     httpLink,
                 ])
-                : httpLink,
+                : ApolloLink.from([authLink, httpLink]),
     });
 }
 

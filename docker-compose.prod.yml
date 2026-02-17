@@ -40,6 +40,9 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
       PORT: 4000
+      AUTH_USERNAME: ${AUTH_USERNAME:-}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-}
     volumes:
       - ${UPLOADS_PATH:-./uploads}:/app/uploads
       - ${SQL_PATH:-./}category.sql:/app/category.sql:ro
@@ -53,7 +56,7 @@ services:
     labels:
       - "traefik.enable=true"
       # API routes - adjust DOMAIN in .env
-      - "traefik.http.routers.inventory-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/graphql`, `/upload`, `/uploads`, `/import`, `/export`)"
+      - "traefik.http.routers.inventory-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/graphql`, `/upload`, `/uploads`, `/import`, `/export`, `/auth`)"
       - "traefik.http.routers.inventory-api.entrypoints=websecure"
       - "traefik.http.routers.inventory-api.tls=true"
       - "traefik.http.routers.inventory-api.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
@@ -98,11 +101,13 @@ services:
       dockerfile: Dockerfile
       args:
         - NEXT_PUBLIC_API_URL=https://${DOMAIN}
+        - NEXT_PUBLIC_CONTACT_EMAIL=${NEXT_PUBLIC_CONTACT_EMAIL:-store@example.com}
     image: inventory-storefront:latest
     container_name: inventory-storefront
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      NEXT_PUBLIC_CONTACT_EMAIL: ${NEXT_PUBLIC_CONTACT_EMAIL:-store@example.com}
     depends_on:
       - api
     networks:

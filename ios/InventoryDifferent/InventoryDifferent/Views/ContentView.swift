@@ -53,4 +53,6 @@ struct ContentView: View {
 #Preview {
     ContentView(deepLinkDeviceId: .constant(nil))
         .environmentObject(DeviceStore())
+        .environmentObject(AppSettings.shared)
+        .environmentObject(AuthService.shared)
 }

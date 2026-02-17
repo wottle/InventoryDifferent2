@@ -1,9 +1,42 @@
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
+import type { Context } from './index';
 
 const exifr: any = require('exifr');
 const sharp: any = require('sharp');
+
+// Helper to check authentication and throw error if not authenticated
+function requireAuth(context: Context): void {
+    if (!context.isAuthenticated) {
+        throw new Error('Authentication required');
+    }
+}
+
+// Sensitive fields to hide from unauthenticated users
+const SENSITIVE_DEVICE_FIELDS = [
+    'priceAcquired',
+    'estimatedValue',
+    'soldPrice',
+    'whereAcquired',
+    'notes',
+] as const;
+
+// Filter sensitive fields from a device for unauthenticated users
+function filterDeviceSensitiveFields(device: any, isAuthenticated: boolean): any {
+    if (isAuthenticated) {
+        return device;
+    }
+
+    return {
+        ...device,
+        priceAcquired: null,
+        estimatedValue: null,
+        soldPrice: null,
+        whereAcquired: null,
+        notes: [],
+    };
+}
 
 function decimalToNumber(value: any) {
     if (value === null || value === undefined) return 0;
@@ -79,7 +112,7 @@ async function generateThumbnailForUpload(imagePath: string) {
 
 export const resolvers = {
     Query: {
-        devices: async (_parent: any, args: any, context: { prisma: PrismaClient }) => {
+        devices: async (_parent: any, args: any, context: Context) => {
             const whereClause: any = {};
 
             // Handle deleted filter
@@ -125,27 +158,30 @@ export const resolvers = {
                 include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
             });
 
-            // Add searchText field as concatenation of searchable fields
-            return devices.map(device => ({
-                ...device,
-                searchText: [
-                    device.name,
-                    device.additionalName,
-                    device.manufacturer,
-                    device.modelNumber,
-                    device.serialNumber,
-                    device.cpu,
-                    device.ram,
-                    device.graphics,
-                    device.storage,
-                    device.info,
-                    ...device.tags.map(tag => tag.name),
-                    ...device.notes.map(note => note.content),
-                    ...device.maintenanceTasks.map(task => task.label + ' ' + task.notes)
-                ].filter(Boolean).join(' ').toLowerCase()
-            }));
+            // Add searchText field and filter sensitive fields
+            return devices.map(device => {
+                const filtered = filterDeviceSensitiveFields(device, context.isAuthenticated);
+                return {
+                    ...filtered,
+                    searchText: [
+                        device.name,
+                        device.additionalName,
+                        device.manufacturer,
+                        device.modelNumber,
+                        device.serialNumber,
+                        device.cpu,
+                        device.ram,
+                        device.graphics,
+                        device.storage,
+                        device.info,
+                        ...device.tags.map(tag => tag.name),
+                        ...(context.isAuthenticated ? device.notes.map(note => note.content) : []),
+                        ...device.maintenanceTasks.map(task => task.label + ' ' + task.notes)
+                    ].filter(Boolean).join(' ').toLowerCase()
+                };
+            });
         },
-        device: async (_parent: any, args: { where?: { id?: number, serialNumber?: { equals?: string }, deleted?: { equals?: boolean } } }, context: { prisma: PrismaClient }) => {
+        device: async (_parent: any, args: { where?: { id?: number, serialNumber?: { equals?: string }, deleted?: { equals?: boolean } } }, context: Context) => {
             const whereClause: any = {};
             if (args.where?.id !== undefined) {
                 whereClause.id = args.where.id;
@@ -156,29 +192,34 @@ export const resolvers = {
             if (args.where?.deleted?.equals !== undefined) {
                 whereClause.deleted = args.where.deleted.equals;
             }
-            
+
+            let device;
             // If searching by serialNumber, use findFirst since it's not unique
             if (args.where?.serialNumber?.equals !== undefined) {
-                return context.prisma.device.findFirst({
+                device = await context.prisma.device.findFirst({
+                    where: whereClause,
+                    include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                });
+            } else {
+                device = await context.prisma.device.findUnique({
                     where: whereClause,
                     include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
                 });
             }
-            
-            return context.prisma.device.findUnique({
-                where: whereClause,
-                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
-            });
+
+            if (!device) return null;
+            return filterDeviceSensitiveFields(device, context.isAuthenticated);
         },
-        categories: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+        categories: async (_parent: any, _args: any, context: Context) => {
+            // Categories are public (needed for device list display)
             return (context.prisma as any).category.findMany({
                 orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
             });
         },
-        tags: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+        tags: async (_parent: any, _args: any, context: Context) => {
             return context.prisma.tag.findMany();
         },
-        maintenanceTaskLabels: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+        maintenanceTaskLabels: async (_parent: any, _args: any, context: Context) => {
             const tasks = await context.prisma.maintenanceTask.findMany({
                 select: { label: true },
                 distinct: ['label'],
@@ -186,13 +227,18 @@ export const resolvers = {
             });
             return tasks.map((t: { label: string }) => t.label);
         },
-        templates: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+        templates: async (_parent: any, _args: any, context: Context) => {
+            // Templates require auth
+            requireAuth(context);
             return (context.prisma as any).template.findMany({
                 orderBy: { name: 'asc' },
                 include: { category: true },
             });
         },
-        financialOverview: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+        financialOverview: async (_parent: any, _args: any, context: Context) => {
+            // Financial data requires auth
+            requireAuth(context);
+
             const baseWhere: any = { deleted: false };
 
             const spentAgg = await context.prisma.device.aggregate({
@@ -250,7 +296,10 @@ export const resolvers = {
                 totalProfit,
             };
         },
-        financialTransactions: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+        financialTransactions: async (_parent: any, _args: any, context: Context) => {
+            // Financial data requires auth
+            requireAuth(context);
+
             const acquisitions = await context.prisma.device.findMany({
                 where: {
                     deleted: false,
@@ -339,7 +388,7 @@ export const resolvers = {
 
             return rows;
         },
-        systemUsage: async (_parent: any, _args: any, context: { prisma: PrismaClient }) => {
+        systemUsage: async (_parent: any, _args: any, context: Context) => {
             const [deviceCount, noteCount, taskCount, imageCount, categoryCount, templateCount, tagCount] = await Promise.all([
                 context.prisma.device.count({ where: { deleted: false } }),
                 context.prisma.note.count(),
@@ -396,8 +445,9 @@ export const resolvers = {
         createCategory: async (
             _parent: any,
             args: { name: string; type: any; sortOrder?: number | null },
-            context: { prisma: PrismaClient }
+            context: Context
         ) => {
+            requireAuth(context);
             return (context.prisma as any).category.create({
                 data: {
                     name: args.name,
@@ -409,8 +459,9 @@ export const resolvers = {
         updateCategory: async (
             _parent: any,
             args: { id: number; name?: string; type?: any; sortOrder?: number | null },
-            context: { prisma: PrismaClient }
+            context: Context
         ) => {
+            requireAuth(context);
             const { id, ...data } = args;
             const cleanData = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== undefined));
             return (context.prisma as any).category.update({
@@ -421,8 +472,9 @@ export const resolvers = {
         createTemplate: async (
             _parent: any,
             args: { input: any },
-            context: { prisma: PrismaClient }
+            context: Context
         ) => {
+            requireAuth(context);
             const { input } = args;
             return (context.prisma as any).template.create({
                 data: {
@@ -434,8 +486,9 @@ export const resolvers = {
         updateTemplate: async (
             _parent: any,
             args: { input: any },
-            context: { prisma: PrismaClient }
+            context: Context
         ) => {
+            requireAuth(context);
             const { id, ...data } = args.input;
             const cleanData = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== undefined));
             return (context.prisma as any).template.update({
@@ -447,14 +500,16 @@ export const resolvers = {
         deleteTemplate: async (
             _parent: any,
             args: { id: number },
-            context: { prisma: PrismaClient }
+            context: Context
         ) => {
+            requireAuth(context);
             await (context.prisma as any).template.delete({
                 where: { id: args.id },
             });
             return true;
         },
-        addDeviceTag: async (_parent: any, args: { deviceId: number; tagName: string }, context: { prisma: PrismaClient }) => {
+        addDeviceTag: async (_parent: any, args: { deviceId: number; tagName: string }, context: Context) => {
+            requireAuth(context);
             const name = (args.tagName ?? '').trim();
             if (!name) {
                 throw new Error('tagName is required');
@@ -476,7 +531,8 @@ export const resolvers = {
                 include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
             });
         },
-        removeDeviceTag: async (_parent: any, args: { deviceId: number; tagId: number }, context: { prisma: PrismaClient }) => {
+        removeDeviceTag: async (_parent: any, args: { deviceId: number; tagId: number }, context: Context) => {
+            requireAuth(context);
             return context.prisma.device.update({
                 where: { id: args.deviceId },
                 data: {
@@ -487,7 +543,8 @@ export const resolvers = {
                 include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
             });
         },
-        createDevice: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+        createDevice: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
             const { input } = args;
             return context.prisma.device.create({
                 data: {
@@ -496,7 +553,8 @@ export const resolvers = {
                 include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
             });
         },
-        updateDevice: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+        updateDevice: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
             const { id, ...data } = args.input;
             // Remove undefined values to avoid overwriting with null
             const cleanData = Object.fromEntries(
@@ -508,21 +566,24 @@ export const resolvers = {
                 include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
             });
         },
-        deleteDevice: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+        deleteDevice: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
             await context.prisma.device.update({
                 where: { id: args.id },
                 data: { deleted: true },
             });
             return true;
         },
-        restoreDevice: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+        restoreDevice: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
             return context.prisma.device.update({
                 where: { id: args.id },
                 data: { deleted: false },
                 include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
             });
         },
-        permanentlyDeleteDevice: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+        permanentlyDeleteDevice: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
             // Get the device with its images
             const device = await context.prisma.device.findUnique({
                 where: { id: args.id },
@@ -549,7 +610,8 @@ export const resolvers = {
 
             return true;
         },
-        createImage: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+        createImage: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
             const { deviceId, path: imagePath, caption, isThumbnail, isShopImage } = args.input;
 
             // If this is set as thumbnail, unset other thumbnails for this device
@@ -590,7 +652,8 @@ export const resolvers = {
                 },
             });
         },
-        updateImage: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+        updateImage: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
             const { id, caption, isThumbnail, isShopImage, isListingImage } = args.input;
 
             // If setting as thumbnail, unset other thumbnails for this device
@@ -626,7 +689,8 @@ export const resolvers = {
                 data: updateData,
             });
         },
-        deleteImage: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+        deleteImage: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
             const image = await (context.prisma as any).image.findUnique({
                 where: { id: args.id },
             });
@@ -665,7 +729,8 @@ export const resolvers = {
 
             return true;
         },
-        createMaintenanceTask: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+        createMaintenanceTask: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
             const { deviceId, label, dateCompleted, notes } = args.input;
             return context.prisma.maintenanceTask.create({
                 data: {
@@ -676,13 +741,15 @@ export const resolvers = {
                 },
             });
         },
-        deleteMaintenanceTask: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+        deleteMaintenanceTask: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
             await context.prisma.maintenanceTask.delete({
                 where: { id: args.id },
             });
             return true;
         },
-        createNote: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+        createNote: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
             const { deviceId, content, date } = args.input;
             return context.prisma.note.create({
                 data: {
@@ -692,7 +759,8 @@ export const resolvers = {
                 },
             });
         },
-        updateNote: async (_parent: any, args: { input: any }, context: { prisma: PrismaClient }) => {
+        updateNote: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
             const { id, content, date } = args.input;
             return context.prisma.note.update({
                 where: { id },
@@ -702,7 +770,8 @@ export const resolvers = {
                 },
             });
         },
-        deleteNote: async (_parent: any, args: { id: number }, context: { prisma: PrismaClient }) => {
+        deleteNote: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
             await context.prisma.note.delete({
                 where: { id: args.id },
             });

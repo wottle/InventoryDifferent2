@@ -35,14 +35,19 @@ class APIService {
         guard let url = URL(string: "\(baseURL)/graphql") else {
             throw APIError.invalidURL
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
+        // Add Authorization header if we have a token
+        if let token = await AuthService.shared.getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
         let graphQLRequest = GraphQLRequest(query: query, variables: variables)
         request.httpBody = try JSONEncoder().encode(graphQLRequest)
-        
+
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {

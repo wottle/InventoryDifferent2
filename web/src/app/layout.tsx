@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ApolloWrapper } from "../lib/apollo-wrapper";
+import { AuthProvider } from "../lib/auth-context";
 import { LegacyRedirect } from "../components/LegacyRedirect";
 import { CollectionChat } from "../components/CollectionChat";
 
@@ -25,13 +26,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <ApolloWrapper>
-          <LegacyRedirect />
-          <div className="container mx-auto p-4">
-            {children}
-          </div>
-          <CollectionChat />
-        </ApolloWrapper>
+        <AuthProvider>
+          <ApolloWrapper>
+            <LegacyRedirect />
+            <div className="container mx-auto p-4">
+              {children}
+            </div>
+            <CollectionChat />
+          </ApolloWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

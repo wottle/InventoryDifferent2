@@ -3,6 +3,7 @@
 import { useChat } from 'ai/react';
 import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../lib/auth-context';
 
 interface Message {
   id: string;
@@ -11,6 +12,7 @@ interface Message {
 }
 
 export function CollectionChat() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
     api: '/api/chat',
   });
@@ -47,8 +49,8 @@ export function CollectionChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Don't render anything if chat is disabled or still checking
-  if (isChecking || !isEnabled) {
+  // Don't render anything if not authenticated, chat is disabled, or still checking
+  if (authLoading || !isAuthenticated || isChecking || !isEnabled) {
     return null;
   }
 

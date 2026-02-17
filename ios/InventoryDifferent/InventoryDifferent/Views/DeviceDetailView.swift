@@ -100,6 +100,7 @@ struct DeviceDetailView: View {
     @Binding var selectedTab: Int
     let onDeviceChanged: ((Device) -> Void)?
     let onDeviceDeleted: (() -> Void)?
+    @EnvironmentObject var authService: AuthService
     @Environment(\.dismiss) private var dismiss
     
     @State private var device: Device
@@ -184,43 +185,48 @@ struct DeviceDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 12) {
-                    if selectedTab == 0 {
-                        Button {
-                            showShareSheet = true
-                        } label: {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        
-                        Button {
-                            showEditDeviceSheet = true
-                        } label: {
-                            Image(systemName: "pencil")
-                        }
-                    } else if selectedTab == 1 {
-                        Button {
-                            isImageManagementMode.toggle()
-                        } label: {
-                            Text(isImageManagementMode ? "Done" : "Manage")
-                        }
-                        
-                        Button {
-                            showImagePicker = true
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    } else if selectedTab == 2 {
-                        Button {
-                            showAddTaskSheet = true
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    } else if selectedTab == 3 {
-                        Button {
-                            showAddNoteSheet = true
-                        } label: {
-                            Image(systemName: "plus")
+            if( selectedTab == 0 || authService.isAuthenticated ) {
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack(spacing: 12) {
+                        if selectedTab == 0 {
+                            Button {
+                                showShareSheet = true
+                            } label: {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                            
+                            if authService.isAuthenticated {
+                                Button {
+                                    showEditDeviceSheet = true
+                                } label: {
+                                    Image(systemName: "pencil")
+                                }
+                            }
+                        } else if selectedTab == 1 && authService.isAuthenticated {
+                            Button {
+                                isImageManagementMode.toggle()
+                            } label: {
+                                Text(isImageManagementMode ? "Done" : "Manage")
+                            }
+                            
+                            Button {
+                                showImagePicker = true
+                            } label: {
+                                Image(systemName: "plus")
+                            }
+                        } else if selectedTab == 2 && authService.isAuthenticated {
+                            Button {
+                                showAddTaskSheet = true
+                            } label: {
+                                Image(systemName: "plus")
+                            }
+                        } else if selectedTab == 3 && authService.isAuthenticated {
+                            Button {
+                                showAddNoteSheet = true
+                            } label: {
+                                Image(systemName: "plus")
+                            }
                         }
                     }
                 }
@@ -280,7 +286,9 @@ struct DeviceDetailView: View {
                 Text("Details").tag(0)
                 Text("Photos (\(images.count))").tag(1)
                 Text("Tasks (\(maintenanceTasks.count))").tag(2)
-                Text("Notes (\(notes.count))").tag(3)
+                if( authService.isAuthenticated ) {
+                    Text("Notes (\(notes.count))").tag(3)
+                }
             }
             .pickerStyle(.segmented)
             .padding(.horizontal, 6)
@@ -1024,7 +1032,8 @@ struct DetailRow: View {
 struct TaskRowView: View {
     let task: MaintenanceTask
     let onDelete: () -> Void
-    
+    @EnvironmentObject var authService: AuthService
+
     @State private var showDeleteConfirmation = false
     
     var body: some View {
@@ -1040,15 +1049,17 @@ struct TaskRowView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
-                    Button {
-                        showDeleteConfirmation = true
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .padding(8)
+                    if( authService.isAuthenticated ) {
+                        Button {
+                            showDeleteConfirmation = true
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .padding(8)
+                        }
+                        .opacity(showDeleteConfirmation ? 0 : 1)
                     }
-                    .opacity(showDeleteConfirmation ? 0 : 1)
                 }
                 
                 if let notes = task.notes, !notes.isEmpty {
@@ -1114,7 +1125,8 @@ struct NoteRowView: View {
     let note: Note
     let onEdit: () -> Void
     let onDelete: () -> Void
-    
+    @EnvironmentObject var authService: AuthService
+
     @State private var showDeleteConfirmation = false
     
     var body: some View {
@@ -1128,25 +1140,28 @@ struct NoteRowView: View {
                         .foregroundColor(.secondary)
                     Spacer()
                     
-                    Button {
-                        onEdit()
-                    } label: {
-                        Image(systemName: "pencil")
-                            .font(.caption)
-                            .foregroundColor(.accentColor)
-                            .padding(8)
-                    }
-                    .opacity(showDeleteConfirmation ? 0 : 1)
                     
-                    Button {
-                        showDeleteConfirmation = true
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .padding(8)
+                    if( authService.isAuthenticated ) {
+                        Button {
+                            onEdit()
+                        } label: {
+                            Image(systemName: "pencil")
+                                .font(.caption)
+                                .foregroundColor(.accentColor)
+                                .padding(8)
+                        }
+                        .opacity(showDeleteConfirmation ? 0 : 1)
+                        
+                        Button {
+                            showDeleteConfirmation = true
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .padding(8)
+                        }
+                        .opacity(showDeleteConfirmation ? 0 : 1)
                     }
-                    .opacity(showDeleteConfirmation ? 0 : 1)
                 }
                 
                 Text(note.content)
