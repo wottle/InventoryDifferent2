@@ -1,0 +1,46 @@
+{
+  "Compacts": {
+    "sourceId": 1,
+    "targetId": 1
+  },
+  "All-In-Ones": {
+    "sourceId": 3,
+    "targetId": 2
+  },
+  "Desktops": {
+    "sourceId": 4,
+    "targetId": 3
+  },
+  "Towers": {
+    "sourceId": 5,
+    "targetId": 4
+  },
+  "Servers": {
+    "sourceId": 11,
+    "targetId": 5
+  },
+  "Laptops": {
+    "sourceId": 2,
+    "targetId": 6
+  },
+  "Portables": {
+    "sourceId": 6,
+    "targetId": 7
+  },
+  "Keyboards": {
+    "sourceId": 10,
+    "targetId": 8
+  },
+  "Monitors": {
+    "sourceId": 7,
+    "targetId": 9
+  },
+  "Accessories": {
+    "sourceId": 8,
+    "targetId": 10
+  },
+  "Non-Apples": {
+    "sourceId": 9,
+    "targetId": 11
+  }
+}

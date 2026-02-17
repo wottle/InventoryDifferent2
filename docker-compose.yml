@@ -37,7 +37,7 @@ services:
       AUTH_PASSWORD: ${AUTH_PASSWORD:-pass}
       JWT_SECRET: ${JWT_SECRET:-}
     volumes:
-      - ./uploads:/app/uploads
+      - ../InvDifferent2-data/uploads:/app/uploads
       - ./category.sql:/app/category.sql:ro
       - ./device_templates.sql:/app/device_templates.sql:ro
     depends_on:
