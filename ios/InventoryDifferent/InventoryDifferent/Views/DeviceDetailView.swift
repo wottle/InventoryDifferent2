@@ -115,7 +115,12 @@ struct DeviceDetailView: View {
     @State private var editingNote: Note?
     @State private var notes: [Note]
     @State private var isDeletingNote = false
-    
+
+    @State private var tags: [Tag]
+    @State private var showAddTagSheet = false
+    @State private var tagToRemove: Tag?
+    @State private var showRemoveTagAlert = false
+
     @State private var showEditDeviceSheet = false
     @State private var showShareSheet = false
     @State private var showDeleteAlert = false
@@ -127,6 +132,9 @@ struct DeviceDetailView: View {
     @State private var imageToDelete: DeviceImage?
     @State private var showDeleteImageAlert = false
     
+    @State private var isUpdatingPowerDate = false
+    @State private var quickActionSourceTab: Int? = nil
+    
     init(device: Device, selectedTab: Binding<Int>, onDeviceChanged: ((Device) -> Void)? = nil, onDeviceDeleted: (() -> Void)? = nil) {
         self.deviceId = device.id
         self._device = State(initialValue: device)
@@ -136,6 +144,7 @@ struct DeviceDetailView: View {
         self._maintenanceTasks = State(initialValue: device.maintenanceTasks)
         self._notes = State(initialValue: device.notes)
         self._images = State(initialValue: device.images)
+        self._tags = State(initialValue: device.tags)
     }
     
     var body: some View {
@@ -152,6 +161,12 @@ struct DeviceDetailView: View {
                             .padding(.horizontal)
                             .padding(.bottom)
                             .padding(.top, -54)
+
+                        if authService.isAuthenticated {
+                            quickActionsRow
+                                .padding(.horizontal)
+                                .padding(.bottom, 8)
+                        }
 
                         detailsSection
                             .padding()
@@ -240,7 +255,8 @@ struct DeviceDetailView: View {
                     images = updatedDevice.images
                     maintenanceTasks = updatedDevice.maintenanceTasks
                     notes = updatedDevice.notes
-                    
+                    tags = updatedDevice.tags
+
                     await refreshDevice()
                 }
             }
@@ -248,9 +264,12 @@ struct DeviceDetailView: View {
         .sheet(isPresented: $showShareSheet) {
             ShareView(device: device)
         }
-        .sheet(isPresented: $showImagePicker) {
+        .sheet(isPresented: $showImagePicker, onDismiss: {
+            returnToSourceTabIfNeeded()
+        }) {
             ImageUploadView(deviceId: device.id) { newImages in
                 images.append(contentsOf: newImages)
+                quickActionSourceTab = nil  // committed — don't snap back
             }
         }
         .fullScreenCover(item: $selectedImageIndex) { imageIndex in
@@ -281,6 +300,30 @@ struct DeviceDetailView: View {
         } message: {
             Text("Are you sure you want to delete this image? This action cannot be undone.")
         }
+        .sheet(isPresented: $showAddTagSheet) {
+            AddTagView(deviceId: device.id, existingTags: tags) { updatedDevice in
+                device = updatedDevice
+                tags = updatedDevice.tags
+                onDeviceChanged?(updatedDevice)
+            }
+        }
+        .alert("Remove Tag", isPresented: $showRemoveTagAlert) {
+            Button("Cancel", role: .cancel) {
+                tagToRemove = nil
+            }
+            Button("Remove", role: .destructive) {
+                if let tag = tagToRemove {
+                    Task {
+                        await removeTag(tag)
+                        tagToRemove = nil
+                    }
+                }
+            }
+        } message: {
+            if let tag = tagToRemove {
+                Text("Remove the tag \"\(tag.name)\" from this device?")
+            }
+        }
         .overlay(alignment: .bottom) {
             Picker("Section", selection: $selectedTab) {
                 Text("Details").tag(0)
@@ -300,6 +343,88 @@ struct DeviceDetailView: View {
         }
     }
     
+    // MARK: - Quick Actions
+
+    private var quickActionsRow: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Quick Actions")
+                .font(.headline)
+                .foregroundColor(.primary)
+
+            HStack(spacing: 12) {
+                QuickActionButton(
+                    title: "Add Photo",
+                    systemImage: "camera"
+                ) {
+                    quickActionSourceTab = selectedTab
+                    selectedTab = 1
+                    showImagePicker = true
+                }
+
+                QuickActionButton(
+                    title: "Add Task",
+                    systemImage: "wrench.and.screwdriver"
+                ) {
+                    quickActionSourceTab = selectedTab
+                    selectedTab = 2
+                    showAddTaskSheet = true
+                }
+
+                QuickActionButton(
+                    title: "Add Note",
+                    systemImage: "note.text.badge.plus"
+                ) {
+                    quickActionSourceTab = selectedTab
+                    selectedTab = 3
+                    showAddNoteSheet = true
+                }
+
+                QuickActionButton(
+                    title: "Powered On Today",
+                    systemImage: isUpdatingPowerDate ? "clock.arrow.circlepath" : "powerplug",
+                    isLoading: isUpdatingPowerDate
+                ) {
+                    Task { await updateLastPoweredOn() }
+                }
+
+                Spacer()
+            }
+        }
+    }
+
+    private func returnToSourceTabIfNeeded() {
+        guard let source = quickActionSourceTab else { return }
+        quickActionSourceTab = nil
+        // Switch the tab during the sheet's dismiss animation so the
+        // Details content is already in place when the sheet finishes sliding away.
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(50))
+            selectedTab = source
+        }
+    }
+
+    private func updateLastPoweredOn() async {
+        isUpdatingPowerDate = true
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let dateString = formatter.string(from: Date())
+        do {
+            let updatedDevice = try await DeviceService.shared.updateDevice(
+                id: deviceId,
+                input: ["lastPowerOnDate": dateString]
+            )
+            device = updatedDevice
+            images = updatedDevice.images
+            maintenanceTasks = updatedDevice.maintenanceTasks
+            notes = updatedDevice.notes
+            tags = updatedDevice.tags
+            onDeviceChanged?(updatedDevice)
+        } catch {
+            print("Failed to update last powered on date: \(error)")
+        }
+        isUpdatingPowerDate = false
+    }
+
     // MARK: - Hero Image
     
     @Environment(\.colorScheme) private var colorScheme
@@ -423,17 +548,65 @@ struct DeviceDetailView: View {
                 .id("\(device.id)-\(device.isFavorite)-\(device.isAssetTagged)-\(device.hasOriginalBox)-\(device.isPramBatteryRemoved ?? false)-\(device.functionalStatus)")
             
             // Tags
-            if !device.tags.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(device.tags) { tag in
-                            Text(tag.name)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.accentColor.opacity(0.1))
-                                .foregroundColor(.accentColor)
-                                .clipShape(Capsule())
+            if authService.isAuthenticated || !tags.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Tags")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        Spacer()
+                        if authService.isAuthenticated {
+                            Button {
+                                showAddTagSheet = true
+                            } label: {
+                                Label("Add Tag", systemImage: "plus")
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.accentColor.opacity(0.1))
+                                    .foregroundColor(.accentColor)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+                    .padding(.top, 8)
+
+                    if tags.isEmpty {
+                        Text("No tags yet")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(tags) { tag in
+                                    if authService.isAuthenticated {
+                                        Button {
+                                            tagToRemove = tag
+                                            showRemoveTagAlert = true
+                                        } label: {
+                                            HStack(spacing: 4) {
+                                                Text(tag.name)
+                                                Image(systemName: "xmark")
+                                                    .font(.system(size: 8, weight: .bold))
+                                            }
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.accentColor.opacity(0.1))
+                                            .foregroundColor(.accentColor)
+                                            .clipShape(Capsule())
+                                        }
+                                    } else {
+                                        Text(tag.name)
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.accentColor.opacity(0.1))
+                                            .foregroundColor(.accentColor)
+                                            .clipShape(Capsule())
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -749,9 +922,12 @@ struct DeviceDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showAddTaskSheet) {
+        .sheet(isPresented: $showAddTaskSheet, onDismiss: {
+            returnToSourceTabIfNeeded()
+        }) {
             AddMaintenanceTaskView(deviceId: device.id) { newTask in
                 maintenanceTasks.append(newTask)
+                quickActionSourceTab = nil  // committed — don't snap back
             }
         }
         .disabled(isDeletingTask)
@@ -801,9 +977,12 @@ struct DeviceDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showAddNoteSheet) {
+        .sheet(isPresented: $showAddNoteSheet, onDismiss: {
+            returnToSourceTabIfNeeded()
+        }) {
             AddNoteView(deviceId: device.id) { newNote in
                 notes.append(newNote)
+                quickActionSourceTab = nil  // committed — don't snap back
             }
         }
         .sheet(isPresented: $showEditNoteSheet) {
@@ -934,6 +1113,17 @@ struct DeviceDetailView: View {
         }
     }
     
+    private func removeTag(_ tag: Tag) async {
+        do {
+            let updatedDevice = try await DeviceService.shared.removeDeviceTag(deviceId: device.id, tagId: tag.id)
+            device = updatedDevice
+            tags = updatedDevice.tags
+            onDeviceChanged?(updatedDevice)
+        } catch {
+            print("Failed to remove tag: \(error)")
+        }
+    }
+
     @MainActor
     private func refreshDevice() async {
         print("[DeviceDetailView] Refreshing device \(deviceId)")
@@ -944,6 +1134,7 @@ struct DeviceDetailView: View {
                 images = refreshedDevice.images
                 maintenanceTasks = refreshedDevice.maintenanceTasks
                 notes = refreshedDevice.notes
+                tags = refreshedDevice.tags
                 print("[DeviceDetailView] Calling onDeviceChanged callback")
                 onDeviceChanged?(refreshedDevice)
             } else {
@@ -988,6 +1179,36 @@ struct DeviceDetailView: View {
 }
 
 // MARK: - Supporting Views
+
+struct QuickActionButton: View {
+    let title: String
+    let systemImage: String
+    var isLoading: Bool = false
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Group {
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(.accentColor)
+                        .frame(width: 20, height: 20)
+                } else {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 18, weight: .medium))
+                        .frame(width: 20, height: 20)
+                }
+            }
+            .padding(14)
+            .background(Color(.systemGray6))
+            .foregroundColor(.primary)
+            .clipShape(Circle())
+        }
+        .disabled(isLoading)
+        .accessibilityLabel(title)
+    }
+}
 
 struct DetailSection<Content: View>: View {
     let title: String

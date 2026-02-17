@@ -615,4 +615,182 @@ class DeviceService {
         let response: Response = try await api.execute(query: mutation, variables: variables)
         return response.createImage
     }
+
+    func fetchAllTags() async throws -> [Tag] {
+        let query = """
+        query GetTags {
+            tags {
+                id
+                name
+            }
+        }
+        """
+
+        struct Response: Decodable {
+            let tags: [Tag]
+        }
+
+        let response: Response = try await api.execute(query: query)
+        return response.tags
+    }
+
+    func addDeviceTag(deviceId: Int, tagName: String) async throws -> Device {
+        let mutation = """
+        mutation AddDeviceTag($deviceId: Int!, $tagName: String!) {
+            addDeviceTag(deviceId: $deviceId, tagName: $tagName) {
+                id
+                name
+                additionalName
+                manufacturer
+                modelNumber
+                serialNumber
+                releaseYear
+                location
+                info
+                searchText
+                isFavorite
+                status
+                functionalStatus
+                lastPowerOnDate
+                hasOriginalBox
+                isAssetTagged
+                dateAcquired
+                whereAcquired
+                priceAcquired
+                estimatedValue
+                listPrice
+                soldPrice
+                soldDate
+                cpu
+                ram
+                graphics
+                storage
+                operatingSystem
+                isWifiEnabled
+                isPramBatteryRemoved
+                externalUrl
+                category {
+                    id
+                    name
+                    type
+                    sortOrder
+                }
+                images {
+                    id
+                    path
+                    thumbnailPath
+                    dateTaken
+                    caption
+                    isShopImage
+                    isThumbnail
+                    isListingImage
+                }
+                notes {
+                    id
+                    content
+                    date
+                }
+                maintenanceTasks {
+                    id
+                    label
+                    dateCompleted
+                    notes
+                }
+                tags {
+                    id
+                    name
+                }
+            }
+        }
+        """
+
+        let variables: [String: Any] = ["deviceId": deviceId, "tagName": tagName]
+
+        struct Response: Decodable {
+            let addDeviceTag: Device
+        }
+
+        let response: Response = try await api.execute(query: mutation, variables: variables)
+        return response.addDeviceTag
+    }
+
+    func removeDeviceTag(deviceId: Int, tagId: Int) async throws -> Device {
+        let mutation = """
+        mutation RemoveDeviceTag($deviceId: Int!, $tagId: Int!) {
+            removeDeviceTag(deviceId: $deviceId, tagId: $tagId) {
+                id
+                name
+                additionalName
+                manufacturer
+                modelNumber
+                serialNumber
+                releaseYear
+                location
+                info
+                searchText
+                isFavorite
+                status
+                functionalStatus
+                lastPowerOnDate
+                hasOriginalBox
+                isAssetTagged
+                dateAcquired
+                whereAcquired
+                priceAcquired
+                estimatedValue
+                listPrice
+                soldPrice
+                soldDate
+                cpu
+                ram
+                graphics
+                storage
+                operatingSystem
+                isWifiEnabled
+                isPramBatteryRemoved
+                externalUrl
+                category {
+                    id
+                    name
+                    type
+                    sortOrder
+                }
+                images {
+                    id
+                    path
+                    thumbnailPath
+                    dateTaken
+                    caption
+                    isShopImage
+                    isThumbnail
+                    isListingImage
+                }
+                notes {
+                    id
+                    content
+                    date
+                }
+                maintenanceTasks {
+                    id
+                    label
+                    dateCompleted
+                    notes
+                }
+                tags {
+                    id
+                    name
+                }
+            }
+        }
+        """
+
+        let variables: [String: Any] = ["deviceId": deviceId, "tagId": tagId]
+
+        struct Response: Decodable {
+            let removeDeviceTag: Device
+        }
+
+        let response: Response = try await api.execute(query: mutation, variables: variables)
+        return response.removeDeviceTag
+    }
 }
