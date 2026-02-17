@@ -62,9 +62,9 @@
             filePath = "InventoryDifferent/Views/FinancialsView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
-            landmarkName = "formatDate(_:)"
+            startingLineNumber = "339"
+            endingLineNumber = "339"
+            landmarkName = "transactionRow(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -78,10 +78,10 @@
             filePath = "InventoryDifferent/Views/FinancialsView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "323"
-            endingLineNumber = "323"
-            landmarkName = "FinancialsView"
-            landmarkType = "14">
+            startingLineNumber = "349"
+            endingLineNumber = "349"
+            landmarkName = "transactionRow(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

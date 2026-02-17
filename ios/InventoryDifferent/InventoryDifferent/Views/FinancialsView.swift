@@ -6,12 +6,24 @@
 //
 
 import SwiftUI
+import Charts
+
+struct ChartDataPoint: Identifiable {
+    let id = UUID()
+    let index: Int
+    let date: Date
+    let label: String
+    let cash: Double
+    let value: Double
+    let net: Double
+}
 
 struct FinancialsView: View {
     @State private var financialData: FinancialData?
     @State private var isLoading = true
     @State private var error: String?
     @State private var transactionsWithCumulative: [TransactionWithCumulative] = []
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     var body: some View {
         Group {
@@ -37,20 +49,177 @@ struct FinancialsView: View {
                 }
                 .padding()
             } else if let data = financialData {
-                ScrollView {
-                    VStack(spacing: 20) {
-                        summarySection(overview: data.financialOverview)
-                        transactionsSection()
+                if verticalSizeClass == .compact {
+                    chartSection(overview: data.financialOverview)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            summarySection(overview: data.financialOverview)
+                            transactionsSection()
+                        }
+                        .padding()
                     }
-                    .padding()
                 }
             }
         }
         .navigationTitle("Financials")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(verticalSizeClass == .compact ? .inline : .large)
         .task {
             await loadFinancials()
         }
+    }
+
+    // MARK: - Chart (Landscape)
+
+    private var chartDataPoints: [ChartDataPoint] {
+        let labelFormatter = DateFormatter()
+        labelFormatter.dateFormat = "MMM ''yy"
+
+        let isoFormatter = ISO8601DateFormatter()
+        let isoFractionalFormatter = ISO8601DateFormatter()
+        isoFractionalFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        let calendar = Calendar.current
+
+        // Parse and sort oldest → newest
+        let sorted = transactionsWithCumulative
+            .compactMap { t -> (date: Date, t: TransactionWithCumulative)? in
+                guard let dateString = t.transaction.date,
+                      let date = isoFormatter.date(from: dateString) ?? isoFractionalFormatter.date(from: dateString)
+                else { return nil }
+                return (date, t)
+            }
+            .sorted { $0.date < $1.date }
+
+        // Keep only the last transaction per calendar day — it holds the
+        // correct end-of-day cumulative totals for cash, value, and net.
+        var seen = Set<DateComponents>()
+        var deduplicated: [(date: Date, t: TransactionWithCumulative)] = []
+        for pair in sorted.reversed() {
+            let day = calendar.dateComponents([.year, .month, .day], from: pair.date)
+            if !seen.contains(day) {
+                seen.insert(day)
+                deduplicated.append(pair)
+            }
+        }
+        deduplicated.reverse() // restore oldest → newest order
+
+        return deduplicated
+            .enumerated()
+            .map { i, pair in
+                ChartDataPoint(
+                    index: i,
+                    date: pair.date,
+                    label: labelFormatter.string(from: pair.date),
+                    cash: pair.t.cumulativeCash,
+                    value: pair.t.cumulativeValue,
+                    net: pair.t.cumulativeNet
+                )
+            }
+    }
+
+    private func chartSection(overview: FinancialOverview) -> some View {
+        VStack(spacing: 8) {
+            // Compact summary row
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    compactSummaryCard(title: "Spent", value: overview.totalSpent, color: .red)
+                    compactSummaryCard(title: "Received", value: overview.totalReceived, color: .green)
+                    compactSummaryCard(title: "Net Cash", value: overview.netCash, color: valueColor(overview.netCash))
+                    compactSummaryCard(title: "Est. Value", value: overview.estimatedValueOwned, color: .green)
+                    compactSummaryCard(title: "Net Position", value: overview.netPosition, color: valueColor(overview.netPosition))
+                    compactSummaryCard(title: "Profit", value: overview.totalProfit, color: valueColor(overview.totalProfit))
+                }
+                .padding(.horizontal)
+            }
+
+            Text("Collection Value Over Time")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+
+            let points = chartDataPoints
+            if points.count < 2 {
+                Text("Not enough data to display chart")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Chart {
+                    ForEach(points) { point in
+                        LineMark(
+                            x: .value("Index", point.index),
+                            y: .value("Amount", point.cash)
+                        )
+                        .foregroundStyle(by: .value("Series", "Cumulative Cash"))
+                        .interpolationMethod(.monotone)
+                    }
+                    ForEach(points) { point in
+                        LineMark(
+                            x: .value("Index", point.index),
+                            y: .value("Amount", point.value)
+                        )
+                        .foregroundStyle(by: .value("Series", "Cumulative Value"))
+                        .interpolationMethod(.monotone)
+                    }
+                    ForEach(points) { point in
+                        LineMark(
+                            x: .value("Index", point.index),
+                            y: .value("Amount", point.net)
+                        )
+                        .foregroundStyle(by: .value("Series", "Net Position"))
+                        .interpolationMethod(.monotone)
+                    }
+                    RuleMark(y: .value("Zero", 0))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
+                        .foregroundStyle(.gray.opacity(0.5))
+                }
+                .chartForegroundStyleScale([
+                    "Cumulative Cash": Color.red,
+                    "Cumulative Value": Color.green,
+                    "Net Position": Color.blue
+                ])
+                .chartYAxis {
+                    AxisMarks(format: .currency(code: "USD"))
+                }
+                .chartXAxis {
+                    // Pick ~5 evenly spaced indices to label so the axis stays readable
+                    let labelCount = min(5, points.count)
+                    let stride = max(1, (points.count - 1) / max(1, labelCount - 1))
+                    let labelIndices = (0..<labelCount).map { i in
+                        min(i * stride, points.count - 1)
+                    }
+                    AxisMarks(values: labelIndices) { axisValue in
+                        AxisGridLine()
+                        AxisValueLabel {
+                            if let idx = axisValue.as(Int.self),
+                               idx < points.count {
+                                Text(points[idx].label)
+                                    .font(.caption2)
+                            }
+                        }
+                    }
+                }
+                .chartLegend(.visible)
+                .padding(.horizontal)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+
+    private func compactSummaryCard(title: String, value: Double, color: Color) -> some View {
+        VStack(spacing: 2) {
+            Text(title)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            Text(formatCurrency(value))
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(color)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(12)
     }
     
     private func summarySection(overview: FinancialOverview) -> some View {
