@@ -7,14 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/index.js",
-    "prisma:seed": "ts-node prisma/seed.ts",
-    "migrate:export": "ts-node migration/export-source.ts",
-    "migrate:devices": "ts-node migration/import-devices.ts",
-    "migrate:images": "ts-node migration/import-images.ts",
-    "migrate:related": "ts-node migration/import-related.ts",
-    "migrate:thumbnails": "ts-node migration/import-thumbnails.ts",
-    "migrate:validate": "ts-node migration/validate.ts",
-    "migrate:all": "npm run migrate:export && npm run migrate:devices && npm run migrate:images && npm run migrate:related && npm run migrate:validate"
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
