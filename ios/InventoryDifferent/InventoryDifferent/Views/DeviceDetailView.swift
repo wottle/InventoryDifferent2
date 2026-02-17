@@ -133,6 +133,9 @@ struct DeviceDetailView: View {
     @State private var showDeleteImageAlert = false
     
     @State private var isUpdatingPowerDate = false
+    @State private var isUpdatingStatus = false
+    @State private var showMarkSoldSheet = false
+    @State private var showMarkForSaleSheet = false
     @State private var quickActionSourceTab: Int? = nil
     
     init(device: Device, selectedTab: Binding<Int>, onDeviceChanged: ((Device) -> Void)? = nil, onDeviceDeleted: (() -> Void)? = nil) {
@@ -264,6 +267,16 @@ struct DeviceDetailView: View {
         .sheet(isPresented: $showShareSheet) {
             ShareView(device: device)
         }
+        .sheet(isPresented: $showMarkSoldSheet) {
+            MarkSoldSheet { date, price in
+                Task { await markDeviceSold(date: date, price: price) }
+            }
+        }
+        .sheet(isPresented: $showMarkForSaleSheet) {
+            MarkForSaleSheet { listPrice in
+                Task { await markDeviceForSale(listPrice: listPrice) }
+            }
+        }
         .sheet(isPresented: $showImagePicker, onDismiss: {
             returnToSourceTabIfNeeded()
         }) {
@@ -387,6 +400,56 @@ struct DeviceDetailView: View {
                     Task { await updateLastPoweredOn() }
                 }
 
+                if device.status == .AVAILABLE {
+                    QuickActionButton(
+                        title: "Mark For Sale",
+                        systemImage: "tag",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        if device.listPrice != nil {
+                            Task { await updateDeviceStatus(.FOR_SALE) }
+                        } else {
+                            showMarkForSaleSheet = true
+                        }
+                    }
+                }
+
+                if device.status == .FOR_SALE {
+                    QuickActionButton(
+                        title: "Mark Pending",
+                        systemImage: "clock.badge.checkmark",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        Task { await updateDeviceStatus(.PENDING_SALE) }
+                    }
+
+                    QuickActionButton(
+                        title: "Mark Sold",
+                        systemImage: "dollarsign.circle",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        showMarkSoldSheet = true
+                    }
+                }
+
+                if device.status == .PENDING_SALE {
+                    QuickActionButton(
+                        title: "Mark For Sale",
+                        systemImage: "tag",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        Task { await updateDeviceStatus(.FOR_SALE) }
+                    }
+
+                    QuickActionButton(
+                        title: "Mark Sold",
+                        systemImage: "dollarsign.circle",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        showMarkSoldSheet = true
+                    }
+                }
+
                 Spacer()
             }
         }
@@ -423,6 +486,70 @@ struct DeviceDetailView: View {
             print("Failed to update last powered on date: \(error)")
         }
         isUpdatingPowerDate = false
+    }
+
+    private func updateDeviceStatus(_ newStatus: Status) async {
+        isUpdatingStatus = true
+        do {
+            let updatedDevice = try await DeviceService.shared.updateDevice(
+                id: deviceId,
+                input: ["status": newStatus.rawValue]
+            )
+            device = updatedDevice
+            images = updatedDevice.images
+            maintenanceTasks = updatedDevice.maintenanceTasks
+            notes = updatedDevice.notes
+            tags = updatedDevice.tags
+            onDeviceChanged?(updatedDevice)
+        } catch {
+            print("Failed to update device status: \(error)")
+        }
+        isUpdatingStatus = false
+    }
+
+    private func markDeviceForSale(listPrice: Double) async {
+        isUpdatingStatus = true
+        do {
+            let updatedDevice = try await DeviceService.shared.updateDevice(
+                id: deviceId,
+                input: ["status": "FOR_SALE", "listPrice": listPrice]
+            )
+            device = updatedDevice
+            images = updatedDevice.images
+            maintenanceTasks = updatedDevice.maintenanceTasks
+            notes = updatedDevice.notes
+            tags = updatedDevice.tags
+            onDeviceChanged?(updatedDevice)
+        } catch {
+            print("Failed to mark device for sale: \(error)")
+        }
+        isUpdatingStatus = false
+    }
+
+    private func markDeviceSold(date: Date, price: Double?) async {
+        isUpdatingStatus = true
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let dateString = formatter.string(from: date)
+        var input: [String: Any] = ["status": "SOLD", "soldDate": dateString]
+        if let price = price {
+            input["soldPrice"] = price
+        }
+        do {
+            let updatedDevice = try await DeviceService.shared.updateDevice(
+                id: deviceId,
+                input: input
+            )
+            device = updatedDevice
+            images = updatedDevice.images
+            maintenanceTasks = updatedDevice.maintenanceTasks
+            notes = updatedDevice.notes
+            tags = updatedDevice.tags
+            onDeviceChanged?(updatedDevice)
+        } catch {
+            print("Failed to mark device as sold: \(error)")
+        }
+        isUpdatingStatus = false
     }
 
     // MARK: - Hero Image
@@ -1440,6 +1567,70 @@ struct NoteRowView: View {
         }
         
         return dateString
+    }
+}
+
+private struct MarkSoldSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var saleDate = Date()
+    @State private var salePriceText = ""
+    let onSubmit: (Date, Double?) -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                DatePicker("Sale Date", selection: $saleDate, displayedComponents: .date)
+                    .datePickerStyle(.compact)
+
+                TextField("Sale Price", text: $salePriceText)
+                    .keyboardType(.decimalPad)
+            }
+            .navigationTitle("Mark as Sold")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Mark Sold") {
+                        let price = Double(salePriceText)
+                        onSubmit(saleDate, price)
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct MarkForSaleSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var listPriceText = ""
+    let onSubmit: (Double) -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("List Price", text: $listPriceText)
+                    .keyboardType(.decimalPad)
+            }
+            .navigationTitle("Mark For Sale")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Mark For Sale") {
+                        if let price = Double(listPriceText) {
+                            onSubmit(price)
+                        }
+                        dismiss()
+                    }
+                    .disabled(Double(listPriceText) == nil)
+                }
+            }
+        }
     }
 }
 
