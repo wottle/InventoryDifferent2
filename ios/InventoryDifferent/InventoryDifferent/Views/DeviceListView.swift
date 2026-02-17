@@ -11,6 +11,7 @@ struct DeviceListView: View {
     @Binding var navigationPath: NavigationPath
     @EnvironmentObject var deviceStore: DeviceStore
     @EnvironmentObject var appSettings: AppSettings
+    @EnvironmentObject var authService: AuthService
     @State private var showingFilters = false
     @State private var showingSortOptions = false
     @State private var showingAddDevice = false
@@ -136,12 +137,15 @@ struct DeviceListView: View {
             }
             
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button {
-                    showingAddDevice = true
-                } label: {
-                    Image(systemName: "plus.circle")
+                // Only show Add button if authenticated
+                if authService.isAuthenticated {
+                    Button {
+                        showingAddDevice = true
+                    } label: {
+                        Image(systemName: "plus.circle")
+                    }
                 }
-                
+
                 Button {
                     showingMenu = true
                 } label: {
@@ -149,6 +153,7 @@ struct DeviceListView: View {
                 }
                 .popover(isPresented: $showingMenu, arrowEdge: .top) {
                     MenuView(navigationPath: $navigationPath, showingMenu: $showingMenu)
+                        .environmentObject(authService)
                         .presentationCompactAdaptation(.popover)
                 }
             }
@@ -429,4 +434,6 @@ struct StatusBadge: View {
         DeviceListView(navigationPath: .constant(NavigationPath()))
     }
     .environmentObject(DeviceStore())
+    .environmentObject(AppSettings.shared)
+    .environmentObject(AuthService.shared)
 }

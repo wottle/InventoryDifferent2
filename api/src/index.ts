@@ -9,6 +9,15 @@ import path from 'path';
 import fs from 'fs';
 import { typeDefs } from './typeDefs';
 import { resolvers } from './resolvers';
+import {
+    verifyAdminCredentials,
+    getAdminUsername,
+    generateAccessToken,
+    generateRefreshToken,
+    verifyRefreshToken,
+    isAuthConfigured,
+} from './auth';
+import { authMiddleware, requireAuth } from './middleware/auth';
 
 const JSZip = require('jszip');
 const sharp = require('sharp');
@@ -74,8 +83,9 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000);
 
-interface Context {
+export interface Context {
     prisma: PrismaClient;
+    isAuthenticated: boolean;
 }
 
 // Configure multer for file uploads
@@ -120,11 +130,77 @@ async function startServer() {
 
     app.use(express.json({ limit: '50mb' }));
 
+    // Apply auth middleware to all routes (sets req.isAuthenticated)
+    app.use(authMiddleware);
+
     // Serve static files from uploads directory
     app.use('/uploads', express.static('/app/uploads'));
 
-    // File upload endpoint
-    app.post('/upload', upload.single('image'), (req, res) => {
+    // ============== AUTH ENDPOINTS ==============
+
+    // Login endpoint
+    app.post('/auth/login', (req, res) => {
+        const { username, password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ error: 'Password is required' });
+        }
+
+        // If username is configured but not provided, reject
+        const adminUsername = getAdminUsername();
+        if (adminUsername && !username) {
+            return res.status(400).json({ error: 'Username is required' });
+        }
+
+        if (!isAuthConfigured()) {
+            return res.status(500).json({ error: 'Authentication not configured. Set AUTH_PASSWORD environment variable.' });
+        }
+
+        if (!verifyAdminCredentials(username || null, password)) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const accessToken = generateAccessToken();
+        const refreshToken = generateRefreshToken();
+
+        return res.json({
+            accessToken,
+            refreshToken,
+            expiresIn: 3600, // 1 hour in seconds
+        });
+    });
+
+    // Refresh token endpoint
+    app.post('/auth/refresh', (req, res) => {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({ error: 'Refresh token is required' });
+        }
+
+        if (!verifyRefreshToken(refreshToken)) {
+            return res.status(401).json({ error: 'Invalid or expired refresh token' });
+        }
+
+        const accessToken = generateAccessToken();
+
+        return res.json({
+            accessToken,
+            expiresIn: 3600,
+        });
+    });
+
+    // Auth status endpoint
+    app.get('/auth/status', (req, res) => {
+        return res.json({
+            authenticated: req.isAuthenticated ?? false,
+            authRequired: isAuthConfigured(),
+            usernameRequired: !!getAdminUsername(),
+        });
+    });
+
+    // File upload endpoint (requires auth)
+    app.post('/upload', requireAuth, upload.single('image'), (req, res) => {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
@@ -463,7 +539,7 @@ RESTART IDENTITY CASCADE;
         }
     }
 
-    app.post('/import', importUpload.single('file'), async (req, res) => {
+    app.post('/import', requireAuth, importUpload.single('file'), async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
@@ -567,8 +643,8 @@ RESTART IDENTITY CASCADE;
     
     const MAX_PART_SIZE = 500 * 1024 * 1024; // 500MB per part
     
-    // Start export job
-    app.post('/export/start', express.json(), async (req, res) => {
+    // Start export job (requires auth)
+    app.post('/export/start', requireAuth, express.json(), async (req, res) => {
         const { deviceIds, includeImages = true, compressImages = false } = req.body;
         
         if (!deviceIds || !Array.isArray(deviceIds) || deviceIds.length === 0) {
@@ -967,8 +1043,9 @@ RESTART IDENTITY CASCADE;
         '/graphql',
         express.json(),
         expressMiddleware(server, {
-            context: async () => ({
+            context: async ({ req }) => ({
                 prisma,
+                isAuthenticated: req.isAuthenticated ?? false,
             }),
         })
     );

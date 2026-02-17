@@ -11,59 +11,82 @@ struct MenuView: View {
     @Binding var navigationPath: NavigationPath
     @Binding var showingMenu: Bool
     @EnvironmentObject var appSettings: AppSettings
+    @EnvironmentObject var authService: AuthService
+    @State private var showingDisconnectAlert = false
     @State private var showingLogoutAlert = false
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            MenuButton(
-                icon: "chart.line.uptrend.xyaxis",
-                title: "Financials",
-                color: .green
-            ) {
-                showingMenu = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    navigationPath.append(MenuDestination.financials)
+            // Only show Financials if authenticated
+            if authService.isAuthenticated {
+                MenuButton(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "Financials",
+                    color: .green
+                ) {
+                    showingMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        navigationPath.append(MenuDestination.financials)
+                    }
                 }
-            }
-            
-            Divider()
-                .padding(.leading, 44)
-            
-            MenuButton(
-                icon: "bubble.left.and.bubble.right",
-                title: "Chat",
-                color: .blue
-            ) {
-                showingMenu = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    navigationPath.append(MenuDestination.chat)
+
+                Divider()
+                    .padding(.leading, 44)
+
+
+                MenuButton(
+                    icon: "bubble.left.and.bubble.right",
+                    title: "Chat",
+                    color: .blue
+                ) {
+                    showingMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        navigationPath.append(MenuDestination.chat)
+                    }
                 }
+
+                Divider()
+                    .padding(.leading, 44)
+
+
             }
-            
-            Divider()
-                .padding(.leading, 44)
-            
-            MenuButton(
-                icon: "rectangle.portrait.and.arrow.right",
-                title: "Disconnect",
-                color: .red
-            ) {
-                showingLogoutAlert = true
+
+            // Show Log Out if authenticated, or Log In if auth is required but not authenticated
+            if authService.isAuthenticated {
+                MenuButton(
+                    icon: "person.badge.minus",
+                    title: "Log Out",
+                    color: .orange
+                ) {
+                    showingLogoutAlert = true
+                }
+
+            } else if !authService.isAuthenticated {
+                MenuButton(
+                    icon: "person.badge.plus",
+                    title: "Log In",
+                    color: .blue
+                ) {
+                    showingMenu = false
+                    authService.disconnect()
+                }
+
             }
+
         }
         .padding(.vertical, 8)
         .frame(width: 250)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
-        .alert("Disconnect from Server?", isPresented: $showingLogoutAlert) {
+        .alert("Log Out?", isPresented: $showingLogoutAlert) {
             Button("Cancel", role: .cancel) { }
-            Button("Disconnect", role: .destructive) {
-                appSettings.logout()
+            Button("Log Out", role: .destructive) {
+                authService.logout()
                 showingMenu = false
             }
         } message: {
-            Text("You will need to enter the server URL again to reconnect.")
+            Text("You will need to enter the password again to access admin features.")
         }
     }
 }
@@ -99,4 +122,5 @@ struct MenuButton: View {
 #Preview {
     MenuView(navigationPath: .constant(NavigationPath()), showingMenu: .constant(true))
         .environmentObject(AppSettings())
+        .environmentObject(AuthService.shared)
 }

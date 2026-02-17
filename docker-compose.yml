@@ -33,6 +33,9 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgres://postgres:password@postgres:5432/inventory
       PORT: 4000
+      AUTH_USERNAME: ${AUTH_USERNAME:-user}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-pass}
+      JWT_SECRET: ${JWT_SECRET:-}
     volumes:
       - ./uploads:/app/uploads
       - ./category.sql:/app/category.sql:ro
@@ -73,6 +76,7 @@ services:
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://localhost:4000
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-store@example.com}
     depends_on:
       - api
     networks:
