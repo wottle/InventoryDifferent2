@@ -16,7 +16,6 @@ struct LoginView: View {
     @State private var isSubmitting: Bool = false
     @State private var errorMessage: String?
     @State private var showPassword: Bool = false
-    @State private var usernameRequired: Bool = false
 
     var body: some View {
         VStack(spacing: 32) {
@@ -58,26 +57,24 @@ struct LoginView: View {
                         .cornerRadius(12)
                 }
 
-                // Username field (shown when required)
-                if usernameRequired {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Username")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                // Username field (always shown)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Username (optional for guest access)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
 
-                        TextField("Username", text: $username)
-                            .textContentType(.username)
-                            .autocapitalization(.none)
-                            .autocorrectionDisabled()
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
-                    }
+                    TextField("Username", text: $username)
+                        .textContentType(.username)
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled()
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
                 }
 
                 // Password field
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(usernameRequired ? "Password" : "Password (optional for guest access)")
+                    Text("Password (optional for guest access)")
                         .font(.caption)
                         .foregroundColor(.secondary)
 
@@ -129,13 +126,11 @@ struct LoginView: View {
                 .disabled(serverURL.isEmpty || isSubmitting)
 
                 // Info text
-                if !usernameRequired {
-                    Text("Leave password blank to browse as guest (view only)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 8)
-                }
+                Text("Leave username and password blank to browse as guest (view only)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 8)
             }
             .padding(.horizontal, 32)
 
@@ -188,22 +183,8 @@ struct LoginView: View {
                 appSettings.configure(serverURL: url)
             }
 
-            // Check if username is required
-            let serverUsernameRequired = await checkUsernameRequired()
-            await MainActor.run {
-                usernameRequired = serverUsernameRequired
-            }
-
-            // If username is required but not provided, stop here and show the form
-            if serverUsernameRequired && username.isEmpty {
-                await MainActor.run {
-                    isSubmitting = false
-                }
-                return
-            }
-
-            // Now try to login if password was provided (or username is required)
-            if !password.isEmpty || serverUsernameRequired {
+            // Now try to login if credentials were provided
+            if !username.isEmpty || !password.isEmpty {
                 let result = await authService.login(username: username.isEmpty ? nil : username, password: password)
 
                 await MainActor.run {
@@ -245,22 +226,6 @@ struct LoginView: View {
         return (200...299).contains(httpResponse.statusCode)
     }
 
-    private func checkUsernameRequired() async -> Bool {
-        let baseURL = APIService.shared.getBaseURL()
-        guard let url = URL(string: "\(baseURL)/auth/status") else {
-            return false
-        }
-
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                return json["usernameRequired"] as? Bool ?? false
-            }
-        } catch {
-            // Assume no username required if we can't reach the server
-        }
-        return false
-    }
 }
 
 #Preview {

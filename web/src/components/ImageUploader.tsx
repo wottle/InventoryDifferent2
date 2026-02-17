@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import { useState, useRef } from "react";
 import { API_BASE_URL } from "../lib/config";
+import { useAuth } from "../lib/auth-context";
 
 const CREATE_IMAGE = gql`
   mutation CreateImage($input: ImageCreateInput!) {
@@ -30,6 +31,7 @@ export function ImageUploader({ deviceId, onUploadComplete, onClose }: ImageUplo
     const [error, setError] = useState<string | null>(null);
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { getAccessToken } = useAuth();
 
     const [createImage] = useMutation(CREATE_IMAGE);
 
@@ -103,8 +105,15 @@ export function ImageUploader({ deviceId, onUploadComplete, onClose }: ImageUplo
                 const formData = new FormData();
                 formData.append('image', file);
 
+                const headers: HeadersInit = {};
+                const token = getAccessToken();
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
                 const uploadResponse = await fetch(`${API_BASE_URL}/upload?deviceId=${deviceId}`, {
                     method: 'POST',
+                    headers,
                     body: formData,
                 });
 

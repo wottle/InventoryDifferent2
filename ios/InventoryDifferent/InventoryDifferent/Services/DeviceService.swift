@@ -554,7 +554,12 @@ class DeviceService {
         var uploadRequest = URLRequest(url: URL(string: "\(api.getBaseURL())/upload?deviceId=\(deviceId)")!)
         uploadRequest.httpMethod = "POST"
         uploadRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
+
+        // Add Authorization header if we have a token
+        if let token = await AuthService.shared.getAccessToken() {
+            uploadRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
         var body = Data()
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
