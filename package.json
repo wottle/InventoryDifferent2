@@ -1,0 +1,17 @@
+{
+  "name": "invdifferent2",
+  "private": true,
+  "scripts": {
+    "test": "npm run test:api && npm run test:mcp && npm run test:web",
+    "test:api": "cd api && npm test",
+    "test:mcp": "cd mcp-server && npm test",
+    "test:web": "cd web && npm test",
+    "test:e2e": "npx playwright test",
+    "test:db:up": "docker compose -f docker-compose.test.yml up -d",
+    "test:db:down": "docker compose -f docker-compose.test.yml down",
+    "test:db:migrate": "cd api && DATABASE_URL=postgresql://postgres:testpass@localhost:5433/inventory_test npx prisma migrate deploy"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

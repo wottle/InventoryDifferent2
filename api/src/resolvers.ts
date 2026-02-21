@@ -23,7 +23,7 @@ const SENSITIVE_DEVICE_FIELDS = [
 ] as const;
 
 // Filter sensitive fields from a device for unauthenticated users
-function filterDeviceSensitiveFields(device: any, isAuthenticated: boolean): any {
+export function filterDeviceSensitiveFields(device: any, isAuthenticated: boolean): any {
     if (isAuthenticated) {
         return device;
     }
@@ -38,7 +38,7 @@ function filterDeviceSensitiveFields(device: any, isAuthenticated: boolean): any
     };
 }
 
-function decimalToNumber(value: any) {
+export function decimalToNumber(value: any) {
     if (value === null || value === undefined) return 0;
     if (typeof value === 'number') return value;
     if (typeof value === 'string') {

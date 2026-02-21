@@ -8,9 +8,15 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
-  "keywords": ["mcp", "inventory", "vintage-computers"],
+  "keywords": [
+    "mcp",
+    "inventory",
+    "vintage-computers"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -22,6 +28,7 @@
     "@types/node": "^20.8.0",
     "prisma": "5.22.0",
     "tsx": "^4.7.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^4.0.18"
   }
 }

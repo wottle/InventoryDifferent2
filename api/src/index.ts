@@ -23,7 +23,7 @@ const JSZip = require('jszip');
 const sharp = require('sharp');
 const unzipper = require('unzipper');
 
-const prisma = new PrismaClient();
+const defaultPrisma = new PrismaClient();
 
 // Import progress tracking
 interface ImportProgress {
@@ -60,8 +60,8 @@ interface ExportProgress {
 
 const exportJobs = new Map<string, ExportProgress>();
 
-// Clean up old jobs after 1 hour
-setInterval(() => {
+// Clean up old jobs after 1 hour (skip in test environment)
+const cleanupInterval = process.env.VITEST !== 'true' ? setInterval(() => {
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
     for (const [id, job] of importJobs.entries()) {
         if (job.startTime < oneHourAgo) {
@@ -81,7 +81,7 @@ setInterval(() => {
             exportJobs.delete(id);
         }
     }
-}, 5 * 60 * 1000);
+}, 5 * 60 * 1000) : null;
 
 export interface Context {
     prisma: PrismaClient;
@@ -122,7 +122,8 @@ const upload = multer({
     }
 });
 
-async function startServer() {
+export async function createApp(prismaOverride?: PrismaClient) {
+    const prisma = prismaOverride || defaultPrisma;
     const app = express();
 
     // CORS configuration
@@ -1050,6 +1051,11 @@ RESTART IDENTITY CASCADE;
         })
     );
 
+    return { app, server };
+}
+
+async function startServer() {
+    const { app } = await createApp();
     const PORT = process.env.PORT || 4000;
 
     app.listen(PORT, () => {
@@ -1059,4 +1065,7 @@ RESTART IDENTITY CASCADE;
     });
 }
 
-startServer();
+// Only start server when run directly (not imported by tests)
+if (process.env.VITEST !== 'true') {
+    startServer();
+}
