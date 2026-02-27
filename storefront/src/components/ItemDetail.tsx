@@ -492,7 +492,7 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                                 <p className="text-sm text-orange-800 dark:text-orange-200">
                                     Interested in this item? Contact us at{" "}
                                     <a
-                                        href={`mailto:${contactEmail}`}
+                                        href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Inquiry about ${device.name}${device.additionalName ? ` ${device.additionalName}` : ''}`)}&body=${encodeURIComponent(`Hi,\n\nI'm interested in the ${device.name}${device.additionalName ? ` ${device.additionalName}` : ''} listed on your shop.\n\nListing: ${typeof window !== 'undefined' ? window.location.href : ''}\n`)}`}
                                         className="font-medium underline hover:no-underline"
                                     >
                                         {contactEmail}
