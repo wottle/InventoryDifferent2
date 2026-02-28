@@ -184,9 +184,11 @@ export async function createApp(prismaOverride?: PrismaClient) {
         }
 
         const accessToken = generateAccessToken();
+        const newRefreshToken = generateRefreshToken();
 
         return res.json({
             accessToken,
+            refreshToken: newRefreshToken,
             expiresIn: 3600,
         });
     });

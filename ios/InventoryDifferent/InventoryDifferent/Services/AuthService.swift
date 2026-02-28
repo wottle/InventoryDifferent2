@@ -215,6 +215,11 @@ class AuthService: ObservableObject {
             setKeychainString(key: accessTokenKey, value: accessToken)
             setKeychainString(key: tokenExpiryKey, value: String(expiryDate.timeIntervalSince1970))
 
+            // Store rolling refresh token if present
+            if let newRefreshToken = json["refreshToken"] as? String {
+                setKeychainString(key: refreshTokenKey, value: newRefreshToken)
+            }
+
             return true
         } catch {
             return false

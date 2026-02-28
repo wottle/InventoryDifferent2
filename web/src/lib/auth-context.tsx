@@ -86,6 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const expiry = Date.now() + (data.expiresIn * 1000);
             localStorage.setItem(ACCESS_TOKEN_KEY, data.accessToken);
             localStorage.setItem(TOKEN_EXPIRY_KEY, expiry.toString());
+            if (data.refreshToken) {
+                localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
+            }
             
             // Also update the cookie with new access token
             if (typeof window !== 'undefined') {

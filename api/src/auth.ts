@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 // Token expiry times
 const ACCESS_TOKEN_EXPIRY = '1h';
-const REFRESH_TOKEN_EXPIRY = '7d';
+const REFRESH_TOKEN_EXPIRY = '90d';
 
 // Get JWT secret from env or generate a random one (not recommended for production)
 function getJwtSecret(): string {
