@@ -132,6 +132,7 @@ struct DeviceDetailView: View {
     @State private var imageToDelete: DeviceImage?
     @State private var showDeleteImageAlert = false
     
+    @State private var isTogglingFavorite = false
     @State private var isUpdatingPowerDate = false
     @State private var isUpdatingStatus = false
     @State private var showMarkSoldSheet = false
@@ -366,6 +367,15 @@ struct DeviceDetailView: View {
 
             HStack(spacing: 12) {
                 QuickActionButton(
+                    title: device.isFavorite ? "Unfavorite" : "Favorite",
+                    systemImage: device.isFavorite ? "star.fill" : "star",
+                    isLoading: isTogglingFavorite,
+                    tintColor: device.isFavorite ? .yellow : nil
+                ) {
+                    Task { await toggleFavorite() }
+                }
+
+                QuickActionButton(
                     title: "Add Photo",
                     systemImage: "camera"
                 ) {
@@ -464,6 +474,25 @@ struct DeviceDetailView: View {
             try? await Task.sleep(for: .milliseconds(50))
             selectedTab = source
         }
+    }
+
+    private func toggleFavorite() async {
+        isTogglingFavorite = true
+        do {
+            let updatedDevice = try await DeviceService.shared.updateDevice(
+                id: deviceId,
+                input: ["isFavorite": !device.isFavorite]
+            )
+            device = updatedDevice
+            images = updatedDevice.images
+            maintenanceTasks = updatedDevice.maintenanceTasks
+            notes = updatedDevice.notes
+            tags = updatedDevice.tags
+            onDeviceChanged?(updatedDevice)
+        } catch {
+            print("Failed to toggle favorite: \(error)")
+        }
+        isTogglingFavorite = false
     }
 
     private func updateLastPoweredOn() async {
@@ -1311,6 +1340,7 @@ struct QuickActionButton: View {
     let title: String
     let systemImage: String
     var isLoading: Bool = false
+    var tintColor: Color? = nil
     let action: () -> Void
 
     var body: some View {
@@ -1329,7 +1359,7 @@ struct QuickActionButton: View {
             }
             .padding(14)
             .background(Color(.systemGray6))
-            .foregroundColor(.primary)
+            .foregroundColor(tintColor ?? .primary)
             .clipShape(Circle())
         }
         .disabled(isLoading)

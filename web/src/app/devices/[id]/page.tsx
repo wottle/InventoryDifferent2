@@ -147,6 +147,15 @@ const UPDATE_LAST_POWER_ON_DATE = gql`
   }
 `;
 
+const TOGGLE_FAVORITE = gql`
+  mutation ToggleFavorite($input: DeviceUpdateInput!) {
+    updateDevice(input: $input) {
+      id
+      isFavorite
+    }
+  }
+`;
+
 const DELETE_DEVICE = gql`
   mutation DeleteDevice($id: Int!) {
     deleteDevice(id: $id)
@@ -487,6 +496,7 @@ export default function DeviceDetail() {
     const [updateNote, { loading: updatingNote }] = useMutation(UPDATE_NOTE);
     const [deleteNote, { loading: deletingNote }] = useMutation(DELETE_NOTE);
     const [updateLastPowerOnDate, { loading: updatingPowerDate }] = useMutation(UPDATE_LAST_POWER_ON_DATE);
+    const [toggleFavorite, { loading: togglingFavorite }] = useMutation(TOGGLE_FAVORITE);
     const [deleteDevice, { loading: deletingDevice }] = useMutation(DELETE_DEVICE);
     const [addDeviceTag, { loading: addingTag }] = useMutation(ADD_DEVICE_TAG);
     const [removeDeviceTag, { loading: removingTag }] = useMutation(REMOVE_DEVICE_TAG);
@@ -656,6 +666,22 @@ export default function DeviceDetail() {
         }
     };
 
+    const handleToggleFavorite = async () => {
+        try {
+            await toggleFavorite({
+                variables: {
+                    input: {
+                        id: device.id,
+                        isFavorite: !device.isFavorite,
+                    },
+                },
+            });
+            refetch();
+        } catch (err) {
+            console.error('Error toggling favorite:', err);
+        }
+    };
+
     const handleUpdateLastPowerOnDate = async () => {
         try {
             await updateLastPowerOnDate({
@@ -797,6 +823,28 @@ export default function DeviceDetail() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     {/* Main Actions - Top row on mobile */}
                     <div className="flex items-center gap-2">
+                        {isAuthenticated && (
+                            <div className="relative group">
+                                <button
+                                    onClick={handleToggleFavorite}
+                                    disabled={togglingFavorite}
+                                    aria-label={device.isFavorite ? "Remove from favorites" : "Add to favorites"}
+                                    className={`inline-flex items-center justify-center p-2 ${
+                                        device.isFavorite
+                                            ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-400 dark:border-yellow-600'
+                                            : 'btn-retro'
+                                    } rounded transition-colors disabled:opacity-50`}
+                                >
+                                    <svg width="16" height="16" fill={device.isFavorite ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                    </svg>
+                                </button>
+                                <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
+                                    {device.isFavorite ? 'Unfavorite' : 'Favorite'}
+                                </span>
+                            </div>
+                        )}
+
                         <div className="relative group">
                             <button
                                 onClick={() => setShowShareModal(true)}
