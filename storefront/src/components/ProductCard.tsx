@@ -131,11 +131,21 @@ export function ProductCard({ device }: ProductCardProps) {
                 {/* Image */}
                 <div className="aspect-square w-full bg-[var(--muted)] relative overflow-hidden">
                     {thumbnail ? (
-                        <img
-                            src={`${API_BASE_URL}${thumbnail}`}
-                            alt={device.name}
-                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                        />
+                        <>
+                            {/* Blurred background fill */}
+                            <img
+                                src={`${API_BASE_URL}${thumbnail}`}
+                                alt=""
+                                aria-hidden="true"
+                                className="absolute inset-0 h-full w-full object-cover scale-110 blur-lg opacity-60"
+                            />
+                            {/* Actual image, fully visible */}
+                            <img
+                                src={`${API_BASE_URL}${thumbnail}`}
+                                alt={device.name}
+                                className="relative h-full w-full object-contain transition-transform group-hover:scale-105"
+                            />
+                        </>
                     ) : (
                         <div className="h-full w-full flex items-center justify-center text-[var(--muted-foreground)]">
                             <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="opacity-30">
