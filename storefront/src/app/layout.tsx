@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ApolloWrapper } from "../lib/apollo-wrapper";
+import { UmamiScript } from "../components/UmamiScript";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
             {children}
           </div>
         </ApolloWrapper>
+        <UmamiScript />
       </body>
     </html>
   );

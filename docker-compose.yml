@@ -56,10 +56,11 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:4000/graphql 
+      NEXT_PUBLIC_API_URL: http://localhost:4000/graphql
       API_URL: http://api:4000
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       # Note: Client-side calls need public URL, Server-side calls use internal API_URL
+      # Set UMAMI_URL and UMAMI_WEBSITE_ID directly on the container for analytics
     depends_on:
       - api
     networks:
@@ -77,6 +78,7 @@ services:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://localhost:4000
       CONTACT_EMAIL: ${CONTACT_EMAIL:-store@example.com}
+      # Set UMAMI_URL and UMAMI_WEBSITE_ID directly on the container for analytics
     depends_on:
       - api
     networks:

@@ -139,6 +139,19 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
         fetchPolicy: "cache-and-network",
     });
 
+    useEffect(() => {
+        if (data?.device && typeof window !== 'undefined' && (window as any).umami) {
+            const d = data.device;
+            const name = d.additionalName ? `${d.name} ${d.additionalName}` : d.name;
+            (window as any).umami.track('device-view', {
+                deviceId: d.id,
+                deviceName: name,
+                category: d.category?.name || 'Unknown',
+                status: d.status,
+            });
+        }
+    }, [data?.device?.id]);
+
     const applyLightboxZoom = useCallback(
         (getNextZoom: (prevZoom: number) => number, anchorOffset?: { x: number; y: number }) => {
             setLightboxZoom((prevZoom) => {

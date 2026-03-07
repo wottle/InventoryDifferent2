@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { ProductCard } from "./ProductCard";
@@ -62,6 +62,14 @@ export default function ShopHome({ contactEmail }: ShopHomeProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('category');
 
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const trackEvent = useCallback((event: string, data: Record<string, string | number>) => {
+    if (typeof window !== 'undefined' && (window as any).umami) {
+      (window as any).umami.track(event, data);
+    }
+  }, []);
+
   // Load saved filter from localStorage on mount
   useEffect(() => {
     try {
@@ -88,6 +96,30 @@ export default function ShopHome({ contactEmail }: ShopHomeProps) {
       }
     }
   }, [selectedStatuses, isInitialized]);
+
+  // Track search queries (debounced to avoid firing on every keystroke)
+  useEffect(() => {
+    if (!isInitialized || !searchQuery.trim()) return;
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      trackEvent('shop-search', { query: searchQuery.trim() });
+    }, 1000);
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, [searchQuery, isInitialized, trackEvent]);
+
+  // Track status filter changes
+  useEffect(() => {
+    if (!isInitialized) return;
+    trackEvent('shop-filter', { statuses: selectedStatuses.join(',') });
+  }, [selectedStatuses, isInitialized, trackEvent]);
+
+  // Track sort changes
+  useEffect(() => {
+    if (!isInitialized) return;
+    trackEvent('shop-sort', { sortBy });
+  }, [sortBy, isInitialized, trackEvent]);
 
   // Build where clause - filter by selected statuses
   const buildWhereClause = () => {

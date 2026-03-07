@@ -5,6 +5,7 @@ import { ApolloWrapper } from "../lib/apollo-wrapper";
 import { AuthProvider } from "../lib/auth-context";
 import { LegacyRedirect } from "../components/LegacyRedirect";
 import { CollectionChat } from "../components/CollectionChat";
+import { UmamiScript } from "../components/UmamiScript";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
             <CollectionChat />
           </ApolloWrapper>
         </AuthProvider>
+        <UmamiScript />
       </body>
     </html>
   );
