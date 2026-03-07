@@ -111,6 +111,7 @@ struct BarcodeScannerView: View {
     }
     
     private func lookupDevice(code: String) async {
+        let code = code.trimmingCharacters(in: .whitespacesAndNewlines)
         print("[Scanner] lookupDevice called with: \(code)")
         
         // First, try to parse as a URL with /devices/<id> pattern
