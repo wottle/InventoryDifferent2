@@ -49,7 +49,10 @@ struct EditDeviceView: View {
     @State private var selectedCategoryId: Int
     @State private var categories: [Category] = []
     @State private var isLoadingCategories = false
-    
+
+    @State private var customFieldDefinitions: [CustomField] = []
+    @State private var customFieldFormValues: [Int: String] = [:]
+
     @State private var isSubmitting = false
     @State private var error: String?
     
@@ -92,6 +95,12 @@ struct EditDeviceView: View {
         _lastPowerOnDate = State(initialValue: Self.parseDate(device.lastPowerOnDate))
         
         _selectedCategoryId = State(initialValue: device.category.id)
+
+        var cfValues: [Int: String] = [:]
+        for cfv in device.customFieldValues {
+            cfValues[cfv.customFieldId] = cfv.value
+        }
+        _customFieldFormValues = State(initialValue: cfValues)
     }
     
     var body: some View {
@@ -107,7 +116,11 @@ struct EditDeviceView: View {
                 if isComputerCategory {
                     computerSpecsSection
                 }
-                
+
+                if !customFieldDefinitions.isEmpty {
+                    customFieldsSection
+                }
+
                 if let error = error {
                     Section {
                         Text(error)
@@ -137,6 +150,7 @@ struct EditDeviceView: View {
             .disabled(isSubmitting)
             .task {
                 await loadCategories()
+                await loadCustomFields()
             }
         }
     }
@@ -293,6 +307,19 @@ struct EditDeviceView: View {
         }
     }
     
+    private var customFieldsSection: some View {
+        Section {
+            ForEach(customFieldDefinitions) { field in
+                TextField(field.name, text: Binding(
+                    get: { customFieldFormValues[field.id] ?? "" },
+                    set: { customFieldFormValues[field.id] = $0 }
+                ))
+            }
+        } header: {
+            Text("Custom Fields")
+        }
+    }
+
     private var showSalesSection: Bool {
         status == .FOR_SALE || status == .PENDING_SALE || status == .SOLD || status == .DONATED
     }
@@ -311,6 +338,14 @@ struct EditDeviceView: View {
         isLoadingCategories = false
     }
     
+    private func loadCustomFields() async {
+        do {
+            customFieldDefinitions = try await DeviceService.shared.fetchCustomFields()
+        } catch {
+            print("Failed to load custom fields: \(error)")
+        }
+    }
+
     private func submitChanges() async {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         
@@ -366,7 +401,33 @@ struct EditDeviceView: View {
                 }
             }
             
-            let updatedDevice = try await DeviceService.shared.updateDevice(id: device.id, input: input)
+            var updatedDevice = try await DeviceService.shared.updateDevice(id: device.id, input: input)
+
+            // Save custom field values
+            let originalValues: [Int: String] = Dictionary(
+                uniqueKeysWithValues: device.customFieldValues.map { ($0.customFieldId, $0.value) }
+            )
+
+            for field in customFieldDefinitions {
+                let newValue = (customFieldFormValues[field.id] ?? "").trimmingCharacters(in: .whitespaces)
+                let oldValue = (originalValues[field.id] ?? "").trimmingCharacters(in: .whitespaces)
+
+                if !newValue.isEmpty && newValue != oldValue {
+                    _ = try await DeviceService.shared.setCustomFieldValue(
+                        deviceId: device.id, customFieldId: field.id, value: newValue
+                    )
+                } else if newValue.isEmpty && !oldValue.isEmpty {
+                    _ = try await DeviceService.shared.removeCustomFieldValue(
+                        deviceId: device.id, customFieldId: field.id
+                    )
+                }
+            }
+
+            // Re-fetch device to get updated custom field values
+            if let refreshedDevice = try await DeviceService.shared.fetchDevice(id: device.id) {
+                updatedDevice = refreshedDevice
+            }
+
             onDeviceUpdated(updatedDevice)
             dismiss()
         } catch {
@@ -433,7 +494,8 @@ struct EditDeviceView: View {
         images: [],
         notes: [],
         maintenanceTasks: [],
-        tags: []
+        tags: [],
+        customFieldValues: []
     )) { device in
         print("Device updated: \(device)")
     }

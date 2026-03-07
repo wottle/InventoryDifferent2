@@ -58,6 +58,7 @@ model Device {
   notes               Note[]
   maintenanceTasks    MaintenanceTask[]
   tags                Tag[]
+  customFieldValues   CustomFieldValue[]
 }
 
 model Category {
@@ -128,6 +129,26 @@ model Template {
 
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])
+}
+
+model CustomField {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isPublic  Boolean  @default(false)
+  sortOrder Int      @default(0)
+
+  values    CustomFieldValue[]
+}
+
+model CustomFieldValue {
+  id            Int         @id @default(autoincrement())
+  customFieldId Int
+  customField   CustomField @relation(fields: [customFieldId], references: [id], onDelete: Cascade)
+  deviceId      Int
+  device        Device      @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  value         String
+
+  @@unique([customFieldId, deviceId])
 }
 
 enum Status {

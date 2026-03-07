@@ -6,6 +6,35 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { BarcodeScannerModal } from "./BarcodeScannerModal";
 
+const GET_CUSTOM_FIELDS = gql`
+  query GetCustomFields {
+    customFields {
+      id
+      name
+      isPublic
+      sortOrder
+    }
+  }
+`;
+
+const SET_CUSTOM_FIELD_VALUE = gql`
+  mutation SetCustomFieldValue($input: SetCustomFieldValueInput!) {
+    setCustomFieldValue(input: $input) {
+      id
+      customFieldId
+      customFieldName
+      value
+      isPublic
+    }
+  }
+`;
+
+const REMOVE_CUSTOM_FIELD_VALUE = gql`
+  mutation RemoveCustomFieldValue($deviceId: Int!, $customFieldId: Int!) {
+    removeCustomFieldValue(deviceId: $deviceId, customFieldId: $customFieldId)
+  }
+`;
+
 const GET_CATEGORIES = gql`
   query GetCategories {
     categories {
@@ -149,6 +178,13 @@ interface DeviceData {
         id: number;
         type: string;
     };
+    customFieldValues?: {
+        id: number;
+        customFieldId: number;
+        customFieldName: string;
+        value: string;
+        isPublic: boolean;
+    }[];
 }
 
 interface DeviceFormProps {
@@ -189,8 +225,11 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
     const router = useRouter();
     const { data: categoriesData } = useQuery(GET_CATEGORIES);
     const { data: templatesData } = useQuery(GET_TEMPLATES);
+    const { data: customFieldsData } = useQuery(GET_CUSTOM_FIELDS);
     const [createDevice, { loading: creating }] = useMutation(CREATE_DEVICE);
     const [updateDevice, { loading: updating }] = useMutation(UPDATE_DEVICE);
+    const [setCustomFieldValue] = useMutation(SET_CUSTOM_FIELD_VALUE);
+    const [removeCustomFieldValue] = useMutation(REMOVE_CUSTOM_FIELD_VALUE);
 
     const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
     const [barcodeSupported, setBarcodeSupported] = useState(false);
@@ -227,6 +266,8 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
         isPramBatteryRemoved: false,
         lastPowerOnDate: "",
     });
+
+    const [customFieldFormValues, setCustomFieldFormValues] = useState<Record<number, string>>({});
 
     const [selectedTemplateId, setSelectedTemplateId] = useState<number>(0);
     const [templateQuery, setTemplateQuery] = useState<string>("");
@@ -272,6 +313,15 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
                 isPramBatteryRemoved: device.isPramBatteryRemoved || false,
                 lastPowerOnDate: device.lastPowerOnDate ? device.lastPowerOnDate.split("T")[0] : "",
             });
+
+            // Populate custom field values
+            if (device.customFieldValues) {
+                const cfValues: Record<number, string> = {};
+                for (const cfv of device.customFieldValues) {
+                    cfValues[cfv.customFieldId] = cfv.value;
+                }
+                setCustomFieldFormValues(cfValues);
+            }
         }
     }, [device, mode]);
 
@@ -425,13 +475,42 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
         }
 
         try {
+            let deviceId: number;
             if (mode === "create") {
                 const result = await createDevice({ variables: { input } });
-                router.push(`/devices/${result.data.createDevice.id}`);
+                deviceId = result.data.createDevice.id;
             } else {
                 await updateDevice({ variables: { input: { ...input, id: device!.id } } });
-                router.push(`/devices/${device!.id}`);
+                deviceId = device!.id;
             }
+
+            // Save custom field values
+            const customFields = customFieldsData?.customFields || [];
+            const originalValues: Record<number, string> = {};
+            if (device?.customFieldValues) {
+                for (const cfv of device.customFieldValues) {
+                    originalValues[cfv.customFieldId] = cfv.value;
+                }
+            }
+
+            for (const field of customFields) {
+                const newValue = (customFieldFormValues[field.id] || "").trim();
+                const oldValue = (originalValues[field.id] || "").trim();
+
+                if (newValue && newValue !== oldValue) {
+                    await setCustomFieldValue({
+                        variables: {
+                            input: { deviceId, customFieldId: field.id, value: newValue },
+                        },
+                    });
+                } else if (!newValue && oldValue) {
+                    await removeCustomFieldValue({
+                        variables: { deviceId, customFieldId: field.id },
+                    });
+                }
+            }
+
+            router.push(`/devices/${deviceId}`);
         } catch (err) {
             console.error("Error saving device:", err);
         }
@@ -909,6 +988,29 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
                                 <span className="text-sm text-[var(--foreground)]">PRAM Battery Removed</span>
                             </label>
                         </div>
+                    </div>
+                </>
+            )}
+
+            {customFieldsData?.customFields?.length > 0 && (
+                <>
+                    <SectionHeader>Custom Fields</SectionHeader>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {customFieldsData.customFields.map((field: any) => (
+                            <FormField key={field.id} label={field.name}>
+                                <input
+                                    type="text"
+                                    value={customFieldFormValues[field.id] || ""}
+                                    onChange={(e) =>
+                                        setCustomFieldFormValues(prev => ({
+                                            ...prev,
+                                            [field.id]: e.target.value,
+                                        }))
+                                    }
+                                    className={inputClass}
+                                />
+                            </FormField>
+                        ))}
                     </div>
                 </>
             )}

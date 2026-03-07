@@ -76,6 +76,14 @@ const GET_DEVICE = gql`
         id
         name
       }
+      customFieldValues {
+        id
+        customFieldId
+        customFieldName
+        value
+        isPublic
+        sortOrder
+      }
     }
   }
 `;
@@ -1640,11 +1648,27 @@ export default function DeviceDetail() {
                         </div>
                     )}
 
+                    {/* Custom Fields */}
+                    {device.customFieldValues && device.customFieldValues.length > 0 && (
+                        <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
+                            <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
+                                Custom Fields
+                            </h2>
+                            <dl>
+                                {[...device.customFieldValues]
+                                    .sort((a: any, b: any) => a.sortOrder - b.sortOrder || a.customFieldName.localeCompare(b.customFieldName))
+                                    .map((cfv: any) => (
+                                        <DetailRow key={cfv.id} label={cfv.customFieldName} value={cfv.value} />
+                                    ))}
+                            </dl>
+                        </div>
+                    )}
+
                     {/* Additional Info */}
                     {device.info && (
                         <div>
                             <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                                About
+                                Description
                             </h2>
                             <p className="text-sm text-[var(--foreground)] leading-relaxed whitespace-pre-wrap">
                                 {device.info}

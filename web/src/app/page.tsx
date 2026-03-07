@@ -531,6 +531,13 @@ export default function Home() {
                     >
                       Manage Templates
                     </Link>
+                    <Link
+                      href="/customFields"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
+                    >
+                      Manage Custom Fields
+                    </Link>
                     <div className="border-t border-[var(--border)] my-1" />
                     <Link
                       href="/trash"

@@ -148,6 +148,14 @@ class DeviceService {
                     id
                     name
                 }
+                customFieldValues {
+                    id
+                    customFieldId
+                    customFieldName
+                    value
+                    isPublic
+                    sortOrder
+                }
             }
         }
         """
@@ -225,6 +233,14 @@ class DeviceService {
                 tags {
                     id
                     name
+                }
+                customFieldValues {
+                    id
+                    customFieldId
+                    customFieldName
+                    value
+                    isPublic
+                    sortOrder
                 }
             }
         }
@@ -458,6 +474,14 @@ class DeviceService {
                 tags {
                     id
                     name
+                }
+                customFieldValues {
+                    id
+                    customFieldId
+                    customFieldName
+                    value
+                    isPublic
+                    sortOrder
                 }
             }
         }
@@ -700,6 +724,14 @@ class DeviceService {
                     id
                     name
                 }
+                customFieldValues {
+                    id
+                    customFieldId
+                    customFieldName
+                    value
+                    isPublic
+                    sortOrder
+                }
             }
         }
         """
@@ -712,6 +744,72 @@ class DeviceService {
 
         let response: Response = try await api.execute(query: mutation, variables: variables)
         return response.addDeviceTag
+    }
+
+    func fetchCustomFields() async throws -> [CustomField] {
+        let query = """
+        query GetCustomFields {
+            customFields {
+                id
+                name
+                isPublic
+                sortOrder
+            }
+        }
+        """
+
+        struct Response: Decodable {
+            let customFields: [CustomField]
+        }
+
+        let response: Response = try await api.execute(query: query)
+        return response.customFields
+    }
+
+    func setCustomFieldValue(deviceId: Int, customFieldId: Int, value: String) async throws -> CustomFieldValue {
+        let mutation = """
+        mutation SetCustomFieldValue($input: SetCustomFieldValueInput!) {
+            setCustomFieldValue(input: $input) {
+                id
+                customFieldId
+                customFieldName
+                value
+                isPublic
+            }
+        }
+        """
+
+        let input: [String: Any] = [
+            "deviceId": deviceId,
+            "customFieldId": customFieldId,
+            "value": value
+        ]
+
+        let variables: [String: Any] = ["input": input]
+
+        struct Response: Decodable {
+            let setCustomFieldValue: CustomFieldValue
+        }
+
+        let response: Response = try await api.execute(query: mutation, variables: variables)
+        return response.setCustomFieldValue
+    }
+
+    func removeCustomFieldValue(deviceId: Int, customFieldId: Int) async throws -> Bool {
+        let mutation = """
+        mutation RemoveCustomFieldValue($deviceId: Int!, $customFieldId: Int!) {
+            removeCustomFieldValue(deviceId: $deviceId, customFieldId: $customFieldId)
+        }
+        """
+
+        let variables: [String: Any] = ["deviceId": deviceId, "customFieldId": customFieldId]
+
+        struct Response: Decodable {
+            let removeCustomFieldValue: Bool
+        }
+
+        let response: Response = try await api.execute(query: mutation, variables: variables)
+        return response.removeCustomFieldValue
     }
 
     func removeDeviceTag(deviceId: Int, tagId: Int) async throws -> Device {
@@ -779,6 +877,14 @@ class DeviceService {
                 tags {
                     id
                     name
+                }
+                customFieldValues {
+                    id
+                    customFieldId
+                    customFieldName
+                    value
+                    isPublic
+                    sortOrder
                 }
             }
         }

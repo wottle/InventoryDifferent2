@@ -829,6 +829,15 @@ struct DeviceDetailView: View {
                 }
             }
             
+            // Custom Fields
+            if !device.customFieldValues.isEmpty {
+                DetailSection(title: "Custom Fields") {
+                    ForEach(device.customFieldValues.sorted(by: { $0.sortOrder == $1.sortOrder ? $0.customFieldName < $1.customFieldName : $0.sortOrder < $1.sortOrder })) { cfv in
+                        DetailRow(label: cfv.customFieldName, value: cfv.value)
+                    }
+                }
+            }
+
             // Info/Notes
             if let info = device.info, !info.isEmpty {
                 DetailSection(title: "Additional Info") {
@@ -1706,7 +1715,8 @@ private struct MarkForSaleSheet: View {
                     images: [],
                     notes: [],
                     maintenanceTasks: [],
-                    tags: [Tag(id: 1, name: "vintage"), Tag(id: 2, name: "working")]
+                    tags: [Tag(id: 1, name: "vintage"), Tag(id: 2, name: "working")],
+                    customFieldValues: []
                 ), selectedTab: $selectedTab)
             }
         }

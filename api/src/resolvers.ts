@@ -35,6 +35,33 @@ export function filterDeviceSensitiveFields(device: any, isAuthenticated: boolea
         soldPrice: null,
         whereAcquired: null,
         notes: [],
+        customFieldValues: (device.customFieldValues || []).filter(
+            (cfv: any) => cfv.isPublic || cfv.customField?.isPublic
+        ),
+    };
+}
+
+const DEVICE_INCLUDE = {
+    category: true,
+    images: true,
+    notes: true,
+    maintenanceTasks: true,
+    tags: true,
+    customFieldValues: { include: { customField: true } },
+};
+
+function mapCustomFieldValues(device: any): any {
+    if (!device.customFieldValues) return device;
+    return {
+        ...device,
+        customFieldValues: device.customFieldValues.map((cfv: any) => ({
+            id: cfv.id,
+            customFieldId: cfv.customFieldId,
+            customFieldName: cfv.customField.name,
+            value: cfv.value,
+            isPublic: cfv.customField.isPublic,
+            sortOrder: cfv.customField.sortOrder,
+        })),
     };
 }
 
@@ -155,12 +182,13 @@ export const resolvers = {
 
             const devices = await context.prisma.device.findMany({
                 where: whereClause,
-                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                include: DEVICE_INCLUDE,
             });
 
-            // Add searchText field and filter sensitive fields
+            // Add searchText field, map custom fields, and filter sensitive fields
             return devices.map(device => {
-                const filtered = filterDeviceSensitiveFields(device, context.isAuthenticated);
+                const mapped = mapCustomFieldValues(device);
+                const filtered = filterDeviceSensitiveFields(mapped, context.isAuthenticated);
                 return {
                     ...filtered,
                     searchText: [
@@ -198,17 +226,17 @@ export const resolvers = {
             if (args.where?.serialNumber?.equals !== undefined) {
                 device = await context.prisma.device.findFirst({
                     where: whereClause,
-                    include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                    include: DEVICE_INCLUDE,
                 });
             } else {
                 device = await context.prisma.device.findUnique({
                     where: whereClause,
-                    include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                    include: DEVICE_INCLUDE,
                 });
             }
 
             if (!device) return null;
-            return filterDeviceSensitiveFields(device, context.isAuthenticated);
+            return filterDeviceSensitiveFields(mapCustomFieldValues(device), context.isAuthenticated);
         },
         categories: async (_parent: any, _args: any, context: Context) => {
             // Categories are public (needed for device list display)
@@ -218,6 +246,12 @@ export const resolvers = {
         },
         tags: async (_parent: any, _args: any, context: Context) => {
             return context.prisma.tag.findMany();
+        },
+        customFields: async (_parent: any, _args: any, context: Context) => {
+            requireAuth(context);
+            return context.prisma.customField.findMany({
+                orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+            });
         },
         maintenanceTaskLabels: async (_parent: any, _args: any, context: Context) => {
             const tasks = await context.prisma.maintenanceTask.findMany({
@@ -521,37 +555,40 @@ export const resolvers = {
                 create: { name },
             });
 
-            return context.prisma.device.update({
+            const device = await context.prisma.device.update({
                 where: { id: args.deviceId },
                 data: {
                     tags: {
                         connect: { id: tag.id },
                     },
                 },
-                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                include: DEVICE_INCLUDE,
             });
+            return mapCustomFieldValues(device);
         },
         removeDeviceTag: async (_parent: any, args: { deviceId: number; tagId: number }, context: Context) => {
             requireAuth(context);
-            return context.prisma.device.update({
+            const device = await context.prisma.device.update({
                 where: { id: args.deviceId },
                 data: {
                     tags: {
                         disconnect: { id: args.tagId },
                     },
                 },
-                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                include: DEVICE_INCLUDE,
             });
+            return mapCustomFieldValues(device);
         },
         createDevice: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
             const { input } = args;
-            return context.prisma.device.create({
+            const device = await context.prisma.device.create({
                 data: {
                     ...input,
                 },
-                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                include: DEVICE_INCLUDE,
             });
+            return mapCustomFieldValues(device);
         },
         updateDevice: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
@@ -560,11 +597,12 @@ export const resolvers = {
             const cleanData = Object.fromEntries(
                 Object.entries(data).filter(([_, v]) => v !== undefined)
             );
-            return context.prisma.device.update({
+            const device = await context.prisma.device.update({
                 where: { id },
                 data: cleanData,
-                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                include: DEVICE_INCLUDE,
             });
+            return mapCustomFieldValues(device);
         },
         deleteDevice: async (_parent: any, args: { id: number }, context: Context) => {
             requireAuth(context);
@@ -576,11 +614,12 @@ export const resolvers = {
         },
         restoreDevice: async (_parent: any, args: { id: number }, context: Context) => {
             requireAuth(context);
-            return context.prisma.device.update({
+            const device = await context.prisma.device.update({
                 where: { id: args.id },
                 data: { deleted: false },
-                include: { category: true, images: true, notes: true, maintenanceTasks: true, tags: true },
+                include: DEVICE_INCLUDE,
             });
+            return mapCustomFieldValues(device);
         },
         permanentlyDeleteDevice: async (_parent: any, args: { id: number }, context: Context) => {
             requireAuth(context);
@@ -604,6 +643,7 @@ export const resolvers = {
             await context.prisma.image.deleteMany({ where: { deviceId: args.id } });
             await context.prisma.note.deleteMany({ where: { deviceId: args.id } });
             await context.prisma.maintenanceTask.deleteMany({ where: { deviceId: args.id } });
+            await context.prisma.customFieldValue.deleteMany({ where: { deviceId: args.id } });
 
             // Delete the device
             await context.prisma.device.delete({ where: { id: args.id } });
@@ -775,6 +815,80 @@ export const resolvers = {
             await context.prisma.note.delete({
                 where: { id: args.id },
             });
+            return true;
+        },
+        createCustomField: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const { name, isPublic, sortOrder } = args.input;
+            const trimmedName = (name || '').trim();
+            if (!trimmedName) {
+                throw new Error('Custom field name is required');
+            }
+            return context.prisma.customField.create({
+                data: {
+                    name: trimmedName,
+                    isPublic: isPublic ?? false,
+                    sortOrder: sortOrder ?? 0,
+                },
+            });
+        },
+        updateCustomField: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const { id, ...data } = args.input;
+            if (data.name !== undefined) {
+                data.name = (data.name || '').trim();
+                if (!data.name) {
+                    throw new Error('Custom field name cannot be empty');
+                }
+            }
+            const cleanData = Object.fromEntries(
+                Object.entries(data).filter(([_, v]) => v !== undefined)
+            );
+            return context.prisma.customField.update({
+                where: { id },
+                data: cleanData,
+            });
+        },
+        deleteCustomField: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
+            await context.prisma.customField.delete({
+                where: { id: args.id },
+            });
+            return true;
+        },
+        setCustomFieldValue: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const { deviceId, customFieldId, value } = args.input;
+            const result = await context.prisma.customFieldValue.upsert({
+                where: {
+                    customFieldId_deviceId: { customFieldId, deviceId },
+                },
+                update: { value },
+                create: { customFieldId, deviceId, value },
+                include: { customField: true },
+            });
+            return {
+                id: result.id,
+                customFieldId: result.customFieldId,
+                customFieldName: result.customField.name,
+                value: result.value,
+                isPublic: result.customField.isPublic,
+            };
+        },
+        removeCustomFieldValue: async (_parent: any, args: { deviceId: number; customFieldId: number }, context: Context) => {
+            requireAuth(context);
+            try {
+                await context.prisma.customFieldValue.delete({
+                    where: {
+                        customFieldId_deviceId: {
+                            customFieldId: args.customFieldId,
+                            deviceId: args.deviceId,
+                        },
+                    },
+                });
+            } catch {
+                // Value may not exist, that's OK
+            }
             return true;
         },
     },

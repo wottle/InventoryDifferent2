@@ -44,6 +44,14 @@ const GET_DEVICE = gql`
         name
         type
       }
+      customFieldValues {
+        id
+        customFieldId
+        customFieldName
+        value
+        isPublic
+        sortOrder
+      }
     }
   }
 `;

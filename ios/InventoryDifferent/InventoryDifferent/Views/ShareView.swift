@@ -382,6 +382,7 @@ struct ShareView: View {
         images: [],
         notes: [],
         maintenanceTasks: [],
-        tags: []
+        tags: [],
+        customFieldValues: []
     ))
 }

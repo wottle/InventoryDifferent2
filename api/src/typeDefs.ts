@@ -66,6 +66,7 @@ export const typeDefs = gql`
     notes: [Note!]!
     maintenanceTasks: [MaintenanceTask!]!
     tags: [Tag!]!
+    customFieldValues: [CustomFieldValue!]!
   }
 
   type Category {
@@ -103,6 +104,22 @@ export const typeDefs = gql`
   type Tag {
     id: Int!
     name: String!
+  }
+
+  type CustomField {
+    id: Int!
+    name: String!
+    isPublic: Boolean!
+    sortOrder: Int!
+  }
+
+  type CustomFieldValue {
+    id: Int!
+    customFieldId: Int!
+    customFieldName: String!
+    value: String!
+    isPublic: Boolean!
+    sortOrder: Int!
   }
 
   type Template {
@@ -202,6 +219,7 @@ export const typeDefs = gql`
     financialTransactions: [FinancialTransaction!]!
     systemUsage: SystemUsage!
     maintenanceTaskLabels: [String!]!
+    customFields: [CustomField!]!
   }
 
   input DeviceCreateInput {
@@ -328,6 +346,25 @@ export const typeDefs = gql`
     date: DateTime!
   }
 
+  input CustomFieldCreateInput {
+    name: String!
+    isPublic: Boolean
+    sortOrder: Int
+  }
+
+  input CustomFieldUpdateInput {
+    id: Int!
+    name: String
+    isPublic: Boolean
+    sortOrder: Int
+  }
+
+  input SetCustomFieldValueInput {
+    deviceId: Int!
+    customFieldId: Int!
+    value: String!
+  }
+
   input DeviceWhereInput {
     id: Int
     serialNumber: DeviceWhereSerialNumberInput
@@ -391,5 +428,10 @@ export const typeDefs = gql`
     deleteNote(id: Int!): Boolean!
     addDeviceTag(deviceId: Int!, tagName: String!): Device!
     removeDeviceTag(deviceId: Int!, tagId: Int!): Device!
+    createCustomField(input: CustomFieldCreateInput!): CustomField!
+    updateCustomField(input: CustomFieldUpdateInput!): CustomField!
+    deleteCustomField(id: Int!): Boolean!
+    setCustomFieldValue(input: SetCustomFieldValueInput!): CustomFieldValue!
+    removeCustomFieldValue(deviceId: Int!, customFieldId: Int!): Boolean!
   }
 `;

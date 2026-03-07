@@ -106,6 +106,22 @@ struct Tag: Codable, Identifiable, Hashable {
     let name: String
 }
 
+struct CustomFieldValue: Codable, Identifiable, Hashable {
+    let id: Int
+    let customFieldId: Int
+    let customFieldName: String
+    let value: String
+    let isPublic: Bool
+    let sortOrder: Int
+}
+
+struct CustomField: Codable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let isPublic: Bool
+    let sortOrder: Int
+}
+
 struct Device: Codable, Identifiable, Hashable {
     static func == (lhs: Device, rhs: Device) -> Bool {
         lhs.id == rhs.id
@@ -157,6 +173,7 @@ struct Device: Codable, Identifiable, Hashable {
     let notes: [Note]
     let maintenanceTasks: [MaintenanceTask]
     let tags: [Tag]
+    let customFieldValues: [CustomFieldValue]
     
     var displayName: String {
         if let additional = additionalName, !additional.isEmpty {

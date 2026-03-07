@@ -51,6 +51,14 @@ const GET_SHOP_DEVICE = gql`
         dateCompleted
         notes
       }
+      customFieldValues {
+        id
+        customFieldId
+        customFieldName
+        value
+        isPublic
+        sortOrder
+      }
     }
   }
 `;
@@ -453,6 +461,18 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                                 )}
                             </dl>
                         </div>
+
+                        {/* Custom Fields */}
+                        {device.customFieldValues && device.customFieldValues.length > 0 && (
+                            <div className="p-4 bg-[var(--card)] rounded-lg border border-[var(--border)] card-retro">
+                                <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3">Additional Details</h2>
+                                <dl>
+                                    {[...device.customFieldValues].sort((a: any, b: any) => a.sortOrder - b.sortOrder || a.customFieldName.localeCompare(b.customFieldName)).map((cfv: any) => (
+                                        <DetailRow key={cfv.id} label={cfv.customFieldName} value={cfv.value} />
+                                    ))}
+                                </dl>
+                            </div>
+                        )}
 
                         {/* Service History */}
                         {device.maintenanceTasks && device.maintenanceTasks.length > 0 && (
