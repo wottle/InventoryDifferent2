@@ -140,3 +140,48 @@ Key variables (see `.env.example`):
 - NAS deployment: `docker-compose.nas.yml`
 
 See `DEPLOYMENT.md` for detailed deployment instructions.
+
+## Docker Images
+
+Docker Hub images (all multi-arch: amd64 + arm64):
+- `wottle/inventory-api:latest`
+- `wottle/inventory-web:latest`
+- `wottle/inventory-storefront:latest`
+- `wottle/inventory-mcp:latest`
+
+Build and push all images: `./build-and-push.sh`
+
+## Build Verification Order
+
+When verifying builds, always build in this order:
+1. `cd api && npm run build` — API (TypeScript compilation)
+2. `cd web && npm run build` — Web admin dashboard (Next.js)
+3. `cd storefront && npm run build` — Storefront (Next.js)
+4. iOS via `xcodebuild` (when iOS changes were made)
+
+Run all applicable builds after making changes to verify nothing is broken before committing.
+
+## Commit Style
+
+- Use short, imperative mood commit messages (1-2 sentences)
+- Focus on "why" not "what" — the diff shows what changed
+- Use accurate verbs: "add" for new features, "update" for enhancements, "fix" for bug fixes
+- Always end with: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
+- Use a HEREDOC to pass the commit message to ensure proper formatting
+
+## Environment Variables: NEXT_PUBLIC_* Rule
+
+**NEVER use `NEXT_PUBLIC_*` environment variables for values that deployers need to configure at runtime.** Next.js bakes `NEXT_PUBLIC_*` values in at build time, so they cannot be changed after the Docker image is built.
+
+Instead, use one of these patterns:
+- **Runtime API route**: Create a `/api/config` endpoint that reads `process.env` at runtime
+- **Server-side props**: Pass values from server components where `process.env` is available
+- The `NEXT_PUBLIC_API_URL` is an intentional exception — it's baked into the Docker image via `build-and-push.sh` with the production domain
+
+## iOS Development Notes
+
+- When modifying the `Device` struct in `ios/.../Models/Device.swift`, always update ALL preview instances that construct a `Device`. These are found in:
+  - `DeviceDetailView.swift` (preview at bottom)
+  - `EditDeviceView.swift` (preview at bottom)
+  - `ShareView.swift` (preview at bottom)
+- Failing to update previews will cause iOS build failures.
