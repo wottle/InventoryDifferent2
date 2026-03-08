@@ -10,4 +10,5 @@ import Foundation
 enum MenuDestination: Hashable {
     case financials
     case chat
+    case stats
 }

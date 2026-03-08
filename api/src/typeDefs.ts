@@ -172,6 +172,24 @@ export const typeDefs = gql`
     totalStorageBytes: Float!
   }
 
+  type StatsBucket {
+    label: String!
+    count: Int!
+  }
+
+  type CollectionStats {
+    byStatus:           [StatsBucket!]!
+    byFunctionalStatus: [StatsBucket!]!
+    byCategoryType:     [StatsBucket!]!
+    byAcquisitionYear:  [StatsBucket!]!
+    byReleaseDecade:    [StatsBucket!]!
+    topManufacturers:   [StatsBucket!]!
+    totalDevices:       Int!
+    workingPercent:     Float!
+    avgEstimatedValue:  Float!
+    topCategoryType:    String!
+  }
+
   input TemplateCreateInput {
     name: String!
     categoryId: Int!
@@ -220,6 +238,7 @@ export const typeDefs = gql`
     systemUsage: SystemUsage!
     maintenanceTaskLabels: [String!]!
     customFields: [CustomField!]!
+    collectionStats: CollectionStats!
   }
 
   input DeviceCreateInput {

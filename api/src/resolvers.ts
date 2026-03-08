@@ -474,6 +474,123 @@ export const resolvers = {
                 totalStorageBytes,
             };
         },
+        collectionStats: async (_parent: any, _args: any, context: Context) => {
+            requireAuth(context);
+
+            const baseWhere: any = { deleted: false };
+
+            const statusLabels: Record<string, string> = {
+                AVAILABLE: 'Available',
+                FOR_SALE: 'For Sale',
+                PENDING_SALE: 'Pending Sale',
+                SOLD: 'Sold',
+                DONATED: 'Donated',
+            };
+            const functionalLabels: Record<string, string> = {
+                YES: 'Working',
+                PARTIAL: 'Partial',
+                NO: 'Not Working',
+            };
+            const categoryTypeLabels: Record<string, string> = {
+                COMPUTER: 'Computer',
+                PERIPHERAL: 'Peripheral',
+                ACCESSORY: 'Accessory',
+                OTHER: 'Other',
+            };
+
+            const [
+                byStatusRaw,
+                byFunctionalRaw,
+                categoriesRaw,
+                acquiredRaw,
+                releaseYearRaw,
+                manufacturersRaw,
+                totalDevices,
+                workingCount,
+                avgValueAgg,
+            ] = await Promise.all([
+                context.prisma.device.groupBy({ by: ['status'], where: baseWhere, _count: { id: true } }),
+                context.prisma.device.groupBy({ by: ['functionalStatus'], where: baseWhere, _count: { id: true } }),
+                context.prisma.device.findMany({ where: baseWhere, select: { category: { select: { type: true } } } }),
+                context.prisma.device.findMany({ where: { ...baseWhere, dateAcquired: { not: null } }, select: { dateAcquired: true } }),
+                context.prisma.device.findMany({ where: baseWhere, select: { releaseYear: true } }),
+                context.prisma.device.groupBy({
+                    by: ['manufacturer'],
+                    where: { ...baseWhere, manufacturer: { not: null } },
+                    _count: { id: true },
+                    orderBy: { _count: { manufacturer: 'desc' } },
+                    take: 10,
+                }),
+                context.prisma.device.count({ where: baseWhere }),
+                context.prisma.device.count({ where: { ...baseWhere, functionalStatus: 'YES' as any } }),
+                context.prisma.device.aggregate({ where: baseWhere, _avg: { estimatedValue: true } }),
+            ]);
+
+            const byStatus = byStatusRaw.map((r: any) => ({
+                label: statusLabels[r.status] ?? r.status,
+                count: r._count.id,
+            }));
+
+            const byFunctionalStatus = byFunctionalRaw.map((r: any) => ({
+                label: functionalLabels[r.functionalStatus] ?? r.functionalStatus,
+                count: r._count.id,
+            }));
+
+            const categoryTypeCounts: Record<string, number> = {};
+            for (const d of categoriesRaw as any[]) {
+                const t = d.category?.type ?? 'OTHER';
+                categoryTypeCounts[t] = (categoryTypeCounts[t] ?? 0) + 1;
+            }
+            const byCategoryType = Object.entries(categoryTypeCounts).map(([type, count]) => ({
+                label: categoryTypeLabels[type] ?? type,
+                count,
+            }));
+
+            const acquisitionYearCounts: Record<string, number> = {};
+            for (const d of acquiredRaw as any[]) {
+                if (d.dateAcquired) {
+                    const year = String(new Date(d.dateAcquired).getFullYear());
+                    acquisitionYearCounts[year] = (acquisitionYearCounts[year] ?? 0) + 1;
+                }
+            }
+            const byAcquisitionYear = Object.entries(acquisitionYearCounts)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([label, count]) => ({ label, count }));
+
+            const decadeCounts: Record<string, number> = {};
+            for (const d of releaseYearRaw as any[]) {
+                if (d.releaseYear) {
+                    const decade = `${Math.floor(d.releaseYear / 10) * 10}s`;
+                    decadeCounts[decade] = (decadeCounts[decade] ?? 0) + 1;
+                }
+            }
+            const byReleaseDecade = Object.entries(decadeCounts)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([label, count]) => ({ label, count }));
+
+            const topManufacturers = manufacturersRaw.map((r: any) => ({
+                label: r.manufacturer ?? 'Unknown',
+                count: r._count.id,
+            }));
+
+            const workingPercent = totalDevices > 0 ? (workingCount / totalDevices) * 100 : 0;
+            const avgEstimatedValue = decimalToNumber((avgValueAgg as any)._avg?.estimatedValue);
+
+            const topCategoryType = byCategoryType.sort((a, b) => b.count - a.count)[0]?.label ?? '';
+
+            return {
+                byStatus,
+                byFunctionalStatus,
+                byCategoryType,
+                byAcquisitionYear,
+                byReleaseDecade,
+                topManufacturers,
+                totalDevices,
+                workingPercent,
+                avgEstimatedValue,
+                topCategoryType,
+            };
+        },
     },
     Mutation: {
         createCategory: async (

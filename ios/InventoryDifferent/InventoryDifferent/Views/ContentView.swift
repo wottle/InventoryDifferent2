@@ -24,6 +24,8 @@ struct ContentView: View {
                         FinancialsView()
                     case .chat:
                         ChatView()
+                    case .stats:
+                        StatsView()
                     }
                 }
         }

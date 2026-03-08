@@ -35,6 +35,20 @@ struct MenuView: View {
 
 
                 MenuButton(
+                    icon: "chart.bar.xaxis",
+                    title: "Stats",
+                    color: .purple
+                ) {
+                    showingMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        navigationPath.append(MenuDestination.stats)
+                    }
+                }
+
+                Divider()
+                    .padding(.leading, 44)
+
+                MenuButton(
                     icon: "bubble.left.and.bubble.right",
                     title: "Chat",
                     color: .blue

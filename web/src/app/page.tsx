@@ -495,6 +495,13 @@ export default function Home() {
                       Financials
                     </Link>
                     <Link
+                      href="/stats"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
+                    >
+                      Stats
+                    </Link>
+                    <Link
                       href="/usage"
                       onClick={() => setMenuOpen(false)}
                       className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
