@@ -9,6 +9,8 @@ export const typeDefs = gql`
     PENDING_SALE
     SOLD
     DONATED
+    IN_REPAIR
+    RETURNED
   }
 
   enum FunctionalStatus {
@@ -22,6 +24,7 @@ export const typeDefs = gql`
     SALE
     DONATION
     MAINTENANCE
+    REPAIR_RETURN
   }
 
   type Device {

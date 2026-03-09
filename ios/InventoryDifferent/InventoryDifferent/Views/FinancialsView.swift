@@ -354,6 +354,7 @@ struct FinancialsView: View {
                     case "SALE": return "Sold"
                     case "DONATION": return "Donated"
                     case "MAINTENANCE": return "Maintenance"
+                    case "REPAIR_RETURN": return "Repair Fee"
                     default: return "Acquired"
                     }
                 }()
@@ -362,6 +363,7 @@ struct FinancialsView: View {
                     case "SALE": return .green
                     case "DONATION": return .purple
                     case "MAINTENANCE": return .orange
+                    case "REPAIR_RETURN": return .teal
                     default: return .blue
                     }
                 }()

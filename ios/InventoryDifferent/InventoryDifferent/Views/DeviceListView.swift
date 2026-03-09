@@ -385,10 +385,18 @@ struct ValueSaleInfo: View {
                 Text("Donated")
                     .font(.caption)
                     .foregroundColor(.purple)
+            case .IN_REPAIR:
+                Text("In Repair")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            case .RETURNED:
+                Text("Returned")
+                    .font(.caption)
+                    .foregroundColor(.teal)
             }
         }
     }
-    
+
     private func formatPrice(_ price: Double) -> String {
         return "$\(Int(price).formatted())"
     }
@@ -425,6 +433,10 @@ struct StatusBadge: View {
             return .red
         case .DONATED:
             return .purple
+        case .IN_REPAIR:
+            return .orange
+        case .RETURNED:
+            return .teal
         }
     }
 }

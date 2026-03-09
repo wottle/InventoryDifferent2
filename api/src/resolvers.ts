@@ -291,7 +291,7 @@ export const resolvers = {
             const ownedValueAgg = await context.prisma.device.aggregate({
                 where: {
                     ...baseWhere,
-                    status: { notIn: ['SOLD', 'DONATED'] as any },
+                    status: { notIn: ['SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED'] as any },
                 },
                 _sum: { estimatedValue: true },
             });
@@ -445,7 +445,22 @@ export const resolvers = {
                 label: t.label,
             }));
 
-            const rows = [...acquisitionRows, ...saleRows, ...donationRows, ...maintenanceRows];
+            const returnedWithFee = await context.prisma.device.findMany({
+                where: { status: 'RETURNED' as any, soldPrice: { not: null }, deleted: false },
+                select: { id: true, name: true, additionalName: true, soldDate: true, soldPrice: true },
+            });
+            const returnedRows = returnedWithFee.map((d: any) => ({
+                type: 'REPAIR_RETURN',
+                deviceId: d.id,
+                deviceName: d.name,
+                additionalName: d.additionalName,
+                date: d.soldDate ?? null,
+                amount: decimalToNumber(d.soldPrice),
+                estimatedValue: 0,
+                label: null,
+            }));
+
+            const rows = [...acquisitionRows, ...saleRows, ...donationRows, ...maintenanceRows, ...returnedRows];
             rows.sort((a, b) => {
                 const at = a.date ? new Date(a.date).getTime() : -Infinity;
                 const bt = b.date ? new Date(b.date).getTime() : -Infinity;

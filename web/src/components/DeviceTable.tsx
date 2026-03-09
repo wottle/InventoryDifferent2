@@ -262,6 +262,18 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
             Donated
           </span>
         );
+      case 'IN_REPAIR':
+        return (
+          <span className="text-amber-600 dark:text-amber-400 font-medium text-xs">
+            In Repair
+          </span>
+        );
+      case 'RETURNED':
+        return (
+          <span className="text-teal-600 dark:text-teal-400 font-medium text-xs">
+            Returned
+          </span>
+        );
       default:
         return (
           <span className="text-gray-600 dark:text-gray-400 font-medium text-xs">

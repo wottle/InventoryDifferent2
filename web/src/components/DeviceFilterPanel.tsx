@@ -57,6 +57,8 @@ export function DeviceFilterPanel({
     { value: "PENDING_SALE", label: "Pending Sale" },
     { value: "SOLD", label: "Sold" },
     { value: "DONATED", label: "Donated" },
+    { value: "IN_REPAIR", label: "In Repair" },
+    { value: "RETURNED", label: "Returned" },
   ];
 
   const functionalStatusOptions = [

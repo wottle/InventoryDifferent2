@@ -169,6 +169,8 @@ enum Status {
   PENDING_SALE
   SOLD
   DONATED
+  IN_REPAIR
+  RETURNED
 }
 
 enum FunctionalStatus {

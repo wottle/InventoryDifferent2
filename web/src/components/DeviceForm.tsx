@@ -350,6 +350,7 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
     const showSoldFields = formData.status === "SOLD";
     const showDonatedFields = formData.status === "DONATED";
     const showDateField = showSoldFields || showDonatedFields;
+    const showRepairFeeField = formData.status === "RETURNED";
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -755,6 +756,8 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
                         <option value="PENDING_SALE">Pending Sale</option>
                         <option value="SOLD">Sold</option>
                         <option value="DONATED">Donated</option>
+                        <option value="IN_REPAIR">In Repair</option>
+                        <option value="RETURNED">Returned</option>
                     </select>
                 </FormField>
 
@@ -856,6 +859,26 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
                     />
                 </FormField>
             </div>
+
+            {showRepairFeeField && (
+                <>
+                    <SectionHeader>Repair Information</SectionHeader>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField label="Repair Fee Charged">
+                            <input
+                                type="number"
+                                name="soldPrice"
+                                value={formData.soldPrice}
+                                onChange={handleChange}
+                                className={inputClass}
+                                step="0.01"
+                                min="0"
+                                placeholder="0.00"
+                            />
+                        </FormField>
+                    </div>
+                </>
+            )}
 
             {showSalesFields && (
                 <>

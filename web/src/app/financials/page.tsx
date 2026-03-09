@@ -250,7 +250,7 @@ export default function FinancialsPage() {
                           {formatDate(t.date)}
                         </td>
                         <td className="px-4 py-2 text-[var(--foreground)]">
-                          {t.type === "SALE" ? "Sold" : t.type === "DONATION" ? "Donated" : t.type === "MAINTENANCE" ? "Maintenance" : "Acquired"}
+                          {t.type === "SALE" ? "Sold" : t.type === "DONATION" ? "Donated" : t.type === "MAINTENANCE" ? "Maintenance" : t.type === "REPAIR_RETURN" ? "Repair Fee" : "Acquired"}
                         </td>
                         <td className="px-4 py-2">
                           <Link

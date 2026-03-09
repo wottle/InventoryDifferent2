@@ -169,6 +169,18 @@ export function DeviceCard({ device }: DeviceCardProps) {
                         Donated
                     </span>
                 );
+            case 'IN_REPAIR':
+                return (
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">
+                        In Repair
+                    </span>
+                );
+            case 'RETURNED':
+                return (
+                    <span className="text-teal-600 dark:text-teal-400 font-medium">
+                        Returned
+                    </span>
+                );
             default:
                 return null;
         }
@@ -273,6 +285,8 @@ export function DeviceCard({ device }: DeviceCardProps) {
                             device.status === "PENDING_SALE" ? "text-yellow-500" :
                             device.status === "FOR_SALE" ? "text-orange-500" :
                             device.status === "DONATED" ? "text-purple-500" :
+                            device.status === "IN_REPAIR" ? "text-amber-500" :
+                            device.status === "RETURNED" ? "text-teal-500" :
                             "text-[var(--muted-foreground)]"
                         }`}
                     >

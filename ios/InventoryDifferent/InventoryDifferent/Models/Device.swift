@@ -27,7 +27,9 @@ enum Status: String, Codable, CaseIterable {
     case PENDING_SALE
     case SOLD
     case DONATED
-    
+    case IN_REPAIR
+    case RETURNED
+
     var displayName: String {
         switch self {
         case .AVAILABLE: return "Available"
@@ -35,9 +37,11 @@ enum Status: String, Codable, CaseIterable {
         case .PENDING_SALE: return "Pending"
         case .SOLD: return "Sold"
         case .DONATED: return "Donated"
+        case .IN_REPAIR: return "In Repair"
+        case .RETURNED: return "Returned"
         }
     }
-    
+
     var color: String {
         switch self {
         case .AVAILABLE: return "green"
@@ -45,6 +49,8 @@ enum Status: String, Codable, CaseIterable {
         case .PENDING_SALE: return "orange"
         case .SOLD: return "gray"
         case .DONATED: return "purple"
+        case .IN_REPAIR: return "orange"
+        case .RETURNED: return "teal"
         }
     }
 }

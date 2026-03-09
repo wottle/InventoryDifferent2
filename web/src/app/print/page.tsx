@@ -157,6 +157,8 @@ export default function PrintListPage() {
       case "PENDING_SALE": return "text-yellow-700";
       case "SOLD": return "text-red-700";
       case "DONATED": return "text-purple-700";
+      case "IN_REPAIR": return "text-amber-700";
+      case "RETURNED": return "text-teal-700";
       default: return "text-gray-700";
     }
   };
