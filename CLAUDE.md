@@ -185,3 +185,173 @@ Instead, use one of these patterns:
   - `EditDeviceView.swift` (preview at bottom)
   - `ShareView.swift` (preview at bottom)
 - Failing to update previews will cause iOS build failures.
+
+---
+
+## Feature Catalog
+
+A comprehensive list of all implemented features, organized by platform. Use this as a reference when planning new features to avoid duplication and ensure consistency across platforms.
+
+### Core Data Model
+
+**Device** (main inventory item)
+- Identification: name, additionalName, manufacturer, modelNumber, serialNumber, releaseYear, location, info
+- Status: AVAILABLE | FOR_SALE | PENDING_SALE | SOLD | DONATED
+- FunctionalStatus: YES | PARTIAL | NO
+- Flags: isFavorite, hasOriginalBox, isAssetTagged, isWifiEnabled, isPramBatteryRemoved
+- Timestamps: dateAcquired, lastPowerOnDate, soldDate
+- Financials: priceAcquired, estimatedValue, listPrice, soldPrice, whereAcquired
+- Specs: cpu, ram, graphics, storage, operatingSystem
+- External: externalUrl
+- Relations: category, images, notes, maintenanceTasks, tags, customFieldValues
+- Soft delete: deleted flag
+
+**Category**: name, type (COMPUTER | PERIPHERAL | ACCESSORY | OTHER), sortOrder
+
+**Image**: path, thumbnailPath (320x320 WebP), dateTaken (EXIF), caption, isShopImage, isThumbnail, isListingImage
+
+**Note**: content, date (auto-timestamped)
+
+**MaintenanceTask**: label (predefined or custom), dateCompleted, notes
+
+**Tag**: name (many-to-many with devices)
+
+**Template**: Pre-configured device specs linked to a category for rapid device creation
+
+**CustomField**: name, isPublic (controls storefront visibility), sortOrder; per-device CustomFieldValue
+
+### API Features
+
+**GraphQL queries**: devices (with filtering), device, categories, tags, templates, customFields, financialOverview, financialTransactions, systemUsage, maintenanceTaskLabels, collectionStats
+
+**GraphQL mutations**: full CRUD for devices, images, notes, maintenanceTasks, tags, customFields/values, categories, templates; restoreDevice, permanentlyDeleteDevice
+
+**REST endpoints**: auth (login/refresh/status), file upload (10MB, auto-thumbnail), bulk ZIP import/export (2GB, async with progress polling), static file serving
+
+**Search**: Computed `searchText` field indexes name, manufacturer, model, CPU, info, notes, and tags for fast full-text search
+
+### Web Admin Dashboard (`/`)
+
+**Inventory page** (`/`):
+- Card grid (responsive 1–7 columns) and data table view modes
+- Real-time search across all text fields
+- Filter by category (multi), status (multi), functional status (multi), favorites
+- Sort by name, manufacturer, releaseYear, dateAcquired, estimatedValue, location, status, functionalStatus
+- Barcode/QR scanner via browser BarcodeDetector API
+- Summary footer: device count, estimated value, total spent, total sold (auth-gated)
+- Favorite toggle per device
+- Persisted filter/sort/view preferences in localStorage
+
+**Device detail** (`/devices/[id]`):
+- Full field display with edit navigation
+- Image gallery with upload, caption editing, role assignment (thumbnail/shop/listing)
+- Notes: add, edit, delete with timestamps
+- Maintenance tasks: add with predefined or custom labels, mark complete
+- Tags: add and remove
+- Custom field values
+- Last power-on date logging
+- QR/barcode deep-link generation
+
+**Device create/edit** (`/devices/new`, `/devices/[id]/edit`):
+- Full form covering all device fields
+- Template application to pre-fill specs
+- Conditional sales section for FOR_SALE status
+
+**Financials** (`/financials`): total spent, total received, net cash, estimated value owned, net position, total profit; interactive cumulative chart over time; transaction list with running totals
+
+**Categories** (`/categories`): view, create, edit categories with type and sort order
+
+**Templates** (`/templates`): view, create, edit, delete templates; one-click device creation from template
+
+**Custom Fields** (`/customFields`): create, edit, delete fields; toggle public/private; set sort order
+
+**Print** (`/print`): filtered print-friendly device table
+
+**Backup** (`/backup`): export selected devices to ZIP (with images, progress tracking); bulk import from ZIP (progress polling, error reporting)
+
+**Trash** (`/trash`): view soft-deleted devices; restore or permanently delete
+
+**Stats** (`/stats`): collection composition donut charts (by status, condition, category type); acquisition per year bar chart; release era bar chart; top manufacturers horizontal bar chart; summary cards (total devices, working %, avg estimated value, top category)
+
+**System Usage** (`/usage`): counts of all entity types and total storage used
+
+### Storefront
+
+- Product grid for FOR_SALE and PENDING_SALE devices
+- Search, filter (status, category), and sort (price, name, year, category, status)
+- Item detail: specs, images, condition, maintenance history, public custom fields, list price or "contact for price"
+- Contact email CTA from env variable
+- Umami analytics events for searches, filter changes, sorts
+- No auth required; sensitive fields (notes, acquisition data) excluded from API responses
+
+### iOS App
+
+**Device list**: search, filter (category, status, favorites), sort, pull-to-refresh, barcode scanner, add device
+
+**Device detail** (tabbed): Overview, Specs, Images, Notes, Tasks tabs; favorite toggle; share QR code; edit/delete
+
+**Image management**: gallery with full-size view, set thumbnail/shop/listing flags, delete with confirmation
+
+**Add/Edit device**: full form with all fields, template selection, category picker, custom field values
+
+**Financials**: summary cards (6 metrics), interactive cumulative line chart (landscape), transaction list
+
+**Stats**: summary cards (total devices, working %, avg value, top category); bar charts for status, condition, category type, acquisition year, release decade, top manufacturers
+
+**AI Chat**: natural language queries about inventory via MCP, streaming responses, conversation history
+
+**Barcode scanner**: live camera preview, QR/barcode detection, serial number lookup, navigate to matched device
+
+**Login**: server URL configuration, password entry, JWT token persistence and refresh
+
+### MCP Server (AI Integration)
+
+Tools available to Claude and other AI assistants:
+- `search_devices`: text + filter search (status, functionalStatus, category, manufacturer, tag), up to 50 results
+- `get_device_details`: full device data by ID
+- `get_financial_summary`: aggregate financial metrics
+- `list_devices`: flexible field selection with filtering and sorting
+
+Used by both the web CollectionChat component and the iOS ChatView.
+
+### Cross-Cutting Features
+
+- **Soft delete**: devices marked deleted, restorable from trash
+- **Financial tracking**: acquisition → ownership → sale profit chain
+- **Template system**: reusable device spec presets
+- **Custom metadata**: extensible fields with public/private visibility control
+- **Image roles**: thumbnail (list display), shop image (storefront card), listing image (storefront detail blurred background)
+- **Deep linking**: devices accessible via URL and QR/barcode code
+- **Bulk import/export**: ZIP with images, streaming, async progress tracking
+- **Multi-platform**: web admin, public storefront, iOS native — all on same GraphQL API
+- **Auth-gated data**: financial/acquisition fields hidden from unauthenticated users; storefront always fully public
+- **Retro aesthetic**: rainbow stripe, vintage fonts, loading messages throughout web UI
+
+---
+
+## Feature Ideas
+
+Potential future features, roughly prioritized. These have not been started — check the Feature Catalog above before implementing to avoid duplication.
+
+### High Value / Low Effort
+
+- **Loan tracking**: mark a device as loaned out to a person with a due-back date; show overdue loans on the inventory page. New `Loan` model (deviceId, borrower, dueDate, returnedDate).
+- **Bulk edit**: select multiple devices on the inventory page and batch-update status, category, or tags.
+- **Wishlist**: a separate status or section for devices you want to acquire; track target price and potential sources.
+- **Storefront "sold" archive**: show SOLD devices on the storefront as a historical gallery rather than hiding them entirely.
+
+### Medium Effort
+
+- **Maintenance reminders**: add an optional due date to maintenance tasks; surface overdue/upcoming tasks on the dashboard and iOS home screen.
+- **Value history**: periodically snapshot `estimatedValue` per device so you can chart how valuations change over time. Requires a new `ValueSnapshot` table.
+- **CSV export**: export the current filtered device list as CSV from the web admin (no images, just data).
+- **Duplicate detection**: warn when adding a device whose name + manufacturer closely matches an existing one.
+- **Storefront inquiry form**: replace the contact email CTA with an in-app inquiry form that logs messages to the database.
+
+### Larger / Exploratory
+
+- **Multi-user / roles**: expand auth beyond single-password to named users with viewer vs. editor roles.
+- **Public collection page**: a read-only view of the entire collection (not just for-sale items) for sharing with other collectors.
+- **Insurance report**: generate a printable PDF valuation report grouped by category, with photos, for insurance purposes.
+- **Mobile barcode add**: from the iOS barcode scanner, if no match is found, pre-fill a new device form using the barcode to look up make/model from an external database (e.g., Open Library / Barcode Lookup API).
+- **Collection timeline**: a visual timeline that plots each device by its `releaseYear`, interspersed with significant Apple product launches and broader cultural/historical milestones (e.g. Macintosh 1984, NeXT acquisition, iPod, iPhone). Devices in the collection are highlighted nodes; external events provide historical context. Could live at `/timeline` on web and as a horizontal scroll view on iOS. Historical event data would be a static JSON fixture bundled with the app.
