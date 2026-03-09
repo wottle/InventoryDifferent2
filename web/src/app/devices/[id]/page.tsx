@@ -71,6 +71,7 @@ const GET_DEVICE = gql`
         label
         dateCompleted
         notes
+        cost
       }
       tags {
         id
@@ -110,6 +111,7 @@ const CREATE_MAINTENANCE_TASK = gql`
       label
       dateCompleted
       notes
+      cost
     }
   }
 `;
@@ -368,7 +370,8 @@ export default function DeviceDetail() {
     const [maintenanceFormData, setMaintenanceFormData] = useState({
         label: '',
         dateCompleted: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10),
-        notes: ''
+        notes: '',
+        cost: '',
     });
     const [deleteTaskId, setDeleteTaskId] = useState<number | null>(null);
     const [showNoteForm, setShowNoteForm] = useState(false);
@@ -552,11 +555,12 @@ export default function DeviceDetail() {
                         label: maintenanceFormData.label,
                         dateCompleted: maintenanceFormData.dateCompleted,
                         notes: maintenanceFormData.notes || null,
+                        cost: maintenanceFormData.cost ? parseFloat(maintenanceFormData.cost) : null,
                     },
                 },
             });
             // Reset form and close
-            setMaintenanceFormData({ label: '', dateCompleted: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10), notes: '' });
+            setMaintenanceFormData({ label: '', dateCompleted: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10), notes: '', cost: '' });
             setShowMaintenanceForm(false);
             // Refetch device data to show new task
             refetch();
@@ -1103,6 +1107,9 @@ export default function DeviceDetail() {
                                                 {task.notes && (
                                                     <p className="text-sm text-[var(--muted-foreground)] mt-1 whitespace-pre-wrap">{task.notes}</p>
                                                 )}
+                                                {task.cost != null && (
+                                                    <p className="text-xs text-[var(--muted-foreground)] mt-1">Cost: ${Number(task.cost).toFixed(2)}</p>
+                                                )}
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs text-[var(--muted-foreground)]">
@@ -1232,6 +1239,21 @@ export default function DeviceDetail() {
                                             value={maintenanceFormData.notes}
                                             onChange={(e) => setMaintenanceFormData(prev => ({ ...prev, notes: e.target.value }))}
                                             rows={3}
+                                            className="input-retro w-full px-3 py-2 text-[var(--foreground)]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="cost" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
+                                            Cost (optional)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="cost"
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="0.00"
+                                            value={maintenanceFormData.cost}
+                                            onChange={(e) => setMaintenanceFormData(prev => ({ ...prev, cost: e.target.value }))}
                                             className="input-retro w-full px-3 py-2 text-[var(--foreground)]"
                                         />
                                     </div>

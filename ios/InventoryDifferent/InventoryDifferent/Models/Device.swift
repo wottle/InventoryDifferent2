@@ -99,6 +99,7 @@ struct MaintenanceTask: Codable, Identifiable {
     let label: String
     let dateCompleted: String
     let notes: String?
+    let cost: Double?
 }
 
 struct Tag: Codable, Identifiable, Hashable {

@@ -127,6 +127,7 @@ struct FinancialsView: View {
                     compactSummaryCard(title: "Received", value: overview.totalReceived, color: .green)
                     compactSummaryCard(title: "Net Cash", value: overview.netCash, color: valueColor(overview.netCash))
                     compactSummaryCard(title: "Est. Value", value: overview.estimatedValueOwned, color: .green)
+                    compactSummaryCard(title: "Maint.", value: overview.totalMaintenanceCost, color: overview.totalMaintenanceCost > 0 ? .red : .primary)
                     compactSummaryCard(title: "Net Position", value: overview.netPosition, color: valueColor(overview.netPosition))
                     compactSummaryCard(title: "Profit", value: overview.totalProfit, color: valueColor(overview.totalProfit))
                 }
@@ -253,9 +254,15 @@ struct FinancialsView: View {
                     value: overview.estimatedValueOwned,
                     color: .green
                 )
-                
+
                 summaryCard(
-                    title: "Net Position",
+                    title: "Maintenance Costs",
+                    value: overview.totalMaintenanceCost,
+                    color: overview.totalMaintenanceCost > 0 ? .red : .primary
+                )
+
+                summaryCard(
+                    title: "Net Position (incl. Maintenance)",
                     value: overview.netPosition,
                     color: valueColor(overview.netPosition)
                 )

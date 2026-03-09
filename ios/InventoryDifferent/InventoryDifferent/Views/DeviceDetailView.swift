@@ -1454,6 +1454,11 @@ struct TaskRowView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
+                if let cost = task.cost, cost > 0 {
+                    Text(String(format: "Cost: $%.2f", cost))
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
             }
             .padding()
             .background(Color(.systemGray6))

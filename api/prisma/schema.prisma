@@ -102,6 +102,7 @@ model MaintenanceTask {
   label         String
   dateCompleted DateTime
   notes         String?  @db.Text
+  cost          Decimal? @db.Decimal(10, 2)
 }
 
 model Tag {

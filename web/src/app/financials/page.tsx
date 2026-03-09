@@ -25,6 +25,7 @@ const GET_FINANCIALS = gql`
       estimatedValueOwned
       netPosition
       totalProfit
+      totalMaintenanceCost
     }
     financialTransactions {
       type
@@ -176,7 +177,7 @@ export default function FinancialsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
                   <div className="text-xs text-[var(--muted-foreground)]">Estimated Value (Still Owned)</div>
                   <div className="mt-1 text-2xl font-light tabular-nums text-green-600 dark:text-green-400">
@@ -184,7 +185,13 @@ export default function FinancialsPage() {
                   </div>
                 </div>
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Net Position (Owned Value + Net Cash)</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">Maintenance Costs</div>
+                  <div className="mt-1 text-2xl font-light tabular-nums text-red-600 dark:text-red-400">
+                    {formatCurrency(overview.totalMaintenanceCost)}
+                  </div>
+                </div>
+                <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
+                  <div className="text-xs text-[var(--muted-foreground)]">Net Position (Owned Value + Net Cash − Maintenance)</div>
                   <div className={`mt-1 text-2xl font-light tabular-nums ${valueColorClass(overview.netPosition)}`}>
                     {formatCurrency(overview.netPosition)}
                   </div>

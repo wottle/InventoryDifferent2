@@ -289,7 +289,7 @@ class DeviceService {
         return response.maintenanceTaskLabels
     }
     
-    func createMaintenanceTask(deviceId: Int, label: String, dateCompleted: String, notes: String?) async throws -> MaintenanceTask {
+    func createMaintenanceTask(deviceId: Int, label: String, dateCompleted: String, notes: String?, cost: Double?) async throws -> MaintenanceTask {
         let mutation = """
         mutation CreateMaintenanceTask($input: MaintenanceTaskCreateInput!) {
             createMaintenanceTask(input: $input) {
@@ -297,20 +297,24 @@ class DeviceService {
                 label
                 dateCompleted
                 notes
+                cost
             }
         }
         """
-        
+
         var input: [String: Any] = [
             "deviceId": deviceId,
             "label": label,
             "dateCompleted": dateCompleted
         ]
-        
+
         if let notes = notes {
             input["notes"] = notes
         }
-        
+        if let cost = cost {
+            input["cost"] = cost
+        }
+
         let variables: [String: Any] = ["input": input]
         
         struct Response: Decodable {

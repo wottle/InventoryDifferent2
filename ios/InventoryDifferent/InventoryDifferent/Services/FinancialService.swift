@@ -22,6 +22,7 @@ class FinancialService {
             estimatedValueOwned
             netPosition
             totalProfit
+            totalMaintenanceCost
           }
           financialTransactions {
             type

@@ -99,6 +99,7 @@ export const typeDefs = gql`
     label: String!
     dateCompleted: DateTime!
     notes: String
+    cost: Float
   }
 
   type Tag {
@@ -149,6 +150,7 @@ export const typeDefs = gql`
     estimatedValueOwned: Float!
     netPosition: Float!
     totalProfit: Float!
+    totalMaintenanceCost: Float!
   }
 
   type FinancialTransaction {
@@ -367,6 +369,7 @@ export const typeDefs = gql`
     label: String!
     dateCompleted: DateTime!
     notes: String
+    cost: Float
   }
 
   input NoteCreateInput {

@@ -315,11 +315,17 @@ export const resolvers = {
                 return sum + (soldPrice - priceAcquired);
             }, 0);
 
+            const maintenanceCostAgg = await context.prisma.maintenanceTask.aggregate({
+                where: { device: { deleted: false } },
+                _sum: { cost: true },
+            });
+
             const totalSpent = -decimalToNumber(spentAgg?._sum?.priceAcquired);
             const totalReceived = decimalToNumber(receivedAgg?._sum?.soldPrice);
             const netCash = totalReceived + totalSpent;
             const estimatedValueOwned = decimalToNumber(ownedValueAgg?._sum?.estimatedValue);
-            const netPosition = estimatedValueOwned + netCash;
+            const totalMaintenanceCost = decimalToNumber(maintenanceCostAgg?._sum?.cost);
+            const netPosition = estimatedValueOwned + netCash - totalMaintenanceCost;
 
             return {
                 totalSpent,
@@ -328,6 +334,7 @@ export const resolvers = {
                 estimatedValueOwned,
                 netPosition,
                 totalProfit,
+                totalMaintenanceCost,
             };
         },
         financialTransactions: async (_parent: any, _args: any, context: Context) => {
@@ -893,13 +900,14 @@ export const resolvers = {
         },
         createMaintenanceTask: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
-            const { deviceId, label, dateCompleted, notes } = args.input;
+            const { deviceId, label, dateCompleted, notes, cost } = args.input;
             return context.prisma.maintenanceTask.create({
                 data: {
                     deviceId,
                     label,
                     dateCompleted: new Date(dateCompleted),
                     notes: notes || null,
+                    cost: cost != null ? cost : null,
                 },
             });
         },

@@ -15,6 +15,7 @@ struct AddMaintenanceTaskView: View {
     @State private var label = ""
     @State private var dateCompleted = Date()
     @State private var notes = ""
+    @State private var cost = ""
     @State private var isSubmitting = false
     @State private var error: String?
     
@@ -76,10 +77,16 @@ struct AddMaintenanceTaskView: View {
                     }
                     
                     DatePicker("Date Completed", selection: $dateCompleted, displayedComponents: .date)
+                    HStack {
+                        Text("$")
+                            .foregroundColor(.secondary)
+                        TextField("Cost (optional)", text: $cost)
+                            .keyboardType(.decimalPad)
+                    }
                 } header: {
                     Text("Task Information")
                 }
-                
+
                 Section {
                     ZStack(alignment: .topLeading) {
                         if notes.isEmpty {
@@ -150,12 +157,14 @@ struct AddMaintenanceTaskView: View {
             let dateString = formatter.string(from: dateCompleted)
             
             let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : notes
-            
+            let costValue = Double(cost.trimmingCharacters(in: .whitespaces))
+
             let task = try await DeviceService.shared.createMaintenanceTask(
                 deviceId: deviceId,
                 label: label.trimmingCharacters(in: .whitespaces),
                 dateCompleted: dateString,
-                notes: notesValue
+                notes: notesValue,
+                cost: costValue
             )
             
             onTaskAdded(task)

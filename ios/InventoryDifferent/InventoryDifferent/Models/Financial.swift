@@ -14,6 +14,7 @@ struct FinancialOverview: Codable {
     let estimatedValueOwned: Double
     let netPosition: Double
     let totalProfit: Double
+    let totalMaintenanceCost: Double
 }
 
 struct FinancialTransaction: Codable, Identifiable {
