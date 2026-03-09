@@ -35,6 +35,7 @@ const GET_FINANCIALS = gql`
       date
       amount
       estimatedValue
+      label
     }
   }
 `;
@@ -249,7 +250,7 @@ export default function FinancialsPage() {
                           {formatDate(t.date)}
                         </td>
                         <td className="px-4 py-2 text-[var(--foreground)]">
-                          {t.type === "SALE" ? "Sold" : t.type === "DONATION" ? "Donated" : "Acquired"}
+                          {t.type === "SALE" ? "Sold" : t.type === "DONATION" ? "Donated" : t.type === "MAINTENANCE" ? "Maintenance" : "Acquired"}
                         </td>
                         <td className="px-4 py-2">
                           <Link
@@ -261,6 +262,9 @@ export default function FinancialsPage() {
                               <span className="text-[var(--muted-foreground)] ml-1">({t.additionalName})</span>
                             )}
                           </Link>
+                          {t.label && (
+                            <div className="text-xs text-[var(--muted-foreground)] mt-0.5">{t.label}</div>
+                          )}
                         </td>
                         <td className={`px-4 py-2 text-right font-medium tabular-nums ${valueColorClass(t.amount)}`}>
                           {formatCurrency(t.amount)}

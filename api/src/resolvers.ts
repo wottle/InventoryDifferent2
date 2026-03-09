@@ -418,7 +418,34 @@ export const resolvers = {
                 estimatedValue: -(decimalToNumber((d as any).estimatedValue) ?? 0),
             }));
 
-            const rows = [...acquisitionRows, ...saleRows, ...donationRows];
+            const maintenanceTasks = await context.prisma.maintenanceTask.findMany({
+                where: {
+                    cost: { not: null },
+                    device: { deleted: false },
+                },
+                select: {
+                    id: true,
+                    label: true,
+                    dateCompleted: true,
+                    cost: true,
+                    device: {
+                        select: { id: true, name: true, additionalName: true },
+                    },
+                },
+            });
+
+            const maintenanceRows = maintenanceTasks.map((t) => ({
+                type: 'MAINTENANCE',
+                deviceId: t.device.id,
+                deviceName: t.device.name,
+                additionalName: t.device.additionalName,
+                date: t.dateCompleted,
+                amount: -(decimalToNumber((t as any).cost) ?? 0),
+                estimatedValue: 0,
+                label: t.label,
+            }));
+
+            const rows = [...acquisitionRows, ...saleRows, ...donationRows, ...maintenanceRows];
             rows.sort((a, b) => {
                 const at = a.date ? new Date(a.date).getTime() : -Infinity;
                 const bt = b.date ? new Date(b.date).getTime() : -Infinity;

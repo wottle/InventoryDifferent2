@@ -21,6 +21,7 @@ export const typeDefs = gql`
     ACQUISITION
     SALE
     DONATION
+    MAINTENANCE
   }
 
   type Device {
@@ -161,6 +162,7 @@ export const typeDefs = gql`
     date: DateTime
     amount: Float!
     estimatedValue: Float!
+    label: String
   }
 
   type SystemUsage {

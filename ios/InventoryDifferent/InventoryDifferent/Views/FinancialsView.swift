@@ -342,14 +342,35 @@ struct FinancialsView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
+                    if let label = transaction.transaction.label {
+                        Text(label)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 Spacer()
-                Text(transaction.transaction.type == "SALE" ? "Sold" : transaction.transaction.type == "DONATION" ? "Donated" : "Acquired")
+                let typeName: String = {
+                    switch transaction.transaction.type {
+                    case "SALE": return "Sold"
+                    case "DONATION": return "Donated"
+                    case "MAINTENANCE": return "Maintenance"
+                    default: return "Acquired"
+                    }
+                }()
+                let typeColor: Color = {
+                    switch transaction.transaction.type {
+                    case "SALE": return .green
+                    case "DONATION": return .purple
+                    case "MAINTENANCE": return .orange
+                    default: return .blue
+                    }
+                }()
+                Text(typeName)
                     .font(.caption)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(transaction.transaction.type == "SALE" ? Color.green.opacity(0.2) : transaction.transaction.type == "DONATION" ? Color.purple.opacity(0.2) : Color.blue.opacity(0.2))
-                    .foregroundColor(transaction.transaction.type == "SALE" ? .green : transaction.transaction.type == "DONATION" ? .purple : .blue)
+                    .background(typeColor.opacity(0.2))
+                    .foregroundColor(typeColor)
                     .cornerRadius(4)
             }
             

@@ -25,7 +25,8 @@ struct FinancialTransaction: Codable, Identifiable {
     let date: String?
     let amount: Double?
     let estimatedValue: Double?
-    
+    let label: String?
+
     var id: String {
         "\(type)-\(deviceId)-\(date ?? "nodate")-\(amount ?? 0)-\(estimatedValue ?? 0)"
     }

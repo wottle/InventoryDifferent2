@@ -32,6 +32,7 @@ class FinancialService {
             date
             amount
             estimatedValue
+            label
           }
         }
         """
