@@ -151,6 +151,17 @@ model CustomFieldValue {
   @@unique([customFieldId, deviceId])
 }
 
+model TimelineEvent {
+  id          Int      @id @default(autoincrement())
+  year        Int
+  title       String
+  description String   @db.Text
+  type        String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 enum Status {
   AVAILABLE
   FOR_SALE

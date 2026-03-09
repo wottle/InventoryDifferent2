@@ -49,6 +49,20 @@ struct MenuView: View {
                     .padding(.leading, 44)
 
                 MenuButton(
+                    icon: "clock.arrow.circlepath",
+                    title: "Timeline",
+                    color: .teal
+                ) {
+                    showingMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        navigationPath.append(MenuDestination.timeline)
+                    }
+                }
+
+                Divider()
+                    .padding(.leading, 44)
+
+                MenuButton(
                     icon: "bubble.left.and.bubble.right",
                     title: "Chat",
                     color: .blue

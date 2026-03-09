@@ -502,6 +502,13 @@ export default function Home() {
                       Stats
                     </Link>
                     <Link
+                      href="/timeline"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
+                    >
+                      Timeline
+                    </Link>
+                    <Link
                       href="/usage"
                       onClick={() => setMenuOpen(false)}
                       className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"

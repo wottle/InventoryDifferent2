@@ -26,6 +26,8 @@ struct ContentView: View {
                         ChatView()
                     case .stats:
                         StatsView()
+                    case .timeline:
+                        TimelineView()
                     }
                 }
         }

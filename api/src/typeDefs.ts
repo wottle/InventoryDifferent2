@@ -172,6 +172,15 @@ export const typeDefs = gql`
     totalStorageBytes: Float!
   }
 
+  type TimelineEvent {
+    id:          Int!
+    year:        Int!
+    title:       String!
+    description: String!
+    type:        String!
+    sortOrder:   Int!
+  }
+
   type StatsBucket {
     label: String!
     count: Int!
@@ -239,6 +248,7 @@ export const typeDefs = gql`
     maintenanceTaskLabels: [String!]!
     customFields: [CustomField!]!
     collectionStats: CollectionStats!
+    timelineEvents: [TimelineEvent!]!
   }
 
   input DeviceCreateInput {

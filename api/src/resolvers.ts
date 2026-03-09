@@ -474,6 +474,11 @@ export const resolvers = {
                 totalStorageBytes,
             };
         },
+        timelineEvents: async (_parent: any, _args: any, context: Context) => {
+            return (context.prisma as any).timelineEvent.findMany({
+                orderBy: [{ year: 'asc' }, { sortOrder: 'asc' }],
+            });
+        },
         collectionStats: async (_parent: any, _args: any, context: Context) => {
             requireAuth(context);
 
