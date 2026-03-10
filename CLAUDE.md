@@ -79,7 +79,7 @@ Provides tools for AI assistants to query inventory:
 ## Data Model (Core Entities)
 
 **Device**: Main inventory item
-- Status: AVAILABLE | FOR_SALE | PENDING_SALE | SOLD | DONATED
+- Status: AVAILABLE | FOR_SALE | PENDING_SALE | SOLD | DONATED | IN_REPAIR | RETURNED
 - FunctionalStatus: YES | PARTIAL | NO
 - Relations: category, images, notes, maintenanceTasks, tags
 
@@ -196,11 +196,11 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Device** (main inventory item)
 - Identification: name, additionalName, manufacturer, modelNumber, serialNumber, releaseYear, location, info
-- Status: AVAILABLE | FOR_SALE | PENDING_SALE | SOLD | DONATED
+- Status: AVAILABLE | FOR_SALE | PENDING_SALE | SOLD | DONATED | IN_REPAIR | RETURNED
 - FunctionalStatus: YES | PARTIAL | NO
 - Flags: isFavorite, hasOriginalBox, isAssetTagged, isWifiEnabled, isPramBatteryRemoved
-- Timestamps: dateAcquired, lastPowerOnDate, soldDate
-- Financials: priceAcquired, estimatedValue, listPrice, soldPrice, whereAcquired
+- Timestamps: dateAcquired, lastPowerOnDate, soldDate (also used as "returned date" for RETURNED)
+- Financials: priceAcquired, estimatedValue, listPrice, soldPrice (also used as "repair fee" for RETURNED), whereAcquired
 - Specs: cpu, ram, graphics, storage, operatingSystem
 - External: externalUrl
 - Relations: category, images, notes, maintenanceTasks, tags, customFieldValues
@@ -212,7 +212,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Note**: content, date (auto-timestamped)
 
-**MaintenanceTask**: label (predefined or custom), dateCompleted, notes
+**MaintenanceTask**: label (predefined or custom), dateCompleted, notes, cost (optional, rolls up to totalMaintenanceCost in financials)
 
 **Tag**: name (many-to-many with devices)
 
@@ -257,7 +257,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 - Template application to pre-fill specs
 - Conditional sales section for FOR_SALE status
 
-**Financials** (`/financials`): total spent, total received, net cash, estimated value owned, net position, total profit; interactive cumulative chart over time; transaction list with running totals
+**Financials** (`/financials`): total spent, total received, net cash, estimated value owned, net position, total profit; interactive cumulative chart over time; transaction list with running totals. TransactionType enum: ACQUISITION | SALE | DONATION | MAINTENANCE | REPAIR_RETURN. IN_REPAIR and RETURNED are excluded from estimatedValueOwned. RETURNED devices with soldPrice generate a REPAIR_RETURN transaction (labeled "Repair Fee").
 
 **Categories** (`/categories`): view, create, edit categories with type and sort order
 
