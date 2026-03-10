@@ -113,6 +113,9 @@ struct EditDeviceView: View {
                 if showSalesSection {
                     salesSection
                 }
+                if status == .RETURNED {
+                    repairSection
+                }
                 if isComputerCategory {
                     computerSpecsSection
                 }
@@ -199,7 +202,7 @@ struct EditDeviceView: View {
                 }
             }
             .onChange(of: status) { oldValue, newValue in
-                if newValue == .SOLD || newValue == .DONATED {
+                if newValue == .SOLD || newValue == .DONATED || newValue == .RETURNED {
                     soldDate = Date()
                 }
             }
@@ -317,6 +320,23 @@ struct EditDeviceView: View {
             }
         } header: {
             Text("Custom Fields")
+        }
+    }
+
+    private var repairSection: some View {
+        Section("Repair Information") {
+            TextField("Repair Fee Charged", text: $soldPrice)
+                .keyboardType(.decimalPad)
+
+            DatePicker("Returned Date", selection: Binding(
+                get: { soldDate ?? Date() },
+                set: { soldDate = $0 }
+            ), displayedComponents: .date)
+
+            Button(soldDate == nil ? "Set Returned Date" : "Clear Returned Date") {
+                soldDate = soldDate == nil ? Date() : nil
+            }
+            .foregroundColor(.accentColor)
         }
     }
 
