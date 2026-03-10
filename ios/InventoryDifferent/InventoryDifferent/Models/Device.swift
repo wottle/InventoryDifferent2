@@ -25,9 +25,9 @@ enum Status: String, Codable, CaseIterable {
     case AVAILABLE
     case FOR_SALE
     case PENDING_SALE
+    case IN_REPAIR
     case SOLD
     case DONATED
-    case IN_REPAIR
     case RETURNED
 
     var displayName: String {

@@ -55,9 +55,9 @@ export function DeviceFilterPanel({
     { value: "AVAILABLE", label: "Available" },
     { value: "FOR_SALE", label: "For Sale" },
     { value: "PENDING_SALE", label: "Pending Sale" },
+    { value: "IN_REPAIR", label: "In Repair" },
     { value: "SOLD", label: "Sold" },
     { value: "DONATED", label: "Donated" },
-    { value: "IN_REPAIR", label: "In Repair" },
     { value: "RETURNED", label: "Returned" },
   ];
 

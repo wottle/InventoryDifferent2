@@ -754,9 +754,9 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
                         <option value="AVAILABLE">Available</option>
                         <option value="FOR_SALE">For Sale</option>
                         <option value="PENDING_SALE">Pending Sale</option>
+                        <option value="IN_REPAIR">In Repair</option>
                         <option value="SOLD">Sold</option>
                         <option value="DONATED">Donated</option>
-                        <option value="IN_REPAIR">In Repair</option>
                         <option value="RETURNED">Returned</option>
                     </select>
                 </FormField>
