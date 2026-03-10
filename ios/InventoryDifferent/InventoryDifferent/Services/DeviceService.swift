@@ -143,6 +143,7 @@ class DeviceService {
                     label
                     dateCompleted
                     notes
+                    cost
                 }
                 tags {
                     id
@@ -229,6 +230,7 @@ class DeviceService {
                     label
                     dateCompleted
                     notes
+                    cost
                 }
                 tags {
                     id
@@ -474,6 +476,7 @@ class DeviceService {
                     label
                     dateCompleted
                     notes
+                    cost
                 }
                 tags {
                     id
@@ -723,6 +726,7 @@ class DeviceService {
                     label
                     dateCompleted
                     notes
+                    cost
                 }
                 tags {
                     id
@@ -877,6 +881,7 @@ class DeviceService {
                     label
                     dateCompleted
                     notes
+                    cost
                 }
                 tags {
                     id
