@@ -368,8 +368,8 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
         setFormData(prev => {
             const updates: any = { [name]: nextValue };
 
-            // Auto-populate sold date when status changes to SOLD or DONATED
-            if (name === "status" && (value === "SOLD" || value === "DONATED") && !prev.soldDate) {
+            // Auto-populate sold date when status changes to SOLD, DONATED, or RETURNED
+            if (name === "status" && (value === "SOLD" || value === "DONATED" || value === "RETURNED") && !prev.soldDate) {
                 updates.soldDate = getLocalDateInputValue();
             }
 
@@ -874,6 +874,15 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
                                 step="0.01"
                                 min="0"
                                 placeholder="0.00"
+                            />
+                        </FormField>
+                        <FormField label="Returned Date">
+                            <input
+                                type="date"
+                                name="soldDate"
+                                value={formData.soldDate}
+                                onChange={handleChange}
+                                className={inputClass}
                             />
                         </FormField>
                     </div>

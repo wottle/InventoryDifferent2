@@ -390,9 +390,15 @@ struct ValueSaleInfo: View {
                     .font(.caption)
                     .foregroundColor(.orange)
             case .RETURNED:
-                Text("Returned")
-                    .font(.caption)
-                    .foregroundColor(.teal)
+                if let fee = device.soldPrice, fee > 0 {
+                    Text("Returned: \(formatPrice(fee))")
+                        .font(.caption)
+                        .foregroundColor(.teal)
+                } else {
+                    Text("Returned")
+                        .font(.caption)
+                        .foregroundColor(.teal)
+                }
             }
         }
     }

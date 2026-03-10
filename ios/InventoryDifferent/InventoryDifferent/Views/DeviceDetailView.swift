@@ -811,6 +811,14 @@ struct DeviceDetailView: View {
                     }
                 }
             }
+            else if device.status == .RETURNED {
+                DetailSection(title: "Repair") {
+                    DetailRow(label: "Returned Date", value: formatDate(device.soldDate))
+                    if let fee = device.soldPrice, fee > 0 {
+                        DetailRow(label: "Repair Fee Charged", value: formatCurrency(fee))
+                    }
+                }
+            }
 
             // Computer Specs (if applicable)
             if hasComputerSpecs {
