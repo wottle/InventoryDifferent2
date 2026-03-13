@@ -79,6 +79,8 @@ function DonutChart({ data, title }: { data: StatsBucket[]; title: string }) {
                 color: "#F3F4F6",
                 fontSize: 12,
               }}
+              labelStyle={{ color: "#9CA3AF" }}
+              itemStyle={{ color: "#F3F4F6" }}
             />
             <Legend wrapperStyle={{ fontSize: 11 }} />
           </PieChart>
@@ -126,6 +128,8 @@ function VerticalBarChart({ data, title }: { data: StatsBucket[]; title: string 
                 color: "#F3F4F6",
                 fontSize: 12,
               }}
+              labelStyle={{ color: "#9CA3AF" }}
+              itemStyle={{ color: "#F3F4F6" }}
             />
             <Bar dataKey="count" name="Devices" fill={COLORS[0]} radius={[3, 3, 0, 0]} />
           </BarChart>
@@ -182,6 +186,8 @@ function HorizontalBarChart({ data, title }: { data: StatsBucket[]; title: strin
                 color: "#F3F4F6",
                 fontSize: 12,
               }}
+              labelStyle={{ color: "#9CA3AF" }}
+              itemStyle={{ color: "#F3F4F6" }}
             />
             <Bar dataKey="count" name="Devices" fill={COLORS[2]} radius={[0, 3, 3, 0]} />
           </BarChart>

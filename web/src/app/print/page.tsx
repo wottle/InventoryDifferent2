@@ -96,6 +96,7 @@ export default function PrintListPage() {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortColumn, setSortColumn] = useState<SortColumn>('category');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [showPrintView, setShowPrintView] = useState(false);
 
   const { data, loading } = useQuery(GET_DEVICES, {
@@ -139,6 +140,7 @@ export default function PrintListPage() {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "";
     return new Date(dateString).toLocaleDateString("en-US", {
+      timeZone: "UTC",
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -527,7 +529,8 @@ export default function PrintListPage() {
         onFiltersChange={setFilters}
         categories={categories}
         sortColumn={sortColumn}
-        onSortChange={setSortColumn}
+        sortDirection={sortDirection}
+        onSortChange={(col, dir) => { setSortColumn(col); setSortDirection(dir); }}
       />
     </div>
   );

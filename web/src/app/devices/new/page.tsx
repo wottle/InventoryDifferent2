@@ -1,7 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { DeviceForm } from "../../../components/DeviceForm";
+
+function NewDeviceFormWithParams() {
+    const searchParams = useSearchParams();
+
+    const prefill: Record<string, any> = {};
+    if (searchParams.get("name")) prefill.name = searchParams.get("name")!;
+    if (searchParams.get("additionalName")) prefill.additionalName = searchParams.get("additionalName")!;
+    if (searchParams.get("manufacturer")) prefill.manufacturer = searchParams.get("manufacturer")!;
+    if (searchParams.get("modelNumber")) prefill.modelNumber = searchParams.get("modelNumber")!;
+    if (searchParams.get("releaseYear")) {
+        const year = parseInt(searchParams.get("releaseYear")!, 10);
+        if (!isNaN(year)) prefill.releaseYear = year;
+    }
+    if (searchParams.get("categoryId")) {
+        const catId = parseInt(searchParams.get("categoryId")!, 10);
+        if (!isNaN(catId)) prefill.categoryId = catId;
+    }
+    if (searchParams.get("cpu")) prefill.cpu = searchParams.get("cpu")!;
+    if (searchParams.get("ram")) prefill.ram = searchParams.get("ram")!;
+    if (searchParams.get("graphics")) prefill.graphics = searchParams.get("graphics")!;
+    if (searchParams.get("storage")) prefill.storage = searchParams.get("storage")!;
+    if (searchParams.get("operatingSystem")) prefill.operatingSystem = searchParams.get("operatingSystem")!;
+    if (searchParams.get("externalUrl")) prefill.externalUrl = searchParams.get("externalUrl")!;
+    if (searchParams.get("isWifiEnabled")) prefill.isWifiEnabled = true;
+    if (searchParams.get("isPramBatteryRemoved")) prefill.isPramBatteryRemoved = true;
+
+    return <DeviceForm mode="create" prefill={prefill} />;
+}
 
 export default function NewDevicePage() {
     return (
@@ -20,7 +50,9 @@ export default function NewDevicePage() {
                 Add New Device
             </h1>
 
-            <DeviceForm mode="create" />
+            <Suspense fallback={<div className="text-sm text-gray-500">Loading form…</div>}>
+                <NewDeviceFormWithParams />
+            </Suspense>
         </div>
     );
 }

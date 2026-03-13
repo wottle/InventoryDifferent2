@@ -256,6 +256,23 @@ class DeviceService {
         return response.device
     }
     
+    func fetchValueHistory(deviceId: Int) async throws -> [ValueSnapshot] {
+        let query = """
+        query GetValueHistory($deviceId: Int!) {
+            valueHistory(deviceId: $deviceId) {
+                id
+                estimatedValue
+                snapshotDate
+            }
+        }
+        """
+        struct Response: Decodable {
+            let valueHistory: [ValueSnapshot]
+        }
+        let response: Response = try await api.execute(query: query, variables: ["deviceId": deviceId])
+        return response.valueHistory
+    }
+
     func fetchCategories() async throws -> [Category] {
         let query = """
         query GetCategories {
@@ -907,5 +924,260 @@ class DeviceService {
 
         let response: Response = try await api.execute(query: mutation, variables: variables)
         return response.removeDeviceTag
+    }
+
+    // MARK: - Wishlist
+
+    func fetchWishlistItems() async throws -> [WishlistItem] {
+        let query = """
+        query GetWishlistItems {
+            wishlistItems(where: { deleted: false }) {
+                id
+                name
+                additionalName
+                manufacturer
+                modelNumber
+                releaseYear
+                targetPrice
+                sourceUrl
+                sourceNotes
+                notes
+                priority
+                group
+                deleted
+                createdAt
+                categoryId
+                cpu
+                ram
+                graphics
+                storage
+                operatingSystem
+                externalUrl
+                isWifiEnabled
+                isPramBatteryRemoved
+                category {
+                    id
+                    name
+                    type
+                }
+            }
+        }
+        """
+
+        struct Response: Decodable {
+            let wishlistItems: [WishlistItem]
+        }
+
+        let response: Response = try await api.execute(query: query)
+        return response.wishlistItems
+    }
+
+    func createWishlistItem(
+        name: String,
+        additionalName: String?,
+        manufacturer: String?,
+        modelNumber: String?,
+        releaseYear: Int?,
+        targetPrice: Double?,
+        sourceUrl: String?,
+        sourceNotes: String?,
+        notes: String?,
+        priority: Int,
+        group: String?,
+        categoryId: Int?,
+        cpu: String?,
+        ram: String?,
+        graphics: String?,
+        storage: String?,
+        operatingSystem: String?,
+        externalUrl: String?,
+        isWifiEnabled: Bool?,
+        isPramBatteryRemoved: Bool?
+    ) async throws -> WishlistItem {
+        let mutation = """
+        mutation CreateWishlistItem($data: WishlistItemCreateInput!) {
+            createWishlistItem(data: $data) {
+                id
+                name
+                additionalName
+                manufacturer
+                modelNumber
+                releaseYear
+                targetPrice
+                sourceUrl
+                sourceNotes
+                notes
+                priority
+                group
+                deleted
+                createdAt
+                categoryId
+                cpu
+                ram
+                graphics
+                storage
+                operatingSystem
+                externalUrl
+                isWifiEnabled
+                isPramBatteryRemoved
+                category {
+                    id
+                    name
+                    type
+                }
+            }
+        }
+        """
+
+        var data: [String: Any] = ["name": name, "priority": priority]
+        if let v = additionalName { data["additionalName"] = v }
+        if let v = manufacturer { data["manufacturer"] = v }
+        if let v = modelNumber { data["modelNumber"] = v }
+        if let v = releaseYear { data["releaseYear"] = v }
+        if let v = targetPrice { data["targetPrice"] = v }
+        if let v = sourceUrl { data["sourceUrl"] = v }
+        if let v = sourceNotes { data["sourceNotes"] = v }
+        if let v = notes { data["notes"] = v }
+        if let v = group { data["group"] = v }
+        if let v = categoryId { data["categoryId"] = v }
+        if let v = cpu { data["cpu"] = v }
+        if let v = ram { data["ram"] = v }
+        if let v = graphics { data["graphics"] = v }
+        if let v = storage { data["storage"] = v }
+        if let v = operatingSystem { data["operatingSystem"] = v }
+        if let v = externalUrl { data["externalUrl"] = v }
+        if let v = isWifiEnabled { data["isWifiEnabled"] = v }
+        if let v = isPramBatteryRemoved { data["isPramBatteryRemoved"] = v }
+
+        let variables: [String: Any] = ["data": data]
+
+        struct Response: Decodable {
+            let createWishlistItem: WishlistItem
+        }
+
+        let response: Response = try await api.execute(query: mutation, variables: variables)
+        return response.createWishlistItem
+    }
+
+    func updateWishlistItem(
+        id: Int,
+        name: String?,
+        additionalName: String?,
+        manufacturer: String?,
+        modelNumber: String?,
+        releaseYear: Int?,
+        targetPrice: Double?,
+        sourceUrl: String?,
+        sourceNotes: String?,
+        notes: String?,
+        priority: Int?,
+        group: String?,
+        categoryId: Int?,
+        cpu: String?,
+        ram: String?,
+        graphics: String?,
+        storage: String?,
+        operatingSystem: String?,
+        externalUrl: String?,
+        isWifiEnabled: Bool?,
+        isPramBatteryRemoved: Bool?
+    ) async throws -> WishlistItem {
+        let mutation = """
+        mutation UpdateWishlistItem($id: Int!, $data: WishlistItemUpdateInput!) {
+            updateWishlistItem(id: $id, data: $data) {
+                id
+                name
+                additionalName
+                manufacturer
+                modelNumber
+                releaseYear
+                targetPrice
+                sourceUrl
+                sourceNotes
+                notes
+                priority
+                group
+                deleted
+                createdAt
+                categoryId
+                cpu
+                ram
+                graphics
+                storage
+                operatingSystem
+                externalUrl
+                isWifiEnabled
+                isPramBatteryRemoved
+                category {
+                    id
+                    name
+                    type
+                }
+            }
+        }
+        """
+
+        var data: [String: Any] = [:]
+        if let v = name { data["name"] = v }
+        if let v = additionalName { data["additionalName"] = v }
+        if let v = manufacturer { data["manufacturer"] = v }
+        if let v = modelNumber { data["modelNumber"] = v }
+        if let v = releaseYear { data["releaseYear"] = v }
+        if let v = targetPrice { data["targetPrice"] = v }
+        if let v = sourceUrl { data["sourceUrl"] = v }
+        if let v = sourceNotes { data["sourceNotes"] = v }
+        if let v = notes { data["notes"] = v }
+        if let v = priority { data["priority"] = v }
+        if let v = group { data["group"] = v }
+        if let v = categoryId { data["categoryId"] = v }
+        if let v = cpu { data["cpu"] = v }
+        if let v = ram { data["ram"] = v }
+        if let v = graphics { data["graphics"] = v }
+        if let v = storage { data["storage"] = v }
+        if let v = operatingSystem { data["operatingSystem"] = v }
+        if let v = externalUrl { data["externalUrl"] = v }
+        if let v = isWifiEnabled { data["isWifiEnabled"] = v }
+        if let v = isPramBatteryRemoved { data["isPramBatteryRemoved"] = v }
+
+        let variables: [String: Any] = ["id": id, "data": data]
+
+        struct Response: Decodable {
+            let updateWishlistItem: WishlistItem
+        }
+
+        let response: Response = try await api.execute(query: mutation, variables: variables)
+        return response.updateWishlistItem
+    }
+
+    func deleteWishlistItem(id: Int) async throws -> WishlistItem {
+        let mutation = """
+        mutation DeleteWishlistItem($id: Int!) {
+            deleteWishlistItem(id: $id) {
+                id
+                name
+                manufacturer
+                modelNumber
+                releaseYear
+                targetPrice
+                sourceUrl
+                sourceNotes
+                notes
+                priority
+                group
+                deleted
+                createdAt
+                categoryId
+            }
+        }
+        """
+
+        let variables: [String: Any] = ["id": id]
+
+        struct Response: Decodable {
+            let deleteWishlistItem: WishlistItem
+        }
+
+        let response: Response = try await api.execute(query: mutation, variables: variables)
+        return response.deleteWishlistItem
     }
 }

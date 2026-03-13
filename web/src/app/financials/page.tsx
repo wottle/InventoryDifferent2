@@ -54,6 +54,7 @@ function valueColorClass(value: number | null | undefined) {
 function formatDate(dateString: string | null | undefined) {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("en-US", {
+    timeZone: "UTC",
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -113,7 +114,7 @@ export default function FinancialsPage() {
     const chartDataPoints = withCum
       .filter((t: any) => t._ms !== null)
       .map((t: any) => ({
-        date: new Date(t.date).toLocaleDateString("en-US", { month: "short", year: "2-digit" }),
+        date: new Date(t.date).toLocaleDateString("en-US", { timeZone: "UTC", month: "short", year: "2-digit" }),
         dateMs: t._ms,
         cash: t.cumulativeCash,
         value: t.cumulativeValue,

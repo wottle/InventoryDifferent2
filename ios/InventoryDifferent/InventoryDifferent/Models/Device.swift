@@ -49,8 +49,8 @@ enum Status: String, Codable, CaseIterable {
         case .PENDING_SALE: return "orange"
         case .SOLD: return "gray"
         case .DONATED: return "purple"
-        case .IN_REPAIR: return "orange"
-        case .RETURNED: return "teal"
+        case .IN_REPAIR: return "teal"
+        case .RETURNED: return "gray"
         }
     }
 }

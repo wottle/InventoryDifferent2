@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { ImageUploader } from "../../../components/ImageUploader";
 import { ImageGallery } from "../../../components/ImageGallery";
 import { ShareModal } from "../../../components/ShareModal";
@@ -12,6 +13,8 @@ import { API_BASE_URL } from "../../../lib/config";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { DeepLinkBanner } from "../../../components/DeepLinkBanner";
 import { useAuth } from "../../../lib/auth-context";
+
+const DeviceValueChart = dynamic(() => import("../../../components/DeviceValueChart"), { ssr: false });
 
 const GET_DEVICE = gql`
   query GetDevice($where: DeviceWhereInput!) {
@@ -94,6 +97,16 @@ const GET_TAGS = gql`
     tags {
       id
       name
+    }
+  }
+`;
+
+const GET_VALUE_HISTORY = gql`
+  query GetValueHistory($deviceId: Int!) {
+    valueHistory(deviceId: $deviceId) {
+      id
+      estimatedValue
+      snapshotDate
     }
   }
 `;
@@ -397,6 +410,10 @@ export default function DeviceDetail() {
 
     const { data: tagsData } = useQuery(GET_TAGS);
     const { data: taskLabelsData } = useQuery(GET_MAINTENANCE_TASK_LABELS);
+    const { data: valueHistoryData } = useQuery(GET_VALUE_HISTORY, {
+        variables: { deviceId: parseInt(id as string) },
+        skip: !id || !isAuthenticated,
+    });
     const [showLabelSuggestions, setShowLabelSuggestions] = useState(false);
 
     const imageCountForNav = (data?.device?.images ?? []).filter((img: any) => !img.isThumbnail).length;
@@ -1114,6 +1131,7 @@ export default function DeviceDetail() {
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs text-[var(--muted-foreground)]">
                                                     {new Date(task.dateCompleted).toLocaleDateString('en-US', {
+                                                        timeZone: 'UTC',
                                                         year: 'numeric',
                                                         month: 'short',
                                                         day: 'numeric'
@@ -1574,6 +1592,7 @@ export default function DeviceDetail() {
                                 <DetailRow
                                     label="Last Used"
                                     value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', {
+                                        timeZone: 'UTC',
                                         year: 'numeric',
                                         month: 'short',
                                         day: 'numeric'
@@ -1626,6 +1645,7 @@ export default function DeviceDetail() {
                                     <DetailRow
                                         label="Date Acquired"
                                         value={new Date(device.dateAcquired).toLocaleDateString('en-US', {
+                                            timeZone: 'UTC',
                                             year: 'numeric',
                                             month: 'short',
                                             day: 'numeric'
@@ -1640,6 +1660,22 @@ export default function DeviceDetail() {
                                     <DetailRow label="Estimated Value" value={`$${Number(device.estimatedValue).toFixed(2)}`} />
                                 )}
                             </dl>
+                        </div>
+                    )}
+
+                    {/* Value History */}
+                    {isAuthenticated && (
+                        <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
+                            <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
+                                Value History
+                            </h2>
+                            <DeviceValueChart
+                                data={(valueHistoryData?.valueHistory ?? []).map((s: any) => ({
+                                    date: new Date(s.snapshotDate).toLocaleDateString("en-US", { timeZone: "UTC", month: "short", year: "2-digit" }),
+                                    dateMs: new Date(s.snapshotDate).getTime(),
+                                    value: s.estimatedValue ?? 0,
+                                }))}
+                            />
                         </div>
                     )}
 
@@ -1660,6 +1696,7 @@ export default function DeviceDetail() {
                                     <DetailRow
                                         label={device.status === "DONATED" ? "Donated Date" : "Sold Date"}
                                         value={new Date(device.soldDate).toLocaleDateString('en-US', {
+                                            timeZone: 'UTC',
                                             year: 'numeric',
                                             month: 'short',
                                             day: 'numeric'

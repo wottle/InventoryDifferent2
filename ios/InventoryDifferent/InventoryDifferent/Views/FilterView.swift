@@ -52,7 +52,7 @@ struct FilterView: View {
                 Section("Other") {
                     Toggle("Favorites Only", isOn: $deviceStore.showFavoritesOnly)
                 }
-                
+
                 Section {
                     Button("Clear All Filters") {
                         deviceStore.clearFilters()

@@ -139,6 +139,10 @@ Key variables (see `.env.example`):
 - Production: `docker-compose.prod.yml` with Traefik reverse proxy
 - NAS deployment: `docker-compose.nas.yml`
 
+### Database Migrations
+
+`api/entrypoint.sh` runs `npx prisma migrate deploy` automatically on every container start. Migrations are applied automatically when redeploying a new image — no manual migration step is needed on the NAS.
+
 See `DEPLOYMENT.md` for detailed deployment instructions.
 
 ## Docker Images
@@ -251,6 +255,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 - Custom field values
 - Last power-on date logging
 - QR/barcode deep-link generation
+- Value history chart (auth-gated; renders when ≥ 2 snapshots exist)
 
 **Device create/edit** (`/devices/new`, `/devices/[id]/edit`):
 - Full form covering all device fields
@@ -271,24 +276,29 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Trash** (`/trash`): view soft-deleted devices; restore or permanently delete
 
+**Wishlist** (`/wishlist`): list of desired devices grouped by `group` field; priority badges (High/Medium/Low); per-item fields: name, manufacturer, model, category, target price, source URL/notes, notes; "Acquired" button pre-fills `/devices/new?name=...`; create/edit via inline form; auth-gated
+
 **Stats** (`/stats`): collection composition donut charts (by status, condition, category type); acquisition per year bar chart; release era bar chart; top manufacturers horizontal bar chart; summary cards (total devices, working %, avg estimated value, top category)
 
 **System Usage** (`/usage`): counts of all entity types and total storage used
 
+**Timeline** (`/timeline`): visual timeline of devices by `releaseYear` interspersed with historical Apple/tech milestones; devices shown as highlighted nodes, external events provide context; event data managed via admin CRUD
+
 ### Storefront
 
-- Product grid for FOR_SALE and PENDING_SALE devices
-- Search, filter (status, category), and sort (price, name, year, category, status)
+- Product grid for FOR_SALE, PENDING_SALE, and (via filter) SOLD devices
+- Search, filter (status including SOLD, category), and sort (price, name, year, category, status)
 - Item detail: specs, images, condition, maintenance history, public custom fields, list price or "contact for price"
 - Contact email CTA from env variable
 - Umami analytics events for searches, filter changes, sorts
 - No auth required; sensitive fields (notes, acquisition data) excluded from API responses
+- **Looking For** (`/looking-for`): public page showing wishlist items (name, manufacturer, model, category, year only — NO price/notes/source); grouped by group field; contact CTA
 
 ### iOS App
 
 **Device list**: search, filter (category, status, favorites), sort, pull-to-refresh, barcode scanner, add device
 
-**Device detail** (tabbed): Overview, Specs, Images, Notes, Tasks tabs; favorite toggle; share QR code; edit/delete
+**Device detail** (tabbed): Overview, Specs, Images, Notes, Tasks tabs; favorite toggle; share QR code; edit/delete; value history chart (when ≥ 2 snapshots)
 
 **Image management**: gallery with full-size view, set thumbnail/shop/listing flags, delete with confirmation
 
@@ -300,9 +310,15 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **AI Chat**: natural language queries about inventory via MCP, streaming responses, conversation history
 
+**Timeline**: horizontal scroll view of devices by release year with historical milestones
+
+**Value history chart**: per-device line chart in the Overview tab showing `estimatedValue` snapshots over time; snapshots auto-created on save when value changes (deduplicated)
+
 **Barcode scanner**: live camera preview, QR/barcode detection, serial number lookup, navigate to matched device
 
 **Login**: server URL configuration, password entry, JWT token persistence and refresh
+
+**Wishlist**: list of desired devices grouped by group field, sorted by priority; swipe to delete; tap to edit; "Mark as Acquired" opens AddDeviceView with pre-filled fields
 
 ### MCP Server (AI Integration)
 
@@ -337,13 +353,11 @@ Potential future features, roughly prioritized. These have not been started — 
 
 - **Loan tracking**: mark a device as loaned out to a person with a due-back date; show overdue loans on the inventory page. New `Loan` model (deviceId, borrower, dueDate, returnedDate).
 - **Bulk edit**: select multiple devices on the inventory page and batch-update status, category, or tags.
-- **Wishlist**: a separate status or section for devices you want to acquire; track target price and potential sources.
-- **Storefront "sold" archive**: show SOLD devices on the storefront as a historical gallery rather than hiding them entirely.
+- ~~**Wishlist**: a separate status or section for devices you want to acquire; track target price and potential sources.~~ **Implemented** — see Feature Catalog.
 
 ### Medium Effort
 
 - **Maintenance reminders**: add an optional due date to maintenance tasks; surface overdue/upcoming tasks on the dashboard and iOS home screen.
-- **Value history**: periodically snapshot `estimatedValue` per device so you can chart how valuations change over time. Requires a new `ValueSnapshot` table.
 - **CSV export**: export the current filtered device list as CSV from the web admin (no images, just data).
 - **Duplicate detection**: warn when adding a device whose name + manufacturer closely matches an existing one.
 - **Storefront inquiry form**: replace the contact email CTA with an in-app inquiry form that logs messages to the database.
@@ -352,6 +366,4 @@ Potential future features, roughly prioritized. These have not been started — 
 
 - **Multi-user / roles**: expand auth beyond single-password to named users with viewer vs. editor roles.
 - **Public collection page**: a read-only view of the entire collection (not just for-sale items) for sharing with other collectors.
-- **Insurance report**: generate a printable PDF valuation report grouped by category, with photos, for insurance purposes.
 - **Mobile barcode add**: from the iOS barcode scanner, if no match is found, pre-fill a new device form using the barcode to look up make/model from an external database (e.g., Open Library / Barcode Lookup API).
-- **Collection timeline**: a visual timeline that plots each device by its `releaseYear`, interspersed with significant Apple product launches and broader cultural/historical milestones (e.g. Macintosh 1984, NeXT acquisition, iPod, iPhone). Devices in the collection are highlighted nodes; external events provide historical context. Could live at `/timeline` on web and as a horizontal scroll view on iOS. Historical event data would be a static JSON fixture bundled with the app.

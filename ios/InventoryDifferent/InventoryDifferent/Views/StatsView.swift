@@ -36,10 +36,10 @@ struct StatsView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         summaryCards(stats)
-                        chartSection(title: "By Status", data: stats.byStatus)
+                        horizontalChartSection(title: "By Status", data: stats.byStatus, color: .blue)
                         chartSection(title: "By Condition", data: stats.byFunctionalStatus)
                         chartSection(title: "By Category Type", data: stats.byCategoryType)
-                        chartSection(title: "Acquired Per Year", data: stats.byAcquisitionYear)
+                        horizontalChartSection(title: "Acquired Per Year", data: stats.byAcquisitionYear, color: .blue)
                         chartSection(title: "By Release Era", data: stats.byReleaseDecade)
                         manufacturersSection(stats.topManufacturers)
                     }
@@ -157,6 +157,50 @@ struct StatsView: View {
                         y: .value("Manufacturer", bucket.label)
                     )
                     .foregroundStyle(Color.orange)
+                    .cornerRadius(4)
+                }
+                .chartXAxis {
+                    AxisMarks(values: .automatic) { _ in
+                        AxisGridLine()
+                        AxisValueLabel()
+                            .font(.caption2)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks { _ in
+                        AxisValueLabel()
+                            .font(.caption2)
+                    }
+                }
+                .frame(height: CGFloat(max(200, data.count * 36)))
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+
+    // MARK: - Horizontal Bar (generic)
+
+    private func horizontalChartSection(title: String, data: [StatsBucket], color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            if data.isEmpty {
+                Text("No data")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                Chart(data) { bucket in
+                    BarMark(
+                        x: .value("Count", bucket.count),
+                        y: .value("Label", bucket.label)
+                    )
+                    .foregroundStyle(color)
                     .cornerRadius(4)
                 }
                 .chartXAxis {

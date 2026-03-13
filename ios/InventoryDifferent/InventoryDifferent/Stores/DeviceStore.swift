@@ -208,6 +208,16 @@ class DeviceStore: ObservableObject {
             print("[DeviceStore] Fetched \(fetchedDevices.count) devices")
             devices = fetchedDevices
             print("[DeviceStore] Updated devices array, first device: \(fetchedDevices.first?.name ?? "none")")
+
+            // Sweep cache in background — delete any cached thumbnails no longer in the device list
+            let activeURLs = Set(fetchedDevices.compactMap { device -> URL? in
+                guard let thumbnail = device.thumbnailImage else { return nil }
+                let path = thumbnail.thumbnailPath ?? thumbnail.path
+                return APIService.shared.imageURL(for: path)
+            })
+            Task.detached(priority: .background) {
+                await ImageCacheService.shared.sweepUnused(keeping: activeURLs)
+            }
         } catch {
             print("[DeviceStore] Error loading devices: \(error)")
             self.error = error.localizedDescription

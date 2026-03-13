@@ -28,6 +28,8 @@ struct ContentView: View {
                         StatsView()
                     case .timeline:
                         TimelineView()
+                    case .wishlist:
+                        WishlistView()
                     }
                 }
         }

@@ -223,33 +223,9 @@ struct DeviceRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Thumbnail
-            AsyncImage(url: thumbnailURL) { phase in
-                switch phase {
-                case .empty:
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                        .overlay {
-                            Image(systemName: "photo")
-                                .foregroundColor(.gray)
-                        }
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipped()
-                case .failure:
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                        .overlay {
-                            Image(systemName: "photo")
-                                .foregroundColor(.gray)
-                        }
-                @unknown default:
-                    EmptyView()
-                }
-            }
-            .frame(width: 80, height: 80)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            CachedThumbnailImage(url: thumbnailURL)
+                .frame(width: 80, height: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(alignment: .leading, spacing: 3) {
                 // Name
@@ -388,16 +364,16 @@ struct ValueSaleInfo: View {
             case .IN_REPAIR:
                 Text("In Repair")
                     .font(.caption)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.teal)
             case .RETURNED:
                 if let fee = device.soldPrice, fee > 0 {
                     Text("Returned: \(formatPrice(fee))")
                         .font(.caption)
-                        .foregroundColor(.teal)
+                        .foregroundColor(.red)
                 } else {
                     Text("Returned")
                         .font(.caption)
-                        .foregroundColor(.teal)
+                        .foregroundColor(.red)
                 }
             }
         }
@@ -440,9 +416,9 @@ struct StatusBadge: View {
         case .DONATED:
             return .purple
         case .IN_REPAIR:
-            return .orange
-        case .RETURNED:
             return .teal
+        case .RETURNED:
+            return .red
         }
     }
 }

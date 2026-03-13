@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct ImageIndex: Identifiable {
     let id = UUID()
@@ -138,6 +139,8 @@ struct DeviceDetailView: View {
     @State private var showMarkSoldSheet = false
     @State private var showMarkForSaleSheet = false
     @State private var quickActionSourceTab: Int? = nil
+
+    @State private var valueSnapshots: [ValueSnapshot] = []
     
     init(device: Device, selectedTab: Binding<Int>, onDeviceChanged: ((Device) -> Void)? = nil, onDeviceDeleted: (() -> Void)? = nil) {
         self.deviceId = device.id
@@ -355,8 +358,15 @@ struct DeviceDetailView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 8)
         }
+        .task {
+            if authService.isAuthenticated {
+                if let snapshots = try? await DeviceService.shared.fetchValueHistory(deviceId: device.id) {
+                    valueSnapshots = snapshots
+                }
+            }
+        }
     }
-    
+
     // MARK: - Quick Actions
 
     private var quickActionsRow: some View {
@@ -793,7 +803,11 @@ struct DeviceDetailView: View {
                 DetailRow(label: "Price Acquired", value: formatCurrency(device.priceAcquired))
                 DetailRow(label: "Estimated Value", value: formatCurrency(device.estimatedValue))
             }
-            
+
+            if authService.isAuthenticated && valueSnapshots.count >= 2 {
+                ValueHistorySection(snapshots: valueSnapshots)
+            }
+
             // Sales Info (if applicable)
             if device.status == .FOR_SALE || device.status == .PENDING_SALE || device.status == .SOLD {
                 DetailSection(title: "Sales") {
@@ -1199,6 +1213,11 @@ struct DeviceDetailView: View {
     
     private func setThumbnail(_ image: DeviceImage) async {
         do {
+            // Capture displaced thumbnail URL for cache eviction
+            let displacedThumbnailURL: URL? = images
+                .first(where: { $0.isThumbnail && $0.id != image.id })
+                .flatMap { APIService.shared.imageURL(for: $0.thumbnailPath ?? $0.path) }
+
             // First, unset any existing thumbnail
             if let currentThumbnail = images.first(where: { $0.isThumbnail && $0.id != image.id }) {
                 _ = try await DeviceService.shared.updateImage(
@@ -1208,7 +1227,7 @@ struct DeviceDetailView: View {
                     isListingImage: nil
                 )
             }
-            
+
             // Set this image as thumbnail
             let updatedImage = try await DeviceService.shared.updateImage(
                 id: image.id,
@@ -1216,11 +1235,16 @@ struct DeviceDetailView: View {
                 isShopImage: nil,
                 isListingImage: nil
             )
-            
+
             if let index = images.firstIndex(where: { $0.id == image.id }) {
                 images[index] = updatedImage
             }
-            
+
+            // Evict the old thumbnail from cache so it doesn't linger on disk
+            if let url = displacedThumbnailURL {
+                await ImageCacheService.shared.removeImage(for: url)
+            }
+
             await refreshDevice()
         } catch {
             print("Failed to set thumbnail: \(error)")
@@ -1683,6 +1707,73 @@ private struct MarkForSaleSheet: View {
                 }
             }
         }
+    }
+}
+
+struct ValueHistorySection: View {
+    let snapshots: [ValueSnapshot]
+
+    private var isoFormatter: ISO8601DateFormatter {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }
+
+    private var isoBasicFormatter: ISO8601DateFormatter {
+        ISO8601DateFormatter()
+    }
+
+    private func parseDate(_ string: String) -> Date? {
+        isoFormatter.date(from: string) ?? isoBasicFormatter.date(from: string)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Value History")
+                .font(.headline)
+                .padding(.bottom, 2)
+
+            Chart {
+                ForEach(snapshots) { snapshot in
+                    if let date = parseDate(snapshot.snapshotDate), let value = snapshot.estimatedValue {
+                        LineMark(
+                            x: .value("Date", date),
+                            y: .value("Value", value)
+                        )
+                        .interpolationMethod(.monotone)
+                        .foregroundStyle(Color.green)
+
+                        PointMark(
+                            x: .value("Date", date),
+                            y: .value("Value", value)
+                        )
+                        .foregroundStyle(Color.green)
+                    }
+                }
+            }
+            .chartXAxis {
+                AxisMarks(values: .automatic) { _ in
+                    AxisValueLabel(format: .dateTime.month(.abbreviated).year(.twoDigits))
+                        .foregroundStyle(Color.secondary)
+                    AxisGridLine()
+                }
+            }
+            .chartYAxis {
+                AxisMarks { value in
+                    if let v = value.as(Double.self) {
+                        AxisValueLabel {
+                            Text(v >= 1000 ? "$\(String(format: "%.1f", v / 1000))k" : "$\(String(format: "%.0f", v))")
+                                .font(.caption)
+                        }
+                        AxisGridLine()
+                    }
+                }
+            }
+            .frame(height: 180)
+        }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(12)
     }
 }
 

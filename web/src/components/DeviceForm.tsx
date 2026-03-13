@@ -187,9 +187,27 @@ interface DeviceData {
     }[];
 }
 
+interface DevicePrefill {
+    name?: string;
+    additionalName?: string;
+    manufacturer?: string;
+    modelNumber?: string;
+    releaseYear?: number;
+    categoryId?: number;
+    cpu?: string;
+    ram?: string;
+    graphics?: string;
+    storage?: string;
+    operatingSystem?: string;
+    externalUrl?: string;
+    isWifiEnabled?: boolean;
+    isPramBatteryRemoved?: boolean;
+}
+
 interface DeviceFormProps {
     device?: DeviceData;
     mode: "create" | "edit";
+    prefill?: DevicePrefill;
 }
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
@@ -221,7 +239,7 @@ const getLocalDateInputValue = () => {
     return new Date(d.getTime() - tzOffsetMs).toISOString().slice(0, 10);
 };
 
-export function DeviceForm({ device, mode }: DeviceFormProps) {
+export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
     const router = useRouter();
     const { data: categoriesData } = useQuery(GET_CATEGORIES);
     const { data: templatesData } = useQuery(GET_TEMPLATES);
@@ -235,17 +253,17 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
     const [barcodeSupported, setBarcodeSupported] = useState(false);
 
     const [formData, setFormData] = useState({
-        name: "",
-        additionalName: "",
-        manufacturer: "",
-        modelNumber: "",
+        name: prefill?.name ?? "",
+        additionalName: prefill?.additionalName ?? "",
+        manufacturer: prefill?.manufacturer ?? "",
+        modelNumber: prefill?.modelNumber ?? "",
         serialNumber: "",
-        releaseYear: new Date().getFullYear(),
+        releaseYear: prefill?.releaseYear ?? new Date().getFullYear(),
         location: "",
-        categoryId: 0,
+        categoryId: prefill?.categoryId ?? 0,
         info: "",
         isFavorite: false,
-        externalUrl: "",
+        externalUrl: prefill?.externalUrl ?? "",
         status: "AVAILABLE",
         functionalStatus: "YES",
         hasOriginalBox: false,
@@ -257,13 +275,13 @@ export function DeviceForm({ device, mode }: DeviceFormProps) {
         listPrice: "",
         soldPrice: "",
         soldDate: "",
-        cpu: "",
-        ram: "",
-        graphics: "",
-        storage: "",
-        operatingSystem: "",
-        isWifiEnabled: false,
-        isPramBatteryRemoved: false,
+        cpu: prefill?.cpu ?? "",
+        ram: prefill?.ram ?? "",
+        graphics: prefill?.graphics ?? "",
+        storage: prefill?.storage ?? "",
+        operatingSystem: prefill?.operatingSystem ?? "",
+        isWifiEnabled: prefill?.isWifiEnabled ?? false,
+        isPramBatteryRemoved: prefill?.isPramBatteryRemoved ?? false,
         lastPowerOnDate: "",
     });
 

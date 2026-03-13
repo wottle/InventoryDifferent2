@@ -10,7 +10,24 @@ import SwiftUI
 struct AddDeviceView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var deviceStore: DeviceStore
-    
+
+    // Optional prefill values (from wishlist "Mark as Acquired")
+    var prefillName: String?
+    var prefillAdditionalName: String?
+    var prefillManufacturer: String?
+    var prefillModelNumber: String?
+    var prefillReleaseYear: Int?
+    var prefillCategoryId: Int?
+    var prefillCpu: String?
+    var prefillRam: String?
+    var prefillGraphics: String?
+    var prefillStorage: String?
+    var prefillOperatingSystem: String?
+    var prefillExternalUrl: String?
+    var prefillIsWifiEnabled: Bool?
+    var prefillIsPramBatteryRemoved: Bool?
+    var prefillEstimatedValue: Double?
+
     @State private var name = ""
     @State private var additionalName = ""
     @State private var manufacturer = ""
@@ -102,6 +119,22 @@ struct AddDeviceView: View {
             .task {
                 await loadCategories()
                 await loadTemplates()
+                // Apply prefill values from wishlist "Mark as Acquired"
+                if let v = prefillName, !v.isEmpty { name = v }
+                if let v = prefillAdditionalName, !v.isEmpty { additionalName = v }
+                if let v = prefillManufacturer, !v.isEmpty { manufacturer = v }
+                if let v = prefillModelNumber, !v.isEmpty { modelNumber = v }
+                if let v = prefillReleaseYear { releaseYear = String(v) }
+                if let v = prefillCategoryId { selectedCategoryId = v }
+                if let v = prefillCpu, !v.isEmpty { cpu = v }
+                if let v = prefillRam, !v.isEmpty { ram = v }
+                if let v = prefillGraphics, !v.isEmpty { graphics = v }
+                if let v = prefillStorage, !v.isEmpty { storage = v }
+                if let v = prefillOperatingSystem, !v.isEmpty { operatingSystem = v }
+                if let v = prefillExternalUrl, !v.isEmpty { externalUrl = v }
+                if let v = prefillIsWifiEnabled { isWifiEnabled = v }
+                if let v = prefillIsPramBatteryRemoved { isPramBatteryRemoved = v }
+                if let v = prefillEstimatedValue { estimatedValue = String(format: "%.2f", v) }
             }
         }
     }

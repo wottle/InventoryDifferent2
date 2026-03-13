@@ -36,3 +36,9 @@ struct FinancialData: Codable {
     let financialOverview: FinancialOverview
     let financialTransactions: [FinancialTransaction]
 }
+
+struct ValueSnapshot: Codable, Identifiable {
+    let id: Int
+    let estimatedValue: Double?
+    let snapshotDate: String
+}

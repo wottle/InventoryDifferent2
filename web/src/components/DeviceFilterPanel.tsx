@@ -18,7 +18,8 @@ interface DeviceFilterPanelProps {
   onFiltersChange: (filters: FilterState) => void;
   categories: Array<{ id: number; name: string; type: string }>;
   sortColumn: SortColumn;
-  onSortChange: (column: SortColumn) => void;
+  sortDirection: 'asc' | 'desc';
+  onSortChange: (column: SortColumn, direction: 'asc' | 'desc') => void;
 }
 
 export function DeviceFilterPanel({
@@ -28,16 +29,19 @@ export function DeviceFilterPanel({
   onFiltersChange,
   categories,
   sortColumn,
+  sortDirection,
   onSortChange,
 }: DeviceFilterPanelProps) {
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
   const [localSortColumn, setLocalSortColumn] = useState<SortColumn>(sortColumn);
+  const [localSortDirection, setLocalSortDirection] = useState<'asc' | 'desc'>(sortDirection);
 
   useEffect(() => {
     if (!isOpen) return;
     setLocalFilters(filters);
     setLocalSortColumn(sortColumn);
-  }, [filters, sortColumn, isOpen]);
+    setLocalSortDirection(sortDirection);
+  }, [filters, sortColumn, sortDirection, isOpen]);
 
   const sortOptions = [
     { value: 'category', label: 'Category' },
@@ -86,7 +90,7 @@ export function DeviceFilterPanel({
 
   const handleApply = () => {
     onFiltersChange(localFilters);
-    onSortChange(localSortColumn);
+    onSortChange(localSortColumn, localSortDirection);
     onClose();
   };
 
@@ -175,7 +179,7 @@ export function DeviceFilterPanel({
           </div>
 
           {/* Sort By */}
-          <div className="mb-6">
+          <div className="mb-4">
             <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Sort By</h3>
             <select
               value={localSortColumn}
@@ -188,6 +192,22 @@ export function DeviceFilterPanel({
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Sort Order */}
+          <div className="mb-6 flex gap-2">
+            <button
+              onClick={() => setLocalSortDirection('asc')}
+              className={`flex-1 py-1.5 text-sm rounded border transition-colors ${localSortDirection === 'asc' ? 'bg-[var(--apple-blue)] text-white border-[#007acc]' : 'btn-retro text-[var(--foreground)]'}`}
+            >
+              ↑ Ascending
+            </button>
+            <button
+              onClick={() => setLocalSortDirection('desc')}
+              className={`flex-1 py-1.5 text-sm rounded border transition-colors ${localSortDirection === 'desc' ? 'bg-[var(--apple-blue)] text-white border-[#007acc]' : 'btn-retro text-[var(--foreground)]'}`}
+            >
+              ↓ Descending
+            </button>
           </div>
 
           {/* Action Buttons */}

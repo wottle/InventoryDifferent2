@@ -285,8 +285,8 @@ export function DeviceCard({ device }: DeviceCardProps) {
                             device.status === "PENDING_SALE" ? "text-yellow-500" :
                             device.status === "FOR_SALE" ? "text-orange-500" :
                             device.status === "DONATED" ? "text-purple-500" :
-                            device.status === "IN_REPAIR" ? "text-amber-500" :
-                            device.status === "RETURNED" ? "text-teal-500" :
+                            device.status === "IN_REPAIR" ? "text-teal-500" :
+                            device.status === "RETURNED" ? "text-red-500" :
                             "text-[var(--muted-foreground)]"
                         }`}
                     >

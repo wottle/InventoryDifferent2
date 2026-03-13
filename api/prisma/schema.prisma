@@ -59,6 +59,7 @@ model Device {
   maintenanceTasks    MaintenanceTask[]
   tags                Tag[]
   customFieldValues   CustomFieldValue[]
+  valueSnapshots      ValueSnapshot[]
 }
 
 model Category {
@@ -66,9 +67,38 @@ model Category {
   name    String   @unique
   type    CategoryType
   sortOrder Int    @default(0)
-  
+
   devices Device[]
   templates Template[]
+  wishlistItems WishlistItem[]
+}
+
+model WishlistItem {
+  id                   Int       @id @default(autoincrement())
+  name                 String
+  additionalName       String?
+  manufacturer         String?
+  modelNumber          String?
+  releaseYear          Int?
+  targetPrice          Decimal?  @db.Decimal(10, 2)
+  sourceUrl            String?
+  sourceNotes          String?
+  notes                String?   @db.Text
+  priority             Int       @default(2)
+  group                String?
+  deleted              Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  // Spec fields (populated via template or manually)
+  cpu                  String?
+  ram                  String?
+  graphics             String?
+  storage              String?
+  operatingSystem      String?
+  externalUrl          String?
+  isWifiEnabled        Boolean?
+  isPramBatteryRemoved Boolean?
+  category             Category? @relation(fields: [categoryId], references: [id])
+  categoryId           Int?
 }
 
 model Image {
@@ -150,6 +180,16 @@ model CustomFieldValue {
   value         String
 
   @@unique([customFieldId, deviceId])
+}
+
+model ValueSnapshot {
+  id             Int      @id @default(autoincrement())
+  deviceId       Int
+  device         Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  estimatedValue Decimal? @db.Decimal(10, 2)
+  snapshotDate   DateTime @default(now())
+
+  @@index([deviceId])
 }
 
 model TimelineEvent {

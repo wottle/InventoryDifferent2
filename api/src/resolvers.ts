@@ -528,6 +528,38 @@ export const resolvers = {
                 orderBy: [{ year: 'asc' }, { sortOrder: 'asc' }],
             });
         },
+        wishlistItems: async (_parent: any, args: any, context: Context) => {
+            // Non-deleted wishlist items are publicly readable (storefront "Looking For" page)
+            // Private fields (targetPrice, sourceUrl, sourceNotes, notes) are only visible when authenticated
+            const deletedFilter = args.where?.deleted !== undefined ? args.where.deleted : false;
+            const items = await (context.prisma as any).wishlistItem.findMany({
+                where: { deleted: deletedFilter },
+                include: { category: true },
+                orderBy: [{ priority: 'asc' }, { name: 'asc' }],
+            });
+            return items.map((item: any) => {
+                const mapped = {
+                    ...item,
+                    targetPrice: item.targetPrice ? decimalToNumber(item.targetPrice) : null,
+                    createdAt: item.createdAt.toISOString(),
+                };
+                // Hide private fields from unauthenticated users
+                if (!context.isAuthenticated) {
+                    mapped.targetPrice = null;
+                    mapped.sourceUrl = null;
+                    mapped.sourceNotes = null;
+                    mapped.notes = null;
+                }
+                return mapped;
+            });
+        },
+        valueHistory: async (_parent: any, args: { deviceId: number }, context: Context) => {
+            requireAuth(context);
+            return context.prisma.valueSnapshot.findMany({
+                where: { deviceId: args.deviceId },
+                orderBy: { snapshotDate: 'asc' },
+            });
+        },
         collectionStats: async (_parent: any, _args: any, context: Context) => {
             requireAuth(context);
 
@@ -539,6 +571,8 @@ export const resolvers = {
                 PENDING_SALE: 'Pending Sale',
                 SOLD: 'Sold',
                 DONATED: 'Donated',
+                IN_REPAIR: 'In Repair',
+                RETURNED: 'Returned',
             };
             const functionalLabels: Record<string, string> = {
                 YES: 'Working',
@@ -647,6 +681,62 @@ export const resolvers = {
         },
     },
     Mutation: {
+        createWishlistItem: async (_parent: any, args: { data: any }, context: Context) => {
+            requireAuth(context);
+            const item = await (context.prisma as any).wishlistItem.create({
+                data: { ...args.data },
+                include: { category: true },
+            });
+            return {
+                ...item,
+                targetPrice: item.targetPrice ? decimalToNumber(item.targetPrice) : null,
+                createdAt: item.createdAt.toISOString(),
+            };
+        },
+        updateWishlistItem: async (_parent: any, args: { id: string; data: any }, context: Context) => {
+            requireAuth(context);
+            const id = parseInt(args.id, 10);
+            const cleanData = Object.fromEntries(Object.entries(args.data).filter(([_, v]) => v !== undefined));
+            const item = await (context.prisma as any).wishlistItem.update({
+                where: { id },
+                data: cleanData,
+                include: { category: true },
+            });
+            return {
+                ...item,
+                targetPrice: item.targetPrice ? decimalToNumber(item.targetPrice) : null,
+                createdAt: item.createdAt.toISOString(),
+            };
+        },
+        deleteWishlistItem: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            const id = parseInt(args.id, 10);
+            const item = await (context.prisma as any).wishlistItem.update({
+                where: { id },
+                data: { deleted: true },
+                include: { category: true },
+            });
+            return {
+                ...item,
+                targetPrice: item.targetPrice ? decimalToNumber(item.targetPrice) : null,
+                createdAt: item.createdAt.toISOString(),
+            };
+        },
+        permanentlyDeleteWishlistItem: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            const id = parseInt(args.id, 10);
+            const item = await (context.prisma as any).wishlistItem.findUnique({
+                where: { id },
+                include: { category: true },
+            });
+            if (!item) throw new Error('WishlistItem not found');
+            await (context.prisma as any).wishlistItem.delete({ where: { id } });
+            return {
+                ...item,
+                targetPrice: item.targetPrice ? decimalToNumber(item.targetPrice) : null,
+                createdAt: item.createdAt.toISOString(),
+            };
+        },
         createCategory: async (
             _parent: any,
             args: { name: string; type: any; sortOrder?: number | null },
@@ -773,6 +863,22 @@ export const resolvers = {
                 data: cleanData,
                 include: DEVICE_INCLUDE,
             });
+
+            // Create value snapshot if estimatedValue was changed
+            if (cleanData.estimatedValue !== undefined) {
+                const lastSnapshot = await context.prisma.valueSnapshot.findFirst({
+                    where: { deviceId: device.id },
+                    orderBy: { snapshotDate: 'desc' },
+                });
+                const newValue = device.estimatedValue ? Number(device.estimatedValue) : null;
+                const lastValue = lastSnapshot?.estimatedValue ? Number(lastSnapshot.estimatedValue) : null;
+                if (newValue !== lastValue) {
+                    await context.prisma.valueSnapshot.create({
+                        data: { deviceId: device.id, estimatedValue: device.estimatedValue },
+                    });
+                }
+            }
+
             return mapCustomFieldValues(device);
         },
         deleteDevice: async (_parent: any, args: { id: number }, context: Context) => {

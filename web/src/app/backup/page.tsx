@@ -97,6 +97,7 @@ export default function ExportPage() {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortColumn, setSortColumn] = useState<SortColumn>('category');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<Set<number>>(new Set());
   const [includeImages, setIncludeImages] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
@@ -694,7 +695,8 @@ export default function ExportPage() {
         onFiltersChange={setFilters}
         categories={categories}
         sortColumn={sortColumn}
-        onSortChange={setSortColumn}
+        sortDirection={sortDirection}
+        onSortChange={(col, dir) => { setSortColumn(col); setSortDirection(dir); }}
       />
     </div>
   );

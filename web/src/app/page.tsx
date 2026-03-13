@@ -268,6 +268,10 @@ export default function Home() {
     if (savedSort && ['category', 'name', 'manufacturer', 'releaseYear', 'dateAcquired', 'estimatedValue', 'location', 'available', 'status'].includes(savedSort)) {
       setSortColumnState(savedSort as SortColumn);
     }
+    const savedDir = localStorage.getItem('inventory-sort-direction');
+    if (savedDir === 'asc' || savedDir === 'desc') {
+      setSortDirectionState(savedDir);
+    }
   }, []);
 
   useEffect(() => {
@@ -284,16 +288,20 @@ export default function Home() {
   // Wrapper function to update sort and persist to localStorage
   const handleSortChange = (column: SortColumn, direction?: 'asc' | 'desc') => {
     if (direction !== undefined) {
-      // Direction explicitly provided (from table column click)
+      // Direction explicitly provided (from filter panel or table header click)
       setSortColumnState(column);
       setSortDirectionState(direction);
+      localStorage.setItem('inventory-sort-direction', direction);
     } else {
-      // Toggle direction if same column, otherwise default to asc
+      // No direction: toggle if same column, default to asc for new column
       if (column === sortColumn) {
-        setSortDirectionState(sortDirection === 'asc' ? 'desc' : 'asc');
+        const next = sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortDirectionState(next);
+        localStorage.setItem('inventory-sort-direction', next);
       } else {
         setSortColumnState(column);
         setSortDirectionState('asc');
+        localStorage.setItem('inventory-sort-direction', 'asc');
       }
     }
     localStorage.setItem('inventory-sort-column', column);
@@ -488,6 +496,13 @@ export default function Home() {
                 {isAuthenticated && (
                   <>
                     <Link
+                      href="/wishlist"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
+                    >
+                      Wishlist
+                    </Link>
+                    <Link
                       href="/financials"
                       onClick={() => setMenuOpen(false)}
                       className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
@@ -654,6 +669,7 @@ export default function Home() {
         onFiltersChange={setFilters}
         categories={categoriesData?.categories || []}
         sortColumn={sortColumn}
+        sortDirection={sortDirection}
         onSortChange={handleSortChange}
       />
     </div>

@@ -274,10 +274,18 @@ export default function ShopHome({ contactEmail }: ShopHomeProps) {
               </div>
             </div>
 
-            <StatusFilter
-              selectedStatuses={selectedStatuses}
-              onStatusChange={setSelectedStatuses}
-            />
+            <div className="flex items-center gap-3">
+              <a
+                href="/looking-for"
+                className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+              >
+                Looking For
+              </a>
+              <StatusFilter
+                selectedStatuses={selectedStatuses}
+                onStatusChange={setSelectedStatuses}
+              />
+            </div>
           </div>
         </div>
       </header>

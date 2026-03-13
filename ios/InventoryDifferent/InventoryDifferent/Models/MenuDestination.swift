@@ -12,4 +12,5 @@ enum MenuDestination: Hashable {
     case chat
     case stats
     case timeline
+    case wishlist
 }

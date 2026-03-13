@@ -20,6 +20,20 @@ struct MenuView: View {
             // Only show Financials if authenticated
             if authService.isAuthenticated {
                 MenuButton(
+                    icon: "star",
+                    title: "Wishlist",
+                    color: .yellow
+                ) {
+                    showingMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        navigationPath.append(MenuDestination.wishlist)
+                    }
+                }
+
+                Divider()
+                    .padding(.leading, 44)
+
+                MenuButton(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "Financials",
                     color: .green

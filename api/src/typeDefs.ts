@@ -179,6 +179,13 @@ export const typeDefs = gql`
     totalStorageBytes: Float!
   }
 
+  type ValueSnapshot {
+    id: Int!
+    deviceId: Int!
+    estimatedValue: Float
+    snapshotDate: DateTime!
+  }
+
   type TimelineEvent {
     id:          Int!
     year:        Int!
@@ -186,6 +193,83 @@ export const typeDefs = gql`
     description: String!
     type:        String!
     sortOrder:   Int!
+  }
+
+  type WishlistItem {
+    id: Int!
+    name: String!
+    additionalName: String
+    manufacturer: String
+    modelNumber: String
+    releaseYear: Int
+    targetPrice: Float
+    sourceUrl: String
+    sourceNotes: String
+    notes: String
+    priority: Int!
+    group: String
+    deleted: Boolean!
+    createdAt: String!
+    cpu: String
+    ram: String
+    graphics: String
+    storage: String
+    operatingSystem: String
+    externalUrl: String
+    isWifiEnabled: Boolean
+    isPramBatteryRemoved: Boolean
+    category: Category
+    categoryId: Int
+  }
+
+  input WishlistItemWhereInput {
+    deleted: Boolean
+  }
+
+  input WishlistItemCreateInput {
+    name: String!
+    additionalName: String
+    manufacturer: String
+    modelNumber: String
+    releaseYear: Int
+    targetPrice: Float
+    sourceUrl: String
+    sourceNotes: String
+    notes: String
+    priority: Int
+    group: String
+    categoryId: Int
+    cpu: String
+    ram: String
+    graphics: String
+    storage: String
+    operatingSystem: String
+    externalUrl: String
+    isWifiEnabled: Boolean
+    isPramBatteryRemoved: Boolean
+  }
+
+  input WishlistItemUpdateInput {
+    name: String
+    additionalName: String
+    manufacturer: String
+    modelNumber: String
+    releaseYear: Int
+    targetPrice: Float
+    sourceUrl: String
+    sourceNotes: String
+    notes: String
+    priority: Int
+    group: String
+    categoryId: Int
+    cpu: String
+    ram: String
+    graphics: String
+    storage: String
+    operatingSystem: String
+    externalUrl: String
+    isWifiEnabled: Boolean
+    isPramBatteryRemoved: Boolean
   }
 
   type StatsBucket {
@@ -256,6 +340,8 @@ export const typeDefs = gql`
     customFields: [CustomField!]!
     collectionStats: CollectionStats!
     timelineEvents: [TimelineEvent!]!
+    valueHistory(deviceId: Int!): [ValueSnapshot!]!
+    wishlistItems(where: WishlistItemWhereInput): [WishlistItem!]!
   }
 
   input DeviceCreateInput {
@@ -445,6 +531,10 @@ export const typeDefs = gql`
   }
 
   type Mutation {
+    createWishlistItem(data: WishlistItemCreateInput!): WishlistItem!
+    updateWishlistItem(id: Int!, data: WishlistItemUpdateInput!): WishlistItem!
+    deleteWishlistItem(id: Int!): WishlistItem!
+    permanentlyDeleteWishlistItem(id: Int!): WishlistItem!
     createCategory(name: String!, type: String!, sortOrder: Int): Category!
     updateCategory(id: Int!, name: String, type: String, sortOrder: Int): Category!
     createTemplate(input: TemplateCreateInput!): Template!

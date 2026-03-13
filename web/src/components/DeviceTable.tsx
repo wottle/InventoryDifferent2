@@ -15,6 +15,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
+      timeZone: 'UTC',
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -264,13 +265,13 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         );
       case 'IN_REPAIR':
         return (
-          <span className="text-amber-600 dark:text-amber-400 font-medium text-xs">
+          <span className="text-teal-600 dark:text-teal-400 font-medium text-xs">
             In Repair
           </span>
         );
       case 'RETURNED':
         return (
-          <span className="text-teal-600 dark:text-teal-400 font-medium text-xs">
+          <span className="text-red-600 dark:text-red-400 font-medium text-xs">
             Returned
           </span>
         );
