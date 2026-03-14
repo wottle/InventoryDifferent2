@@ -59,7 +59,7 @@ const TOOLS = [
         },
         status: {
           type: "string",
-          enum: ["AVAILABLE", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED"],
+          enum: ["AVAILABLE", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED", "IN_REPAIR", "RETURNED"],
           description: "Filter by device status",
         },
         functionalStatus: {
@@ -116,6 +116,27 @@ const TOOLS = [
     },
   },
   {
+    name: "list_all_devices",
+    description:
+      "Returns a compact summary of every device in the collection for whole-collection reasoning. Optimized to fit 300+ devices in a single context window. Use this for questions like 'what fills gaps in my collection?', 'what's my best machine for Mac OS 8?', 'do I have any PowerPC Macs?', or any query that requires surveying the whole inventory. Each device is returned with just the fields needed for collection reasoning: identity, specs, status, and category.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        inPossessionOnly: {
+          type: "boolean",
+          description:
+            "If true (default), only return devices currently in possession (AVAILABLE, FOR_SALE, PENDING_SALE, IN_REPAIR, RETURNED). Set to false to include SOLD and DONATED devices.",
+        },
+        categoryType: {
+          type: "string",
+          enum: ["COMPUTER", "PERIPHERAL", "ACCESSORY", "OTHER"],
+          description:
+            "Optional: filter to a specific category type (e.g. COMPUTER for spec-related queries).",
+        },
+      },
+    },
+  },
+  {
     name: "list_devices",
     description:
       "List all devices with flexible field selection. Use this when you need to retrieve specific fields that aren't available in search_devices, or when you need to manually sort/filter results by fields not supported by search_devices sorting.",
@@ -124,7 +145,7 @@ const TOOLS = [
       properties: {
         status: {
           type: "string",
-          enum: ["AVAILABLE", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED"],
+          enum: ["AVAILABLE", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED", "IN_REPAIR", "RETURNED"],
           description: "Filter by device status",
         },
         functionalStatus: {
@@ -456,6 +477,75 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "list_all_devices": {
+        const IN_POSSESSION_STATUSES = ['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'IN_REPAIR', 'RETURNED'];
+
+        const where: any = { deleted: false };
+        if (args?.inPossessionOnly !== false) {
+          where.status = { in: IN_POSSESSION_STATUSES };
+        }
+        if (args?.categoryType) {
+          where.category = { type: args.categoryType };
+        }
+
+        const devices = await prisma.device.findMany({
+          where,
+          select: {
+            id: true,
+            name: true,
+            additionalName: true,
+            manufacturer: true,
+            modelNumber: true,
+            releaseYear: true,
+            status: true,
+            functionalStatus: true,
+            cpu: true,
+            ram: true,
+            storage: true,
+            operatingSystem: true,
+            estimatedValue: true,
+            category: { select: { name: true, type: true } },
+            tags: { select: { name: true } },
+          },
+          orderBy: [
+            { category: { sortOrder: 'asc' } },
+            { releaseYear: 'asc' },
+            { name: 'asc' },
+          ],
+        });
+
+        const summary = {
+          totalCount: devices.length,
+          inPossessionOnly: args?.inPossessionOnly !== false,
+          devices: devices.map(d => ({
+            id: d.id,
+            name: d.additionalName ? `${d.name} ${d.additionalName}` : d.name,
+            manufacturer: d.manufacturer,
+            model: d.modelNumber,
+            year: d.releaseYear,
+            status: d.status,
+            condition: d.functionalStatus,
+            category: d.category?.name,
+            categoryType: d.category?.type,
+            cpu: d.cpu,
+            ram: d.ram,
+            storage: d.storage,
+            os: d.operatingSystem,
+            estimatedValue: d.estimatedValue ? Number(d.estimatedValue) : null,
+            tags: d.tags.length > 0 ? d.tags.map(t => t.name) : undefined,
+          })),
+        };
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(summary, null, 0),
             },
           ],
         };
