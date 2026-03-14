@@ -59,9 +59,11 @@ VINTAGE COMPUTING KNOWLEDGE:
 
 TOOL USAGE:
 - For financial questions, use the get_financial_summary tool
-- For searching devices, use the search_devices tool with appropriate filters
-- For detailed information about a specific device, use the get_device_details tool
-- Unless specifically noted, exclude sold items from results when being assked about the collction
+- For whole-collection questions ("what fills gaps?", "best machine for X?", "do I have any Y?"), use list_all_devices — it returns every device compactly
+- For targeted searches with text or filters, use search_devices
+- For detailed information about a specific device, use get_device_details
+- For financial questions, use get_financial_summary
+- Unless specifically noted, exclude sold items from results when being asked about the collection
 
 DEVICE IDENTIFICATION:
 - ALWAYS include the additionalName field when referencing devices, as there are duplicates and the additionalName differentiates them
@@ -87,7 +89,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
         description: 'Search the vintage computer collection. Can filter by text query, status, category type, functional status, manufacturer, and tags. Can sort results by various fields.',
         parameters: z.object({
           query: z.string().optional().describe('Text to search for in device name, manufacturer, model, CPU, info, notes, and tags'),
-          status: z.enum(['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED']).optional().describe('Filter by device status'),
+          status: z.enum(['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED']).optional().describe('Filter by device status'),
           functionalStatus: z.enum(['YES', 'PARTIAL', 'NO']).optional().describe('Filter by whether the device is functional'),
           categoryType: z.enum(['COMPUTER', 'PERIPHERAL', 'ACCESSORY', 'OTHER']).optional().describe('Filter by category type'),
           manufacturer: z.string().optional().describe('Filter by manufacturer name (partial match)'),
@@ -385,7 +387,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
       list_devices: tool({
         description: 'List all devices with flexible field selection. Use this when you need specific fields not available in search_devices, or when you need to manually sort/filter by fields not supported by search_devices sorting (e.g., hasOriginalBox, isPramBatteryRemoved, etc.).',
         parameters: z.object({
-          status: z.enum(['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED']).optional().describe('Filter by device status'),
+          status: z.enum(['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED']).optional().describe('Filter by device status'),
           functionalStatus: z.enum(['YES', 'PARTIAL', 'NO']).optional().describe('Filter by whether the device is functional'),
           categoryType: z.enum(['COMPUTER', 'PERIPHERAL', 'ACCESSORY', 'OTHER']).optional().describe('Filter by category type'),
           fields: z.array(z.string()).optional().describe('Array of field names to include. Available: id, name, additionalName, manufacturer, modelNumber, serialNumber, releaseYear, location, info, isFavorite, status, functionalStatus, hasOriginalBox, isAssetTagged, dateAcquired, whereAcquired, priceAcquired, estimatedValue, listPrice, soldPrice, soldDate, cpu, ram, graphics, storage, operatingSystem, isWifiEnabled, isPramBatteryRemoved, lastPowerOnDate, externalUrl, category, tags, notes, maintenanceTasks'),
@@ -507,6 +509,84 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
         },
       }),
 
+      list_all_devices: tool({
+        description: 'Returns a compact summary of every device in the collection for whole-collection reasoning. Use this for questions like "what fills gaps in my collection?", "what\'s my best machine for Mac OS 8?", "do I have any PowerPC Macs?", or any query requiring the full inventory. Returns id, name, specs, status, category, and tags for each device.',
+        parameters: z.object({
+          inPossessionOnly: z.boolean().optional().describe('If true (default), only return devices currently in possession (AVAILABLE, FOR_SALE, PENDING_SALE, IN_REPAIR, RETURNED). Set to false to include SOLD and DONATED.'),
+          categoryType: z.enum(['COMPUTER', 'PERIPHERAL', 'ACCESSORY', 'OTHER']).optional().describe('Filter to a specific category type.'),
+        }),
+        execute: async (params) => {
+          try {
+            const IN_POSSESSION_STATUSES = ['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'IN_REPAIR', 'RETURNED'];
+            const statusFilter = params.inPossessionOnly !== false
+              ? { status: { in: IN_POSSESSION_STATUSES } }
+              : {};
+
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                query: `
+                  query ListAllDevices($where: DeviceWhereInput) {
+                    devices(where: $where) {
+                      id
+                      name
+                      additionalName
+                      manufacturer
+                      modelNumber
+                      releaseYear
+                      status
+                      functionalStatus
+                      cpu
+                      ram
+                      storage
+                      operatingSystem
+                      estimatedValue
+                      category { name type }
+                      tags { name }
+                    }
+                  }
+                `,
+                variables: {
+                  where: {
+                    deleted: { equals: false },
+                    ...(params.inPossessionOnly !== false && { status: { in: IN_POSSESSION_STATUSES } }),
+                    ...(params.categoryType && { category: { type: { equals: params.categoryType } } }),
+                  },
+                },
+              }),
+            });
+
+            const data = await response.json();
+            const devices = data.data?.devices || [];
+
+            return {
+              totalCount: devices.length,
+              inPossessionOnly: params.inPossessionOnly !== false,
+              devices: devices.map((d: any) => ({
+                id: d.id,
+                name: d.additionalName ? `${d.name} ${d.additionalName}` : d.name,
+                manufacturer: d.manufacturer,
+                model: d.modelNumber,
+                year: d.releaseYear,
+                status: d.status,
+                condition: d.functionalStatus,
+                category: d.category?.name,
+                categoryType: d.category?.type,
+                cpu: d.cpu,
+                ram: d.ram,
+                storage: d.storage,
+                os: d.operatingSystem,
+                estimatedValue: d.estimatedValue ? decimalToNumber(d.estimatedValue) : null,
+                tags: d.tags?.length > 0 ? d.tags.map((t: any) => t.name) : undefined,
+              })),
+            };
+          } catch (error) {
+            return { error: `Failed to list all devices: ${error}` };
+          }
+        },
+      }),
+
       get_financial_summary: tool({
         description: 'Get financial overview of the collection including total spent, total received from sales, net cash position, estimated value of owned items, and total profit.',
         parameters: z.object({}),
@@ -557,7 +637,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
         },
       }),
     },
-    maxSteps: 5,
+    maxSteps: 10,
     onError: (error) => {
       console.error('[Chat API] streamText error:', error);
     },

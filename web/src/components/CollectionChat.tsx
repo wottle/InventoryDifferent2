@@ -5,11 +5,13 @@ import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../lib/auth-context';
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
+const TOOL_LABELS: Record<string, string> = {
+  search_devices: 'Searching collection',
+  list_all_devices: 'Loading full inventory',
+  list_devices: 'Loading devices',
+  get_device_details: 'Loading device details',
+  get_financial_summary: 'Loading financials',
+};
 
 export function CollectionChat() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -93,8 +95,30 @@ export function CollectionChat() {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}
           >
+            {/* Tool call indicators */}
+            {message.role === 'assistant' && (message as any).toolInvocations?.map((invocation: any) => (
+              <div key={invocation.toolCallId} className="flex items-center gap-1.5 mb-1 px-2 py-1 rounded text-xs text-[var(--muted-foreground)] bg-[var(--muted)]">
+                {invocation.state !== 'result' ? (
+                  <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                ) : (
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+                <span>{TOOL_LABELS[invocation.toolName] ?? invocation.toolName}</span>
+                {invocation.state === 'result' && invocation.result?.totalCount != null && (
+                  <span className="opacity-60">— {invocation.result.totalCount} devices</span>
+                )}
+                {invocation.state === 'result' && invocation.result?.count != null && (
+                  <span className="opacity-60">— {invocation.result.count} results</span>
+                )}
+              </div>
+            ))}
             <div
               className={`max-w-[85%] rounded-lg px-4 py-2 ${
                 message.role === 'user'
