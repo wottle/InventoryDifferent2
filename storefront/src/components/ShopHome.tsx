@@ -20,6 +20,7 @@ const GET_SHOP_DEVICES = gql`
       functionalStatus
       listPrice
       soldPrice
+      popularity
       category {
         id
         name
@@ -41,9 +42,10 @@ const GET_SHOP_DEVICES = gql`
 const STORAGE_KEY = 'shop-status-filter';
 const DEFAULT_STATUSES = ['FOR_SALE', 'PENDING_SALE'];
 
-type SortOption = 'category' | 'status' | 'price-high' | 'price-low' | 'name' | 'year';
+type SortOption = 'popular' | 'category' | 'status' | 'price-high' | 'price-low' | 'name' | 'year';
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'popular', label: 'Popular' },
   { value: 'category', label: 'Category' },
   { value: 'status', label: 'Status' },
   { value: 'price-high', label: 'Price: High to Low' },
@@ -183,6 +185,12 @@ export default function ShopHome({ contactEmail }: ShopHomeProps) {
       let primaryResult = 0;
 
       switch (sortBy) {
+        case 'popular': {
+          const popA = a.popularity ?? 0;
+          const popB = b.popularity ?? 0;
+          primaryResult = popB - popA;
+          break;
+        }
         case 'category': {
           const catOrderA = a.category?.sortOrder ?? 999;
           const catOrderB = b.category?.sortOrder ?? 999;

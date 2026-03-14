@@ -65,6 +65,8 @@ export const typeDefs = gql`
     
     externalUrl: String
     
+    popularity: Float
+
     category: Category!
     images: [Image!]!
     notes: [Note!]!
@@ -531,6 +533,7 @@ export const typeDefs = gql`
   }
 
   type Mutation {
+    recordDeviceView(deviceId: Int!): Boolean
     createWishlistItem(data: WishlistItemCreateInput!): WishlistItem!
     updateWishlistItem(id: Int!, data: WishlistItemUpdateInput!): WishlistItem!
     deleteWishlistItem(id: Int!): WishlistItem!

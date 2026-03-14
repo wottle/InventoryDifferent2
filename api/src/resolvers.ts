@@ -6,6 +6,29 @@ import type { Context } from './index';
 const exifr: any = require('exifr');
 const sharp: any = require('sharp');
 
+// Compute time-decay popularity scores for devices based on page views from the last 14 days.
+// Score per view = exp(-λ * daysAgo) where λ = ln(2)/7, giving a half-life of 7 days.
+async function computePopularityScores(prisma: PrismaClient, deviceIds?: number[]): Promise<Map<number, number>> {
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+    const lambda = Math.log(2) / 7;
+    const now = Date.now();
+
+    const views = await prisma.devicePageView.findMany({
+        where: {
+            viewedAt: { gte: twoWeeksAgo },
+            ...(deviceIds ? { deviceId: { in: deviceIds } } : {}),
+        },
+        select: { deviceId: true, viewedAt: true },
+    });
+
+    const scores = new Map<number, number>();
+    for (const view of views) {
+        const daysAgo = (now - view.viewedAt.getTime()) / (1000 * 60 * 60 * 24);
+        scores.set(view.deviceId, (scores.get(view.deviceId) ?? 0) + Math.exp(-lambda * daysAgo));
+    }
+    return scores;
+}
+
 // Helper to check authentication and throw error if not authenticated
 function requireAuth(context: Context): void {
     if (!context.isAuthenticated) {
@@ -185,12 +208,15 @@ export const resolvers = {
                 include: DEVICE_INCLUDE,
             });
 
+            const popularityScores = await computePopularityScores(context.prisma);
+
             // Add searchText field, map custom fields, and filter sensitive fields
             return devices.map(device => {
                 const mapped = mapCustomFieldValues(device);
                 const filtered = filterDeviceSensitiveFields(mapped, context.isAuthenticated);
                 return {
                     ...filtered,
+                    popularity: popularityScores.get(device.id) ?? 0,
                     searchText: [
                         device.name,
                         device.additionalName,
@@ -236,7 +262,11 @@ export const resolvers = {
             }
 
             if (!device) return null;
-            return filterDeviceSensitiveFields(mapCustomFieldValues(device), context.isAuthenticated);
+            const popularityScores = await computePopularityScores(context.prisma, [device.id]);
+            return {
+                ...filterDeviceSensitiveFields(mapCustomFieldValues(device), context.isAuthenticated),
+                popularity: popularityScores.get(device.id) ?? 0,
+            };
         },
         categories: async (_parent: any, _args: any, context: Context) => {
             // Categories are public (needed for device list display)
@@ -681,6 +711,17 @@ export const resolvers = {
         },
     },
     Mutation: {
+        recordDeviceView: async (_parent: any, args: { deviceId: number }, context: Context) => {
+            // No auth required — public storefront calls this
+            try {
+                await context.prisma.devicePageView.create({
+                    data: { deviceId: args.deviceId },
+                });
+                return true;
+            } catch {
+                return false;
+            }
+        },
         createWishlistItem: async (_parent: any, args: { data: any }, context: Context) => {
             requireAuth(context);
             const item = await (context.prisma as any).wishlistItem.create({

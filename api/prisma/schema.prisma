@@ -60,6 +60,7 @@ model Device {
   tags                Tag[]
   customFieldValues   CustomFieldValue[]
   valueSnapshots      ValueSnapshot[]
+  pageViews           DevicePageView[]
 }
 
 model Category {
@@ -190,6 +191,15 @@ model ValueSnapshot {
   snapshotDate   DateTime @default(now())
 
   @@index([deviceId])
+}
+
+model DevicePageView {
+  id        Int      @id @default(autoincrement())
+  deviceId  Int
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  viewedAt  DateTime @default(now())
+
+  @@index([deviceId, viewedAt])
 }
 
 model TimelineEvent {

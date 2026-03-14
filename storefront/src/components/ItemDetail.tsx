@@ -1,11 +1,17 @@
 "use client";
 
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { API_BASE_URL } from "../lib/config";
 import { LoadingPanel } from "./LoadingPanel";
+
+const RECORD_DEVICE_VIEW = gql`
+  mutation RecordDeviceView($deviceId: Int!) {
+    recordDeviceView(deviceId: $deviceId)
+  }
+`;
 
 const GET_SHOP_DEVICE = gql`
   query GetShopDevice($where: DeviceWhereInput!) {
@@ -131,6 +137,7 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxZoom, setLightboxZoom] = useState(1);
+    const [recordView] = useMutation(RECORD_DEVICE_VIEW);
     const [lightboxPan, setLightboxPan] = useState({ x: 0, y: 0 });
     const lightboxContainerRef = useRef<HTMLDivElement | null>(null);
     const lastPointerOffsetRef = useRef<{ x: number; y: number } | null>(null);
@@ -148,15 +155,20 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
     });
 
     useEffect(() => {
-        if (data?.device && typeof window !== 'undefined' && (window as any).umami) {
+        if (data?.device) {
             const d = data.device;
-            const name = d.additionalName ? `${d.name} ${d.additionalName}` : d.name;
-            (window as any).umami.track('device-view', {
-                deviceId: d.id,
-                deviceName: name,
-                category: d.category?.name || 'Unknown',
-                status: d.status,
-            });
+            // Record view for popularity tracking
+            recordView({ variables: { deviceId: d.id } }).catch(() => {});
+            // Track analytics event
+            if (typeof window !== 'undefined' && (window as any).umami) {
+                const name = d.additionalName ? `${d.name} ${d.additionalName}` : d.name;
+                (window as any).umami.track('device-view', {
+                    deviceId: d.id,
+                    deviceName: name,
+                    category: d.category?.name || 'Unknown',
+                    status: d.status,
+                });
+            }
         }
     }, [data?.device?.id]);
 
