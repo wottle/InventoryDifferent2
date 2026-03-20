@@ -2,6 +2,9 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import express, { type Request, type Response, type NextFunction } from "express";
+import { randomUUID, createHash } from "crypto";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -29,19 +32,20 @@ function decimalToNumber(value: any): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-// Create MCP server
-const server = new Server(
-  {
-    name: "inventory-collection",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-      resources: {},
+// Factory: create a fresh MCP Server instance per connection
+function createMcpServer(): Server {
+  const server = new Server(
+    {
+      name: "inventory-collection",
+      version: "1.0.0",
     },
-  }
-);
+    {
+      capabilities: {
+        tools: {},
+        resources: {},
+      },
+    }
+  );
 
 // Tool definitions
 const TOOLS = [
@@ -1019,11 +1023,225 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   }
 });
 
+  return server;
+} // end createMcpServer
+
 // Start the server
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Inventory MCP server running on stdio");
+  const port = process.env.PORT ? parseInt(process.env.PORT) : null;
+
+  if (port) {
+    // HTTP/SSE mode for remote access via domain
+    const app = express();
+    // Do NOT apply express.json() globally — it consumes the request stream
+    // before SSEServerTransport.handlePostMessage() can read it on POST /message
+
+    const mcpToken = process.env.MCP_TOKEN;
+
+    // Request logger — logs every incoming request
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      const start = Date.now();
+      const authHeader = req.headers.authorization;
+      const authSnippet = authHeader
+        ? authHeader.startsWith("Bearer ")
+          ? `Bearer ***${authHeader.slice(-4)}`
+          : "[non-bearer]"
+        : "[none]";
+      console.error(`[${new Date().toISOString()}] --> ${req.method} ${req.path} auth=${authSnippet}`);
+      res.on("finish", () => {
+        console.error(`[${new Date().toISOString()}] <-- ${req.method} ${req.path} ${res.statusCode} (${Date.now() - start}ms)`);
+      });
+      next();
+    });
+
+    // Base URL helper — trust X-Forwarded-Proto from Traefik
+    function baseUrl(req: Request): string {
+      const proto = (req.headers["x-forwarded-proto"] as string) || req.protocol;
+      return `${proto}://${req.get("host")}`;
+    }
+
+    // Bearer token auth middleware
+    function requireAuth(req: Request, res: Response, next: NextFunction) {
+      if (!mcpToken) return next();
+      const authHeader = req.headers.authorization;
+      if (authHeader === `Bearer ${mcpToken}`) {
+        console.error(`[auth] PASS ${req.method} ${req.path}`);
+        return next();
+      }
+      console.error(`[auth] FAIL ${req.method} ${req.path} — header="${authHeader ?? "(missing)"}"`);
+      // Return OAuth challenge so Claude Code starts the auth flow
+      res.setHeader("WWW-Authenticate", `Bearer realm="${baseUrl(req)}"`);
+      res.status(401).json({ error: "unauthorized", error_description: "Bearer token required" });
+    }
+
+    // ── OAuth 2.0 endpoints ──────────────────────────────────────────────────
+
+    // In-memory store: auth code → { codeChallenge, method }
+    const authCodes = new Map<string, { codeChallenge: string; method: string }>();
+
+    // OAuth discovery
+    app.get("/.well-known/oauth-authorization-server", (req: Request, res: Response) => {
+      const base = baseUrl(req);
+      res.json({
+        issuer: base,
+        authorization_endpoint: `${base}/authorize`,
+        token_endpoint: `${base}/token`,
+        registration_endpoint: `${base}/register`,
+        response_types_supported: ["code"],
+        grant_types_supported: ["authorization_code"],
+        code_challenge_methods_supported: ["S256"],
+      });
+    });
+
+    // Dynamic client registration — open, just hands back a client_id
+    app.post("/register", express.json(), (req: Request, res: Response) => {
+      const body = req.body || {};
+      res.status(201).json({
+        client_id: "claude-code",
+        redirect_uris: body.redirect_uris || [],
+        grant_types: ["authorization_code"],
+        token_endpoint_auth_method: "none",
+      });
+    });
+
+    // Authorization page — user enters MCP token to approve access
+    app.get("/authorize", (req: Request, res: Response) => {
+      const { redirect_uri, state, code_challenge, code_challenge_method } = req.query;
+      res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inventory MCP — Authorize</title>
+  <style>
+    body { font-family: monospace; max-width: 420px; margin: 80px auto; padding: 20px; }
+    h2 { margin-bottom: 4px; }
+    p { color: #555; font-size: 14px; }
+    input[type=password] { width: 100%; padding: 8px; margin: 10px 0; box-sizing: border-box; font-size: 16px; }
+    button { padding: 10px 20px; font-size: 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Inventory MCP</h2>
+  <p>Enter your MCP token to authorize Claude Code to access your collection.</p>
+  <form method="post" action="/authorize/confirm">
+    <input type="hidden" name="redirect_uri" value="${redirect_uri}">
+    <input type="hidden" name="state" value="${state}">
+    <input type="hidden" name="code_challenge" value="${code_challenge}">
+    <input type="hidden" name="code_challenge_method" value="${code_challenge_method}">
+    <input type="password" name="token" placeholder="MCP Token" autofocus>
+    <button type="submit">Authorize</button>
+  </form>
+</body>
+</html>`);
+    });
+
+    // Authorization confirmation — validates token, issues auth code
+    app.post(
+      "/authorize/confirm",
+      express.urlencoded({ extended: false }),
+      (req: Request, res: Response) => {
+        const { redirect_uri, state, token, code_challenge, code_challenge_method } = req.body;
+
+        if (mcpToken && token !== mcpToken) {
+          res.status(401).send("Invalid token. <a href='javascript:history.back()'>Go back</a>.");
+          return;
+        }
+
+        const code = randomUUID();
+        authCodes.set(code, {
+          codeChallenge: code_challenge || "",
+          method: code_challenge_method || "",
+        });
+        // Auth codes expire after 5 minutes
+        setTimeout(() => authCodes.delete(code), 5 * 60 * 1000);
+
+        const redirectUrl = new URL(redirect_uri);
+        redirectUrl.searchParams.set("code", code);
+        if (state) redirectUrl.searchParams.set("state", state);
+        res.redirect(redirectUrl.toString());
+      }
+    );
+
+    // Token exchange — validates PKCE, returns access token
+    app.post(
+      "/token",
+      express.urlencoded({ extended: false }),
+      (req: Request, res: Response) => {
+        const { grant_type, code, code_verifier } = req.body;
+
+        if (grant_type !== "authorization_code") {
+          res.status(400).json({ error: "unsupported_grant_type" });
+          return;
+        }
+
+        const stored = authCodes.get(code);
+        if (!stored) {
+          res.status(401).json({ error: "invalid_grant", error_description: "Unknown or expired code" });
+          return;
+        }
+        authCodes.delete(code); // single use
+
+        // Verify PKCE (S256)
+        if (stored.codeChallenge && code_verifier) {
+          const hash = createHash("sha256").update(code_verifier).digest("base64url");
+          if (hash !== stored.codeChallenge) {
+            res.status(401).json({ error: "invalid_grant", error_description: "PKCE verification failed" });
+            return;
+          }
+        }
+
+        const token = mcpToken || "no-token";
+        console.error(`[token] issued access_token ending in ...${token.slice(-4)}`);
+        res.json({
+          access_token: token,
+          token_type: "Bearer",
+          expires_in: 86400 * 30, // 30 days
+        });
+      }
+    );
+
+    // ── MCP endpoints ────────────────────────────────────────────────────────
+
+    const transports: Record<string, SSEServerTransport> = {};
+
+    app.get("/sse", requireAuth, async (req: Request, res: Response) => {
+      console.error(`[sse] new connection from ${req.ip}`);
+      try {
+        const transport = new SSEServerTransport("/message", res);
+        console.error(`[sse] transport created, sessionId=${transport.sessionId}`);
+        transports[transport.sessionId] = transport;
+        res.on("close", () => {
+          console.error(`[sse] connection closed, sessionId=${transport.sessionId}`);
+          delete transports[transport.sessionId];
+        });
+        const mcpServer = createMcpServer();
+        console.error(`[sse] connecting server to transport...`);
+        await mcpServer.connect(transport);
+        console.error(`[sse] server connected successfully, sessionId=${transport.sessionId}`);
+      } catch (err) {
+        console.error(`[sse] ERROR during connect:`, err);
+      }
+    });
+
+    app.post("/message", requireAuth, async (req: Request, res: Response) => {
+      const sessionId = req.query.sessionId as string;
+      const transport = transports[sessionId];
+      if (!transport) {
+        res.status(404).json({ error: "Session not found" });
+        return;
+      }
+      await transport.handlePostMessage(req, res);
+    });
+
+    app.listen(port, () => {
+      console.error(`Inventory MCP server running on port ${port}${mcpToken ? " (auth enabled)" : " (no auth)"}`);
+    });
+  } else {
+    // stdio mode for local use
+    const transport = new StdioServerTransport();
+    await createMcpServer().connect(transport);
+    console.error("Inventory MCP server running on stdio");
+  }
 }
 
 main().catch((error) => {

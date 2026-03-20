@@ -801,7 +801,30 @@ struct DeviceDetailView: View {
                 DetailRow(label: "Date Acquired", value: formatDate(device.dateAcquired))
                 DetailRow(label: "Where Acquired", value: device.whereAcquired)
                 DetailRow(label: "Price Acquired", value: formatCurrency(device.priceAcquired))
-                DetailRow(label: "Estimated Value", value: formatCurrency(device.estimatedValue))
+                if let value = device.estimatedValue {
+                    HStack {
+                        Text("Estimated Value")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text(formatCurrency(value) ?? "")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        if let query = [device.manufacturer, device.name, device.modelNumber]
+                            .compactMap({ $0 })
+                            .filter({ !$0.isEmpty })
+                            .joined(separator: " ")
+                            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                           let url = URL(string: "https://www.ebay.com/sch/i.html?_nkw=\(query)&LH_Sold=1&LH_Complete=1") {
+                            Link("eBay sold", destination: url)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                } else {
+                    DetailRow(label: "Estimated Value", value: formatCurrency(device.estimatedValue))
+                }
             }
 
             if authService.isAuthenticated && valueSnapshots.count >= 2 {

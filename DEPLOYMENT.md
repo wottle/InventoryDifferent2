@@ -229,7 +229,7 @@ The admin web app includes an AI-powered chat assistant that can:
 - Generate financial summaries and reports
 - Answer questions about your vintage computer collection
 
-The chat uses OpenAI's GPT-4o-mini model and requires an `OPENAI_API_KEY` to function.
+The chat uses OpenAI's GPT-5-4 model and requires an `OPENAI_API_KEY` to function.
 
 ## iOS App Deployment
 

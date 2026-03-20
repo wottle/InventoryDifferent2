@@ -163,6 +163,12 @@ When verifying builds, always build in this order:
 3. `cd storefront && npm run build` — Storefront (Next.js)
 4. iOS via `xcodebuild` (when iOS changes were made)
 
+### iOS Build Command
+```bash
+xcodebuild -scheme InventoryDifferent -destination 'platform=iOS Simulator,id=9116C8FB-2461-4260-B7DD-FE254FD202DE' build 2>&1 | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:)"
+```
+SourceKit/LSP will often report "Cannot find type X in scope" for cross-file references — these are indexing artifacts, not real errors. Always verify with `xcodebuild`, not IDE diagnostics.
+
 Run all applicable builds after making changes to verify nothing is broken before committing.
 
 ## Commit Style
@@ -180,7 +186,7 @@ Run all applicable builds after making changes to verify nothing is broken befor
 Instead, use one of these patterns:
 - **Runtime API route**: Create a `/api/config` endpoint that reads `process.env` at runtime
 - **Server-side props**: Pass values from server components where `process.env` is available
-- The `NEXT_PUBLIC_API_URL` is an intentional exception — it's baked into the Docker image via `build-and-push.sh` with the production domain
+- The web app derives the API URL at runtime from `window.location.origin` in the browser (no `NEXT_PUBLIC_*` vars needed) and from `API_URL` env var during SSR. No build-time domain baking is required.
 
 ## iOS Development Notes
 
@@ -296,7 +302,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 ### iOS App
 
-**Device list**: search, filter (category, status, favorites), sort, pull-to-refresh, barcode scanner, add device
+**Device list**: search, filter (category, status, favorites), sort, pull-to-refresh, barcode scanner, add device; toggle between list view and grid tile view (2-col portrait, adaptive landscape/iPad); preference persisted via `@AppStorage("deviceViewMode")`
 
 **Device detail** (tabbed): Overview, Specs, Images, Notes, Tasks tabs; favorite toggle; share QR code; edit/delete; value history chart (when ≥ 2 snapshots)
 

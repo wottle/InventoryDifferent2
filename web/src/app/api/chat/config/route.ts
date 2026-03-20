@@ -1,7 +1,8 @@
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
-  const hasApiKey = !!process.env.OPENAI_API_KEY;
-  
-  return Response.json({ 
-    enabled: hasApiKey 
+  const key = process.env.ANTHROPIC_API_KEY;
+  return Response.json({
+    enabled: !!key
   });
 }

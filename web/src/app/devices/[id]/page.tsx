@@ -1657,7 +1657,19 @@ export default function DeviceDetail() {
                                     <DetailRow label="Price Acquired" value={`$${Number(device.priceAcquired).toFixed(2)}`} />
                                 )}
                                 {device.estimatedValue !== null && device.estimatedValue !== undefined && (
-                                    <DetailRow label="Estimated Value" value={`$${Number(device.estimatedValue).toFixed(2)}`} />
+                                    <DetailRow label="Estimated Value" value={
+                                        <span className="flex items-center gap-2">
+                                            <span>${Number(device.estimatedValue).toFixed(2)}</span>
+                                            <a
+                                                href={`https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent([device.manufacturer, device.name, device.modelNumber].filter(Boolean).join(" "))}&LH_Sold=1&LH_Complete=1`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline"
+                                            >
+                                                eBay sold
+                                            </a>
+                                        </span>
+                                    } />
                                 )}
                             </dl>
                         </div>

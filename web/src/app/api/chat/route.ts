@@ -1,9 +1,9 @@
-import { createOpenAI } from '@ai-sdk/openai';
+import { createAnthropic } from '@ai-sdk/anthropic';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
 
-const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 // Helper function to convert Prisma Decimal to number
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     console.log('[Chat API] Creating streamText...');
     const result = streamText({
-      model: openai('gpt-4o'),
+      model: anthropic('claude-sonnet-4-6'),
     system: `You are a helpful, friendly assistant for a vintage computer collection inventory system called "InventoryDifferent". 
     
 You help users query and understand their collection of vintage computers, peripherals, and accessories.

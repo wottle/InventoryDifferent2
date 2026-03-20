@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+private enum ViewMode: String {
+    case list, grid
+}
+
 struct DeviceListView: View {
     @Binding var navigationPath: NavigationPath
     @EnvironmentObject var deviceStore: DeviceStore
@@ -17,6 +21,9 @@ struct DeviceListView: View {
     @State private var showingAddDevice = false
     @State private var showingMenu = false
     @State private var showingScanner = false
+    @AppStorage("deviceViewMode") private var viewMode: ViewMode = .list
+
+    private let gridColumns = [GridItem(.adaptive(minimum: 160, maximum: 220))]
     
     var body: some View {
         Group {
@@ -137,6 +144,12 @@ struct DeviceListView: View {
             }
             
             ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    viewMode = viewMode == .list ? .grid : .list
+                } label: {
+                    Image(systemName: viewMode == .list ? "square.grid.2x2" : "list.bullet")
+                }
+
                 // Only show Add button if authenticated
                 if authService.isAuthenticated {
                     Button {
@@ -160,15 +173,19 @@ struct DeviceListView: View {
         }
         .sheet(isPresented: $showingFilters) {
             FilterView()
+                .environmentObject(deviceStore)
         }
         .sheet(isPresented: $showingSortOptions) {
             SortOptionsView()
+                .environmentObject(deviceStore)
         }
         .sheet(isPresented: $showingAddDevice) {
             AddDeviceView()
+                .environmentObject(deviceStore)
         }
         .fullScreenCover(isPresented: $showingScanner) {
             BarcodeScannerView()
+                .environmentObject(deviceStore)
         }
         .refreshable {
             await deviceStore.loadDevices()
@@ -176,38 +193,65 @@ struct DeviceListView: View {
     }
     
     private var deviceList: some View {
-        List {
-            if !deviceStore.filteredDevices.isEmpty {
-                Section {
-                    ForEach(deviceStore.filteredDevices) { device in
-                        NavigationLink(value: device.id) {
-                            DeviceRowView(device: device)
+        Group {
+            if deviceStore.filteredDevices.isEmpty {
+                List {
+                    ContentUnavailableView {
+                        Label("No Devices", systemImage: "desktopcomputer")
+                    } description: {
+                        if hasActiveFilters {
+                            Text("No devices match your filters")
+                        } else {
+                            Text("No devices found")
                         }
-                        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
+                    } actions: {
+                        if hasActiveFilters {
+                            Button("Clear Filters") {
+                                deviceStore.clearFilters()
+                            }
+                        }
                     }
-                } header: {
-                    Text("\(deviceStore.filteredDevices.count) devices")
                 }
-            } else {
-                ContentUnavailableView {
-                    Label("No Devices", systemImage: "desktopcomputer")
-                } description: {
-                    if hasActiveFilters {
-                        Text("No devices match your filters")
-                    } else {
-                        Text("No devices found")
-                    }
-                } actions: {
-                    if hasActiveFilters {
-                        Button("Clear Filters") {
-                            deviceStore.clearFilters()
+                .listStyle(.plain)
+            } else if viewMode == .list {
+                List {
+                    Section {
+                        ForEach(deviceStore.filteredDevices) { device in
+                            NavigationLink(value: device.id) {
+                                DeviceRowView(device: device)
+                            }
+                            .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
                         }
+                    } header: {
+                        Text("\(deviceStore.filteredDevices.count) devices")
+                    }
+                }
+                .listStyle(.plain)
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: gridColumns, spacing: 8) {
+                        ForEach(deviceStore.filteredDevices) { device in
+                            NavigationLink(value: device.id) {
+                                DeviceGridItemView(device: device)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.top, 8)
+                    .padding(.bottom, 80) // room for the floating search bar
+                    .safeAreaInset(edge: .top) {
+                        Text("\(deviceStore.filteredDevices.count) devices")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
                     }
                 }
             }
         }
-        .listStyle(.plain)
     }
     
     private var hasActiveFilters: Bool {
