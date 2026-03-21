@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import { ImageUploader } from "../../../components/ImageUploader";
 import { ImageGallery } from "../../../components/ImageGallery";
 import { ShareModal } from "../../../components/ShareModal";
+import { GenerateImageModal } from "../../../components/GenerateImageModal";
 import { API_BASE_URL } from "../../../lib/config";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { DeepLinkBanner } from "../../../components/DeepLinkBanner";
@@ -379,6 +380,8 @@ export default function DeviceDetail() {
     const lightboxContainerRef = useRef<HTMLDivElement | null>(null);
     const lastPointerOffsetRef = useRef<{ x: number; y: number } | null>(null);
     const [showUploader, setShowUploader] = useState(false);
+    const [showGenerateModal, setShowGenerateModal] = useState(false);
+    const [openaiEnabled, setOpenaiEnabled] = useState(false);
     const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
     const [maintenanceFormData, setMaintenanceFormData] = useState({
         label: '',
@@ -517,6 +520,13 @@ export default function DeviceDetail() {
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [imageCountForNav]);
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/generate-image/config`)
+            .then((r) => r.json())
+            .then((d) => setOpenaiEnabled(!!d.enabled))
+            .catch(() => {});
+    }, []);
 
     const [createMaintenanceTask, { loading: creatingTask }] = useMutation(CREATE_MAINTENANCE_TASK);
     const [deleteMaintenanceTask, { loading: deletingTask }] = useMutation(DELETE_MAINTENANCE_TASK);
@@ -1084,15 +1094,29 @@ export default function DeviceDetail() {
                     {/* Image Management */}
                     <div className="flex items-center justify-between">
                         <h3 className="text-sm font-medium text-[var(--foreground)]">Photos</h3>
-                        <button
-                            onClick={() => setShowUploader(true)}
-                            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
-                        >
-                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Add Photos
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {isAuthenticated && openaiEnabled && (
+                                <button
+                                    onClick={() => setShowGenerateModal(true)}
+                                    className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--foreground)] btn-retro transition-colors"
+                                    title="Generate AI product image"
+                                >
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                    AI Image
+                                </button>
+                            )}
+                            <button
+                                onClick={() => setShowUploader(true)}
+                                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
+                            >
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Add Photos
+                            </button>
+                        </div>
                     </div>
 
                     <ImageGallery images={galleryImages} onImagesChanged={refetch} />
@@ -1951,6 +1975,16 @@ export default function DeviceDetail() {
                 additionalName={device.additionalName}
                 deviceId={device.id}
             />
+
+            {/* AI Image Generation Modal */}
+            {showGenerateModal && (
+                <GenerateImageModal
+                    deviceId={device.id}
+                    images={images}
+                    onClose={() => setShowGenerateModal(false)}
+                    onGenerated={() => { refetch(); }}
+                />
+            )}
             </div>
         </>
     );

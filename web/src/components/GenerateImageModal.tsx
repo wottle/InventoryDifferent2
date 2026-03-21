@@ -1,0 +1,215 @@
+"use client";
+
+import { useState } from "react";
+import { API_BASE_URL } from "../lib/config";
+import { useAuth } from "../lib/auth-context";
+
+const DEFAULT_PROMPT =
+  "Create a professional product photograph of this vintage computer device on a dark background (#282828) with a 1:1 ratio for square image use. Use studio lighting with soft, even illumination to eliminate harsh shadows. Position the product at a slight 30-degree angle to show dimension. High detail, sharp focus throughout, showing clear material texture. Photorealistic rendering for high-end e-commerce use.";
+
+interface Image {
+  id: number;
+  path: string;
+  thumbnailPath?: string;
+  caption?: string;
+  isThumbnail: boolean;
+}
+
+interface Props {
+  deviceId: number;
+  images: Image[];
+  onClose: () => void;
+  onGenerated: () => void;
+}
+
+export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: Props) {
+  const { getAccessToken } = useAuth();
+  const [selectedImageId, setSelectedImageId] = useState<number | null>(
+    images.find((i) => i.isThumbnail)?.id ?? images[0]?.id ?? null
+  );
+  const [useTextOnly, setUseTextOnly] = useState(images.length === 0);
+  const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const [assignAsThumbnail, setAssignAsThumbnail] = useState(true);
+  const [assignAsShopImage, setAssignAsShopImage] = useState(false);
+  const [assignAsListingImage, setAssignAsListingImage] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function handleGenerate() {
+    setIsGenerating(true);
+    setError(null);
+
+    const token = getAccessToken();
+    const body: Record<string, unknown> = {
+      deviceId,
+      prompt,
+      assignAsThumbnail,
+      assignAsShopImage,
+      assignAsListingImage,
+    };
+    if (!useTextOnly && selectedImageId != null) {
+      body.sourceImageId = selectedImageId;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/generate-image`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error ${res.status}`);
+      }
+
+      setDone(true);
+      onGenerated();
+    } catch (err: any) {
+      setError(err?.message || "Generation failed");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-lg rounded border border-[var(--border)] bg-[var(--card)] shadow-xl card-retro overflow-y-auto max-h-[90vh]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
+          <h2 className="text-base font-semibold text-[var(--foreground)]">Generate AI Product Image</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-5 space-y-5">
+          {/* Reference image picker */}
+          {images.length > 0 && (
+            <div>
+              <p className="text-sm font-medium text-[var(--foreground)] mb-2">Reference photo</p>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {images.map((img) => (
+                  <button
+                    key={img.id}
+                    type="button"
+                    onClick={() => { setSelectedImageId(img.id); setUseTextOnly(false); }}
+                    className={`w-16 h-16 rounded border-2 overflow-hidden transition-all ${
+                      !useTextOnly && selectedImageId === img.id
+                        ? "border-[var(--apple-blue)]"
+                        : "border-[var(--border)] opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={`${API_BASE_URL}${img.thumbnailPath || img.path}`}
+                      alt={img.caption || ""}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setUseTextOnly(true)}
+                className={`text-sm px-3 py-1.5 rounded border transition-all ${
+                  useTextOnly
+                    ? "border-[var(--apple-blue)] text-[var(--apple-blue)]"
+                    : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                Skip — text description only
+              </button>
+            </div>
+          )}
+
+          {/* Prompt */}
+          <div>
+            <label className="text-sm font-medium text-[var(--foreground)] block mb-1">Prompt</label>
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              rows={5}
+              className="w-full rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--apple-blue)] resize-none"
+            />
+          </div>
+
+          {/* Role assignment */}
+          <div>
+            <p className="text-sm font-medium text-[var(--foreground)] mb-2">Assign roles</p>
+            <div className="space-y-1.5">
+              {[
+                { label: "Set as thumbnail", value: assignAsThumbnail, set: setAssignAsThumbnail },
+                { label: "Set as shop image", value: assignAsShopImage, set: setAssignAsShopImage },
+                { label: "Set as listing image", value: assignAsListingImage, set: setAssignAsListingImage },
+              ].map(({ label, value, set }) => (
+                <label key={label} className="flex items-center gap-2 text-sm text-[var(--foreground)] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={value}
+                    onChange={(e) => set(e.target.checked)}
+                    className="rounded"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <p className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded px-3 py-2">{error}</p>
+          )}
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3">
+            {done ? (
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--muted)]"
+              >
+                Done
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={onClose}
+                  disabled={isGenerating}
+                  className="px-4 py-2 text-sm font-medium rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGenerate}
+                  disabled={isGenerating || !prompt.trim()}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isGenerating ? (
+                    <>
+                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
+                      </svg>
+                      Generating… ~20s
+                    </>
+                  ) : (
+                    "Generate"
+                  )}
+                </button>
+              </>
+            )}
+          </div>
+
+          {done && (
+            <p className="text-sm text-green-600 text-center">Image generated and added to the gallery.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -8,7 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
 import { typeDefs } from './typeDefs';
-import { resolvers } from './resolvers';
+import { resolvers, generateThumbnailForUpload } from './resolvers';
+import OpenAI from 'openai';
 import {
     verifyAdminCredentials,
     getAdminUsername,
@@ -1017,6 +1018,120 @@ RESTART IDENTITY CASCADE;
         const timestamp = new Date(job.startTime).toISOString().replace(/[:.]/g, '-').slice(0, 19);
         const partSuffix = job.zipPaths.length > 1 ? `-part${partNumber}of${job.zipPaths.length}` : '';
         res.download(zipPath, `inventory-export-${timestamp}${partSuffix}.zip`);
+    });
+
+    // ============== AI IMAGE GENERATION ==============
+
+    const DEFAULT_IMAGE_PROMPT =
+        'Create a professional product photograph of this vintage computer device on a dark background (#282828) with a 1:1 ratio for square image use. Use studio lighting with soft, even illumination to eliminate harsh shadows. Position the product at a slight 30-degree angle to show dimension. High detail, sharp focus throughout, showing clear material texture. Photorealistic rendering for high-end e-commerce use.';
+
+    // Config endpoint — read at request time so the web can detect feature availability without a build-time bake
+    app.get('/generate-image/config', (_req, res) => {
+        return res.json({ enabled: !!process.env.OPENAI_API_KEY });
+    });
+
+    app.post('/generate-image', requireAuth, async (req, res) => {
+        if (!process.env.OPENAI_API_KEY) {
+            return res.status(503).json({ error: 'OPENAI_API_KEY is not configured on the server.' });
+        }
+
+        const { deviceId, sourceImageId, prompt, assignAsThumbnail, assignAsShopImage, assignAsListingImage } = req.body as {
+            deviceId: number;
+            sourceImageId?: number;
+            prompt?: string;
+            assignAsThumbnail?: boolean;
+            assignAsShopImage?: boolean;
+            assignAsListingImage?: boolean;
+        };
+
+        if (!deviceId) {
+            return res.status(400).json({ error: 'deviceId is required' });
+        }
+
+        const finalPrompt = prompt || DEFAULT_IMAGE_PROMPT;
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+        try {
+            let imageBase64: string;
+
+            if (sourceImageId) {
+                // Image edit mode: use existing device photo as reference
+                const sourceImage = await prisma.image.findUnique({ where: { id: sourceImageId } });
+                if (!sourceImage) {
+                    return res.status(404).json({ error: 'Source image not found' });
+                }
+                const relative = sourceImage.path.replace('/uploads/', '');
+                const sourceFilePath = path.join('/app/uploads', relative);
+                if (!fs.existsSync(sourceFilePath)) {
+                    return res.status(404).json({ error: 'Source image file not found on disk' });
+                }
+
+                const imageFile = await OpenAI.toFile(fs.createReadStream(sourceFilePath), path.basename(sourceFilePath));
+                const response = await (openai.images as any).edit({
+                    model: 'gpt-image-1',
+                    image: imageFile,
+                    prompt: finalPrompt,
+                    size: '1024x1024',
+                    response_format: 'b64_json',
+                });
+                imageBase64 = response.data[0].b64_json as string;
+            } else {
+                // Text-to-image fallback via DALL-E 3
+                const device = await prisma.device.findUnique({ where: { id: Number(deviceId) } });
+                if (!device) {
+                    return res.status(404).json({ error: 'Device not found' });
+                }
+                const deviceDesc = [device.manufacturer, device.name, device.releaseYear].filter(Boolean).join(' ');
+                const textPrompt = `${deviceDesc} — ${finalPrompt}`;
+                const response = await openai.images.generate({
+                    model: 'dall-e-3',
+                    prompt: textPrompt,
+                    size: '1024x1024',
+                    response_format: 'b64_json',
+                });
+                imageBase64 = response.data![0].b64_json as string;
+            }
+
+            // Write generated PNG to disk
+            const outputDir = path.join('/app/uploads/devices', String(deviceId));
+            fs.mkdirSync(outputDir, { recursive: true });
+            const filename = `${uuidv4()}.png`;
+            const outputPath = path.join(outputDir, filename);
+            fs.writeFileSync(outputPath, Buffer.from(imageBase64, 'base64'));
+
+            const imagePath = `/uploads/devices/${deviceId}/${filename}`;
+
+            // Generate thumbnail
+            const thumbnailPath = await generateThumbnailForUpload(imagePath);
+
+            // Handle image role assignments — unset existing flags as needed
+            if (assignAsThumbnail) {
+                await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isThumbnail: true }, data: { isThumbnail: false } });
+            }
+            if (assignAsShopImage) {
+                await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isShopImage: true }, data: { isShopImage: false } });
+            }
+            if (assignAsListingImage) {
+                await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isListingImage: true }, data: { isListingImage: false } });
+            }
+
+            const newImage = await prisma.image.create({
+                data: {
+                    deviceId: Number(deviceId),
+                    path: imagePath,
+                    thumbnailPath: thumbnailPath || undefined,
+                    caption: 'AI-generated product image',
+                    isThumbnail: !!assignAsThumbnail,
+                    isShopImage: !!assignAsShopImage,
+                    isListingImage: !!assignAsListingImage,
+                },
+            });
+
+            return res.json(newImage);
+        } catch (err: any) {
+            console.error('Image generation error:', err);
+            return res.status(500).json({ error: err?.message || 'Image generation failed' });
+        }
     });
 
     // Error handling for multer

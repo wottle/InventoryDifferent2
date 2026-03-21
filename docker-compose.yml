@@ -36,6 +36,7 @@ services:
       AUTH_USERNAME: ${AUTH_USERNAME:-user}
       AUTH_PASSWORD: ${AUTH_PASSWORD:-pass}
       JWT_SECRET: ${JWT_SECRET:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
       - ../InvDifferent2-data/uploads:/app/uploads
       - ./category.sql:/app/category.sql:ro

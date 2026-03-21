@@ -131,7 +131,7 @@ async function getExifDateTaken(filePath: string) {
     }
 }
 
-async function generateThumbnailForUpload(imagePath: string) {
+export async function generateThumbnailForUpload(imagePath: string) {
     try {
         if (typeof imagePath !== 'string' || !imagePath.startsWith('/uploads/')) return null;
 

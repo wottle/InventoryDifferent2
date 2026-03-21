@@ -545,6 +545,13 @@ export default function Home() {
                     >
                       Export / Import
                     </Link>
+                    <Link
+                      href="/generate-images"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
+                    >
+                      AI Product Images
+                    </Link>
                     <div className="border-t border-[var(--border)] my-1" />
                     <Link
                       href="/categories"
