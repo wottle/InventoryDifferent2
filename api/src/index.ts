@@ -1055,7 +1055,7 @@ RESTART IDENTITY CASCADE;
             let imageBase64: string;
 
             if (sourceImageId) {
-                // Image edit mode: use existing device photo as reference
+                // Image edit mode: use existing device photo as reference via dall-e-2
                 const sourceImage = await prisma.image.findUnique({ where: { id: sourceImageId } });
                 if (!sourceImage) {
                     return res.status(404).json({ error: 'Source image not found' });
@@ -1066,15 +1066,30 @@ RESTART IDENTITY CASCADE;
                     return res.status(404).json({ error: 'Source image file not found on disk' });
                 }
 
-                const imageFile = await OpenAI.toFile(fs.createReadStream(sourceFilePath), path.basename(sourceFilePath));
-                const response = await (openai.images as any).edit({
-                    model: 'gpt-image-1',
+                // dall-e-2 requires a square RGBA PNG ≤ 4MB. Prepare source and a fully-transparent mask.
+                const preparedImageBuffer = await sharp(sourceFilePath)
+                    .rotate()
+                    .resize({ width: 1024, height: 1024, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 1 } })
+                    .png()
+                    .toBuffer();
+
+                // Fully transparent mask tells dall-e-2 the entire image area is editable
+                const maskBuffer = await sharp({
+                    create: { width: 1024, height: 1024, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } }
+                }).png().toBuffer();
+
+                const imageFile = await OpenAI.toFile(preparedImageBuffer, 'image.png', { type: 'image/png' });
+                const maskFile = await OpenAI.toFile(maskBuffer, 'mask.png', { type: 'image/png' });
+
+                const response = await openai.images.edit({
+                    model: 'dall-e-2',
                     image: imageFile,
+                    mask: maskFile,
                     prompt: finalPrompt,
                     size: '1024x1024',
                     response_format: 'b64_json',
                 });
-                imageBase64 = response.data[0].b64_json as string;
+                imageBase64 = response.data![0].b64_json as string;
             } else {
                 // Text-to-image fallback via DALL-E 3
                 const device = await prisma.device.findUnique({ where: { id: Number(deviceId) } });
