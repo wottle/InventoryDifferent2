@@ -1071,7 +1071,7 @@ RESTART IDENTITY CASCADE;
                 const imageFile = await OpenAI.toFile(pngBuffer, 'image.png', { type: 'image/png' });
 
                 const response = await openai.images.edit({
-                    model: 'gpt-image-1',
+                    model: 'gpt-image-1.5',
                     image: imageFile,
                     prompt: finalPrompt,
                     size: '1024x1024',
