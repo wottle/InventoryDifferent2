@@ -132,6 +132,8 @@ struct DeviceDetailView: View {
     @State private var isImageManagementMode = false
     @State private var imageToDelete: DeviceImage?
     @State private var showDeleteImageAlert = false
+    @State private var showGenerateImageSheet = false
+    @State private var openaiEnabled = false
     
     @State private var isTogglingFavorite = false
     @State private var isUpdatingPowerDate = false
@@ -231,7 +233,15 @@ struct DeviceDetailView: View {
                             } label: {
                                 Text(isImageManagementMode ? "Done" : "Manage")
                             }
-                            
+
+                            if openaiEnabled {
+                                Button {
+                                    showGenerateImageSheet = true
+                                } label: {
+                                    Image(systemName: "sparkles")
+                                }
+                            }
+
                             Button {
                                 showImagePicker = true
                             } label: {
@@ -287,6 +297,22 @@ struct DeviceDetailView: View {
             ImageUploadView(deviceId: device.id) { newImages in
                 images.append(contentsOf: newImages)
                 quickActionSourceTab = nil  // committed — don't snap back
+            }
+        }
+        .sheet(isPresented: $showGenerateImageSheet) {
+            GenerateImageView(deviceId: device.id, images: images) { newImage in
+                images.append(newImage)
+                // If the new image was set as thumbnail, clear the flag on previous thumbnail
+                if newImage.isThumbnail {
+                    images = images.map { img in
+                        img.id == newImage.id ? img : DeviceImage(
+                            id: img.id, path: img.path, thumbnailPath: img.thumbnailPath,
+                            dateTaken: img.dateTaken, caption: img.caption,
+                            isShopImage: img.isShopImage, isThumbnail: false,
+                            isListingImage: img.isListingImage
+                        )
+                    }
+                }
             }
         }
         .fullScreenCover(item: $selectedImageIndex) { imageIndex in
@@ -363,6 +389,7 @@ struct DeviceDetailView: View {
                 if let snapshots = try? await DeviceService.shared.fetchValueHistory(deviceId: device.id) {
                     valueSnapshots = snapshots
                 }
+                openaiEnabled = await DeviceService.shared.checkOpenAIEnabled()
             }
         }
     }

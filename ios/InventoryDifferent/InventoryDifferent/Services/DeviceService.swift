@@ -664,6 +664,66 @@ class DeviceService {
         return response.createImage
     }
 
+    func checkOpenAIEnabled() async -> Bool {
+        guard let url = URL(string: "\(api.getBaseURL())/generate-image/config") else { return false }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            struct Config: Decodable { let enabled: Bool }
+            let config = try JSONDecoder().decode(Config.self, from: data)
+            return config.enabled
+        } catch {
+            return false
+        }
+    }
+
+    func generateImage(
+        deviceId: Int,
+        sourceImageId: Int?,
+        prompt: String,
+        assignAsThumbnail: Bool,
+        assignAsShopImage: Bool,
+        assignAsListingImage: Bool
+    ) async throws -> DeviceImage {
+        guard let url = URL(string: "\(api.getBaseURL())/generate-image") else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        if let token = await AuthService.shared.getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
+        var body: [String: Any] = [
+            "deviceId": deviceId,
+            "prompt": prompt,
+            "assignAsThumbnail": assignAsThumbnail,
+            "assignAsShopImage": assignAsShopImage,
+            "assignAsListingImage": assignAsListingImage
+        ]
+        if let sourceImageId = sourceImageId {
+            body["sourceImageId"] = sourceImageId
+        }
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            struct ErrorResponse: Decodable { let error: String }
+            if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                throw NSError(domain: "DeviceService", code: -1,
+                              userInfo: [NSLocalizedDescriptionKey: errorResponse.error])
+            }
+            throw APIError.invalidResponse
+        }
+
+        return try JSONDecoder().decode(DeviceImage.self, from: data)
+    }
+
     func fetchAllTags() async throws -> [Tag] {
         let query = """
         query GetTags {
