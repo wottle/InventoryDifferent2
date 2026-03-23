@@ -49,7 +49,7 @@ struct DeviceGridItemView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
         }
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(.systemGray5))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
     }

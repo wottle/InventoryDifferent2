@@ -269,6 +269,7 @@ struct DeviceRowView: View {
             // Thumbnail
             CachedThumbnailImage(url: thumbnailURL)
                 .frame(width: 80, height: 80)
+                .background(Color(.systemGray5))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(alignment: .leading, spacing: 3) {
