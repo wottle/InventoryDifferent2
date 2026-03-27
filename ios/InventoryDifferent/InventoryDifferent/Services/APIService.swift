@@ -14,7 +14,7 @@ class APIService {
     
     private init() {
         // Load from UserDefaults or use default
-        self.baseURL = UserDefaults.standard.string(forKey: "serverURL") ?? "https://inventorydifferent.com"
+        self.baseURL = UserDefaults.standard.string(forKey: "serverURL") ?? ""
     }
     
     func updateBaseURL(_ url: String) {

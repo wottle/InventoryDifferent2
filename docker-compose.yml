@@ -8,9 +8,9 @@ services:
     ports:
       - "5432:5432"  # Exposed for migration scripts - can remove after migration
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: inventory
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-inventory}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -31,7 +31,7 @@ services:
       - "4000:4000"
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgres://postgres:password@postgres:5432/inventory
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-inventory}
       PORT: 4000
       AUTH_USERNAME: ${AUTH_USERNAME:-user}
       AUTH_PASSWORD: ${AUTH_PASSWORD:-pass}
@@ -95,7 +95,7 @@ services:
       - "3002:3002"
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgres://postgres:password@postgres:5432/inventory
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-inventory}
     depends_on:
       postgres:
         condition: service_healthy

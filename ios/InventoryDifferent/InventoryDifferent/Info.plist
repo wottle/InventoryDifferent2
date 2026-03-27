@@ -47,7 +47,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.wottle.InventoryDifferent</string>
+			<string>com.yourorg.InventoryDifferent</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>inventorydifferent</string>

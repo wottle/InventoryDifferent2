@@ -47,7 +47,7 @@ struct LoginView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    TextField("https://inventorydifferent.com", text: $serverURL)
+                    TextField("https://your-server.example.com", text: $serverURL)
                         .textContentType(.URL)
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
@@ -140,7 +140,7 @@ struct LoginView: View {
         .padding()
         .onAppear {
             // Default to saved URL or the default
-            serverURL = appSettings.serverURL.isEmpty ? "https://inventorydifferent.com" : appSettings.serverURL
+            serverURL = appSettings.serverURL
         }
     }
 

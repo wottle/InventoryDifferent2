@@ -3,7 +3,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const SHOP_DOMAIN = "https://shop.inventorydifferent.com";
+// Configure this to your storefront domain if you use legacy hash-based URLs
+const SHOP_DOMAIN = typeof window !== "undefined"
+    ? `${window.location.protocol}//${window.location.hostname.replace(/^[^.]+/, "shop")}:3001`
+    : "";
 
 export function LegacyRedirect() {
     const router = useRouter();
@@ -17,14 +20,14 @@ export function LegacyRedirect() {
 
         const path = hash.slice(2); // Remove "#!"
 
-        // /#!/devices/store/<id> -> shop.inventorydifferent.com/item/<id>
+        // /#!/devices/store/<id> -> shop subdomain /item/<id>
         const storeDetailMatch = path.match(/^\/devices\/store\/(\d+)$/);
         if (storeDetailMatch) {
             window.location.href = `${SHOP_DOMAIN}/item/${storeDetailMatch[1]}`;
             return;
         }
 
-        // /#!/devices/store -> shop.inventorydifferent.com
+        // /#!/devices/store -> shop subdomain
         if (path === "/devices/store") {
             window.location.href = SHOP_DOMAIN;
             return;

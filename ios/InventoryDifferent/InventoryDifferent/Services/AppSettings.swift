@@ -18,7 +18,7 @@ final class AppSettings: ObservableObject {
     @Published var isConfigured: Bool
     
     init() {
-        self.serverURL = UserDefaults.standard.string(forKey: serverURLKey) ?? "https://inventorydifferent.com"
+        self.serverURL = UserDefaults.standard.string(forKey: serverURLKey) ?? ""
         self.isConfigured = UserDefaults.standard.bool(forKey: isConfiguredKey)
     }
     

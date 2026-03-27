@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ServerSetupView: View {
     @EnvironmentObject var appSettings: AppSettings
-    @State private var serverURL: String = "https://inventorydifferent.com"
+    @State private var serverURL: String = ""
     @State private var isConnecting = false
     @State private var errorMessage: String?
     

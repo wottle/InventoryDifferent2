@@ -62,7 +62,7 @@ struct InventoryDifferentApp: App {
     
     private func handleDeepLink(_ url: URL) {
         // Handle both custom URL scheme (inventorydifferent://devices/123)
-        // and Universal Links (https://inventorydifferent.com/devices/123)
+        // and Universal Links (https://your-domain.example.com/devices/123)
         
         print("🔗 Deep link received: \(url.absoluteString)")
         print("   Scheme: \(url.scheme ?? "none")")
@@ -87,8 +87,8 @@ struct InventoryDifferentApp: App {
                 }
             }
         }
-        // For Universal Links: https://inventorydifferent.com/devices/123
-        // Host = "inventorydifferent.com", Path = "/devices/123"
+        // For Universal Links: https://your-domain.example.com/devices/123
+        // Host = "your-domain.example.com", Path = "/devices/123"
         else if url.scheme == "https" || url.scheme == "http" {
             let pathComponents = url.pathComponents.filter { $0 != "/" }
             if pathComponents.count >= 2 && (pathComponents[0] == "devices" || pathComponents[0] == "item") {

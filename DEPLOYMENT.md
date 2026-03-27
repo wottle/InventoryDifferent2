@@ -27,11 +27,9 @@ The system consists of five main components:
 
 ## Quick Start
 
-### 1. Clone or copy the project to your NAS
+### 1. Clone the project
 
 ```bash
-# Example path on Synology NAS
-cd /volume1/docker
 git clone <your-repo> inventory
 cd inventory
 ```
@@ -63,8 +61,8 @@ TRAEFIK_NETWORK=traefik
 # Certificate resolver name from your Traefik config
 CERT_RESOLVER=letsencrypt
 
-# Path for uploaded images (use absolute path on NAS)
-UPLOADS_PATH=/volume1/docker/inventory/uploads
+# Path for uploaded images (use absolute path on host)
+UPLOADS_PATH=/path/to/inventory/uploads
 
 # OpenAI API Key for chat assistant (required for AI features)
 OPENAI_API_KEY=sk-proj-your-key-here
@@ -73,8 +71,8 @@ OPENAI_API_KEY=sk-proj-your-key-here
 ### 3. Create uploads directory
 
 ```bash
-mkdir -p /volume1/docker/inventory/uploads
-chmod 755 /volume1/docker/inventory/uploads
+mkdir -p /path/to/inventory/uploads
+chmod 755 /path/to/inventory/uploads
 ```
 
 ### 4. Deploy with Docker Compose
@@ -125,7 +123,7 @@ certificatesResolvers:
 To update the application:
 
 ```bash
-cd /volume1/docker/inventory
+cd /path/to/inventory
 git pull
 docker compose -f docker-compose.prod.yml up -d --build
 ```
@@ -296,8 +294,8 @@ Note: When using Portainer, you may need to specify the build context paths as a
 You'll need to configure DNS records for both domains:
 
 ```
-A    inventory.yourdomain.com    →  Your NAS IP
-A    shop.yourdomain.com         →  Your NAS IP
+A    inventory.yourdomain.com    →  Your server IP
+A    shop.yourdomain.com         →  Your server IP
 ```
 
 Or use CNAME records if pointing to a dynamic DNS hostname.
