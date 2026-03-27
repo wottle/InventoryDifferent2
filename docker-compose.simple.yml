@@ -1,0 +1,104 @@
+# Simple deployment using pre-built images from Docker Hub
+# No reverse proxy — services are exposed directly on ports
+#
+# Usage:
+#   1. Copy .env.example to .env and configure (DOMAIN, passwords, etc.)
+#   2. docker compose -f docker-compose.simple.yml up -d
+#
+# Access:
+#   Admin web:   http://your-host:3000
+#   Storefront:  http://your-host:3001
+#   API:         http://your-host:4000/graphql
+#   MCP server:  http://your-host:3002  (optional)
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: inventory-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-inventory}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password required}
+      POSTGRES_DB: ${POSTGRES_DB:-inventory}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-inventory}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: wottle/inventory-api:latest
+    container_name: inventory-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
+      PORT: 4000
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    volumes:
+      - ${UPLOADS_PATH:-./uploads}:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  web:
+    image: wottle/inventory-web:latest
+    container_name: inventory-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      API_URL: http://api:4000
+    depends_on:
+      - api
+    networks:
+      - internal
+
+  storefront:
+    image: wottle/inventory-storefront:latest
+    container_name: inventory-storefront
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-store@example.com}
+    depends_on:
+      - api
+    networks:
+      - internal
+
+  # MCP server (optional — only needed for AI assistant integration)
+  # mcp-server:
+  #   image: wottle/inventory-mcp:latest
+  #   container_name: inventory-mcp
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3002:3002"
+  #   environment:
+  #     NODE_ENV: production
+  #     DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
+  #     MCP_TOKEN: ${MCP_TOKEN:-}
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data:
