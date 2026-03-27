@@ -181,13 +181,19 @@ jobs:
 
       - name: Build and start web
         working-directory: web
-        env:
-          NEXT_PUBLIC_API_URL: http://localhost:4000
         run: |
           npm ci
           npm run build
-          npx next start -p 3000 &
-          sleep 3
+          API_URL=http://localhost:4000 npx next start -p 3000 &
+
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000 > /dev/null 2>&1; then
+              echo "Web is ready"
+              break
+            fi
+            echo "Waiting for web... ($i)"
+            sleep 1
+          done
 
       - name: Build and start storefront
         working-directory: storefront
@@ -197,7 +203,15 @@ jobs:
           npm ci
           npm run build
           npx next start -p 3001 &
-          sleep 3
+
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3001 > /dev/null 2>&1; then
+              echo "Storefront is ready"
+              break
+            fi
+            echo "Waiting for storefront... ($i)"
+            sleep 1
+          done
 
       - name: Run Playwright tests
         env:
