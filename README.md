@@ -64,6 +64,8 @@ Services will be available at:
 
 > **iOS / remote access:** The web app resolves the API URL from the browser's origin automatically. For the iOS app — or any client on a different device — set `AUTH_URL` in your `.env` or configure the server URL directly in the iOS app settings.
 
+> **Asset tagging note:** If you use the QR code asset tagging feature, the generated codes embed your server's URL. A local IP address (`192.168.x.x`) or a hostname that may change will cause those QR codes to stop working when scanned from a device that isn't on your home network, or after your IP changes. If you plan to use asset tagging, Option 2 (a persistent public domain) is strongly recommended so your QR codes remain valid long-term.
+
 ---
 
 ### Option 2 — Traefik with HTTPS (recommended for internet-facing installs)
