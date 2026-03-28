@@ -9,7 +9,7 @@ const mockDevice = {
     manufacturer: 'Apple',
     modelNumber: 'M5011',
     releaseYear: 1987,
-    status: 'AVAILABLE',
+    status: 'COLLECTION',
     functionalStatus: 'YES',
     isAssetTagged: false,
     estimatedValue: 300,
@@ -37,7 +37,7 @@ describe('DeviceCard', () => {
 
     it('renders status badge', () => {
         render(<DeviceCard device={mockDevice} />);
-        const statusBadges = screen.getAllByText('AVAILABLE');
+        const statusBadges = screen.getAllByText('COLLECTION');
         expect(statusBadges.length).toBeGreaterThan(0);
     });
 

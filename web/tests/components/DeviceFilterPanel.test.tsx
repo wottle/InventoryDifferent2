@@ -33,7 +33,7 @@ describe('DeviceFilterPanel', () => {
 
     it('displays status checkboxes', () => {
         render(<DeviceFilterPanel {...defaultProps} />);
-        expect(screen.getByText('Available')).toBeInTheDocument();
+        expect(screen.getByText('In Collection')).toBeInTheDocument();
         expect(screen.getByText('For Sale')).toBeInTheDocument();
         expect(screen.getByText('Sold')).toBeInTheDocument();
     });
