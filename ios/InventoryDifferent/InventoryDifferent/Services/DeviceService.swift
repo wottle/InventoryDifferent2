@@ -40,9 +40,9 @@ class DeviceService {
                 status
                 functionalStatus
                 lastPowerOnDate
-                hasOriginalBox
                 isAssetTagged
                 isPramBatteryRemoved
+                accessories { id name }
                 dateAcquired
                 estimatedValue
                 listPrice
@@ -100,7 +100,6 @@ class DeviceService {
                 status
                 functionalStatus
                 lastPowerOnDate
-                hasOriginalBox
                 isAssetTagged
                 dateAcquired
                 whereAcquired
@@ -116,7 +115,6 @@ class DeviceService {
                 operatingSystem
                 isWifiEnabled
                 isPramBatteryRemoved
-                externalUrl
                 category {
                     id
                     name
@@ -157,14 +155,16 @@ class DeviceService {
                     isPublic
                     sortOrder
                 }
+                accessories { id name }
+                links { id label url }
             }
         }
         """
-        
+
         struct Response: Decodable {
             let devices: [Device]
         }
-        
+
         let response: Response = try await api.execute(query: query)
         return response.devices
     }
@@ -187,7 +187,6 @@ class DeviceService {
                 status
                 functionalStatus
                 lastPowerOnDate
-                hasOriginalBox
                 isAssetTagged
                 dateAcquired
                 whereAcquired
@@ -203,7 +202,6 @@ class DeviceService {
                 operatingSystem
                 isWifiEnabled
                 isPramBatteryRemoved
-                externalUrl
                 category {
                     id
                     name
@@ -244,6 +242,8 @@ class DeviceService {
                     isPublic
                     sortOrder
                 }
+                accessories { id name }
+                links { id label url }
             }
         }
         """
@@ -450,7 +450,6 @@ class DeviceService {
                 status
                 functionalStatus
                 lastPowerOnDate
-                hasOriginalBox
                 isAssetTagged
                 dateAcquired
                 whereAcquired
@@ -466,7 +465,6 @@ class DeviceService {
                 operatingSystem
                 isWifiEnabled
                 isPramBatteryRemoved
-                externalUrl
                 category {
                     id
                     name
@@ -507,6 +505,8 @@ class DeviceService {
                     isPublic
                     sortOrder
                 }
+                accessories { id name }
+                links { id label url }
             }
         }
         """
@@ -760,7 +760,6 @@ class DeviceService {
                 status
                 functionalStatus
                 lastPowerOnDate
-                hasOriginalBox
                 isAssetTagged
                 dateAcquired
                 whereAcquired
@@ -776,7 +775,6 @@ class DeviceService {
                 operatingSystem
                 isWifiEnabled
                 isPramBatteryRemoved
-                externalUrl
                 category {
                     id
                     name
@@ -817,6 +815,8 @@ class DeviceService {
                     isPublic
                     sortOrder
                 }
+                accessories { id name }
+                links { id label url }
             }
         }
         """
@@ -915,7 +915,6 @@ class DeviceService {
                 status
                 functionalStatus
                 lastPowerOnDate
-                hasOriginalBox
                 isAssetTagged
                 dateAcquired
                 whereAcquired
@@ -931,7 +930,6 @@ class DeviceService {
                 operatingSystem
                 isWifiEnabled
                 isPramBatteryRemoved
-                externalUrl
                 category {
                     id
                     name
@@ -972,6 +970,8 @@ class DeviceService {
                     isPublic
                     sortOrder
                 }
+                accessories { id name }
+                links { id label url }
             }
         }
         """
@@ -1207,6 +1207,73 @@ class DeviceService {
 
         let response: Response = try await api.execute(query: mutation, variables: variables)
         return response.updateWishlistItem
+    }
+
+    func addDeviceAccessory(deviceId: Int, name: String) async throws -> DeviceAccessory {
+        let mutation = """
+        mutation {
+            addDeviceAccessory(deviceId: \(deviceId), name: "\(name.replacingOccurrences(of: "\"", with: "\\\""))") {
+                id
+                name
+            }
+        }
+        """
+
+        struct Response: Decodable {
+            let addDeviceAccessory: DeviceAccessory
+        }
+
+        let response: Response = try await api.execute(query: mutation)
+        return response.addDeviceAccessory
+    }
+
+    func removeDeviceAccessory(id: Int) async throws {
+        let mutation = """
+        mutation {
+            removeDeviceAccessory(id: \(id))
+        }
+        """
+
+        struct Response: Decodable {
+            let removeDeviceAccessory: Bool
+        }
+
+        let _: Response = try await api.execute(query: mutation)
+    }
+
+    func addDeviceLink(deviceId: Int, label: String, url: String) async throws -> DeviceLink {
+        let safeLabel = label.replacingOccurrences(of: "\"", with: "\\\"")
+        let safeUrl = url.replacingOccurrences(of: "\"", with: "\\\"")
+        let mutation = """
+        mutation {
+            addDeviceLink(deviceId: \(deviceId), label: "\(safeLabel)", url: "\(safeUrl)") {
+                id
+                label
+                url
+            }
+        }
+        """
+
+        struct Response: Decodable {
+            let addDeviceLink: DeviceLink
+        }
+
+        let response: Response = try await api.execute(query: mutation)
+        return response.addDeviceLink
+    }
+
+    func removeDeviceLink(id: Int) async throws {
+        let mutation = """
+        mutation {
+            removeDeviceLink(id: \(id))
+        }
+        """
+
+        struct Response: Decodable {
+            let removeDeviceLink: Bool
+        }
+
+        let _: Response = try await api.execute(query: mutation)
     }
 
     func deleteWishlistItem(id: Int) async throws -> WishlistItem {

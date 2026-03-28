@@ -36,13 +36,16 @@ struct AddDeviceView: View {
     @State private var releaseYear = ""
     @State private var location = ""
     @State private var info = ""
-    @State private var externalUrl = ""
-    
+
     @State private var status: Status = .COLLECTION
     @State private var functionalStatus: FunctionalStatus = .YES
     @State private var isFavorite = false
-    @State private var hasOriginalBox = false
     @State private var isAssetTagged = false
+
+    @State private var localAccessories: [String] = []
+    @State private var localLinks: [(label: String, url: String)] = []
+    @State private var showAddAccessorySheet = false
+    @State private var showAddLinkSheet = false
     
     @State private var dateAcquired: Date?
     @State private var whereAcquired = ""
@@ -88,7 +91,9 @@ struct AddDeviceView: View {
                 if isComputerCategory {
                     computerSpecsSection
                 }
-                
+                accessoriesSection
+                linksSection
+
                 if let error = errorMessage {
                     Section {
                         Text(error)
@@ -116,6 +121,18 @@ struct AddDeviceView: View {
                 }
             }
             .disabled(isSaving)
+            .sheet(isPresented: $showAddAccessorySheet) {
+                AddLocalAccessorySheet { name in
+                    if !localAccessories.contains(name) {
+                        localAccessories.append(name)
+                    }
+                }
+            }
+            .sheet(isPresented: $showAddLinkSheet) {
+                AddLocalLinkSheet { label, url in
+                    localLinks.append((label: label, url: url))
+                }
+            }
             .task {
                 await loadCategories()
                 await loadTemplates()
@@ -131,7 +148,6 @@ struct AddDeviceView: View {
                 if let v = prefillGraphics, !v.isEmpty { graphics = v }
                 if let v = prefillStorage, !v.isEmpty { storage = v }
                 if let v = prefillOperatingSystem, !v.isEmpty { operatingSystem = v }
-                if let v = prefillExternalUrl, !v.isEmpty { externalUrl = v }
                 if let v = prefillIsWifiEnabled { isWifiEnabled = v }
                 if let v = prefillIsPramBatteryRemoved { isPramBatteryRemoved = v }
                 if let v = prefillEstimatedValue { estimatedValue = String(format: "%.2f", v) }
@@ -196,10 +212,7 @@ struct AddDeviceView: View {
             TextField("Release Year", text: $releaseYear)
                 .keyboardType(.numberPad)
             TextField("Location", text: $location)
-            TextField("External URL", text: $externalUrl)
-                .keyboardType(.URL)
-                .textInputAutocapitalization(.never)
-            
+
             Picker("Category", selection: $selectedCategoryId) {
                 Text("Select a category")
                     .tag(nil as Int?)
@@ -250,10 +263,74 @@ struct AddDeviceView: View {
     private var flagsSection: some View {
         Section {
             Toggle("Favorite", isOn: $isFavorite)
-            Toggle("Has Original Box", isOn: $hasOriginalBox)
             Toggle("Asset Tagged", isOn: $isAssetTagged)
         } header: {
             Text("Flags")
+        }
+    }
+
+    private var accessoriesSection: some View {
+        Section {
+            if localAccessories.isEmpty {
+                Text("No accessories yet")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(localAccessories, id: \.self) { accessory in
+                    HStack {
+                        Text(accessory)
+                        Spacer()
+                        Button {
+                            localAccessories.removeAll { $0 == accessory }
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+            Button("Add Accessory") {
+                showAddAccessorySheet = true
+            }
+            .foregroundColor(.accentColor)
+        } header: {
+            Text("Accessories")
+        }
+    }
+
+    private var linksSection: some View {
+        Section {
+            if localLinks.isEmpty {
+                Text("No links yet")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(Array(localLinks.enumerated()), id: \.offset) { index, link in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(link.label)
+                                .font(.subheadline)
+                            Text(link.url)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                        Spacer()
+                        Button {
+                            localLinks.remove(at: index)
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+            Button("Add Reference Link") {
+                showAddLinkSheet = true
+            }
+            .foregroundColor(.accentColor)
+        } header: {
+            Text("Reference Links")
         }
     }
     
@@ -428,7 +505,6 @@ struct AddDeviceView: View {
         graphics = template.graphics ?? ""
         storage = template.storage ?? ""
         operatingSystem = template.operatingSystem ?? ""
-        externalUrl = template.externalUrl ?? ""
         isWifiEnabled = template.isWifiEnabled ?? false
         isPramBatteryRemoved = template.isPramBatteryRemoved ?? false
         selectedCategoryId = template.categoryId
@@ -465,12 +541,10 @@ struct AddDeviceView: View {
             if let year = Int(releaseYear) { input["releaseYear"] = year }
             if !location.isEmpty { input["location"] = location }
             if !info.isEmpty { input["info"] = info }
-            if !externalUrl.isEmpty { input["externalUrl"] = externalUrl }
-            
+
             input["status"] = status.rawValue
             input["functionalStatus"] = functionalStatus.rawValue
             input["isFavorite"] = isFavorite
-            input["hasOriginalBox"] = hasOriginalBox
             input["isAssetTagged"] = isAssetTagged
             
             if let date = dateAcquired {
@@ -506,12 +580,23 @@ struct AddDeviceView: View {
                 }
                 let createDevice: CreateDevice
             }
-            
-            let _: Response = try await APIService.shared.execute(
+
+            let response: Response = try await APIService.shared.execute(
                 query: query,
                 variables: ["input": input]
             )
-            
+            let newDeviceId = response.createDevice.id
+
+            // Add accessories
+            for accessoryName in localAccessories {
+                try? await DeviceService.shared.addDeviceAccessory(deviceId: newDeviceId, name: accessoryName)
+            }
+
+            // Add links
+            for linkEntry in localLinks {
+                try? await DeviceService.shared.addDeviceLink(deviceId: newDeviceId, label: linkEntry.label, url: linkEntry.url)
+            }
+
             await MainActor.run {
                 Task {
                     await deviceStore.loadDevices()
@@ -530,6 +615,108 @@ struct AddDeviceView: View {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter.string(from: date)
+    }
+}
+
+private struct AddLocalAccessorySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let onAdded: (String) -> Void
+
+    @State private var customName = ""
+
+    private let suggestions = [
+        "Original Box", "Power Adapter", "Power Cable", "Keyboard", "Mouse",
+        "Monitor", "Speakers", "Manuals", "Floppy Disks", "CDs", "Remote Control"
+    ]
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Suggestions") {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(suggestions, id: \.self) { suggestion in
+                                Button {
+                                    onAdded(suggestion)
+                                    dismiss()
+                                } label: {
+                                    Text(suggestion)
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.green.opacity(0.15))
+                                        .foregroundColor(.green)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+
+                Section("Custom") {
+                    HStack {
+                        TextField("Accessory name", text: $customName)
+                        Button("Add") {
+                            let trimmed = customName.trimmingCharacters(in: .whitespaces)
+                            if !trimmed.isEmpty {
+                                onAdded(trimmed)
+                                dismiss()
+                            }
+                        }
+                        .disabled(customName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
+                }
+            }
+            .navigationTitle("Add Accessory")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+private struct AddLocalLinkSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let onAdded: (String, String) -> Void
+
+    @State private var label = ""
+    @State private var url = ""
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Link Details") {
+                    TextField("Label (e.g. EveryMac)", text: $label)
+                    TextField("URL", text: $url)
+                        .keyboardType(.URL)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                }
+            }
+            .navigationTitle("Add Reference Link")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") {
+                        let trimmedLabel = label.trimmingCharacters(in: .whitespaces)
+                        let trimmedUrl = url.trimmingCharacters(in: .whitespaces)
+                        if !trimmedLabel.isEmpty && !trimmedUrl.isEmpty {
+                            onAdded(trimmedLabel, trimmedUrl)
+                            dismiss()
+                        }
+                    }
+                    .disabled(label.trimmingCharacters(in: .whitespaces).isEmpty ||
+                              url.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
     }
 }
 

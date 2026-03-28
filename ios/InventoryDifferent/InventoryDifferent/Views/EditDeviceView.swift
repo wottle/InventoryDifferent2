@@ -20,13 +20,16 @@ struct EditDeviceView: View {
     @State private var releaseYear: String
     @State private var location: String
     @State private var info: String
-    @State private var externalUrl: String
-    
+
     @State private var status: Status
     @State private var functionalStatus: FunctionalStatus
     @State private var isFavorite: Bool
-    @State private var hasOriginalBox: Bool
     @State private var isAssetTagged: Bool
+
+    @State private var accessories: [DeviceAccessory]
+    @State private var links: [DeviceLink]
+    @State private var showAddAccessorySheet = false
+    @State private var showAddLinkSheet = false
     
     @State private var dateAcquired: Date?
     @State private var whereAcquired: String
@@ -68,13 +71,13 @@ struct EditDeviceView: View {
         _releaseYear = State(initialValue: device.releaseYear.map { String($0) } ?? "")
         _location = State(initialValue: device.location ?? "")
         _info = State(initialValue: device.info ?? "")
-        _externalUrl = State(initialValue: device.externalUrl ?? "")
-        
+
         _status = State(initialValue: device.status)
         _functionalStatus = State(initialValue: device.functionalStatus)
         _isFavorite = State(initialValue: device.isFavorite)
-        _hasOriginalBox = State(initialValue: device.hasOriginalBox)
         _isAssetTagged = State(initialValue: device.isAssetTagged)
+        _accessories = State(initialValue: device.accessories)
+        _links = State(initialValue: device.links)
         
         _dateAcquired = State(initialValue: Self.parseDate(device.dateAcquired))
         _whereAcquired = State(initialValue: device.whereAcquired ?? "")
@@ -124,6 +127,9 @@ struct EditDeviceView: View {
                     customFieldsSection
                 }
 
+                accessoriesSection
+                linksSection
+
                 if let error = error {
                     Section {
                         Text(error)
@@ -155,6 +161,16 @@ struct EditDeviceView: View {
                 await loadCategories()
                 await loadCustomFields()
             }
+            .sheet(isPresented: $showAddAccessorySheet) {
+                AddAccessorySheet(deviceId: device.id) { newAccessory in
+                    accessories.append(newAccessory)
+                }
+            }
+            .sheet(isPresented: $showAddLinkSheet) {
+                AddLinkSheet(deviceId: device.id) { newLink in
+                    links.append(newLink)
+                }
+            }
         }
     }
     
@@ -168,10 +184,7 @@ struct EditDeviceView: View {
             TextField("Release Year", text: $releaseYear)
                 .keyboardType(.numberPad)
             TextField("Location", text: $location)
-            TextField("External URL", text: $externalUrl)
-                .keyboardType(.URL)
-                .textInputAutocapitalization(.never)
-            
+
             Picker("Category", selection: $selectedCategoryId) {
                 ForEach(categories) { category in
                     Text(category.name).tag(category.id)
@@ -220,10 +233,74 @@ struct EditDeviceView: View {
     private var flagsSection: some View {
         Section {
             Toggle("Favorite", isOn: $isFavorite)
-            Toggle("Has Original Box", isOn: $hasOriginalBox)
             Toggle("Asset Tagged", isOn: $isAssetTagged)
         } header: {
             Text("Flags")
+        }
+    }
+
+    private var accessoriesSection: some View {
+        Section {
+            if accessories.isEmpty {
+                Text("No accessories recorded")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(accessories) { accessory in
+                    HStack {
+                        Text(accessory.name)
+                        Spacer()
+                        Button {
+                            Task { await removeAccessory(accessory) }
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+            Button("Add Accessory") {
+                showAddAccessorySheet = true
+            }
+            .foregroundColor(.accentColor)
+        } header: {
+            Text("Accessories")
+        }
+    }
+
+    private var linksSection: some View {
+        Section {
+            if links.isEmpty {
+                Text("No links recorded")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(links) { link in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(link.label)
+                                .font(.subheadline)
+                            Text(link.url)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                        Spacer()
+                        Button {
+                            Task { await removeLink(link) }
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+            Button("Add Reference Link") {
+                showAddLinkSheet = true
+            }
+            .foregroundColor(.accentColor)
+        } header: {
+            Text("Reference Links")
         }
     }
     
@@ -348,6 +425,24 @@ struct EditDeviceView: View {
         categories.first(where: { $0.id == selectedCategoryId })?.type == "COMPUTER"
     }
     
+    private func removeAccessory(_ accessory: DeviceAccessory) async {
+        do {
+            try await DeviceService.shared.removeDeviceAccessory(id: accessory.id)
+            accessories.removeAll { $0.id == accessory.id }
+        } catch {
+            print("Failed to remove accessory: \(error)")
+        }
+    }
+
+    private func removeLink(_ link: DeviceLink) async {
+        do {
+            try await DeviceService.shared.removeDeviceLink(id: link.id)
+            links.removeAll { $0.id == link.id }
+        } catch {
+            print("Failed to remove link: \(error)")
+        }
+    }
+
     private func loadCategories() async {
         isLoadingCategories = true
         do {
@@ -383,12 +478,10 @@ struct EditDeviceView: View {
             if let year = Int(releaseYear) { input["releaseYear"] = year }
             if !location.isEmpty { input["location"] = location }
             if !info.isEmpty { input["info"] = info }
-            if !externalUrl.isEmpty { input["externalUrl"] = externalUrl }
-            
+
             input["status"] = status.rawValue
             input["functionalStatus"] = functionalStatus.rawValue
             input["isFavorite"] = isFavorite
-            input["hasOriginalBox"] = hasOriginalBox
             input["isAssetTagged"] = isAssetTagged
             
             if let date = dateAcquired {
@@ -493,7 +586,6 @@ struct EditDeviceView: View {
         status: .COLLECTION,
         functionalStatus: .YES,
         lastPowerOnDate: nil,
-        hasOriginalBox: false,
         isAssetTagged: true,
         dateAcquired: "2024-01-15T00:00:00.000Z",
         whereAcquired: "eBay",
@@ -509,13 +601,14 @@ struct EditDeviceView: View {
         operatingSystem: "System 6",
         isWifiEnabled: false,
         isPramBatteryRemoved: true,
-        externalUrl: "https://everymac.com",
         category: Category(id: 1, name: "Compact Macs", type: "COMPUTER", sortOrder: 1),
         images: [],
         notes: [],
         maintenanceTasks: [],
         tags: [],
-        customFieldValues: []
+        customFieldValues: [],
+        accessories: [],
+        links: []
     )) { device in
         print("Device updated: \(device)")
     }

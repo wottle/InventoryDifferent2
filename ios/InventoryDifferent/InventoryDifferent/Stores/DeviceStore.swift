@@ -14,6 +14,7 @@ enum SortOption: String, CaseIterable {
     case dateAcquired = "Date Acquired"
     case manufacturer = "Manufacturer"
     case releaseYear = "Release Year"
+    case status = "Status"
 }
 
 enum SortDirection: String, CaseIterable {
@@ -155,6 +156,25 @@ class DeviceStore: ObservableObject {
                 let bYear = b.releaseYear ?? 0
                 if aYear != bYear {
                     primaryComparison = aYear < bYear ? .orderedAscending : .orderedDescending
+                } else {
+                    primaryComparison = .orderedSame
+                }
+            case .status:
+                func statusRank(_ s: Status) -> Int {
+                    switch s {
+                    case .COLLECTION: return 0
+                    case .FOR_SALE: return 1
+                    case .PENDING_SALE: return 2
+                    case .IN_REPAIR: return 3
+                    case .RETURNED: return 4
+                    case .SOLD: return 5
+                    case .DONATED: return 6
+                    }
+                }
+                let aRank = statusRank(a.status)
+                let bRank = statusRank(b.status)
+                if aRank != bRank {
+                    primaryComparison = aRank < bRank ? .orderedAscending : .orderedDescending
                 } else {
                     primaryComparison = .orderedSame
                 }

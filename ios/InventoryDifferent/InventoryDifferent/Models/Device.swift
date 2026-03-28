@@ -7,12 +7,23 @@
 
 import Foundation
 
+struct DeviceAccessory: Codable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+}
+
+struct DeviceLink: Codable, Identifiable, Hashable {
+    let id: Int
+    let label: String
+    let url: String
+}
+
 protocol DeviceRowPresentable {
     var id: Int { get }
     var status: Status { get }
     var functionalStatus: FunctionalStatus { get }
     var isAssetTagged: Bool { get }
-    var hasOriginalBox: Bool { get }
+    var accessories: [DeviceAccessory] { get }
     var isFavorite: Bool { get }
     var isPramBatteryRemoved: Bool? { get }
     var category: Category { get }
@@ -149,13 +160,12 @@ struct Device: Codable, Identifiable, Hashable {
     let info: String?
     let searchText: String?
     let isFavorite: Bool
-    
+
     let status: Status
     let functionalStatus: FunctionalStatus
     let lastPowerOnDate: String?
-    let hasOriginalBox: Bool
     let isAssetTagged: Bool
-    
+
     let dateAcquired: String?
     let whereAcquired: String?
     let priceAcquired: Double?
@@ -172,15 +182,15 @@ struct Device: Codable, Identifiable, Hashable {
     let operatingSystem: String?
     let isWifiEnabled: Bool?
     let isPramBatteryRemoved: Bool?
-    
-    let externalUrl: String?
-    
+
     let category: Category
     let images: [DeviceImage]
     let notes: [Note]
     let maintenanceTasks: [MaintenanceTask]
     let tags: [Tag]
     let customFieldValues: [CustomFieldValue]
+    let accessories: [DeviceAccessory]
+    let links: [DeviceLink]
     
     var displayName: String {
         if let additional = additionalName, !additional.isEmpty {
@@ -211,9 +221,9 @@ struct DeviceListItem: Codable, Identifiable, Hashable {
     let status: Status
     let functionalStatus: FunctionalStatus
     let lastPowerOnDate: String?
-    let hasOriginalBox: Bool
     let isAssetTagged: Bool
     let isPramBatteryRemoved: Bool?
+    let accessories: [DeviceAccessory]
 
     let dateAcquired: String?
     let estimatedValue: Double?

@@ -361,7 +361,6 @@ struct ShareView: View {
         status: .COLLECTION,
         functionalStatus: .YES,
         lastPowerOnDate: nil,
-        hasOriginalBox: false,
         isAssetTagged: true,
         dateAcquired: nil,
         whereAcquired: nil,
@@ -377,12 +376,13 @@ struct ShareView: View {
         operatingSystem: nil,
         isWifiEnabled: nil,
         isPramBatteryRemoved: nil,
-        externalUrl: nil,
         category: Category(id: 1, name: "Compact Macs", type: "COMPUTER", sortOrder: 1),
         images: [],
         notes: [],
         maintenanceTasks: [],
         tags: [],
-        customFieldValues: []
+        customFieldValues: [],
+        accessories: [],
+        links: []
     ))
 }

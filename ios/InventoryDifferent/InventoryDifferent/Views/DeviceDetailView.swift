@@ -122,6 +122,11 @@ struct DeviceDetailView: View {
     @State private var tagToRemove: Tag?
     @State private var showRemoveTagAlert = false
 
+    @State private var accessories: [DeviceAccessory]
+    @State private var links: [DeviceLink]
+    @State private var showAddAccessorySheet = false
+    @State private var showAddLinkSheet = false
+
     @State private var showEditDeviceSheet = false
     @State private var showShareSheet = false
     @State private var showDeleteAlert = false
@@ -154,6 +159,8 @@ struct DeviceDetailView: View {
         self._notes = State(initialValue: device.notes)
         self._images = State(initialValue: device.images)
         self._tags = State(initialValue: device.tags)
+        self._accessories = State(initialValue: device.accessories)
+        self._links = State(initialValue: device.links)
     }
     
     var body: some View {
@@ -273,6 +280,8 @@ struct DeviceDetailView: View {
                     maintenanceTasks = updatedDevice.maintenanceTasks
                     notes = updatedDevice.notes
                     tags = updatedDevice.tags
+                    accessories = updatedDevice.accessories
+                    links = updatedDevice.links
 
                     await refreshDevice()
                 }
@@ -348,6 +357,16 @@ struct DeviceDetailView: View {
                 device = updatedDevice
                 tags = updatedDevice.tags
                 onDeviceChanged?(updatedDevice)
+            }
+        }
+        .sheet(isPresented: $showAddAccessorySheet) {
+            AddAccessorySheet(deviceId: device.id) { newAccessory in
+                accessories.append(newAccessory)
+            }
+        }
+        .sheet(isPresented: $showAddLinkSheet) {
+            AddLinkSheet(deviceId: device.id) { newLink in
+                links.append(newLink)
             }
         }
         .alert("Remove Tag", isPresented: $showRemoveTagAlert) {
@@ -525,6 +544,8 @@ struct DeviceDetailView: View {
             maintenanceTasks = updatedDevice.maintenanceTasks
             notes = updatedDevice.notes
             tags = updatedDevice.tags
+            accessories = updatedDevice.accessories
+            links = updatedDevice.links
             onDeviceChanged?(updatedDevice)
         } catch {
             print("Failed to toggle favorite: \(error)")
@@ -547,6 +568,8 @@ struct DeviceDetailView: View {
             maintenanceTasks = updatedDevice.maintenanceTasks
             notes = updatedDevice.notes
             tags = updatedDevice.tags
+            accessories = updatedDevice.accessories
+            links = updatedDevice.links
             onDeviceChanged?(updatedDevice)
         } catch {
             print("Failed to update last powered on date: \(error)")
@@ -566,6 +589,8 @@ struct DeviceDetailView: View {
             maintenanceTasks = updatedDevice.maintenanceTasks
             notes = updatedDevice.notes
             tags = updatedDevice.tags
+            accessories = updatedDevice.accessories
+            links = updatedDevice.links
             onDeviceChanged?(updatedDevice)
         } catch {
             print("Failed to update device status: \(error)")
@@ -585,6 +610,8 @@ struct DeviceDetailView: View {
             maintenanceTasks = updatedDevice.maintenanceTasks
             notes = updatedDevice.notes
             tags = updatedDevice.tags
+            accessories = updatedDevice.accessories
+            links = updatedDevice.links
             onDeviceChanged?(updatedDevice)
         } catch {
             print("Failed to mark device for sale: \(error)")
@@ -611,6 +638,8 @@ struct DeviceDetailView: View {
             maintenanceTasks = updatedDevice.maintenanceTasks
             notes = updatedDevice.notes
             tags = updatedDevice.tags
+            accessories = updatedDevice.accessories
+            links = updatedDevice.links
             onDeviceChanged?(updatedDevice)
         } catch {
             print("Failed to mark device as sold: \(error)")
@@ -738,7 +767,7 @@ struct DeviceDetailView: View {
             
             // Status Indicators
             StatusIndicatorsRow(device: device)
-                .id("\(device.id)-\(device.isFavorite)-\(device.isAssetTagged)-\(device.hasOriginalBox)-\(device.isPramBatteryRemoved ?? false)-\(device.functionalStatus)")
+                .id("\(device.id)-\(device.isFavorite)-\(device.isAssetTagged)-\(device.accessories.contains(where: { $0.name == "Original Box" }))-\(device.isPramBatteryRemoved ?? false)-\(device.functionalStatus)")
             
             // Tags
             if authService.isAuthenticated || !tags.isEmpty {
@@ -919,20 +948,131 @@ struct DeviceDetailView: View {
                 }
             }
             
-            // External URL
-            if let urlString = device.externalUrl, let url = URL(string: urlString) {
-                DetailSection(title: "External Link") {
-                    Link(destination: url) {
-                        HStack {
-                            Text(urlString)
-                                .lineLimit(1)
-                            Spacer()
-                            Image(systemName: "arrow.up.right.square")
+            // Accessories
+            if authService.isAuthenticated || !accessories.isEmpty {
+                DetailSection(title: "Accessories") {
+                    if accessories.isEmpty {
+                        Text("No accessories recorded")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    } else {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(accessories) { accessory in
+                                    if authService.isAuthenticated {
+                                        Button {
+                                            Task { await removeAccessory(accessory) }
+                                        } label: {
+                                            HStack(spacing: 4) {
+                                                Text(accessory.name)
+                                                Image(systemName: "xmark")
+                                                    .font(.system(size: 8, weight: .bold))
+                                            }
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.green.opacity(0.15))
+                                            .foregroundColor(.green)
+                                            .clipShape(Capsule())
+                                        }
+                                    } else {
+                                        Text(accessory.name)
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.green.opacity(0.15))
+                                            .foregroundColor(.green)
+                                            .clipShape(Capsule())
+                                    }
+                                }
+                            }
                         }
+                    }
+                    if authService.isAuthenticated {
+                        Button {
+                            showAddAccessorySheet = true
+                        } label: {
+                            Label("Add Accessory", systemImage: "plus")
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.accentColor.opacity(0.1))
+                                .foregroundColor(.accentColor)
+                                .clipShape(Capsule())
+                        }
+                        .padding(.top, 4)
                     }
                 }
             }
-            
+
+            // Reference Links
+            if authService.isAuthenticated || !links.isEmpty {
+                DetailSection(title: "Reference Links") {
+                    if links.isEmpty {
+                        Text("No links recorded")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(links) { link in
+                            HStack {
+                                if let url = URL(string: link.url) {
+                                    Link(destination: url) {
+                                        HStack {
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(link.label)
+                                                    .font(.subheadline)
+                                                    .foregroundColor(.primary)
+                                                Text(link.url)
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                                    .lineLimit(1)
+                                            }
+                                            Spacer()
+                                            Image(systemName: "arrow.up.right.square")
+                                                .foregroundColor(.accentColor)
+                                        }
+                                    }
+                                } else {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(link.label)
+                                            .font(.subheadline)
+                                        Text(link.url)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                    Spacer()
+                                }
+                                if authService.isAuthenticated {
+                                    Button {
+                                        Task { await removeLink(link) }
+                                    } label: {
+                                        Image(systemName: "trash")
+                                            .font(.caption)
+                                            .foregroundColor(.red)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    }
+                    if authService.isAuthenticated {
+                        Button {
+                            showAddLinkSheet = true
+                        } label: {
+                            Label("Add Link", systemImage: "plus")
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.accentColor.opacity(0.1))
+                                .foregroundColor(.accentColor)
+                                .clipShape(Capsule())
+                        }
+                        .padding(.top, 4)
+                    }
+                }
+            }
+
             // Delete Device Button
             Button {
                 showDeleteAlert = true
@@ -1365,9 +1505,29 @@ struct DeviceDetailView: View {
             let updatedDevice = try await DeviceService.shared.removeDeviceTag(deviceId: device.id, tagId: tag.id)
             device = updatedDevice
             tags = updatedDevice.tags
+            accessories = updatedDevice.accessories
+            links = updatedDevice.links
             onDeviceChanged?(updatedDevice)
         } catch {
             print("Failed to remove tag: \(error)")
+        }
+    }
+
+    private func removeAccessory(_ accessory: DeviceAccessory) async {
+        do {
+            try await DeviceService.shared.removeDeviceAccessory(id: accessory.id)
+            accessories.removeAll { $0.id == accessory.id }
+        } catch {
+            print("Failed to remove accessory: \(error)")
+        }
+    }
+
+    private func removeLink(_ link: DeviceLink) async {
+        do {
+            try await DeviceService.shared.removeDeviceLink(id: link.id)
+            links.removeAll { $0.id == link.id }
+        } catch {
+            print("Failed to remove link: \(error)")
         }
     }
 
@@ -1382,6 +1542,8 @@ struct DeviceDetailView: View {
                 maintenanceTasks = refreshedDevice.maintenanceTasks
                 notes = refreshedDevice.notes
                 tags = refreshedDevice.tags
+                accessories = refreshedDevice.accessories
+                links = refreshedDevice.links
                 print("[DeviceDetailView] Calling onDeviceChanged callback")
                 onDeviceChanged?(refreshedDevice)
             } else {
@@ -1760,6 +1922,133 @@ private struct MarkForSaleSheet: View {
     }
 }
 
+struct AddAccessorySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let deviceId: Int
+    let onAdded: (DeviceAccessory) -> Void
+
+    @State private var customName = ""
+    @State private var isSubmitting = false
+
+    private let suggestions = [
+        "Original Box", "Power Adapter", "Power Cable", "Keyboard", "Mouse",
+        "Monitor", "Speakers", "Manuals", "Floppy Disks", "CDs", "Remote Control"
+    ]
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Suggestions") {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(suggestions, id: \.self) { suggestion in
+                                Button {
+                                    Task { await addAccessory(name: suggestion) }
+                                } label: {
+                                    Text(suggestion)
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.green.opacity(0.15))
+                                        .foregroundColor(.green)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+
+                Section("Custom") {
+                    HStack {
+                        TextField("Accessory name", text: $customName)
+                        Button("Add") {
+                            Task { await addAccessory(name: customName) }
+                        }
+                        .disabled(customName.trimmingCharacters(in: .whitespaces).isEmpty || isSubmitting)
+                    }
+                }
+            }
+            .navigationTitle("Add Accessory")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .disabled(isSubmitting)
+        }
+    }
+
+    private func addAccessory(name: String) async {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+        isSubmitting = true
+        do {
+            let newAccessory = try await DeviceService.shared.addDeviceAccessory(deviceId: deviceId, name: trimmed)
+            onAdded(newAccessory)
+            dismiss()
+        } catch {
+            print("Failed to add accessory: \(error)")
+        }
+        isSubmitting = false
+    }
+}
+
+struct AddLinkSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let deviceId: Int
+    let onAdded: (DeviceLink) -> Void
+
+    @State private var label = ""
+    @State private var url = ""
+    @State private var isSubmitting = false
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Link Details") {
+                    TextField("Label (e.g. EveryMac)", text: $label)
+                    TextField("URL", text: $url)
+                        .keyboardType(.URL)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                }
+            }
+            .navigationTitle("Add Reference Link")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") {
+                        Task { await addLink() }
+                    }
+                    .disabled(label.trimmingCharacters(in: .whitespaces).isEmpty ||
+                              url.trimmingCharacters(in: .whitespaces).isEmpty || isSubmitting)
+                }
+            }
+            .disabled(isSubmitting)
+        }
+    }
+
+    private func addLink() async {
+        let trimmedLabel = label.trimmingCharacters(in: .whitespaces)
+        let trimmedUrl = url.trimmingCharacters(in: .whitespaces)
+        guard !trimmedLabel.isEmpty, !trimmedUrl.isEmpty else { return }
+        isSubmitting = true
+        do {
+            let newLink = try await DeviceService.shared.addDeviceLink(deviceId: deviceId, label: trimmedLabel, url: trimmedUrl)
+            onAdded(newLink)
+            dismiss()
+        } catch {
+            print("Failed to add link: \(error)")
+        }
+        isSubmitting = false
+    }
+}
+
 struct ValueHistorySection: View {
     let snapshots: [ValueSnapshot]
 
@@ -1848,7 +2137,6 @@ struct ValueHistorySection: View {
                     status: .COLLECTION,
                     functionalStatus: .YES,
                     lastPowerOnDate: nil,
-                    hasOriginalBox: false,
                     isAssetTagged: true,
                     dateAcquired: "2024-01-15T00:00:00.000Z",
                     whereAcquired: "eBay",
@@ -1864,13 +2152,14 @@ struct ValueHistorySection: View {
                     operatingSystem: "System 6",
                     isWifiEnabled: false,
                     isPramBatteryRemoved: true,
-                    externalUrl: "https://everymac.com",
                     category: Category(id: 1, name: "Compact Macs", type: "COMPUTER", sortOrder: 1),
                     images: [],
                     notes: [],
                     maintenanceTasks: [],
                     tags: [Tag(id: 1, name: "vintage"), Tag(id: 2, name: "working")],
-                    customFieldValues: []
+                    customFieldValues: [],
+                    accessories: [],
+                    links: []
                 ), selectedTab: $selectedTab)
             }
         }

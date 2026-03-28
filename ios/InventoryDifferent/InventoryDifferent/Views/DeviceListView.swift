@@ -340,7 +340,7 @@ struct StatusIndicatorsRow: View {
             // Original Box
             Image(systemName: "shippingbox.fill")
                 .font(.system(size: 12))
-                .foregroundColor(device.hasOriginalBox ? .green : .gray.opacity(0.4))
+                .foregroundColor(device.accessories.contains(where: { $0.name == "Original Box" }) ? .green : .gray.opacity(0.4))
             
             // PRAM Battery (only for computers)
             if device.category.type == "COMPUTER" {

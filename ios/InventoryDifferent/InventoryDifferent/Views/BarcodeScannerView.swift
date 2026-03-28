@@ -220,7 +220,6 @@ struct BarcodeScannerView: View {
                 status
                 functionalStatus
                 lastPowerOnDate
-                hasOriginalBox
                 isAssetTagged
                 dateAcquired
                 whereAcquired
@@ -236,7 +235,6 @@ struct BarcodeScannerView: View {
                 operatingSystem
                 isWifiEnabled
                 isPramBatteryRemoved
-                externalUrl
                 category {
                     id
                     name
@@ -268,6 +266,16 @@ struct BarcodeScannerView: View {
                     id
                     name
                 }
+                customFieldValues {
+                    id
+                    customFieldId
+                    customFieldName
+                    value
+                    isPublic
+                    sortOrder
+                }
+                accessories { id name }
+                links { id label url }
             }
         }
         """
