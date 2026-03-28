@@ -32,6 +32,7 @@ export async function POST(req: Request) {
     console.log('[Chat API] OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
     const { messages } = await req.json();
     console.log('[Chat API] Messages:', messages?.length || 0);
+    const authHeader = req.headers.get('authorization') || '';
 
     console.log('[Chat API] Creating streamText...');
     const result = streamText({
@@ -600,7 +601,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
           try {
             const response = await fetch(API_URL, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
               body: JSON.stringify({
                 query: `
                   query FinancialOverview {
