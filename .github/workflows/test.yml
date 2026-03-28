@@ -181,10 +181,12 @@ jobs:
 
       - name: Build and start web
         working-directory: web
+        env:
+          API_URL: http://localhost:4000
         run: |
           npm ci
           npm run build
-          API_URL=http://localhost:4000 npx next start -p 3000 &
+          npx next start -p 3000 &
 
           for i in $(seq 1 30); do
             if curl -sf http://localhost:3000 > /dev/null 2>&1; then
