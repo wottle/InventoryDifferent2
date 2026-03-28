@@ -25,7 +25,6 @@ const GET_SHOP_DEVICE = gql`
       info
       status
       functionalStatus
-      hasOriginalBox
       listPrice
       soldPrice
       soldDate
@@ -35,7 +34,15 @@ const GET_SHOP_DEVICE = gql`
       storage
       operatingSystem
       isWifiEnabled
-      externalUrl
+      accessories {
+        id
+        name
+      }
+      links {
+        id
+        label
+        url
+      }
       category {
         id
         name
@@ -428,14 +435,16 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                             {getPriceDisplay()}
                             <div className="mt-2 flex items-center gap-3">
                                 <FunctionalBadge status={device.functionalStatus} />
-                                {device.hasOriginalBox && (
-                                    <span className="inline-flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400">
-                                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                        </svg>
-                                        Original Box
+                                {device.accessories?.map((acc: any) => (
+                                    <span key={acc.id} className="inline-flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400">
+                                        {acc.name === 'Original Box' && (
+                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                            </svg>
+                                        )}
+                                        {acc.name}
                                     </span>
-                                )}
+                                ))}
                             </div>
                             {device.status === 'SOLD' && device.soldDate && (
                                 <p className="mt-2 text-sm text-[var(--muted-foreground)]">
@@ -516,19 +525,24 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                             </div>
                         )}
 
-                        {/* External Link */}
-                        {device.externalUrl && (
-                            <a
-                                href={device.externalUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-sm text-[var(--apple-blue)] hover:underline"
-                            >
-                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                More Information
-                            </a>
+                        {/* Reference Links */}
+                        {device.links && device.links.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {device.links.map((link: any) => (
+                                    <a
+                                        key={link.id}
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-sm text-[var(--apple-blue)] hover:underline"
+                                    >
+                                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                        {link.label}
+                                    </a>
+                                ))}
+                            </div>
                         )}
 
                         {/* Contact CTA */}
