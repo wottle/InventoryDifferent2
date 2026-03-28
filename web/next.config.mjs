@@ -10,6 +10,7 @@ const nextConfig = {
             { source: '/export', destination: `${apiUrl}/export` },
             { source: '/auth/:path*', destination: `${apiUrl}/auth/:path*` },
             { source: '/generate-image', destination: `${apiUrl}/generate-image` },
+            { source: '/generate-image/:path*', destination: `${apiUrl}/generate-image/:path*` },
         ];
     },
 };
