@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import { API_BASE_URL } from "../../lib/config";
@@ -10,6 +10,12 @@ import { LoadingPanel } from "../../components/LoadingPanel";
 
 const DEFAULT_PROMPT =
   "Create a professional product photograph of this vintage computer device on a dark background (#282828) with a 1:1 ratio for square image use. Use studio lighting with soft, even illumination to eliminate harsh shadows. Position the product at a slight 30-degree angle to show dimension. High detail, sharp focus throughout, showing clear material texture. Photorealistic rendering for high-end e-commerce use.";
+
+const SET_SYSTEM_SETTING = gql`
+  mutation SetSystemSetting($key: String!, $value: String!) {
+    setSystemSetting(key: $key, value: $value)
+  }
+`;
 
 const GET_DEVICES = gql`
   query GetDevicesForGenerate {
@@ -44,9 +50,11 @@ interface DeviceRow {
 export default function GenerateImagesPage() {
   const { isAuthenticated, isLoading: authLoading, getAccessToken } = useAuth();
   const { data, loading: devicesLoading } = useQuery(GET_DEVICES);
+  const [setSystemSetting] = useMutation(SET_SYSTEM_SETTING);
 
   const [openaiEnabled, setOpenaiEnabled] = useState<boolean | null>(null);
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const [savedPrompt, setSavedPrompt] = useState(false);
   const [assignAsThumbnail, setAssignAsThumbnail] = useState(true);
   const [assignAsShopImage, setAssignAsShopImage] = useState(true);
   const [assignAsListingImage, setAssignAsListingImage] = useState(false);
@@ -60,7 +68,10 @@ export default function GenerateImagesPage() {
   useEffect(() => {
     fetch(`${API_BASE_URL}/generate-image/config`)
       .then((r) => r.json())
-      .then((d) => setOpenaiEnabled(!!d.enabled))
+      .then((d) => {
+        setOpenaiEnabled(!!d.enabled);
+        if (d.defaultPrompt) setPrompt(d.defaultPrompt);
+      })
       .catch(() => setOpenaiEnabled(false));
   }, []);
 
@@ -154,6 +165,12 @@ export default function GenerateImagesPage() {
     cancelRef.current = true;
   }
 
+  async function handleSaveDefaultPrompt() {
+    await setSystemSetting({ variables: { key: "imagePrompt", value: prompt } });
+    setSavedPrompt(true);
+    setTimeout(() => setSavedPrompt(false), 2000);
+  }
+
   if (authLoading || openaiEnabled === null) {
     return <LoadingPanel title="Loading…" />;
   }
@@ -200,6 +217,17 @@ export default function GenerateImagesPage() {
               disabled={isRunning}
               className="w-full rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--apple-blue)] resize-none disabled:opacity-60"
             />
+            <div className="flex items-center gap-2 mt-1.5">
+              <button
+                type="button"
+                onClick={handleSaveDefaultPrompt}
+                disabled={isRunning}
+                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:underline disabled:opacity-50"
+              >
+                Save as default
+              </button>
+              {savedPrompt && <span className="text-xs text-green-600">Saved!</span>}
+            </div>
           </div>
           <div className="flex flex-wrap gap-4">
             {[

@@ -234,6 +234,11 @@ model TimelineEvent {
   updatedAt   DateTime @updatedAt
 }
 
+model SystemSetting {
+  key   String @id
+  value String
+}
+
 enum Status {
   COLLECTION
   FOR_SALE

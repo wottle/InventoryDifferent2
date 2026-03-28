@@ -1026,8 +1026,9 @@ RESTART IDENTITY CASCADE;
         'Create a professional product photograph of this vintage computer device on a dark background (#282828) with a 1:1 ratio for square image use. Use studio lighting with soft, even illumination to eliminate harsh shadows. Position the product at a slight 30-degree angle to show dimension. High detail, sharp focus throughout, showing clear material texture. Photorealistic rendering for high-end e-commerce use.';
 
     // Config endpoint — read at request time so the web can detect feature availability without a build-time bake
-    app.get('/generate-image/config', (_req, res) => {
-        return res.json({ enabled: !!process.env.OPENAI_API_KEY });
+    app.get('/generate-image/config', async (_req, res) => {
+        const setting = await (defaultPrisma as any).systemSetting.findUnique({ where: { key: 'imagePrompt' } });
+        return res.json({ enabled: !!process.env.OPENAI_API_KEY, defaultPrompt: setting?.value ?? null });
     });
 
     app.post('/generate-image', requireAuth, async (req, res) => {

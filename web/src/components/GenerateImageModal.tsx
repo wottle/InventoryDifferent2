@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../lib/config";
 import { useAuth } from "../lib/auth-context";
 
@@ -29,6 +29,13 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
   );
   const [useTextOnly, setUseTextOnly] = useState(images.length === 0);
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/generate-image/config`)
+      .then(r => r.json())
+      .then(cfg => { if (cfg.defaultPrompt) setPrompt(cfg.defaultPrompt); })
+      .catch(() => {});
+  }, []);
   const [assignAsThumbnail, setAssignAsThumbnail] = useState(true);
   const [assignAsShopImage, setAssignAsShopImage] = useState(false);
   const [assignAsListingImage, setAssignAsListingImage] = useState(false);

@@ -711,6 +711,10 @@ export const resolvers = {
                 topCategoryType,
             };
         },
+        systemSetting: async (_parent: any, args: { key: string }, context: Context) => {
+            const setting = await (context.prisma as any).systemSetting.findUnique({ where: { key: args.key } });
+            return setting?.value ?? null;
+        },
     },
     Mutation: {
         recordDeviceView: async (_parent: any, args: { deviceId: number }, context: Context) => {
@@ -1238,6 +1242,15 @@ export const resolvers = {
         removeDeviceLink: async (_parent: any, args: { id: number }, context: Context) => {
             requireAuth(context);
             await context.prisma.deviceLink.delete({ where: { id: args.id } });
+            return true;
+        },
+        setSystemSetting: async (_parent: any, args: { key: string; value: string }, context: Context) => {
+            requireAuth(context);
+            await (context.prisma as any).systemSetting.upsert({
+                where: { key: args.key },
+                create: { key: args.key, value: args.value },
+                update: { value: args.value },
+            });
             return true;
         },
     },

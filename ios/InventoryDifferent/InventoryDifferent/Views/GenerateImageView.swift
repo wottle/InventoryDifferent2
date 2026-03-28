@@ -23,6 +23,7 @@ struct GenerateImageView: View {
     @State private var isGenerating = false
     @State private var errorMessage: String?
     @State private var done = false
+    @State private var savedPrompt = false
 
     init(deviceId: Int, images: [DeviceImage], onGenerated: @escaping (DeviceImage) -> Void) {
         self.deviceId = deviceId
@@ -89,6 +90,24 @@ struct GenerateImageView: View {
                     TextEditor(text: $prompt)
                         .frame(minHeight: 120)
                         .font(.footnote)
+                    Button {
+                        Task {
+                            try? await DeviceService.shared.saveDefaultImagePrompt(prompt)
+                            savedPrompt = true
+                            try? await Task.sleep(nanoseconds: 2_000_000_000)
+                            savedPrompt = false
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Save as default prompt")
+                            if savedPrompt {
+                                Text("· Saved!")
+                                    .foregroundColor(.green)
+                            }
+                        }
+                    }
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
                 }
 
                 // Role assignment
@@ -117,6 +136,12 @@ struct GenerateImageView: View {
             }
             .navigationTitle("AI Product Image")
             .navigationBarTitleDisplayMode(.inline)
+            .task {
+                if let config = try? await DeviceService.shared.fetchGenerateImageConfig(),
+                   let saved = config.defaultPrompt {
+                    prompt = saved
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

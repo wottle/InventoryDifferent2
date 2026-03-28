@@ -361,6 +361,7 @@ export const typeDefs = gql`
     timelineEvents: [TimelineEvent!]!
     valueHistory(deviceId: Int!): [ValueSnapshot!]!
     wishlistItems(where: WishlistItemWhereInput): [WishlistItem!]!
+    systemSetting(key: String!): String
   }
 
   input DeviceCreateInput {
@@ -584,5 +585,6 @@ export const typeDefs = gql`
     removeDeviceAccessory(id: Int!): Boolean!
     addDeviceLink(deviceId: Int!, label: String!, url: String!): DeviceLink!
     removeDeviceLink(id: Int!): Boolean!
+    setSystemSetting(key: String!, value: String!): Boolean!
   }
 `;

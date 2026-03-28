@@ -664,16 +664,33 @@ class DeviceService {
         return response.createImage
     }
 
-    func checkOpenAIEnabled() async -> Bool {
-        guard let url = URL(string: "\(api.getBaseURL())/generate-image/config") else { return false }
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            struct Config: Decodable { let enabled: Bool }
-            let config = try JSONDecoder().decode(Config.self, from: data)
-            return config.enabled
-        } catch {
-            return false
+    struct GenerateImageConfig: Decodable {
+        let enabled: Bool
+        let defaultPrompt: String?
+    }
+
+    func fetchGenerateImageConfig() async throws -> GenerateImageConfig {
+        guard let url = URL(string: "\(api.getBaseURL())/generate-image/config") else {
+            throw APIError.invalidURL
         }
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(GenerateImageConfig.self, from: data)
+    }
+
+    func checkOpenAIEnabled() async -> Bool {
+        return (try? await fetchGenerateImageConfig())?.enabled ?? false
+    }
+
+    func saveDefaultImagePrompt(_ prompt: String) async throws {
+        let mutation = """
+        mutation SetSystemSetting($key: String!, $value: String!) {
+            setSystemSetting(key: $key, value: $value)
+        }
+        """
+        struct SetSystemSettingData: Decodable {
+            let setSystemSetting: Bool
+        }
+        let _: SetSystemSettingData = try await api.execute(query: mutation, variables: ["key": "imagePrompt", "value": prompt])
     }
 
     func generateImage(
