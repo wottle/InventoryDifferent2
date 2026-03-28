@@ -35,6 +35,37 @@ const REMOVE_CUSTOM_FIELD_VALUE = gql`
   }
 `;
 
+const ADD_DEVICE_ACCESSORY = gql`
+  mutation AddDeviceAccessory($deviceId: Int!, $name: String!) {
+    addDeviceAccessory(deviceId: $deviceId, name: $name) {
+      id
+      name
+    }
+  }
+`;
+
+const REMOVE_DEVICE_ACCESSORY = gql`
+  mutation RemoveDeviceAccessory($id: Int!) {
+    removeDeviceAccessory(id: $id)
+  }
+`;
+
+const ADD_DEVICE_LINK = gql`
+  mutation AddDeviceLink($deviceId: Int!, $label: String!, $url: String!) {
+    addDeviceLink(deviceId: $deviceId, label: $label, url: $url) {
+      id
+      label
+      url
+    }
+  }
+`;
+
+const REMOVE_DEVICE_LINK = gql`
+  mutation RemoveDeviceLink($id: Int!) {
+    removeDeviceLink(id: $id)
+  }
+`;
+
 const GET_CATEGORIES = gql`
   query GetCategories {
     categories {
@@ -118,6 +149,17 @@ const UPDATE_DEVICE = gql`
   }
 `;
 
+interface DeviceAccessory {
+    id: number;
+    name: string;
+}
+
+interface DeviceLink {
+    id: number;
+    label: string;
+    url: string;
+}
+
 interface Category {
     id: number;
     name: string;
@@ -174,6 +216,8 @@ interface DeviceData {
     isWifiEnabled?: boolean;
     isPramBatteryRemoved?: boolean;
     lastPowerOnDate?: string;
+    accessories?: DeviceAccessory[];
+    links?: DeviceLink[];
     category: {
         id: number;
         type: string;
@@ -248,6 +292,10 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
     const [updateDevice, { loading: updating }] = useMutation(UPDATE_DEVICE);
     const [setCustomFieldValue] = useMutation(SET_CUSTOM_FIELD_VALUE);
     const [removeCustomFieldValue] = useMutation(REMOVE_CUSTOM_FIELD_VALUE);
+    const [addDeviceAccessory] = useMutation(ADD_DEVICE_ACCESSORY);
+    const [removeDeviceAccessory] = useMutation(REMOVE_DEVICE_ACCESSORY);
+    const [addDeviceLink] = useMutation(ADD_DEVICE_LINK);
+    const [removeDeviceLink] = useMutation(REMOVE_DEVICE_LINK);
 
     const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
     const [barcodeSupported, setBarcodeSupported] = useState(false);
@@ -292,6 +340,19 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Accessories state
+    const [accessories, setAccessories] = useState<Array<{id?: number, name: string}>>(
+        device?.accessories?.map(a => ({ id: a.id, name: a.name })) ?? []
+    );
+    const [newAccessoryName, setNewAccessoryName] = useState("");
+
+    // Links state
+    const [links, setLinks] = useState<Array<{id?: number, label: string, url: string}>>(
+        device?.links?.map(l => ({ id: l.id, label: l.label, url: l.url })) ?? []
+    );
+    const [newLinkLabel, setNewLinkLabel] = useState("");
+    const [newLinkUrl, setNewLinkUrl] = useState("");
+
     useEffect(() => {
         const BarcodeDetectorCtor = typeof window !== "undefined" ? (window as any).BarcodeDetector : undefined;
         setBarcodeSupported(typeof BarcodeDetectorCtor === "function" && !!navigator?.mediaDevices?.getUserMedia);
@@ -331,6 +392,9 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 isPramBatteryRemoved: device.isPramBatteryRemoved || false,
                 lastPowerOnDate: device.lastPowerOnDate ? device.lastPowerOnDate.split("T")[0] : "",
             });
+
+            setAccessories(device.accessories?.map(a => ({ id: a.id, name: a.name })) ?? []);
+            setLinks(device.links?.map(l => ({ id: l.id, label: l.label, url: l.url })) ?? []);
 
             // Populate custom field values
             if (device.customFieldValues) {
@@ -529,6 +593,16 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 }
             }
 
+            // Save accessories (create mode only — edit mode is handled inline)
+            if (mode === "create") {
+                for (const acc of accessories) {
+                    await addDeviceAccessory({ variables: { deviceId, name: acc.name } });
+                }
+                for (const link of links) {
+                    await addDeviceLink({ variables: { deviceId, label: link.label, url: link.url } });
+                }
+            }
+
             router.push(`/devices/${deviceId}`);
         } catch (err) {
             console.error("Error saving device:", err);
@@ -536,6 +610,52 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
     };
 
     const loading = creating || updating;
+
+    const categoryType = categoriesData?.categories?.find((c: any) => c.id === formData.categoryId)?.type ?? "";
+    const accessorySuggestions = categoryType === 'COMPUTER'
+        ? ["Original Box", "Keyboard", "Mouse", "Power Cable/Adapter", "Power Supply", "Manual/Documentation", "Software Disks", "Monitor"]
+        : ["Original Box", "Power Cable", "Cables/Adapters", "Manual"];
+
+    const handleAddAccessory = async (name: string) => {
+        if (!name.trim() || accessories.some(a => a.name === name.trim())) return;
+        if (mode === 'edit' && device?.id) {
+            const res = await addDeviceAccessory({ variables: { deviceId: device.id, name: name.trim() } });
+            setAccessories(prev => [...prev, { id: res.data.addDeviceAccessory.id, name: name.trim() }]);
+        } else {
+            setAccessories(prev => [...prev, { name: name.trim() }]);
+        }
+        setNewAccessoryName("");
+    };
+
+    const handleRemoveAccessory = async (index: number) => {
+        const acc = accessories[index];
+        if (mode === 'edit' && acc.id) {
+            await removeDeviceAccessory({ variables: { id: acc.id } });
+        }
+        setAccessories(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const linkLabelSuggestions = ["EveryMac", "MacTracker", "Macintosh Garden", "Macintosh Repository", "68kMLA Thread", "Repair Guide", "Service Manual", "eBay Listing", "Wikipedia"];
+
+    const handleAddLink = async () => {
+        if (!newLinkLabel.trim() || !newLinkUrl.trim()) return;
+        if (mode === 'edit' && device?.id) {
+            const res = await addDeviceLink({ variables: { deviceId: device.id, label: newLinkLabel.trim(), url: newLinkUrl.trim() } });
+            setLinks(prev => [...prev, { id: res.data.addDeviceLink.id, label: newLinkLabel.trim(), url: newLinkUrl.trim() }]);
+        } else {
+            setLinks(prev => [...prev, { label: newLinkLabel.trim(), url: newLinkUrl.trim() }]);
+        }
+        setNewLinkLabel("");
+        setNewLinkUrl("");
+    };
+
+    const handleRemoveLink = async (index: number) => {
+        const link = links[index];
+        if (mode === 'edit' && link.id) {
+            await removeDeviceLink({ variables: { id: link.id } });
+        }
+        setLinks(prev => prev.filter((_, i) => i !== index));
+    };
 
     return (
         <form onSubmit={handleSubmit} className="max-w-4xl">
@@ -807,17 +927,6 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     <label className="flex items-center gap-2 cursor-pointer">
                         <input
                             type="checkbox"
-                            name="hasOriginalBox"
-                            checked={formData.hasOriginalBox}
-                            onChange={handleChange}
-                            className="w-4 h-4 rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--apple-blue)]"
-                        />
-                        <span className="text-sm text-[var(--foreground)]">Has Original Box</span>
-                    </label>
-
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="checkbox"
                             name="isAssetTagged"
                             checked={formData.isAssetTagged}
                             onChange={handleChange}
@@ -1065,6 +1174,81 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 </>
             )}
 
+            <SectionHeader>Accessories</SectionHeader>
+            <div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                    {accessories.map((acc, i) => (
+                        <span key={i} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
+                            {acc.name}
+                            <button type="button" onClick={() => handleRemoveAccessory(i)} className="text-[var(--muted-foreground)] hover:text-[var(--apple-red)] ml-1">×</button>
+                        </span>
+                    ))}
+                </div>
+                <div className="flex flex-wrap gap-1 mb-3">
+                    {accessorySuggestions.filter(s => !accessories.some(a => a.name === s)).map(s => (
+                        <button key={s} type="button" onClick={() => handleAddAccessory(s)}
+                            className="px-2 py-1 text-xs rounded border border-dashed border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--apple-blue)] hover:text-[var(--apple-blue)] transition-colors">
+                            + {s}
+                        </button>
+                    ))}
+                </div>
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        value={newAccessoryName}
+                        onChange={e => setNewAccessoryName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddAccessory(newAccessoryName); }}}
+                        className={`${inputClass} flex-1`}
+                        placeholder="Custom accessory..."
+                    />
+                    <button type="button" onClick={() => handleAddAccessory(newAccessoryName)}
+                        className="px-3 py-2 text-sm bg-[var(--apple-blue)] text-white rounded border border-[#007acc] hover:brightness-110 whitespace-nowrap">
+                        Add
+                    </button>
+                </div>
+            </div>
+
+            <SectionHeader>Reference Links</SectionHeader>
+            <div>
+                {links.length > 0 && (
+                    <div className="space-y-2 mb-3">
+                        {links.map((link, i) => (
+                            <div key={i} className="flex items-center gap-2 p-2 rounded border border-[var(--border)] bg-[var(--card)]">
+                                <span className="text-xs font-medium text-[var(--foreground)] min-w-0 flex-shrink-0">{link.label}</span>
+                                <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--apple-blue)] hover:underline truncate flex-1 min-w-0">{link.url}</a>
+                                <button type="button" onClick={() => handleRemoveLink(i)} className="text-[var(--muted-foreground)] hover:text-[var(--apple-red)] flex-shrink-0">×</button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                    <input
+                        type="text"
+                        value={newLinkLabel}
+                        onChange={e => setNewLinkLabel(e.target.value)}
+                        list="link-label-suggestions"
+                        className={`${inputClass} flex-1`}
+                        style={{ minWidth: '120px' }}
+                        placeholder="Label (e.g. EveryMac)"
+                    />
+                    <datalist id="link-label-suggestions">
+                        {linkLabelSuggestions.map(s => <option key={s} value={s} />)}
+                    </datalist>
+                    <input
+                        type="url"
+                        value={newLinkUrl}
+                        onChange={e => setNewLinkUrl(e.target.value)}
+                        className={`${inputClass} flex-1`}
+                        style={{ minWidth: '120px' }}
+                        placeholder="https://..."
+                    />
+                    <button type="button" onClick={handleAddLink}
+                        className="px-3 py-2 text-sm bg-[var(--apple-blue)] text-white rounded border border-[#007acc] hover:brightness-110 whitespace-nowrap">
+                        Add
+                    </button>
+                </div>
+            </div>
+
             <SectionHeader>Additional Information</SectionHeader>
             <div className="grid grid-cols-1 gap-4">
                 <FormField label="Description / Notes">
@@ -1074,17 +1258,6 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         onChange={handleChange}
                         className={`${inputClass} min-h-[100px]`}
                         placeholder="Add any additional information about this device..."
-                    />
-                </FormField>
-
-                <FormField label="External URL">
-                    <input
-                        type="url"
-                        name="externalUrl"
-                        value={formData.externalUrl}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="https://..."
                     />
                 </FormField>
             </div>

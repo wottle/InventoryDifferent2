@@ -25,7 +25,7 @@ interface DeviceCardProps {
             isThumbnail: boolean;
         }[];
         isFavorite?: boolean;
-        hasOriginalBox?: boolean;
+        accessories?: Array<{id: number, name: string}>;
         isPramBatteryRemoved?: boolean;
     };
 }
@@ -76,7 +76,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 )}
 
                 {/* Original Box indicator */}
-                {device.hasOriginalBox && (
+                {device.accessories?.some((a: any) => a.name === 'Original Box') && (
                     <div className="w-4 h-4 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center" title="Has Original Box">
                         <svg width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-purple-600 dark:text-purple-400">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -224,9 +224,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
             </span>
 
             {/* Original Box - box icon */}
-            <span title={device.hasOriginalBox ? 'Has Original Box' : 'No Original Box'}>
-                <svg 
-                    className={`w-4 h-4 ${device.hasOriginalBox ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`} 
+            <span title={device.accessories?.some((a: any) => a.name === 'Original Box') ? 'Has Original Box' : 'No Original Box'}>
+                <svg
+                    className={`w-4 h-4 ${device.accessories?.some((a: any) => a.name === 'Original Box') ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"

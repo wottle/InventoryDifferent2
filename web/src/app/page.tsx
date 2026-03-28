@@ -76,6 +76,10 @@ const GET_DEVICES = gql`
         id
         name
       }
+      accessories {
+        id
+        name
+      }
     }
   }
 `;

@@ -89,6 +89,15 @@ const GET_DEVICE = gql`
         isPublic
         sortOrder
       }
+      accessories {
+        id
+        name
+      }
+      links {
+        id
+        label
+        url
+      }
     }
   }
 `;
@@ -310,7 +319,7 @@ function StatusIndicatorIcons({ device }: { device: any }) {
             )}
 
             {/* Original Box indicator */}
-            {device.hasOriginalBox && (
+            {device.accessories?.some((a: any) => a.name === 'Original Box') && (
                 <div className="w-5 h-5 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center" title="Has Original Box">
                     <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-purple-600 dark:text-purple-400">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -1623,16 +1632,23 @@ export default function DeviceDetail() {
                                     })}
                                 />
                             )}
-                            {device.externalUrl && (
-                                <DetailRow
-                                    label="External Link"
-                                    value={
-                                        <a href={device.externalUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--apple-blue)] hover:underline">
-                                            View
-                                        </a>
-                                    }
-                                />
+                            {device.accessories?.length > 0 && (
+                                <div className="flex justify-between py-3 border-b border-[var(--border)] last:border-0">
+                                    <dt className="text-sm text-[var(--muted-foreground)]">Accessories</dt>
+                                    <dd className="flex flex-wrap gap-1 mt-1 justify-end">
+                                        {device.accessories.map((a: any) => (
+                                            <span key={a.id} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
+                                                {a.name}
+                                            </span>
+                                        ))}
+                                    </dd>
+                                </div>
                             )}
+                            {device.links?.length > 0 && device.links.map((link: any) => (
+                                <DetailRow key={link.id} label={link.label} value={
+                                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-[var(--apple-blue)] hover:underline">{link.url}</a>
+                                } />
+                            ))}
                         </dl>
                     </div>
 

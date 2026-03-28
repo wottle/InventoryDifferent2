@@ -189,9 +189,9 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         </span>
 
         {/* Original Box - box icon */}
-        <span title={device.hasOriginalBox ? 'Has Original Box' : 'No Original Box'}>
-          <svg 
-            className={`w-5 h-5 ${device.hasOriginalBox ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`} 
+        <span title={device.accessories?.some((a: any) => a.name === 'Original Box') ? 'Has Original Box' : 'No Original Box'}>
+          <svg
+            className={`w-5 h-5 ${device.accessories?.some((a: any) => a.name === 'Original Box') ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
