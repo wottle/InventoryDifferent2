@@ -43,7 +43,9 @@ jobs:
         working-directory: api
         env:
           DATABASE_URL: postgresql://postgres:testpass@localhost:5433/inventory_test
-        run: npx prisma migrate deploy
+        run: |
+          npx prisma migrate deploy
+          npx prisma generate
 
       - name: Run tests
         working-directory: api
@@ -95,7 +97,9 @@ jobs:
         working-directory: api
         env:
           DATABASE_URL: postgresql://postgres:testpass@localhost:5433/inventory_test
-        run: npx prisma migrate deploy
+        run: |
+          npx prisma migrate deploy
+          npx prisma generate
 
       - name: Run tests
         working-directory: mcp-server

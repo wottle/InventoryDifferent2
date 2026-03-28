@@ -20,7 +20,7 @@ model Device {
   info                String?   @db.Text
   isFavorite          Boolean   @default(false)
 
-  status              Status    @default(AVAILABLE)
+  status              Status    @default(COLLECTION)
   functionalStatus    FunctionalStatus @default(YES)
   lastPowerOnDate     DateTime?
   hasOriginalBox      Boolean   @default(false)
@@ -126,7 +126,7 @@ model Template {
 }
 
 enum Status {
-  AVAILABLE
+  COLLECTION
   FOR_SALE
   PENDING_SALE
   SOLD
