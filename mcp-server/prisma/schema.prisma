@@ -53,6 +53,27 @@ model Device {
   notes               Note[]
   maintenanceTasks    MaintenanceTask[]
   tags                Tag[]
+  accessories         DeviceAccessory[]
+  links               DeviceLink[]
+}
+
+model DeviceAccessory {
+  id        Int      @id @default(autoincrement())
+  deviceId  Int
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+
+  @@unique([deviceId, name])
+}
+
+model DeviceLink {
+  id        Int      @id @default(autoincrement())
+  deviceId  Int
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  label     String
+  url       String
+  createdAt DateTime @default(now())
 }
 
 model Category {

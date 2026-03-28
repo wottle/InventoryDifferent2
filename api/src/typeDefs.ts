@@ -73,6 +73,23 @@ export const typeDefs = gql`
     maintenanceTasks: [MaintenanceTask!]!
     tags: [Tag!]!
     customFieldValues: [CustomFieldValue!]!
+    accessories: [DeviceAccessory!]!
+    links: [DeviceLink!]!
+  }
+
+  type DeviceAccessory {
+    id: Int!
+    deviceId: Int!
+    name: String!
+    createdAt: String!
+  }
+
+  type DeviceLink {
+    id: Int!
+    deviceId: Int!
+    label: String!
+    url: String!
+    createdAt: String!
   }
 
   type Category {
@@ -563,5 +580,9 @@ export const typeDefs = gql`
     deleteCustomField(id: Int!): Boolean!
     setCustomFieldValue(input: SetCustomFieldValueInput!): CustomFieldValue!
     removeCustomFieldValue(deviceId: Int!, customFieldId: Int!): Boolean!
+    addDeviceAccessory(deviceId: Int!, name: String!): DeviceAccessory!
+    removeDeviceAccessory(id: Int!): Boolean!
+    addDeviceLink(deviceId: Int!, label: String!, url: String!): DeviceLink!
+    removeDeviceLink(id: Int!): Boolean!
   }
 `;

@@ -71,6 +71,8 @@ const DEVICE_INCLUDE = {
     maintenanceTasks: true,
     tags: true,
     customFieldValues: { include: { customField: true } },
+    accessories: true,
+    links: true,
 };
 
 function mapCustomFieldValues(device: any): any {
@@ -1208,6 +1210,34 @@ export const resolvers = {
             } catch {
                 // Value may not exist, that's OK
             }
+            return true;
+        },
+
+        addDeviceAccessory: async (_parent: any, args: { deviceId: number; name: string }, context: Context) => {
+            requireAuth(context);
+            return context.prisma.deviceAccessory.upsert({
+                where: { deviceId_name: { deviceId: args.deviceId, name: args.name } },
+                create: { deviceId: args.deviceId, name: args.name },
+                update: {},
+            });
+        },
+
+        removeDeviceAccessory: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
+            await context.prisma.deviceAccessory.delete({ where: { id: args.id } });
+            return true;
+        },
+
+        addDeviceLink: async (_parent: any, args: { deviceId: number; label: string; url: string }, context: Context) => {
+            requireAuth(context);
+            return context.prisma.deviceLink.create({
+                data: { deviceId: args.deviceId, label: args.label, url: args.url },
+            });
+        },
+
+        removeDeviceLink: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
+            await context.prisma.deviceLink.delete({ where: { id: args.id } });
             return true;
         },
     },

@@ -240,6 +240,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             tags: true,
             notes: true,
             maintenanceTasks: true,
+            accessories: true,
+            links: true,
           },
           take: limit,
           orderBy: { name: "asc" },
@@ -324,6 +326,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             notes: { orderBy: { date: "desc" } },
             maintenanceTasks: { orderBy: { dateCompleted: "desc" } },
             tags: true,
+            accessories: true,
+            links: true,
           },
         });
 
@@ -591,6 +595,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             tags: true,
             notes: shouldIncludeNotes ? { orderBy: { date: "desc" } } : false,
             maintenanceTasks: shouldIncludeTasks ? { orderBy: { dateCompleted: "desc" } } : false,
+            accessories: true,
+            links: true,
           },
           take: limit,
           orderBy: { id: "asc" },
