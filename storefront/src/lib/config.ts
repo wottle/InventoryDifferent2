@@ -1,7 +1,10 @@
 // API configuration
-// Uses environment variable in production, falls back to localhost for development
+// Browser: derives URL from window.location.origin (works for any deployment domain automatically)
+// SSR: uses internal Docker network URL via API_URL env var
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+export const API_BASE_URL = typeof window !== 'undefined'
+  ? window.location.origin
+  : process.env.API_URL || 'http://api:4000';
 export const GRAPHQL_URL = `${API_BASE_URL}/graphql`;
 
 // Contact email for the shop (server-side env var for runtime configuration)

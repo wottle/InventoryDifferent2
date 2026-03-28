@@ -5,9 +5,6 @@ name: Publish Docker Images
 # Required GitHub secrets:
 #   DOCKERHUB_TOKEN   — Docker Hub access token (Account Settings → Security)
 #
-# Required GitHub repository variables:
-#   STOREFRONT_DOMAIN — your API domain baked into the storefront image, e.g. inventorydifferent.com
-#                       (Settings → Variables → Actions → New repository variable)
 
 on:
   workflow_run:
@@ -59,8 +56,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: wottle/inventory-storefront:latest
-          build-args: |
-            NEXT_PUBLIC_API_URL=https://${{ vars.STOREFRONT_DOMAIN }}
 
       - name: Build and push MCP Server
         uses: docker/build-push-action@v5

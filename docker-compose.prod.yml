@@ -100,15 +100,12 @@ services:
     build:
       context: ./storefront
       dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_API_URL=https://${DOMAIN}
-        - NEXT_PUBLIC_CONTACT_EMAIL=${NEXT_PUBLIC_CONTACT_EMAIL:-store@example.com}
     image: inventory-storefront:latest
     container_name: inventory-storefront
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_CONTACT_EMAIL: ${NEXT_PUBLIC_CONTACT_EMAIL:-store@example.com}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-store@example.com}
     depends_on:
       - api
     networks:
