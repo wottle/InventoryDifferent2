@@ -10,7 +10,7 @@ const mockDevice = {
     soldPrice: 250,
     whereAcquired: 'eBay',
     notes: [{ id: 1, content: 'Works great', date: new Date() }],
-    status: 'AVAILABLE',
+    status: 'COLLECTION',
 };
 
 describe('filterDeviceSensitiveFields', () => {
@@ -38,6 +38,6 @@ describe('filterDeviceSensitiveFields', () => {
         expect(result.id).toBe(1);
         expect(result.name).toBe('Macintosh SE');
         expect(result.manufacturer).toBe('Apple');
-        expect(result.status).toBe('AVAILABLE');
+        expect(result.status).toBe('COLLECTION');
     });
 });

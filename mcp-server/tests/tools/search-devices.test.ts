@@ -23,10 +23,10 @@ describe('handleSearchDevices', () => {
     });
 
     it('filters by status', async () => {
-        await prisma.device.create({ data: { name: 'Available', categoryId: categories.computer.id, status: 'AVAILABLE' } });
+        await prisma.device.create({ data: { name: 'Available', categoryId: categories.computer.id, status: 'COLLECTION' } });
         await prisma.device.create({ data: { name: 'Sold', categoryId: categories.computer.id, status: 'SOLD' } });
 
-        const result = await handleSearchDevices(prisma, { status: 'AVAILABLE' });
+        const result = await handleSearchDevices(prisma, { status: 'COLLECTION' });
         expect(result.count).toBe(1);
         expect(result.devices[0].name).toBe('Available');
     });

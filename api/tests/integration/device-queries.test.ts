@@ -62,14 +62,14 @@ describe('devices query', () => {
     it('filters by status', async () => {
         const prisma = getTestPrismaClient();
         await prisma.device.create({
-            data: { name: 'Available Device', categoryId: categories.computer.id, status: 'AVAILABLE' },
+            data: { name: 'Available Device', categoryId: categories.computer.id, status: 'COLLECTION' },
         });
         await prisma.device.create({
             data: { name: 'For Sale Device', categoryId: categories.computer.id, status: 'FOR_SALE' },
         });
 
         const res = await graphqlQuery(app, `
-            query { devices(where: { status: { equals: AVAILABLE } }) { id name status } }
+            query { devices(where: { status: { equals: COLLECTION } }) { id name status } }
         `, undefined, token);
         expect(res.data.devices).toHaveLength(1);
         expect(res.data.devices[0].name).toBe('Available Device');
