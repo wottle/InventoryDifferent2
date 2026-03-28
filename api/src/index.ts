@@ -358,7 +358,7 @@ RESTART IDENTITY CASCADE;
             info: deviceData.info,
             isFavorite: deviceData.isFavorite || false,
             externalUrl: deviceData.externalUrl,
-            status: deviceData.status || 'AVAILABLE',
+            status: deviceData.status || 'COLLECTION',
             functionalStatus: deviceData.functionalStatus || 'YES',
             hasOriginalBox: deviceData.hasOriginalBox || false,
             isAssetTagged: deviceData.isAssetTagged || false,

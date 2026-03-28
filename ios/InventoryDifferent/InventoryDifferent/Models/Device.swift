@@ -22,7 +22,7 @@ protocol DeviceRowPresentable {
 }
 
 enum Status: String, Codable, CaseIterable {
-    case AVAILABLE
+    case COLLECTION
     case FOR_SALE
     case PENDING_SALE
     case IN_REPAIR
@@ -32,7 +32,7 @@ enum Status: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .AVAILABLE: return "Available"
+        case .COLLECTION: return "In Collection"
         case .FOR_SALE: return "For Sale"
         case .PENDING_SALE: return "Pending"
         case .SOLD: return "Sold"
@@ -44,7 +44,7 @@ enum Status: String, Codable, CaseIterable {
 
     var color: String {
         switch self {
-        case .AVAILABLE: return "green"
+        case .COLLECTION: return "green"
         case .FOR_SALE: return "blue"
         case .PENDING_SALE: return "orange"
         case .SOLD: return "gray"

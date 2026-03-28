@@ -95,7 +95,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
         description: 'Search the vintage computer collection. Can filter by text query, status, category type, functional status, manufacturer, and tags. Can sort results by various fields.',
         parameters: z.object({
           query: z.string().optional().describe('Text to search for in device name, manufacturer, model, CPU, info, notes, and tags'),
-          status: z.enum(['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED']).optional().describe('Filter by device status'),
+          status: z.enum(['COLLECTION', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED']).optional().describe('Filter by device status'),
           functionalStatus: z.enum(['YES', 'PARTIAL', 'NO']).optional().describe('Filter by whether the device is functional'),
           categoryType: z.enum(['COMPUTER', 'PERIPHERAL', 'ACCESSORY', 'OTHER']).optional().describe('Filter by category type'),
           manufacturer: z.string().optional().describe('Filter by manufacturer name (partial match)'),
@@ -393,7 +393,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
       list_devices: tool({
         description: 'List all devices with flexible field selection. Use this when you need specific fields not available in search_devices, or when you need to manually sort/filter by fields not supported by search_devices sorting (e.g., hasOriginalBox, isPramBatteryRemoved, etc.).',
         parameters: z.object({
-          status: z.enum(['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED']).optional().describe('Filter by device status'),
+          status: z.enum(['COLLECTION', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED']).optional().describe('Filter by device status'),
           functionalStatus: z.enum(['YES', 'PARTIAL', 'NO']).optional().describe('Filter by whether the device is functional'),
           categoryType: z.enum(['COMPUTER', 'PERIPHERAL', 'ACCESSORY', 'OTHER']).optional().describe('Filter by category type'),
           fields: z.array(z.string()).optional().describe('Array of field names to include. Available: id, name, additionalName, manufacturer, modelNumber, serialNumber, releaseYear, location, info, isFavorite, status, functionalStatus, hasOriginalBox, isAssetTagged, dateAcquired, whereAcquired, priceAcquired, estimatedValue, listPrice, soldPrice, soldDate, cpu, ram, graphics, storage, operatingSystem, isWifiEnabled, isPramBatteryRemoved, lastPowerOnDate, externalUrl, category, tags, notes, maintenanceTasks'),
@@ -518,12 +518,12 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
       list_all_devices: tool({
         description: 'Returns a compact summary of every device in the collection for whole-collection reasoning. Use this for questions like "what fills gaps in my collection?", "what\'s my best machine for Mac OS 8?", "do I have any PowerPC Macs?", or any query requiring the full inventory. Returns id, name, specs, status, category, and tags for each device.',
         parameters: z.object({
-          inPossessionOnly: z.boolean().optional().describe('If true (default), only return devices currently in possession (AVAILABLE, FOR_SALE, PENDING_SALE, IN_REPAIR, RETURNED). Set to false to include SOLD and DONATED.'),
+          inPossessionOnly: z.boolean().optional().describe('If true (default), only return devices currently in possession (COLLECTION, FOR_SALE, PENDING_SALE, IN_REPAIR, RETURNED). Set to false to include SOLD and DONATED.'),
           categoryType: z.enum(['COMPUTER', 'PERIPHERAL', 'ACCESSORY', 'OTHER']).optional().describe('Filter to a specific category type.'),
         }),
         execute: async (params) => {
           try {
-            const IN_POSSESSION_STATUSES = ['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'IN_REPAIR', 'RETURNED'];
+            const IN_POSSESSION_STATUSES = ['COLLECTION', 'FOR_SALE', 'PENDING_SALE', 'IN_REPAIR', 'RETURNED'];
             const statusFilter = params.inPossessionOnly !== false
               ? { status: { in: IN_POSSESSION_STATUSES } }
               : {};

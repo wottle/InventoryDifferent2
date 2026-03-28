@@ -154,7 +154,7 @@ export default function PrintListPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "AVAILABLE": return "text-green-700";
+      case "COLLECTION": return "text-green-700";
       case "FOR_SALE": return "text-orange-700";
       case "PENDING_SALE": return "text-yellow-700";
       case "SOLD": return "text-red-700";

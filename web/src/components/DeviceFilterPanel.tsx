@@ -56,7 +56,7 @@ export function DeviceFilterPanel({
   ];
 
   const statusOptions = [
-    { value: "AVAILABLE", label: "Available" },
+    { value: "COLLECTION", label: "In Collection" },
     { value: "FOR_SALE", label: "For Sale" },
     { value: "PENDING_SALE", label: "Pending Sale" },
     { value: "IN_REPAIR", label: "In Repair" },

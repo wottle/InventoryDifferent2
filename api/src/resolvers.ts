@@ -596,7 +596,7 @@ export const resolvers = {
             const baseWhere: any = { deleted: false };
 
             const statusLabels: Record<string, string> = {
-                AVAILABLE: 'Available',
+                COLLECTION: 'In Collection',
                 FOR_SALE: 'For Sale',
                 PENDING_SALE: 'Pending Sale',
                 SOLD: 'Sold',

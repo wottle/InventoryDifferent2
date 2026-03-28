@@ -84,7 +84,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
           description: 'Search the vintage computer collection. Can filter by text query, status, category type, functional status, manufacturer, and tags. Can sort results by various fields.',
           parameters: z.object({
             query: z.string().optional().describe('Text to search for in device name, manufacturer, model, CPU, info, notes, and tags'),
-            status: z.enum(['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED']).optional().describe('Filter by device status'),
+            status: z.enum(['COLLECTION', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED']).optional().describe('Filter by device status'),
             functionalStatus: z.enum(['YES', 'PARTIAL', 'NO']).optional().describe('Filter by whether the device is functional'),
             categoryType: z.enum(['COMPUTER', 'PERIPHERAL', 'ACCESSORY', 'OTHER']).optional().describe('Filter by category type'),
             manufacturer: z.string().optional().describe('Filter by manufacturer name (partial match)'),

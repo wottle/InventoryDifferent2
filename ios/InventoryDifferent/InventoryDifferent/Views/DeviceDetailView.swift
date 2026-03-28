@@ -447,7 +447,7 @@ struct DeviceDetailView: View {
                     Task { await updateLastPoweredOn() }
                 }
 
-                if device.status == .AVAILABLE {
+                if device.status == .COLLECTION {
                     QuickActionButton(
                         title: "Mark For Sale",
                         systemImage: "tag",
@@ -1845,7 +1845,7 @@ struct ValueHistorySection: View {
                     info: "Great condition vintage Mac",
                     searchText: nil,
                     isFavorite: true,
-                    status: .AVAILABLE,
+                    status: .COLLECTION,
                     functionalStatus: .YES,
                     lastPowerOnDate: nil,
                     hasOriginalBox: false,

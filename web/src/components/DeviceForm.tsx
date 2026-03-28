@@ -264,7 +264,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         info: "",
         isFavorite: false,
         externalUrl: prefill?.externalUrl ?? "",
-        status: "AVAILABLE",
+        status: "COLLECTION",
         functionalStatus: "YES",
         hasOriginalBox: false,
         isAssetTagged: false,
@@ -311,7 +311,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 info: device.info || "",
                 isFavorite: device.isFavorite || false,
                 externalUrl: device.externalUrl || "",
-                status: device.status || "AVAILABLE",
+                status: device.status || "COLLECTION",
                 functionalStatus: device.functionalStatus || "YES",
                 hasOriginalBox: device.hasOriginalBox || false,
                 isAssetTagged: device.isAssetTagged || false,
@@ -769,7 +769,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         onChange={handleChange}
                         className={selectClass}
                     >
-                        <option value="AVAILABLE">Available</option>
+                        <option value="COLLECTION">In Collection</option>
                         <option value="FOR_SALE">For Sale</option>
                         <option value="PENDING_SALE">Pending Sale</option>
                         <option value="IN_REPAIR">In Repair</option>

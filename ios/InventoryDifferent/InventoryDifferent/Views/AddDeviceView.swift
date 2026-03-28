@@ -38,7 +38,7 @@ struct AddDeviceView: View {
     @State private var info = ""
     @State private var externalUrl = ""
     
-    @State private var status: Status = .AVAILABLE
+    @State private var status: Status = .COLLECTION
     @State private var functionalStatus: FunctionalStatus = .YES
     @State private var isFavorite = false
     @State private var hasOriginalBox = false

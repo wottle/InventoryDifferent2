@@ -4,7 +4,7 @@ export const typeDefs = gql`
   scalar DateTime
 
   enum Status {
-    AVAILABLE
+    COLLECTION
     FOR_SALE
     PENDING_SALE
     SOLD

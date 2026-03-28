@@ -233,7 +233,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
   // Get status display with color - matches DeviceCard
   const getStatusDisplay = (device: any) => {
     switch (device.status) {
-      case 'AVAILABLE':
+      case 'COLLECTION':
         return (
           <span className="text-green-600 dark:text-green-400 font-medium text-xs">
             Available

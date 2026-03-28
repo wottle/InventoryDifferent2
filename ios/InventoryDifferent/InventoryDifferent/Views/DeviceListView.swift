@@ -384,7 +384,7 @@ struct ValueSaleInfo: View {
     var body: some View {
         Group {
             switch device.status {
-            case .AVAILABLE:
+            case .COLLECTION:
                 if let value = device.estimatedValue {
                     Text("Est. Value: \(formatPrice(value))")
                         .font(.caption)
@@ -450,7 +450,7 @@ struct StatusBadge: View {
     
     private var backgroundColor: Color {
         switch status {
-        case .AVAILABLE:
+        case .COLLECTION:
             return Color(red: 0.13, green: 0.55, blue: 0.13) // Darker green for readability
         case .FOR_SALE:
             return .orange

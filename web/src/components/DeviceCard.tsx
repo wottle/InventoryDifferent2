@@ -139,7 +139,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
     // Value/Sale info line component
     const ValueSaleInfo = () => {
         switch (device.status) {
-            case 'AVAILABLE':
+            case 'COLLECTION':
                 return device.estimatedValue ? (
                     <span className="text-green-600 dark:text-green-400 font-medium">
                         Est. Value: {formatPrice(device.estimatedValue)}
@@ -280,7 +280,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 <div className="absolute top-1 right-1 flex items-center gap-1">
                     <span
                         className={`text-[10px] font-bold px-1 py-0.5 rounded shadow-sm bg-gray-700 ${
-                            device.status === "AVAILABLE" ? "text-[var(--apple-green)]" :
+                            device.status === "COLLECTION" ? "text-[var(--apple-green)]" :
                             device.status === "SOLD" ? "text-red-500" :
                             device.status === "PENDING_SALE" ? "text-yellow-500" :
                             device.status === "FOR_SALE" ? "text-orange-500" :

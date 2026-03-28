@@ -234,14 +234,14 @@ function linkifyText(text: string) {
 
 function StatusBadge({ status }: { status: string }) {
     const styles: Record<string, string> = {
-        AVAILABLE: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+        COLLECTION: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
         FOR_SALE: "bg-amber-50 text-amber-700 ring-amber-600/20",
         PENDING_SALE: "bg-orange-50 text-orange-700 ring-orange-600/20",
         SOLD: "bg-slate-50 text-slate-600 ring-slate-500/20",
         DONATED: "bg-sky-50 text-sky-700 ring-sky-600/20",
     };
     return (
-        <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${styles[status] || styles.AVAILABLE}`}>
+        <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${styles[status] || styles.COLLECTION}`}>
             {status.replace(/_/g, " ")}
         </span>
     );

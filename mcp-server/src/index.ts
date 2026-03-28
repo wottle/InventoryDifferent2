@@ -63,7 +63,7 @@ const TOOLS = [
         },
         status: {
           type: "string",
-          enum: ["AVAILABLE", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED", "IN_REPAIR", "RETURNED"],
+          enum: ["COLLECTION", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED", "IN_REPAIR", "RETURNED"],
           description: "Filter by device status",
         },
         functionalStatus: {
@@ -129,7 +129,7 @@ const TOOLS = [
         inPossessionOnly: {
           type: "boolean",
           description:
-            "If true (default), only return devices currently in possession (AVAILABLE, FOR_SALE, PENDING_SALE, IN_REPAIR, RETURNED). Set to false to include SOLD and DONATED devices.",
+            "If true (default), only return devices currently in possession (COLLECTION, FOR_SALE, PENDING_SALE, IN_REPAIR, RETURNED). Set to false to include SOLD and DONATED devices.",
         },
         categoryType: {
           type: "string",
@@ -149,7 +149,7 @@ const TOOLS = [
       properties: {
         status: {
           type: "string",
-          enum: ["AVAILABLE", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED", "IN_REPAIR", "RETURNED"],
+          enum: ["COLLECTION", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED", "IN_REPAIR", "RETURNED"],
           description: "Filter by device status",
         },
         functionalStatus: {
@@ -487,7 +487,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "list_all_devices": {
-        const IN_POSSESSION_STATUSES = ['AVAILABLE', 'FOR_SALE', 'PENDING_SALE', 'IN_REPAIR', 'RETURNED'];
+        const IN_POSSESSION_STATUSES = ['COLLECTION', 'FOR_SALE', 'PENDING_SALE', 'IN_REPAIR', 'RETURNED'];
 
         const where: any = { deleted: false };
         if (args?.inPossessionOnly !== false) {

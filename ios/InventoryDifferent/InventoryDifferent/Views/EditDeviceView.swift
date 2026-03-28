@@ -490,7 +490,7 @@ struct EditDeviceView: View {
         info: "Great condition",
         searchText: nil,
         isFavorite: true,
-        status: .AVAILABLE,
+        status: .COLLECTION,
         functionalStatus: .YES,
         lastPowerOnDate: nil,
         hasOriginalBox: false,
