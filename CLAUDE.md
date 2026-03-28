@@ -89,7 +89,7 @@ Provides tools for AI assistants to query inventory:
 ## Data Model (Core Entities)
 
 **Device**: Main inventory item
-- Status: AVAILABLE | FOR_SALE | PENDING_SALE | SOLD | DONATED | IN_REPAIR | RETURNED
+- Status: COLLECTION | FOR_SALE | PENDING_SALE | SOLD | DONATED | IN_REPAIR | RETURNED
 - FunctionalStatus: YES | PARTIAL | NO
 - Relations: category, images, notes, maintenanceTasks, tags
 
@@ -216,7 +216,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Device** (main inventory item)
 - Identification: name, additionalName, manufacturer, modelNumber, serialNumber, releaseYear, location, info
-- Status: AVAILABLE | FOR_SALE | PENDING_SALE | SOLD | DONATED | IN_REPAIR | RETURNED
+- Status: COLLECTION | FOR_SALE | PENDING_SALE | SOLD | DONATED | IN_REPAIR | RETURNED
 - FunctionalStatus: YES | PARTIAL | NO
 - Flags: isFavorite, hasOriginalBox, isAssetTagged, isWifiEnabled, isPramBatteryRemoved
 - Timestamps: dateAcquired, lastPowerOnDate, soldDate (also used as "returned date" for RETURNED)
