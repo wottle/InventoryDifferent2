@@ -14,9 +14,25 @@ on:
 
 jobs:
   publish:
-    name: Build and Push Docker Images
+    name: Build and Push ${{ matrix.name }}
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    strategy:
+      matrix:
+        include:
+          - name: API
+            context: ./api
+            image: wottle/inventory-api
+          - name: Web
+            context: ./web
+            image: wottle/inventory-web
+          - name: Storefront
+            context: ./storefront
+            image: wottle/inventory-storefront
+          - name: MCP Server
+            context: ./mcp-server
+            image: wottle/inventory-mcp
 
     steps:
       - uses: actions/checkout@v4
@@ -33,34 +49,12 @@ jobs:
           username: wottle
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push API
+      - name: Build and push ${{ matrix.name }}
         uses: docker/build-push-action@v5
         with:
-          context: ./api
+          context: ${{ matrix.context }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: wottle/inventory-api:latest
-
-      - name: Build and push Web
-        uses: docker/build-push-action@v5
-        with:
-          context: ./web
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: wottle/inventory-web:latest
-
-      - name: Build and push Storefront
-        uses: docker/build-push-action@v5
-        with:
-          context: ./storefront
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: wottle/inventory-storefront:latest
-
-      - name: Build and push MCP Server
-        uses: docker/build-push-action@v5
-        with:
-          context: ./mcp-server
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: wottle/inventory-mcp:latest
+          tags: ${{ matrix.image }}:latest
+          cache-from: type=registry,ref=${{ matrix.image }}:buildcache
+          cache-to: type=registry,ref=${{ matrix.image }}:buildcache,mode=max
