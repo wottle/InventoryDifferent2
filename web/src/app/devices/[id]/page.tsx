@@ -219,6 +219,37 @@ const REMOVE_DEVICE_TAG = gql`
   }
 `;
 
+const ADD_DEVICE_ACCESSORY = gql`
+  mutation AddDeviceAccessory($deviceId: Int!, $name: String!) {
+    addDeviceAccessory(deviceId: $deviceId, name: $name) {
+      id
+      name
+    }
+  }
+`;
+
+const REMOVE_DEVICE_ACCESSORY = gql`
+  mutation RemoveDeviceAccessory($id: Int!) {
+    removeDeviceAccessory(id: $id)
+  }
+`;
+
+const ADD_DEVICE_LINK = gql`
+  mutation AddDeviceLink($deviceId: Int!, $label: String!, $url: String!) {
+    addDeviceLink(deviceId: $deviceId, label: $label, url: $url) {
+      id
+      label
+      url
+    }
+  }
+`;
+
+const REMOVE_DEVICE_LINK = gql`
+  mutation RemoveDeviceLink($id: Int!) {
+    removeDeviceLink(id: $id)
+  }
+`;
+
 function linkifyText(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
@@ -412,6 +443,10 @@ export default function DeviceDetail() {
     });
     const [deleteDeviceConfirm, setDeleteDeviceConfirm] = useState(false);
     const [tagName, setTagName] = useState('');
+    const [newAccessoryName, setNewAccessoryName] = useState('');
+    const [newLinkLabel, setNewLinkLabel] = useState('');
+    const [newLinkUrl, setNewLinkUrl] = useState('');
+    const [showLinkForm, setShowLinkForm] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
 
     const { loading, error, data, refetch } = useQuery(GET_DEVICE, {
@@ -547,6 +582,10 @@ export default function DeviceDetail() {
     const [deleteDevice, { loading: deletingDevice }] = useMutation(DELETE_DEVICE);
     const [addDeviceTag, { loading: addingTag }] = useMutation(ADD_DEVICE_TAG);
     const [removeDeviceTag, { loading: removingTag }] = useMutation(REMOVE_DEVICE_TAG);
+    const [addDeviceAccessory, { loading: addingAccessory }] = useMutation(ADD_DEVICE_ACCESSORY);
+    const [removeDeviceAccessory] = useMutation(REMOVE_DEVICE_ACCESSORY);
+    const [addDeviceLink, { loading: addingLink }] = useMutation(ADD_DEVICE_LINK);
+    const [removeDeviceLink] = useMutation(REMOVE_DEVICE_LINK);
 
     const handleAddTag = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -578,6 +617,54 @@ export default function DeviceDetail() {
             refetch();
         } catch (err) {
             console.error('Error removing tag:', err);
+        }
+    };
+
+    const handleAddAccessory = async (name: string) => {
+        const trimmed = name.trim();
+        if (!trimmed) return;
+        const alreadyHas = (device.accessories ?? []).some((a: any) => a.name.toLowerCase() === trimmed.toLowerCase());
+        if (alreadyHas) return;
+        try {
+            await addDeviceAccessory({ variables: { deviceId: device.id, name: trimmed } });
+            setNewAccessoryName('');
+            refetch();
+        } catch (err) {
+            console.error('Error adding accessory:', err);
+        }
+    };
+
+    const handleRemoveAccessory = async (id: number) => {
+        try {
+            await removeDeviceAccessory({ variables: { id } });
+            refetch();
+        } catch (err) {
+            console.error('Error removing accessory:', err);
+        }
+    };
+
+    const handleAddLink = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const label = newLinkLabel.trim();
+        const url = newLinkUrl.trim();
+        if (!label || !url) return;
+        try {
+            await addDeviceLink({ variables: { deviceId: device.id, label, url } });
+            setNewLinkLabel('');
+            setNewLinkUrl('');
+            setShowLinkForm(false);
+            refetch();
+        } catch (err) {
+            console.error('Error adding link:', err);
+        }
+    };
+
+    const handleRemoveLink = async (id: number) => {
+        try {
+            await removeDeviceLink({ variables: { id } });
+            refetch();
+        } catch (err) {
+            console.error('Error removing link:', err);
         }
     };
 
@@ -1611,6 +1698,181 @@ export default function DeviceDetail() {
                         )}
                     </div>
 
+                    {/* Accessories */}
+                    {(isAuthenticated || (device.accessories ?? []).length > 0) && (
+                    <div>
+                        <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
+                            Accessories
+                        </h2>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {(device.accessories ?? []).map((acc: any) => (
+                                <span
+                                    key={acc.id}
+                                    className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-[var(--card)] text-[var(--foreground)] rounded ring-1 ring-inset ring-[var(--border)]"
+                                >
+                                    {acc.name}
+                                    {isAuthenticated && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveAccessory(acc.id)}
+                                            className="ml-1 inline-flex items-center justify-center rounded hover:bg-[var(--muted)] px-1"
+                                            title="Remove accessory"
+                                        >
+                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                </span>
+                            ))}
+                            {(device.accessories ?? []).length === 0 && (
+                                <span className="text-sm text-[var(--muted-foreground)]">No accessories</span>
+                            )}
+                        </div>
+                        {isAuthenticated && (() => {
+                            const categoryType = device.category?.type ?? '';
+                            const suggestions = categoryType === 'COMPUTER'
+                                ? ['Original Box', 'Keyboard', 'Mouse', 'Power Cable/Adapter', 'Power Supply', 'Manual/Documentation', 'Software Disks', 'Monitor']
+                                : ['Original Box', 'Power Cable', 'Cables/Adapters', 'Manual'];
+                            const existing = new Set((device.accessories ?? []).map((a: any) => a.name));
+                            return (
+                                <div className="space-y-2">
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {suggestions.filter(s => !existing.has(s)).map(s => (
+                                            <button
+                                                key={s}
+                                                type="button"
+                                                onClick={() => handleAddAccessory(s)}
+                                                disabled={addingAccessory}
+                                                className="px-2 py-1 text-xs rounded border border-dashed border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--apple-blue)] hover:text-[var(--apple-blue)] transition-colors disabled:opacity-50"
+                                            >
+                                                + {s}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <form onSubmit={(e) => { e.preventDefault(); handleAddAccessory(newAccessoryName); }} className="flex items-center gap-2">
+                                        <input
+                                            type="text"
+                                            value={newAccessoryName}
+                                            onChange={(e) => setNewAccessoryName(e.target.value)}
+                                            placeholder="Custom accessory…"
+                                            className="input-retro flex-1 px-3 py-2 text-[var(--foreground)]"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={addingAccessory || !newAccessoryName.trim()}
+                                            className="px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Add
+                                        </button>
+                                    </form>
+                                </div>
+                            );
+                        })()}
+                    </div>
+                    )}
+
+                    {/* Reference Links */}
+                    {(isAuthenticated || (device.links ?? []).length > 0) && (
+                    <div>
+                        <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
+                                Reference Links
+                            </h2>
+                            {isAuthenticated && !showLinkForm && (
+                                <button
+                                    onClick={() => setShowLinkForm(true)}
+                                    className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc]"
+                                >
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Add Link
+                                </button>
+                            )}
+                        </div>
+                        {(device.links ?? []).length > 0 && (
+                            <div className="space-y-2 mb-3">
+                                {device.links.map((link: any) => (
+                                    <div key={link.id} className="flex items-center gap-2 group">
+                                        <svg width="14" height="14" className="shrink-0 text-[var(--muted-foreground)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                        </svg>
+                                        <div className="flex-1 min-w-0">
+                                            <a
+                                                href={link.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm font-medium text-[var(--apple-blue)] hover:underline"
+                                            >
+                                                {link.label}
+                                            </a>
+                                            <p className="text-xs text-[var(--muted-foreground)] truncate">{link.url}</p>
+                                        </div>
+                                        {isAuthenticated && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveLink(link.id)}
+                                                className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all shrink-0"
+                                                title="Remove link"
+                                            >
+                                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {(device.links ?? []).length === 0 && !showLinkForm && (
+                            <span className="text-sm text-[var(--muted-foreground)]">No links</span>
+                        )}
+                        {isAuthenticated && showLinkForm && (
+                            <form onSubmit={handleAddLink} className="space-y-2 mt-2">
+                                <input
+                                    type="text"
+                                    value={newLinkLabel}
+                                    onChange={(e) => setNewLinkLabel(e.target.value)}
+                                    list="link-label-suggestions"
+                                    placeholder="Label (e.g. EveryMac)"
+                                    className="input-retro w-full px-3 py-2 text-[var(--foreground)]"
+                                    required
+                                />
+                                <datalist id="link-label-suggestions">
+                                    {['EveryMac', 'MacTracker', 'Macintosh Garden', 'Macintosh Repository', '68kMLA Thread', 'Repair Guide', 'Service Manual', 'eBay Listing', 'Wikipedia', 'YouTube'].map(l => (
+                                        <option key={l} value={l} />
+                                    ))}
+                                </datalist>
+                                <input
+                                    type="url"
+                                    value={newLinkUrl}
+                                    onChange={(e) => setNewLinkUrl(e.target.value)}
+                                    placeholder="https://…"
+                                    className="input-retro w-full px-3 py-2 text-[var(--foreground)]"
+                                    required
+                                />
+                                <div className="flex gap-2 justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setShowLinkForm(false); setNewLinkLabel(''); setNewLinkUrl(''); }}
+                                        className="btn-retro px-3 py-1.5 text-sm font-medium"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={addingLink}
+                                        className="px-3 py-1.5 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50"
+                                    >
+                                        {addingLink ? 'Adding…' : 'Add Link'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+                    </div>
+                    )}
+
                     {/* Specifications */}
                     <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
                         <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
@@ -1632,23 +1894,6 @@ export default function DeviceDetail() {
                                     })}
                                 />
                             )}
-                            {device.accessories?.length > 0 && (
-                                <div className="flex justify-between py-3 border-b border-[var(--border)] last:border-0">
-                                    <dt className="text-sm text-[var(--muted-foreground)]">Accessories</dt>
-                                    <dd className="flex flex-wrap gap-1 mt-1 justify-end">
-                                        {device.accessories.map((a: any) => (
-                                            <span key={a.id} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
-                                                {a.name}
-                                            </span>
-                                        ))}
-                                    </dd>
-                                </div>
-                            )}
-                            {device.links?.length > 0 && device.links.map((link: any) => (
-                                <DetailRow key={link.id} label={link.label} value={
-                                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-[var(--apple-blue)] hover:underline">{link.url}</a>
-                                } />
-                            ))}
                         </dl>
                     </div>
 
