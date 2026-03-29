@@ -27,7 +27,7 @@ function unescapeSqlString(raw: string) {
     if (trimmed === 'NULL') return null;
     if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
         const inner = trimmed.slice(1, -1);
-        return inner.replace(/\\'/g, "'").replace(/\\\\/g, '\\');
+        return inner.replace(/\\'/g, "'").replace(/\\\\/g, '\\').replace(/\\"/g, '"');
     }
     return trimmed;
 }
