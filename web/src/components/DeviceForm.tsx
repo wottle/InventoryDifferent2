@@ -94,6 +94,7 @@ const GET_TEMPLATES = gql`
       externalUrl
       isWifiEnabled
       isPramBatteryRemoved
+      rarity
       categoryId
     }
   }
@@ -184,6 +185,7 @@ interface Template {
     externalUrl?: string;
     isWifiEnabled?: boolean;
     isPramBatteryRemoved?: boolean;
+    rarity?: string;
     categoryId: number;
 }
 
@@ -498,6 +500,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
             if (typeof tpl.isWifiEnabled === 'boolean') next.isWifiEnabled = tpl.isWifiEnabled;
             if (typeof tpl.isPramBatteryRemoved === 'boolean') next.isPramBatteryRemoved = tpl.isPramBatteryRemoved;
+            if (typeof tpl.rarity === 'string') next.rarity = tpl.rarity;
 
             return next;
         });

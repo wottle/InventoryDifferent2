@@ -21,6 +21,7 @@ const GET_TEMPLATES = gql`
       ram
       storage
       graphics
+      rarity
       categoryId
       category {
         id
@@ -51,6 +52,7 @@ const CREATE_TEMPLATE = gql`
       ram
       storage
       graphics
+      rarity
       categoryId
       category {
         id
@@ -76,6 +78,7 @@ const UPDATE_TEMPLATE = gql`
       ram
       storage
       graphics
+      rarity
       categoryId
       category {
         id
@@ -98,6 +101,15 @@ type Category = {
   type: string;
 };
 
+const RARITY_OPTIONS = [
+  { value: "", label: "Not Set" },
+  { value: "COMMON", label: "Common" },
+  { value: "UNCOMMON", label: "Uncommon" },
+  { value: "RARE", label: "Rare" },
+  { value: "VERY_RARE", label: "Very Rare" },
+  { value: "EXTREMELY_RARE", label: "Extremely Rare" },
+];
+
 type Template = {
   id: number;
   name: string;
@@ -111,6 +123,7 @@ type Template = {
   ram?: string | null;
   storage?: string | null;
   graphics?: string | null;
+  rarity?: string | null;
   categoryId: number;
   category?: Category;
 };
@@ -127,6 +140,7 @@ type TemplateFormState = {
   ram: string;
   storage: string;
   graphics: string;
+  rarity: string;
   categoryId: number;
 };
 
@@ -142,6 +156,7 @@ const emptyFormState: TemplateFormState = {
   ram: "",
   storage: "",
   graphics: "",
+  rarity: "",
   categoryId: 0,
 };
 
@@ -191,6 +206,7 @@ export default function TemplatesPage() {
       ram: tpl.ram ?? "",
       storage: tpl.storage ?? "",
       graphics: tpl.graphics ?? "",
+      rarity: tpl.rarity ?? "",
       categoryId: tpl.categoryId ?? 0,
     });
     setModalOpen(true);
@@ -217,6 +233,7 @@ export default function TemplatesPage() {
       releaseYear: Number.isFinite(releaseYear as any) ? releaseYear : null,
       estimatedValue: Number.isFinite(estimatedValue as any) ? estimatedValue : null,
       externalUrl: form.externalUrl.trim() || null,
+      rarity: form.rarity || null,
     };
 
     if (isComputer) {
@@ -459,6 +476,21 @@ export default function TemplatesPage() {
                       </a>
                     </div>
                   )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Rarity</label>
+                  <select
+                    value={form.rarity}
+                    onChange={(e) => setForm((prev) => ({ ...prev, rarity: e.target.value }))}
+                    className="select-flat w-full px-4 py-2 text-sm text-[var(--foreground)]"
+                  >
+                    {RARITY_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

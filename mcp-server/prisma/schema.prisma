@@ -22,6 +22,8 @@ model Device {
 
   status              Status    @default(COLLECTION)
   functionalStatus    FunctionalStatus @default(YES)
+  condition           Condition?
+  rarity              Rarity?
   lastPowerOnDate     DateTime?
   hasOriginalBox      Boolean   @default(false)
   isAssetTagged       Boolean   @default(false)
@@ -141,6 +143,7 @@ model Template {
   externalUrl     String?
   isWifiEnabled       Boolean?
   isPramBatteryRemoved Boolean?
+  rarity          Rarity?
 
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])
@@ -160,6 +163,23 @@ enum FunctionalStatus {
   YES
   PARTIAL
   NO
+}
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  VERY_GOOD
+  GOOD
+  ACCEPTABLE
+  FOR_PARTS
+}
+
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  VERY_RARE
+  EXTREMELY_RARE
 }
 
 enum CategoryType {

@@ -181,6 +181,7 @@ export const typeDefs = gql`
     externalUrl: String
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
+    rarity: Rarity
     categoryId: Int!
     category: Category!
   }
@@ -344,6 +345,7 @@ export const typeDefs = gql`
     externalUrl: String
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
+    rarity: Rarity
   }
 
   input TemplateUpdateInput {
@@ -363,6 +365,7 @@ export const typeDefs = gql`
     externalUrl: String
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
+    rarity: Rarity
   }
 
   type Query {

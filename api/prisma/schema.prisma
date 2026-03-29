@@ -181,6 +181,7 @@ model Template {
   externalUrl     String?
   isWifiEnabled       Boolean?
   isPramBatteryRemoved Boolean?
+  rarity          Rarity?
 
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])

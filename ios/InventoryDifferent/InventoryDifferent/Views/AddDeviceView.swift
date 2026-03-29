@@ -485,6 +485,7 @@ struct AddDeviceView: View {
                     externalUrl
                     isWifiEnabled
                     isPramBatteryRemoved
+                    rarity
                     categoryId
                     category {
                         id
@@ -523,6 +524,7 @@ struct AddDeviceView: View {
         operatingSystem = template.operatingSystem ?? ""
         isWifiEnabled = template.isWifiEnabled ?? false
         isPramBatteryRemoved = template.isPramBatteryRemoved ?? false
+        if let r = template.rarity { rarity = r }
         selectedCategoryId = template.categoryId
         
         templateSearchText = ""
