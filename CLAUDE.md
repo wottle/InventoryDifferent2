@@ -16,8 +16,10 @@ InvDifferent2 is a vintage computer collection inventory management system. It's
 This project is distributed as pre-built Docker images published to Docker Hub (`wottle/inventory-*:latest`). The primary deployment path for end users is pulling these images via `docker-compose.simple.yml` (simple/local) or `docker-compose.prod.yml` (Traefik + HTTPS). End-user setup instructions live in `README.md`.
 
 When changes are ready to ship:
-1. Run `./build-and-push.sh` to build multi-arch images and push to Docker Hub
+1. Push to `main` — GitHub Actions automatically builds multi-arch images and pushes to Docker Hub
 2. Users update by running `docker compose pull && docker compose up -d` — migrations run automatically on container start via `api/entrypoint.sh`
+
+The `./build-and-push.sh` script still exists for manual local builds if needed, but the normal path is CI/CD via GitHub Actions.
 
 The `docker-compose.simple.yml` file is for users without a reverse proxy (direct port exposure). The `docker-compose.prod.yml` file is for Traefik deployments with HTTPS. The `docker-compose.nas.yml` file is the author's personal NAS deployment and is not intended as a template for other users.
 
@@ -46,7 +48,7 @@ cd api && npm run build                  # Compiles to dist/
 cd web && npm run build                  # Next.js build
 cd storefront && npm run build
 
-# Docker multi-arch build and push
+# Docker multi-arch build and push (manual; normally handled by GitHub Actions on push to main)
 ./build-and-push.sh
 ```
 
