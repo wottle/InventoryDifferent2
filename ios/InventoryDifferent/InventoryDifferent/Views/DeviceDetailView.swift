@@ -848,6 +848,22 @@ struct DeviceDetailView: View {
                 DetailRow(label: "Release Year", value: device.releaseYear.map { String($0) })
                 DetailRow(label: "Location", value: device.location)
                 DetailRow(label: "Functional Status", value: device.functionalStatus.displayName)
+                if let condition = device.condition {
+                    DetailRow(label: "Condition", value: condition.displayName)
+                }
+                if let rarity = device.rarity {
+                    HStack {
+                        Text("Rarity")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text(rarity.displayName)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(rarity.isRare ? .yellow : .primary)
+                    }
+                    .padding(.vertical, 8)
+                }
                 DetailRow(label: "Last Used Date", value: formatDate(device.lastPowerOnDate))
             }
             
@@ -2136,6 +2152,8 @@ struct ValueHistorySection: View {
                     isFavorite: true,
                     status: .COLLECTION,
                     functionalStatus: .YES,
+                    condition: nil,
+                    rarity: nil,
                     lastPowerOnDate: nil,
                     isAssetTagged: true,
                     dateAcquired: "2024-01-15T00:00:00.000Z",

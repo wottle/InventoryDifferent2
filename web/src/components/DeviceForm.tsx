@@ -123,6 +123,8 @@ const UPDATE_DEVICE = gql`
       externalUrl
       status
       functionalStatus
+      condition
+      rarity
       hasOriginalBox
       isAssetTagged
       dateAcquired
@@ -199,6 +201,8 @@ interface DeviceData {
     externalUrl?: string;
     status: string;
     functionalStatus: string;
+    condition?: string;
+    rarity?: string;
     hasOriginalBox: boolean;
     isAssetTagged: boolean;
     dateAcquired?: string;
@@ -314,6 +318,8 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         externalUrl: prefill?.externalUrl ?? "",
         status: "COLLECTION",
         functionalStatus: "YES",
+        condition: "" as string,
+        rarity: "" as string,
         hasOriginalBox: false,
         isAssetTagged: false,
         dateAcquired: getLocalDateInputValue(),
@@ -374,6 +380,8 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 externalUrl: device.externalUrl || "",
                 status: device.status || "COLLECTION",
                 functionalStatus: device.functionalStatus || "YES",
+                condition: device.condition || "",
+                rarity: device.rarity || "",
                 hasOriginalBox: device.hasOriginalBox || false,
                 isAssetTagged: device.isAssetTagged || false,
                 dateAcquired: device.dateAcquired ? device.dateAcquired.split("T")[0] : "",
@@ -529,6 +537,8 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         if (formData.info) input.info = formData.info;
         if (formData.externalUrl) input.externalUrl = formData.externalUrl;
         if (formData.whereAcquired) input.whereAcquired = formData.whereAcquired;
+        if (formData.condition) input.condition = formData.condition;
+        if (formData.rarity) input.rarity = formData.rarity;
 
         // Add optional numeric fields
         if (formData.releaseYear) input.releaseYear = parseInt(formData.releaseYear.toString());
@@ -909,6 +919,39 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         <option value="YES">Fully Functional</option>
                         <option value="PARTIAL">Partially Functional</option>
                         <option value="NO">Not Functional</option>
+                    </select>
+                </FormField>
+
+                <FormField label="Condition">
+                    <select
+                        name="condition"
+                        value={formData.condition}
+                        onChange={handleChange}
+                        className={selectClass}
+                    >
+                        <option value="">— Not Set —</option>
+                        <option value="NEW">New</option>
+                        <option value="LIKE_NEW">Like New</option>
+                        <option value="VERY_GOOD">Very Good</option>
+                        <option value="GOOD">Good</option>
+                        <option value="ACCEPTABLE">Acceptable</option>
+                        <option value="FOR_PARTS">For Parts</option>
+                    </select>
+                </FormField>
+
+                <FormField label="Rarity">
+                    <select
+                        name="rarity"
+                        value={formData.rarity}
+                        onChange={handleChange}
+                        className={selectClass}
+                    >
+                        <option value="">— Not Set —</option>
+                        <option value="COMMON">Common</option>
+                        <option value="UNCOMMON">Uncommon</option>
+                        <option value="RARE">Rare</option>
+                        <option value="VERY_RARE">Very Rare</option>
+                        <option value="EXTREMELY_RARE">Extremely Rare</option>
                     </select>
                 </FormField>
 

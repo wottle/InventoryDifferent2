@@ -11,6 +11,8 @@ interface DeviceCardProps {
         releaseYear?: number | null;
         status: string;
         functionalStatus: string;
+        condition?: string | null;
+        rarity?: string | null;
         isAssetTagged?: boolean;
         estimatedValue?: number | null;
         listPrice?: number | null;
@@ -28,6 +30,18 @@ interface DeviceCardProps {
         accessories?: Array<{id: number, name: string}>;
         isPramBatteryRemoved?: boolean;
     };
+}
+
+function conditionLabel(condition: string): string {
+    const labels: Record<string, string> = {
+        NEW: "New",
+        LIKE_NEW: "Like New",
+        VERY_GOOD: "Very Good",
+        GOOD: "Good",
+        ACCEPTABLE: "Acceptable",
+        FOR_PARTS: "For Parts",
+    };
+    return labels[condition] ?? condition;
 }
 
 export function DeviceCard({ device }: DeviceCardProps) {
@@ -277,7 +291,12 @@ export function DeviceCard({ device }: DeviceCardProps) {
                         <span className="text-xs">No Image</span>
                     )}
                 </div>
-                <div className="absolute top-1 right-1 flex items-center gap-1">
+                <div className="absolute top-1 right-1 flex flex-col items-end gap-1">
+                    {(device.rarity === "VERY_RARE" || device.rarity === "EXTREMELY_RARE") && (
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm">
+                            ✦ {device.rarity === "EXTREMELY_RARE" ? "Extremely Rare" : "Very Rare"}
+                        </span>
+                    )}
                     <span
                         className={`text-[10px] font-bold px-1 py-0.5 rounded shadow-sm bg-gray-700 ${
                             device.status === "COLLECTION" ? "text-[var(--apple-green)]" :
@@ -306,6 +325,11 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 <p className="line-clamp-1 text-xs text-[var(--muted-foreground)] mb-1">
                     {device.additionalName || `${device.manufacturer || ''} ${device.modelNumber || ''}`.trim() || ''}
                 </p>
+                {device.condition && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        {conditionLabel(device.condition)}
+                    </p>
+                )}
                 <div className="text-xs mb-1">
                     <ValueSaleInfo />
                 </div>
@@ -352,6 +376,20 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 <p className="text-[11px] text-[var(--muted-foreground)]">
                     {device.category.name}{device.releaseYear ? ` • ${device.releaseYear}` : ''}
                 </p>
+
+                {/* Condition and Rarity */}
+                <div className="flex items-center gap-2 text-[11px] mb-1">
+                    {device.condition && (
+                        <span className="text-gray-500 dark:text-gray-400">
+                            {conditionLabel(device.condition)}
+                        </span>
+                    )}
+                    {(device.rarity === "VERY_RARE" || device.rarity === "EXTREMELY_RARE") && (
+                        <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                            ✦ {device.rarity === "EXTREMELY_RARE" ? "Ext. Rare" : "V. Rare"}
+                        </span>
+                    )}
+                </div>
 
                 {/* Value/Sale info */}
                 <div className="text-[11px]">

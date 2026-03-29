@@ -39,6 +39,8 @@ class DeviceService {
                 isFavorite
                 status
                 functionalStatus
+                condition
+                rarity
                 lastPowerOnDate
                 isAssetTagged
                 isPramBatteryRemoved
@@ -99,6 +101,8 @@ class DeviceService {
                 isFavorite
                 status
                 functionalStatus
+                condition
+                rarity
                 lastPowerOnDate
                 isAssetTagged
                 dateAcquired
@@ -186,6 +190,8 @@ class DeviceService {
                 isFavorite
                 status
                 functionalStatus
+                condition
+                rarity
                 lastPowerOnDate
                 isAssetTagged
                 dateAcquired
@@ -449,6 +455,8 @@ class DeviceService {
                 isFavorite
                 status
                 functionalStatus
+                condition
+                rarity
                 lastPowerOnDate
                 isAssetTagged
                 dateAcquired
@@ -776,6 +784,8 @@ class DeviceService {
                 isFavorite
                 status
                 functionalStatus
+                condition
+                rarity
                 lastPowerOnDate
                 isAssetTagged
                 dateAcquired
@@ -931,6 +941,8 @@ class DeviceService {
                 isFavorite
                 status
                 functionalStatus
+                condition
+                rarity
                 lastPowerOnDate
                 isAssetTagged
                 dateAcquired

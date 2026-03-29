@@ -23,6 +23,8 @@ struct EditDeviceView: View {
 
     @State private var status: Status
     @State private var functionalStatus: FunctionalStatus
+    @State private var condition: Condition?
+    @State private var rarity: Rarity?
     @State private var isFavorite: Bool
     @State private var isAssetTagged: Bool
 
@@ -74,6 +76,8 @@ struct EditDeviceView: View {
 
         _status = State(initialValue: device.status)
         _functionalStatus = State(initialValue: device.functionalStatus)
+        _condition = State(initialValue: device.condition)
+        _rarity = State(initialValue: device.rarity)
         _isFavorite = State(initialValue: device.isFavorite)
         _isAssetTagged = State(initialValue: device.isAssetTagged)
         _accessories = State(initialValue: device.accessories)
@@ -219,10 +223,24 @@ struct EditDeviceView: View {
                     soldDate = Date()
                 }
             }
-            
+
             Picker("Functional Status", selection: $functionalStatus) {
                 ForEach(FunctionalStatus.allCases, id: \.self) { status in
                     Text(status.displayName).tag(status)
+                }
+            }
+
+            Picker("Condition", selection: $condition) {
+                Text("Not Set").tag(Optional<Condition>.none)
+                ForEach(Condition.allCases, id: \.self) { c in
+                    Text(c.displayName).tag(Optional<Condition>.some(c))
+                }
+            }
+
+            Picker("Rarity", selection: $rarity) {
+                Text("Not Set").tag(Optional<Rarity>.none)
+                ForEach(Rarity.allCases, id: \.self) { r in
+                    Text(r.displayName).tag(Optional<Rarity>.some(r))
                 }
             }
         } header: {
@@ -481,6 +499,8 @@ struct EditDeviceView: View {
 
             input["status"] = status.rawValue
             input["functionalStatus"] = functionalStatus.rawValue
+            input["condition"] = condition?.rawValue as Any
+            input["rarity"] = rarity?.rawValue as Any
             input["isFavorite"] = isFavorite
             input["isAssetTagged"] = isAssetTagged
             
@@ -585,6 +605,8 @@ struct EditDeviceView: View {
         isFavorite: true,
         status: .COLLECTION,
         functionalStatus: .YES,
+        condition: nil,
+        rarity: nil,
         lastPowerOnDate: nil,
         isAssetTagged: true,
         dateAcquired: "2024-01-15T00:00:00.000Z",

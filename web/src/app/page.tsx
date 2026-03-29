@@ -119,6 +119,8 @@ export default function Home() {
     categoryIds: [],
     statuses: [],
     functionalStatuses: [],
+    conditions: [],
+    rarities: [],
     searchTerm: '',
   };
 
@@ -137,6 +139,12 @@ export default function Home() {
           : [],
         functionalStatuses: Array.isArray(parsed?.functionalStatuses)
           ? parsed.functionalStatuses.map((s: any) => String(s))
+          : [],
+        conditions: Array.isArray(parsed?.conditions)
+          ? parsed.conditions.map((s: any) => String(s))
+          : [],
+        rarities: Array.isArray(parsed?.rarities)
+          ? parsed.rarities.map((s: any) => String(s))
           : [],
         searchTerm: typeof parsed?.searchTerm === 'string' ? parsed.searchTerm : '',
       };

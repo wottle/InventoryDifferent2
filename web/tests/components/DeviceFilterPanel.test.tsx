@@ -9,6 +9,8 @@ const defaultProps = {
         categoryIds: [],
         statuses: [],
         functionalStatuses: [],
+        conditions: [],
+        rarities: [],
         searchTerm: '',
     },
     onFiltersChange: vi.fn(),
@@ -17,6 +19,7 @@ const defaultProps = {
         { id: 2, name: 'Peripherals', type: 'PERIPHERAL' },
     ],
     sortColumn: 'category' as const,
+    sortDirection: 'asc' as const,
     onSortChange: vi.fn(),
 };
 
@@ -79,6 +82,8 @@ describe('DeviceFilterPanel', () => {
             categoryIds: [],
             statuses: [],
             functionalStatuses: [],
+            conditions: [],
+            rarities: [],
             searchTerm: '',
         });
         expect(onClose).toHaveBeenCalled();

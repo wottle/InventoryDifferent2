@@ -25,6 +25,8 @@ const GET_SHOP_DEVICE = gql`
       info
       status
       functionalStatus
+      condition
+      rarity
       listPrice
       soldPrice
       soldDate
@@ -433,8 +435,13 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                         {/* Price */}
                         <div className="p-4 bg-[var(--card)] rounded-lg border border-[var(--border)] card-retro">
                             {getPriceDisplay()}
-                            <div className="mt-2 flex items-center gap-3">
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
                                 <FunctionalBadge status={device.functionalStatus} />
+                                {(device.rarity === "VERY_RARE" || device.rarity === "EXTREMELY_RARE") && (
+                                    <span className="inline-flex items-center gap-0.5 px-2 py-1 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                                        ✦ {device.rarity === "EXTREMELY_RARE" ? "Extremely Rare" : "Very Rare"}
+                                    </span>
+                                )}
                                 {device.accessories?.map((acc: any) => (
                                     <span key={acc.id} className="inline-flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400">
                                         {acc.name === 'Original Box' && (
@@ -467,6 +474,15 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                         <div className="p-4 bg-[var(--card)] rounded-lg border border-[var(--border)] card-retro">
                             <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3">Specifications</h2>
                             <dl>
+                                <DetailRow label="Condition" value={device.condition ? (
+                                    device.condition === "NEW" ? "New" :
+                                    device.condition === "LIKE_NEW" ? "Like New" :
+                                    device.condition === "VERY_GOOD" ? "Very Good" :
+                                    device.condition === "GOOD" ? "Good" :
+                                    device.condition === "ACCEPTABLE" ? "Acceptable" :
+                                    device.condition === "FOR_PARTS" ? "For Parts" :
+                                    device.condition
+                                ) : null} />
                                 <DetailRow label="Manufacturer" value={device.manufacturer} />
                                 <DetailRow label="Model" value={device.modelNumber} />
                                 <DetailRow label="Release Year" value={device.releaseYear} />

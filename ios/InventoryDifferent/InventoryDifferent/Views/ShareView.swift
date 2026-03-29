@@ -360,6 +360,8 @@ struct ShareView: View {
         isFavorite: true,
         status: .COLLECTION,
         functionalStatus: .YES,
+        condition: nil,
+        rarity: nil,
         lastPowerOnDate: nil,
         isAssetTagged: true,
         dateAcquired: nil,

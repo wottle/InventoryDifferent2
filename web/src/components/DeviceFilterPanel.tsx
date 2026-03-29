@@ -6,6 +6,8 @@ export interface FilterState {
   categoryIds: number[];
   statuses: string[];
   functionalStatuses: string[];
+  conditions: string[];
+  rarities: string[];
   searchTerm: string;
 }
 
@@ -71,6 +73,23 @@ export function DeviceFilterPanel({
     { value: "NO", label: "Not Functional" },
   ];
 
+  const conditionOptions = [
+    { value: "NEW", label: "New" },
+    { value: "LIKE_NEW", label: "Like New" },
+    { value: "VERY_GOOD", label: "Very Good" },
+    { value: "GOOD", label: "Good" },
+    { value: "ACCEPTABLE", label: "Acceptable" },
+    { value: "FOR_PARTS", label: "For Parts" },
+  ];
+
+  const rarityOptions = [
+    { value: "COMMON", label: "Common" },
+    { value: "UNCOMMON", label: "Uncommon" },
+    { value: "RARE", label: "Rare" },
+    { value: "VERY_RARE", label: "Very Rare" },
+    { value: "EXTREMELY_RARE", label: "Extremely Rare" },
+  ];
+
   const handleCategoryChange = (categoryId: number) => {
     const newCategoryIds = categoryId ? [categoryId] : [];
     setLocalFilters({ ...localFilters, categoryIds: newCategoryIds });
@@ -88,6 +107,20 @@ export function DeviceFilterPanel({
     setLocalFilters({ ...localFilters, functionalStatuses: newFunctionalStatuses });
   };
 
+  const handleConditionChange = (condition: string, checked: boolean) => {
+    const newConditions = checked
+      ? [...localFilters.conditions, condition]
+      : localFilters.conditions.filter((c) => c !== condition);
+    setLocalFilters({ ...localFilters, conditions: newConditions });
+  };
+
+  const handleRarityChange = (rarity: string, checked: boolean) => {
+    const newRarities = checked
+      ? [...localFilters.rarities, rarity]
+      : localFilters.rarities.filter((r) => r !== rarity);
+    setLocalFilters({ ...localFilters, rarities: newRarities });
+  };
+
   const handleApply = () => {
     onFiltersChange(localFilters);
     onSortChange(localSortColumn, localSortDirection);
@@ -99,6 +132,8 @@ export function DeviceFilterPanel({
       categoryIds: [],
       statuses: [],
       functionalStatuses: [],
+      conditions: [],
+      rarities: [],
       searchTerm: '',
     };
     setLocalFilters(clearedFilters);
@@ -176,6 +211,46 @@ export function DeviceFilterPanel({
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Condition */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Condition</h3>
+            <div className="space-y-2">
+              {conditionOptions.map((condition) => (
+                <label key={condition.value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={localFilters.conditions.includes(condition.value)}
+                    onChange={(e) => handleConditionChange(condition.value, e.target.checked)}
+                    className="rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--ring)] bg-[var(--input)]"
+                  />
+                  <span className="ml-2 text-sm text-[var(--foreground)]">
+                    {condition.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Rarity */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Rarity</h3>
+            <div className="space-y-2">
+              {rarityOptions.map((rarity) => (
+                <label key={rarity.value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={localFilters.rarities.includes(rarity.value)}
+                    onChange={(e) => handleRarityChange(rarity.value, e.target.checked)}
+                    className="rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--ring)] bg-[var(--input)]"
+                  />
+                  <span className="ml-2 text-sm text-[var(--foreground)]">
+                    {rarity.label}
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
 
           {/* Sort By */}

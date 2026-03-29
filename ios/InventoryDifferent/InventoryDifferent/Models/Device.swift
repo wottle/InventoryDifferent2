@@ -22,6 +22,8 @@ protocol DeviceRowPresentable {
     var id: Int { get }
     var status: Status { get }
     var functionalStatus: FunctionalStatus { get }
+    var condition: Condition? { get }
+    var rarity: Rarity? { get }
     var isAssetTagged: Bool { get }
     var accessories: [DeviceAccessory] { get }
     var isFavorite: Bool { get }
@@ -70,13 +72,55 @@ enum FunctionalStatus: String, Codable, CaseIterable {
     case YES
     case PARTIAL
     case NO
-    
+
     var displayName: String {
         switch self {
         case .YES: return "Working"
         case .PARTIAL: return "Partial"
         case .NO: return "Not Working"
         }
+    }
+}
+
+enum Condition: String, Codable, CaseIterable {
+    case NEW = "NEW"
+    case LIKE_NEW = "LIKE_NEW"
+    case VERY_GOOD = "VERY_GOOD"
+    case GOOD = "GOOD"
+    case ACCEPTABLE = "ACCEPTABLE"
+    case FOR_PARTS = "FOR_PARTS"
+
+    var displayName: String {
+        switch self {
+        case .NEW: return "New"
+        case .LIKE_NEW: return "Like New"
+        case .VERY_GOOD: return "Very Good"
+        case .GOOD: return "Good"
+        case .ACCEPTABLE: return "Acceptable"
+        case .FOR_PARTS: return "For Parts"
+        }
+    }
+}
+
+enum Rarity: String, Codable, CaseIterable {
+    case COMMON = "COMMON"
+    case UNCOMMON = "UNCOMMON"
+    case RARE = "RARE"
+    case VERY_RARE = "VERY_RARE"
+    case EXTREMELY_RARE = "EXTREMELY_RARE"
+
+    var displayName: String {
+        switch self {
+        case .COMMON: return "Common"
+        case .UNCOMMON: return "Uncommon"
+        case .RARE: return "Rare"
+        case .VERY_RARE: return "Very Rare"
+        case .EXTREMELY_RARE: return "Extremely Rare"
+        }
+    }
+
+    var isRare: Bool {
+        return self == .VERY_RARE || self == .EXTREMELY_RARE
     }
 }
 
@@ -163,6 +207,8 @@ struct Device: Codable, Identifiable, Hashable {
 
     let status: Status
     let functionalStatus: FunctionalStatus
+    let condition: Condition?
+    let rarity: Rarity?
     let lastPowerOnDate: String?
     let isAssetTagged: Bool
 
@@ -170,11 +216,11 @@ struct Device: Codable, Identifiable, Hashable {
     let whereAcquired: String?
     let priceAcquired: Double?
     let estimatedValue: Double?
-    
+
     let listPrice: Double?
     let soldPrice: Double?
     let soldDate: String?
-    
+
     let cpu: String?
     let ram: String?
     let graphics: String?
@@ -220,6 +266,8 @@ struct DeviceListItem: Codable, Identifiable, Hashable {
 
     let status: Status
     let functionalStatus: FunctionalStatus
+    let condition: Condition?
+    let rarity: Rarity?
     let lastPowerOnDate: String?
     let isAssetTagged: Bool
     let isPramBatteryRemoved: Bool?

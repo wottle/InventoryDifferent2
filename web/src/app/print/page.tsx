@@ -89,6 +89,8 @@ const defaultFilters: FilterState = {
   categoryIds: [],
   statuses: [],
   functionalStatuses: [],
+  conditions: [],
+  rarities: [],
   searchTerm: "",
 };
 

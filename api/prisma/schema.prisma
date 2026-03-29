@@ -22,6 +22,8 @@ model Device {
   // Status & Condition
   status              Status    @default(COLLECTION)
   functionalStatus    FunctionalStatus @default(YES)
+  condition           Condition?
+  rarity              Rarity?
   lastPowerOnDate     DateTime?
   hasOriginalBox      Boolean   @default(false)
   isAssetTagged       Boolean   @default(false)
@@ -253,6 +255,23 @@ enum FunctionalStatus {
   YES
   PARTIAL
   NO
+}
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  VERY_GOOD
+  GOOD
+  ACCEPTABLE
+  FOR_PARTS
+}
+
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  VERY_RARE
+  EXTREMELY_RARE
 }
 
 enum CategoryType {

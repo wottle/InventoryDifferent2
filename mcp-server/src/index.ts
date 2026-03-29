@@ -71,6 +71,16 @@ const TOOLS = [
           enum: ["YES", "PARTIAL", "NO"],
           description: "Filter by whether the device is functional",
         },
+        condition: {
+          type: "string",
+          enum: ["NEW", "LIKE_NEW", "VERY_GOOD", "GOOD", "ACCEPTABLE", "FOR_PARTS"],
+          description: "Filter by cosmetic condition",
+        },
+        rarity: {
+          type: "string",
+          enum: ["COMMON", "UNCOMMON", "RARE", "VERY_RARE", "EXTREMELY_RARE"],
+          description: "Filter by rarity",
+        },
         categoryId: {
           type: "number",
           description: "Filter by category ID",
@@ -166,7 +176,7 @@ const TOOLS = [
           type: "array",
           items: { type: "string" },
           description:
-            "Array of field names to include in results. Available fields: id, name, additionalName, manufacturer, modelNumber, serialNumber, releaseYear, location, info, isFavorite, status, functionalStatus, hasOriginalBox, isAssetTagged, dateAcquired, whereAcquired, priceAcquired, estimatedValue, listPrice, soldPrice, soldDate, cpu, ram, graphics, storage, operatingSystem, isWifiEnabled, isPramBatteryRemoved, lastPowerOnDate, externalUrl, category, tags, notes, maintenanceTasks",
+            "Array of field names to include in results. Available fields: id, name, additionalName, manufacturer, modelNumber, serialNumber, releaseYear, location, info, isFavorite, status, functionalStatus, condition, rarity, hasOriginalBox, isAssetTagged, dateAcquired, whereAcquired, priceAcquired, estimatedValue, listPrice, soldPrice, soldDate, cpu, ram, graphics, storage, operatingSystem, isWifiEnabled, isPramBatteryRemoved, lastPowerOnDate, externalUrl, category, tags, notes, maintenanceTasks",
         },
         limit: {
           type: "number",
@@ -199,6 +209,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Functional status filter
         if (args?.functionalStatus) {
           whereClause.functionalStatus = args.functionalStatus;
+        }
+
+        // Condition filter
+        if (args?.condition) {
+          whereClause.condition = args.condition;
+        }
+
+        // Rarity filter
+        if (args?.rarity) {
+          whereClause.rarity = args.rarity;
         }
 
         // Category ID filter
@@ -284,6 +304,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           releaseYear: d.releaseYear,
           status: d.status,
           functionalStatus: d.functionalStatus,
+          condition: d.condition,
+          rarity: d.rarity,
           category: d.category.name,
           categoryType: d.category.type,
           cpu: d.cpu,

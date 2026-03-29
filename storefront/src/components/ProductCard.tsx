@@ -11,6 +11,8 @@ interface ProductCardProps {
         releaseYear?: number | null;
         status: string;
         functionalStatus: string;
+        condition?: string | null;
+        rarity?: string | null;
         listPrice?: number | null;
         soldPrice?: number | null;
         category: {
@@ -178,6 +180,19 @@ export function ProductCard({ device }: ProductCardProps) {
                     <p className="line-clamp-1 text-xs text-[var(--muted-foreground)] mb-2">
                         {device.additionalName || `${device.manufacturer || ''} ${device.modelNumber || ''}`.trim() || '\u00A0'}
                     </p>
+
+                    {/* Condition */}
+                    {device.condition && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            {device.condition === "NEW" ? "New" :
+                             device.condition === "LIKE_NEW" ? "Like New" :
+                             device.condition === "VERY_GOOD" ? "Very Good" :
+                             device.condition === "GOOD" ? "Good" :
+                             device.condition === "ACCEPTABLE" ? "Acceptable" :
+                             device.condition === "FOR_PARTS" ? "For Parts" :
+                             device.condition}
+                        </p>
+                    )}
 
                     {/* Price & Status */}
                     <div className="mt-auto flex items-center justify-between">

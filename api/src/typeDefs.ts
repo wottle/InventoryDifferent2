@@ -19,6 +19,23 @@ export const typeDefs = gql`
     NO
   }
 
+  enum Condition {
+    NEW
+    LIKE_NEW
+    VERY_GOOD
+    GOOD
+    ACCEPTABLE
+    FOR_PARTS
+  }
+
+  enum Rarity {
+    COMMON
+    UNCOMMON
+    RARE
+    VERY_RARE
+    EXTREMELY_RARE
+  }
+
   enum TransactionType {
     ACQUISITION
     SALE
@@ -42,6 +59,8 @@ export const typeDefs = gql`
     
     status: Status!
     functionalStatus: FunctionalStatus!
+    condition: Condition
+    rarity: Rarity
     lastPowerOnDate: DateTime
     hasOriginalBox: Boolean!
     isAssetTagged: Boolean!
@@ -383,6 +402,8 @@ export const typeDefs = gql`
     # Optional - Status
     status: Status
     functionalStatus: FunctionalStatus
+    condition: Condition
+    rarity: Rarity
 
     # Optional - Flags
     hasOriginalBox: Boolean
@@ -429,6 +450,8 @@ export const typeDefs = gql`
 
     status: Status
     functionalStatus: FunctionalStatus
+    condition: Condition
+    rarity: Rarity
 
     hasOriginalBox: Boolean
     isAssetTagged: Boolean
@@ -515,6 +538,8 @@ export const typeDefs = gql`
     category: DeviceWhereCategoryInput
     status: DeviceWhereStatusInput
     functionalStatus: DeviceWhereFunctionalStatusInput
+    condition: DeviceWhereConditionInput
+    rarity: DeviceWhereRarityInput
   }
 
   input DeviceWhereSerialNumberInput {
@@ -548,6 +573,16 @@ export const typeDefs = gql`
   input DeviceWhereFunctionalStatusInput {
     equals: FunctionalStatus
     in: [FunctionalStatus!]
+  }
+
+  input DeviceWhereConditionInput {
+    equals: Condition
+    in: [Condition!]
+  }
+
+  input DeviceWhereRarityInput {
+    equals: Rarity
+    in: [Rarity!]
   }
 
   type Mutation {

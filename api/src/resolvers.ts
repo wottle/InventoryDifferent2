@@ -205,6 +205,22 @@ export const resolvers = {
                 whereClause.functionalStatus = { in: args.where.functionalStatus.in };
             }
 
+            // Handle condition filter
+            if (args.where?.condition?.equals !== undefined) {
+                whereClause.condition = args.where.condition.equals;
+            }
+            if (args.where?.condition?.in !== undefined) {
+                whereClause.condition = { in: args.where.condition.in };
+            }
+
+            // Handle rarity filter
+            if (args.where?.rarity?.equals !== undefined) {
+                whereClause.rarity = args.where.rarity.equals;
+            }
+            if (args.where?.rarity?.in !== undefined) {
+                whereClause.rarity = { in: args.where.rarity.in };
+            }
+
             const devices = await context.prisma.device.findMany({
                 where: whereClause,
                 include: DEVICE_INCLUDE,
