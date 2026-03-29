@@ -304,8 +304,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           releaseYear: d.releaseYear,
           status: d.status,
           functionalStatus: d.functionalStatus,
-          condition: d.condition,
-          rarity: d.rarity,
           category: d.category.name,
           categoryType: d.category.type,
           cpu: d.cpu,
