@@ -285,8 +285,11 @@ export default function ShopHome({ contactEmail }: ShopHomeProps) {
             <div className="flex items-center gap-3">
               <a
                 href="/looking-for"
-                className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full border border-[var(--apple-blue)] text-[var(--apple-blue)] hover:bg-[var(--apple-blue)] hover:text-white transition-colors"
               >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
                 Looking For
               </a>
               <StatusFilter
@@ -297,6 +300,19 @@ export default function ShopHome({ contactEmail }: ShopHomeProps) {
           </div>
         </div>
       </header>
+
+      {/* Looking For Banner */}
+      <div className="bg-[var(--apple-blue)] text-white text-sm">
+        <div className="container mx-auto px-4 py-2 flex items-center justify-center gap-2">
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Don't see what you're looking for?</span>
+          <a href="/looking-for" className="font-semibold underline underline-offset-2 hover:no-underline">
+            See our wishlist →
+          </a>
+        </div>
+      </div>
 
       {/* Search and Sort Bar */}
       <div className="bg-[var(--card)] border-b border-[var(--border)]">
