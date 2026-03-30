@@ -20,7 +20,11 @@ class ChatService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
+        if let token = await AuthService.shared.getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
         let body = ["message": message]
         request.httpBody = try JSONEncoder().encode(body)
         
