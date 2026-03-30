@@ -29,7 +29,8 @@ const API_URL = (process.env.API_URL || 'http://api:4000') + '/graphql';
 export async function POST(req: Request) {
   try {
     const { message } = await req.json();
-    
+    const authHeader = req.headers.get('authorization') || '';
+
     if (!message) {
       return new Response(JSON.stringify({ error: 'Message is required' }), {
         status: 400,
@@ -97,7 +98,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
             try {
               const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(authHeader && { 'Authorization': authHeader }),
+                },
                 body: JSON.stringify({
                   query: `
                     query SearchDevices($where: DeviceWhereInput) {
@@ -251,7 +255,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
             try {
               const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(authHeader && { 'Authorization': authHeader }),
+                },
                 body: JSON.stringify({
                   query: `
                     query FinancialOverview {
