@@ -185,6 +185,55 @@ const TOOLS = [
       },
     },
   },
+  {
+    name: "update_device",
+    description:
+      "Update a device in the collection. Use for logging power-ons, updating estimated value, marking as sold, changing status, updating functional status, or changing location.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        deviceId: { type: "number", description: "The device ID to update" },
+        lastPowerOnDate: { type: "string", description: "ISO date string for when the device was last powered on (e.g., '2026-03-30T00:00:00.000Z')" },
+        estimatedValue: { type: "number", description: "Updated estimated value in dollars" },
+        status: { type: "string", enum: ["COLLECTION", "FOR_SALE", "PENDING_SALE", "SOLD", "DONATED", "IN_REPAIR", "RETURNED"], description: "New device status" },
+        soldPrice: { type: "number", description: "Price the device was sold for" },
+        soldDate: { type: "string", description: "ISO date string for when the device was sold" },
+        listPrice: { type: "number", description: "Asking price for devices listed for sale" },
+        functionalStatus: { type: "string", enum: ["YES", "PARTIAL", "NO"], description: "Updated functional status" },
+        location: { type: "string", description: "Where the device is stored or located" },
+      },
+      required: ["deviceId"],
+    },
+  },
+  {
+    name: "add_note",
+    description:
+      "Add a note to a device. Use for recording observations, work done, provenance info, or any free-form notes about a device.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        deviceId: { type: "number", description: "The device ID to add a note to" },
+        content: { type: "string", description: "The note content" },
+      },
+      required: ["deviceId", "content"],
+    },
+  },
+  {
+    name: "add_maintenance_task",
+    description:
+      "Log a completed maintenance task for a device. Use for recording repairs, recaps, cleaning, part replacements, etc.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        deviceId: { type: "number", description: "The device ID" },
+        label: { type: "string", description: "Short description of the task (e.g., 'Recap analog board', 'Replaced PRAM battery', 'Screen cleaning')" },
+        dateCompleted: { type: "string", description: "ISO date string for when the task was completed (e.g., '2026-03-30T00:00:00.000Z')" },
+        notes: { type: "string", description: "Additional notes about the task" },
+        cost: { type: "number", description: "Cost of the task in dollars (parts, labor, etc.)" },
+      },
+      required: ["deviceId", "label", "dateCompleted"],
+    },
+  },
 ];
 
 // List tools handler
@@ -720,6 +769,96 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               ),
             },
           ],
+        };
+      }
+
+      case "update_device": {
+        if (!args?.deviceId) throw new Error("deviceId is required");
+
+        const data: any = {};
+        if (args.lastPowerOnDate !== undefined) data.lastPowerOnDate = new Date(args.lastPowerOnDate as string);
+        if (args.estimatedValue !== undefined) data.estimatedValue = args.estimatedValue;
+        if (args.status !== undefined) data.status = args.status;
+        if (args.soldPrice !== undefined) data.soldPrice = args.soldPrice;
+        if (args.soldDate !== undefined) data.soldDate = new Date(args.soldDate as string);
+        if (args.listPrice !== undefined) data.listPrice = args.listPrice;
+        if (args.functionalStatus !== undefined) data.functionalStatus = args.functionalStatus;
+        if (args.location !== undefined) data.location = args.location;
+
+        const device = await prisma.device.update({
+          where: { id: args.deviceId as number },
+          data,
+        });
+
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              device: {
+                id: device.id,
+                name: device.additionalName ? `${device.name} (${device.additionalName})` : device.name,
+                lastPowerOnDate: device.lastPowerOnDate,
+                estimatedValue: decimalToNumber(device.estimatedValue),
+                status: device.status,
+                soldPrice: decimalToNumber(device.soldPrice),
+                soldDate: device.soldDate,
+                listPrice: decimalToNumber(device.listPrice),
+                functionalStatus: device.functionalStatus,
+                location: device.location,
+              },
+            }, null, 2),
+          }],
+        };
+      }
+
+      case "add_note": {
+        if (!args?.deviceId) throw new Error("deviceId is required");
+        if (!args?.content) throw new Error("content is required");
+
+        const note = await prisma.note.create({
+          data: {
+            deviceId: args.deviceId as number,
+            content: args.content as string,
+            date: new Date(),
+          },
+        });
+
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({ success: true, noteId: note.id, content: note.content, date: note.date }, null, 2),
+          }],
+        };
+      }
+
+      case "add_maintenance_task": {
+        if (!args?.deviceId) throw new Error("deviceId is required");
+        if (!args?.label) throw new Error("label is required");
+        if (!args?.dateCompleted) throw new Error("dateCompleted is required");
+
+        const task = await prisma.maintenanceTask.create({
+          data: {
+            deviceId: args.deviceId as number,
+            label: args.label as string,
+            dateCompleted: new Date(args.dateCompleted as string),
+            notes: (args.notes as string | undefined) ?? null,
+            cost: (args.cost as number | undefined) ?? null,
+          },
+        });
+
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              taskId: task.id,
+              label: task.label,
+              dateCompleted: task.dateCompleted,
+              notes: task.notes,
+              cost: task.cost ? decimalToNumber(task.cost) : null,
+            }, null, 2),
+          }],
         };
       }
 

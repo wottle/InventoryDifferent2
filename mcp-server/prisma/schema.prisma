@@ -115,10 +115,11 @@ model MaintenanceTask {
   id            Int      @id @default(autoincrement())
   deviceId      Int
   device        Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-  
+
   label         String
   dateCompleted DateTime
   notes         String?  @db.Text
+  cost          Float?
 }
 
 model Tag {
