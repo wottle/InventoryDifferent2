@@ -1308,7 +1308,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 </FormField>
             </div>
 
-            <div className="flex gap-3 mt-8 pt-6 border-t border-[var(--border)]">
+            <div className="sticky bottom-0 z-10 flex gap-3 mt-8 pt-4 pb-4 border-t border-[var(--border)] bg-[var(--background)]">
                 <button
                     type="submit"
                     disabled={loading}
