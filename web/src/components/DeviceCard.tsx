@@ -276,9 +276,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
         </div>
     );
 
-    // Desktop card view (hidden on mobile)
+    // Desktop card view (hidden only on very small screens < 360px)
     const DesktopCard = () => (
-        <div className="hidden sm:flex overflow-hidden rounded border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md h-full flex-col max-w-[230px] mx-auto card-retro">
+        <div className="hidden min-[360px]:flex overflow-hidden rounded border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md h-full flex-col card-retro">
             <div className="aspect-square w-full bg-[var(--muted)] object-cover relative overflow-hidden">
                 <div className="flex h-full items-center justify-center text-[var(--muted-foreground)]">
                     {thumbnail ? (
@@ -340,9 +340,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
         </div>
     );
 
-    // Mobile card view (horizontal layout, shown only on mobile)
+    // Mobile card view (horizontal layout, shown only on very small screens < 360px)
     const MobileCard = () => (
-        <div className="flex sm:hidden overflow-hidden rounded border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md card-retro">
+        <div className="flex min-[360px]:hidden overflow-hidden rounded border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md card-retro">
             {/* Thumbnail - 20% width, centered vertically */}
             <div className="w-[20%] min-w-[60px] flex items-center justify-center flex-shrink-0 p-2">
                 <div className="aspect-square w-full rounded-lg overflow-hidden bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)]">

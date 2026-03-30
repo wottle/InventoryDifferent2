@@ -637,7 +637,7 @@ export default function Home() {
             </div>
           )
         ) : viewMode === 'card' ? (
-          <div className="grid grid-cols-1 gap-0.5 sm:gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 xxl:grid-cols-7">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-0.5 sm:gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 xxl:grid-cols-7">
             {sortedDevicesForCards.map((device: any) => (
               <DeviceCard key={device.id} device={device} />
             ))}
