@@ -28,11 +28,20 @@ interface CollectionStats {
   byAcquisitionYear: StatsBucket[];
   byReleaseDecade: StatsBucket[];
   topManufacturers: StatsBucket[];
+  byRarity: StatsBucket[];
   totalDevices: number;
   workingPercent: number;
   avgEstimatedValue: number;
   topCategoryType: string;
 }
+
+const RARITY_COLORS: Record<string, string> = {
+  'Common':           '#6B7280',
+  'Uncommon':         '#22C55E',
+  'Rare':             '#3B82F6',
+  'Very Rare':        '#8B5CF6',
+  'Extremely Rare':   '#F59E0B',
+};
 
 function DonutChart({ data, title }: { data: StatsBucket[]; title: string }) {
   if (data.length === 0) {
@@ -197,6 +206,59 @@ function HorizontalBarChart({ data, title }: { data: StatsBucket[]; title: strin
   );
 }
 
+function RarityBarChart({ data, title }: { data: StatsBucket[]; title: string }) {
+  if (data.length === 0) {
+    return (
+      <div className="h-48 flex items-center justify-center text-[var(--muted-foreground)] text-sm">
+        No data
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-2">
+        {title}
+      </h3>
+      <div className="h-56">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 11, fill: "#9CA3AF" }}
+              tickLine={{ stroke: "#6B7280" }}
+              axisLine={{ stroke: "#6B7280" }}
+            />
+            <YAxis
+              tick={{ fontSize: 11, fill: "#9CA3AF" }}
+              tickLine={{ stroke: "#6B7280" }}
+              axisLine={{ stroke: "#6B7280" }}
+              allowDecimals={false}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1F2937",
+                border: "1px solid #374151",
+                borderRadius: "0.5rem",
+                color: "#F3F4F6",
+                fontSize: 12,
+              }}
+              labelStyle={{ color: "#9CA3AF" }}
+              itemStyle={{ color: "#F3F4F6" }}
+            />
+            <Bar dataKey="count" name="Devices" radius={[3, 3, 0, 0]}>
+              {data.map((entry, index) => (
+                <Cell key={index} fill={RARITY_COLORS[entry.label] ?? COLORS[index % COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
 export default function StatsCharts({ stats }: { stats: CollectionStats }) {
   return (
     <div className="space-y-8">
@@ -208,6 +270,12 @@ export default function StatsCharts({ stats }: { stats: CollectionStats }) {
           <DonutChart data={stats.byFunctionalStatus} title="By Condition" />
           <DonutChart data={stats.byCategoryType} title="By Category Type" />
         </div>
+      </section>
+
+      {/* Rarity */}
+      <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
+        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">By Rarity</h2>
+        <RarityBarChart data={stats.byRarity} title="Rarity Distribution" />
       </section>
 
       {/* Acquisition Trends */}

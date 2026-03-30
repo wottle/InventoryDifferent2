@@ -24,6 +24,7 @@ const GET_COLLECTION_STATS = gql`
       byAcquisitionYear { label count }
       byReleaseDecade { label count }
       topManufacturers { label count }
+      byRarity { label count }
       totalDevices
       workingPercent
       avgEstimatedValue

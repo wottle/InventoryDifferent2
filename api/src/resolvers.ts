@@ -641,6 +641,7 @@ export const resolvers = {
                 acquiredRaw,
                 releaseYearRaw,
                 manufacturersRaw,
+                byRarityRaw,
                 totalDevices,
                 workingCount,
                 avgValueAgg,
@@ -656,6 +657,11 @@ export const resolvers = {
                     _count: { id: true },
                     orderBy: { _count: { manufacturer: 'desc' } },
                     take: 10,
+                }),
+                context.prisma.device.groupBy({
+                    by: ['rarity'],
+                    where: { ...baseWhere, rarity: { not: null } },
+                    _count: { id: true },
                 }),
                 context.prisma.device.count({ where: baseWhere }),
                 context.prisma.device.count({ where: { ...baseWhere, functionalStatus: 'YES' as any } }),
@@ -709,6 +715,18 @@ export const resolvers = {
                 count: r._count.id,
             }));
 
+            const rarityOrder = ['COMMON', 'UNCOMMON', 'RARE', 'VERY_RARE', 'EXTREMELY_RARE'];
+            const rarityLabels: Record<string, string> = {
+                COMMON: 'Common',
+                UNCOMMON: 'Uncommon',
+                RARE: 'Rare',
+                VERY_RARE: 'Very Rare',
+                EXTREMELY_RARE: 'Extremely Rare',
+            };
+            const byRarity = (byRarityRaw as any[])
+                .sort((a, b) => rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity))
+                .map((r) => ({ label: rarityLabels[r.rarity] ?? r.rarity, count: r._count.id }));
+
             const workingPercent = totalDevices > 0 ? (workingCount / totalDevices) * 100 : 0;
             const avgEstimatedValue = decimalToNumber((avgValueAgg as any)._avg?.estimatedValue);
 
@@ -721,6 +739,7 @@ export const resolvers = {
                 byAcquisitionYear,
                 byReleaseDecade,
                 topManufacturers,
+                byRarity,
                 totalDevices,
                 workingPercent,
                 avgEstimatedValue,

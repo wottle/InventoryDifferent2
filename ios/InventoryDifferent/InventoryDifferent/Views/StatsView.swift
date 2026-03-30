@@ -39,6 +39,7 @@ struct StatsView: View {
                         horizontalChartSection(title: "By Status", data: stats.byStatus, color: .blue)
                         chartSection(title: "By Condition", data: stats.byFunctionalStatus)
                         chartSection(title: "By Category Type", data: stats.byCategoryType)
+                        rarityChartSection(stats.byRarity)
                         horizontalChartSection(title: "Acquired Per Year", data: stats.byAcquisitionYear, color: .blue)
                         chartSection(title: "By Release Era", data: stats.byReleaseDecade)
                         manufacturersSection(stats.topManufacturers)
@@ -173,6 +174,61 @@ struct StatsView: View {
                     }
                 }
                 .frame(height: CGFloat(max(200, data.count * 36)))
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+
+    // MARK: - Rarity Chart
+
+    private func rarityColor(_ label: String) -> Color {
+        switch label {
+        case "Common":         return Color(.systemGray)
+        case "Uncommon":       return Color.green
+        case "Rare":           return Color.blue
+        case "Very Rare":      return Color.purple
+        case "Extremely Rare": return Color.orange
+        default:               return Color.blue
+        }
+    }
+
+    private func rarityChartSection(_ data: [StatsBucket]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("By Rarity")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            if data.isEmpty {
+                Text("No data")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                Chart(data) { bucket in
+                    BarMark(
+                        x: .value("Rarity", bucket.label),
+                        y: .value("Count", bucket.count)
+                    )
+                    .foregroundStyle(rarityColor(bucket.label))
+                    .cornerRadius(4)
+                }
+                .chartXAxis {
+                    AxisMarks { _ in
+                        AxisValueLabel()
+                            .font(.caption2)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(values: .automatic) { _ in
+                        AxisGridLine()
+                        AxisValueLabel()
+                            .font(.caption2)
+                    }
+                }
+                .frame(height: 200)
             }
         }
         .padding()

@@ -20,6 +20,7 @@ class StatsService {
             byAcquisitionYear { label count }
             byReleaseDecade { label count }
             topManufacturers { label count }
+            byRarity { label count }
             totalDevices
             workingPercent
             avgEstimatedValue

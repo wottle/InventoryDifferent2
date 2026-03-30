@@ -18,6 +18,7 @@ struct CollectionStats: Codable {
     let byAcquisitionYear: [StatsBucket]
     let byReleaseDecade: [StatsBucket]
     let topManufacturers: [StatsBucket]
+    let byRarity: [StatsBucket]
     let totalDevices: Int
     let workingPercent: Double
     let avgEstimatedValue: Double

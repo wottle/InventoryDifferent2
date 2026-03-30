@@ -323,6 +323,7 @@ export const typeDefs = gql`
     byAcquisitionYear:  [StatsBucket!]!
     byReleaseDecade:    [StatsBucket!]!
     topManufacturers:   [StatsBucket!]!
+    byRarity:           [StatsBucket!]!
     totalDevices:       Int!
     workingPercent:     Float!
     avgEstimatedValue:  Float!
