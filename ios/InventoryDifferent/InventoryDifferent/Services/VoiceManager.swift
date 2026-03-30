@@ -27,6 +27,8 @@ class VoiceManager: NSObject, ObservableObject {
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     private let synthesizer = AVSpeechSynthesizer()
+    private var silenceTimer: Timer?
+    private let silenceTimeout: TimeInterval = 1.5
 
     override init() {
         super.init()
@@ -65,8 +67,23 @@ class VoiceManager: NSObject, ObservableObject {
             Task { @MainActor in
                 if let result {
                     self.transcript = result.bestTranscription.formattedString
+                    // Reset silence timer on each new partial result
+                    self.silenceTimer?.invalidate()
+                    self.silenceTimer = Timer.scheduledTimer(withTimeInterval: self.silenceTimeout, repeats: false) { [weak self] _ in
+                        Task { @MainActor in
+                            guard let self, self.isRecording else { return }
+                            let completed = self.transcript
+                            self.stopRecording()
+                            if !completed.isEmpty && !self.suppressFinalTranscript {
+                                self.finalTranscript = completed
+                            }
+                            self.suppressFinalTranscript = false
+                        }
+                    }
                 }
                 if error != nil || result?.isFinal == true {
+                    self.silenceTimer?.invalidate()
+                    self.silenceTimer = nil
                     let completed = self.transcript
                     self.stopRecording()
                     if !completed.isEmpty && !self.suppressFinalTranscript {
@@ -90,6 +107,8 @@ class VoiceManager: NSObject, ObservableObject {
     }
 
     func stopRecording() {
+        silenceTimer?.invalidate()
+        silenceTimer = nil
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
         recognitionRequest?.endAudio()
