@@ -73,11 +73,12 @@ class VoiceManager: NSObject, ObservableObject {
                         Task { @MainActor in
                             guard let self, self.isRecording else { return }
                             let completed = self.transcript
+                            // Suppress the isFinal callback that endAudio() will trigger
+                            self.suppressFinalTranscript = true
                             self.stopRecording()
-                            if !completed.isEmpty && !self.suppressFinalTranscript {
+                            if !completed.isEmpty {
                                 self.finalTranscript = completed
                             }
-                            self.suppressFinalTranscript = false
                         }
                     }
                 }
