@@ -132,7 +132,7 @@ const TOOLS = [
   {
     name: "list_all_devices",
     description:
-      "Returns a compact summary of every device in the collection for whole-collection reasoning. Optimized to fit 300+ devices in a single context window. Use this for questions like 'what fills gaps in my collection?', 'what's my best machine for Mac OS 8?', 'do I have any PowerPC Macs?', or any query that requires surveying the whole inventory. Each device is returned with just the fields needed for collection reasoning: identity, specs, status, and category.",
+      "Returns a compact summary of EVERY device in the collection — no pagination, no limit. Use this for whole-collection reasoning and any query involving superlatives or rankings: most/least valuable, oldest/newest, rarest, largest RAM, most recently acquired, etc. list_devices has a 100-item default limit and will silently miss devices beyond that, giving wrong answers for superlatives. ALWAYS prefer list_all_devices over list_devices when the user asks for the 'best', 'most', 'least', 'oldest', 'newest', 'most valuable', or any attribute that requires seeing the full collection to answer correctly. Also use for: 'what fills gaps in my collection?', 'what's my best machine for Mac OS 8?', 'do I have any PowerPC Macs?'. estimatedValue is included in results so you can sort client-side.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -153,7 +153,7 @@ const TOOLS = [
   {
     name: "list_devices",
     description:
-      "List all devices with flexible field selection. Use this when you need to retrieve specific fields that aren't available in search_devices, or when you need to manually sort/filter results by fields not supported by search_devices sorting.",
+      "List devices with flexible field selection, returning up to 100 by default (max 200). WARNING: this tool has a hard limit and will not return the full collection if there are more than 100 devices — do NOT use it for superlatives (most/least valuable, oldest, newest, etc.) or any ranking that requires seeing every device. Use list_all_devices instead for those queries. list_devices is appropriate when you need specific fields not in search_devices, or need to filter by status/functionalStatus/categoryType and inspect the returned fields.",
     inputSchema: {
       type: "object" as const,
       properties: {
