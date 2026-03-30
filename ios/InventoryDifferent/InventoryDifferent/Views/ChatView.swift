@@ -150,12 +150,12 @@ struct ChatView: View {
                 inputText = newTranscript
             }
         }
-        // Auto-send when STT finishes with content
-        .onChange(of: voice.isRecording) { recording in
-            if !recording && !voice.transcript.isEmpty {
-                inputText = voice.transcript
-                sendMessage(fromVoice: true)
-            }
+        // Auto-send when STT finishes naturally (silence / isFinal)
+        .onChange(of: voice.finalTranscript) { finalTranscript in
+            guard let text = finalTranscript, !text.isEmpty else { return }
+            voice.finalTranscript = nil
+            inputText = text
+            sendMessage(fromVoice: true)
         }
         // Auto-restart mic in conversation mode after TTS ends
         .onChange(of: voice.isSpeaking) { speaking in
@@ -184,6 +184,7 @@ struct ChatView: View {
         }
 
         if voice.isRecording {
+            voice.suppressFinalTranscript = true
             voice.stopRecording()
         } else {
             isInputFocused = false
@@ -195,6 +196,7 @@ struct ChatView: View {
 
     private func exitConversationMode() {
         isConversationMode = false
+        voice.suppressFinalTranscript = true
         voice.stopRecording()
         voice.stopSpeaking()
         inputText = ""
@@ -203,7 +205,10 @@ struct ChatView: View {
     private func sendMessage(fromVoice: Bool) {
         guard !inputText.isEmpty else { return }
 
-        if voice.isRecording { voice.stopRecording() }
+        if voice.isRecording {
+            voice.suppressFinalTranscript = true
+            voice.stopRecording()
+        }
         voice.stopSpeaking()
 
         let userMessage = ChatMessage(content: inputText, isUser: true)

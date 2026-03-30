@@ -13,8 +13,14 @@ class VoiceManager: NSObject, ObservableObject {
     @Published var isRecording = false
     @Published var isSpeaking = false
     @Published var transcript = ""
+    /// Set to the final transcript when recognition ends naturally (silence/isFinal).
+    /// Cleared by the observer after consuming. Not set when stopRecording() is called manually.
+    @Published var finalTranscript: String? = nil
     @Published var isSpeakingEnabled = true
     @Published var permissionsGranted = false
+
+    /// Set to true before calling stopRecording() manually to prevent finalTranscript from firing.
+    var suppressFinalTranscript = false
 
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
@@ -41,6 +47,7 @@ class VoiceManager: NSObject, ObservableObject {
     func startRecording() throws {
         recognitionTask?.cancel()
         recognitionTask = nil
+        suppressFinalTranscript = false
 
         let audioSession = AVAudioSession.sharedInstance()
         try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
@@ -54,14 +61,18 @@ class VoiceManager: NSObject, ObservableObject {
 
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { [weak self] result, error in
             guard let self else { return }
-            if let result {
-                Task { @MainActor in
+            // Single Task so transcript is guaranteed set before stopRecording() runs
+            Task { @MainActor in
+                if let result {
                     self.transcript = result.bestTranscription.formattedString
                 }
-            }
-            if error != nil || result?.isFinal == true {
-                Task { @MainActor in
+                if error != nil || result?.isFinal == true {
+                    let completed = self.transcript
                     self.stopRecording()
+                    if !completed.isEmpty && !self.suppressFinalTranscript {
+                        self.finalTranscript = completed
+                    }
+                    self.suppressFinalTranscript = false
                 }
             }
         }
