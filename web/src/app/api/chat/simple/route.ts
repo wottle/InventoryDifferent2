@@ -64,7 +64,7 @@ VINTAGE COMPUTING KNOWLEDGE:
 TOOL USAGE:
 - For financial questions, use the get_financial_summary tool
 - For searching devices, use the search_devices tool with appropriate filters
-- For detailed information about a specific device, use the get_device_details tool
+- For detailed information about a specific device (including purchase price, notes, maintenance history), use get_device_details with the device ID from search results
 - Unless specifically noted, exclude sold items from results when being asked about the collection
 
 DEVICE IDENTIFICATION:
@@ -121,6 +121,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                         location
                         estimatedValue
                         listPrice
+                        soldPrice
+                        priceAcquired
+                        whereAcquired
+                        dateAcquired
                         info
                         category {
                           name
@@ -235,6 +239,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                 location: d.location,
                 estimatedValue: decimalToNumber(d.estimatedValue),
                 listPrice: decimalToNumber(d.listPrice),
+                soldPrice: decimalToNumber(d.soldPrice),
+                priceAcquired: decimalToNumber(d.priceAcquired),
+                whereAcquired: d.whereAcquired,
+                dateAcquired: d.dateAcquired,
                 tags: d.tags?.map((t: any) => t.name) || [],
               }));
 
@@ -244,6 +252,91 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
               };
             } catch (error) {
               return { error: `Failed to search devices: ${error}` };
+            }
+          },
+        }),
+
+        get_device_details: tool({
+          description: 'Get full details for a specific device by ID, including all specs, notes, maintenance tasks, and financial info.',
+          parameters: z.object({
+            deviceId: z.number().describe('The device ID to retrieve'),
+          }),
+          execute: async (params) => {
+            try {
+              const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(authHeader && { 'Authorization': authHeader }),
+                },
+                body: JSON.stringify({
+                  query: `
+                    query GetDevice($where: DeviceWhereInput) {
+                      device(where: $where) {
+                        id name additionalName manufacturer modelNumber serialNumber
+                        releaseYear location info isFavorite status functionalStatus
+                        lastPowerOnDate hasOriginalBox isAssetTagged
+                        dateAcquired whereAcquired priceAcquired
+                        estimatedValue listPrice soldPrice soldDate
+                        cpu ram graphics storage operatingSystem
+                        isWifiEnabled isPramBatteryRemoved externalUrl
+                        category { id name type }
+                        tags { name }
+                        notes { content date }
+                        maintenanceTasks { label dateCompleted notes cost }
+                        images { id }
+                      }
+                    }
+                  `,
+                  variables: { where: { id: params.deviceId } },
+                }),
+              });
+
+              const data = await response.json();
+              const device = data.data?.device;
+              if (!device) return { error: `Device ${params.deviceId} not found` };
+
+              return {
+                id: device.id,
+                name: device.name,
+                additionalName: device.additionalName,
+                manufacturer: device.manufacturer,
+                modelNumber: device.modelNumber,
+                serialNumber: device.serialNumber,
+                releaseYear: device.releaseYear,
+                location: device.location,
+                info: device.info,
+                isFavorite: device.isFavorite,
+                status: device.status,
+                functionalStatus: device.functionalStatus,
+                lastPowerOnDate: device.lastPowerOnDate,
+                hasOriginalBox: device.hasOriginalBox,
+                isAssetTagged: device.isAssetTagged,
+                category: device.category,
+                specs: {
+                  cpu: device.cpu, ram: device.ram, graphics: device.graphics,
+                  storage: device.storage, operatingSystem: device.operatingSystem,
+                  isWifiEnabled: device.isWifiEnabled, isPramBatteryRemoved: device.isPramBatteryRemoved,
+                },
+                acquisition: {
+                  dateAcquired: device.dateAcquired,
+                  whereAcquired: device.whereAcquired,
+                  priceAcquired: decimalToNumber(device.priceAcquired),
+                },
+                valuation: {
+                  estimatedValue: decimalToNumber(device.estimatedValue),
+                  listPrice: decimalToNumber(device.listPrice),
+                  soldPrice: decimalToNumber(device.soldPrice),
+                  soldDate: device.soldDate,
+                },
+                externalUrl: device.externalUrl,
+                tags: device.tags?.map((t: any) => t.name) || [],
+                notes: device.notes || [],
+                maintenanceTasks: device.maintenanceTasks || [],
+                imageCount: device.images?.length || 0,
+              };
+            } catch (error) {
+              return { error: `Failed to get device details: ${error}` };
             }
           },
         }),
