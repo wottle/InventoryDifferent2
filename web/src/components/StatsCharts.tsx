@@ -14,7 +14,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const COLORS = ["#3B82F6", "#22C55E", "#F59E0B", "#EF4444", "#8B5CF6"];
+const COLORS = ["#3B82F6", "#22C55E", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#14B8A6", "#F97316"];
+
+const STATUS_COLORS: Record<string, string> = {
+  'In Collection':  '#3B82F6',  // blue
+  'For Sale':       '#22C55E',  // green
+  'Pending Sale':   '#F59E0B',  // amber
+  'Sold':           '#6B7280',  // grey
+  'Donated':        '#EC4899',  // pink
+  'In Repair':      '#F97316',  // orange
+  'Returned':       '#14B8A6',  // teal
+};
 
 interface StatsBucket {
   label: string;
@@ -43,7 +53,7 @@ const RARITY_COLORS: Record<string, string> = {
   'Extremely Rare':   '#F59E0B',
 };
 
-function DonutChart({ data, title }: { data: StatsBucket[]; title: string }) {
+function DonutChart({ data, title, colorMap }: { data: StatsBucket[]; title: string; colorMap?: Record<string, string> }) {
   if (data.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-[var(--muted-foreground)] text-sm">
@@ -76,8 +86,8 @@ function DonutChart({ data, title }: { data: StatsBucket[]; title: string }) {
               }}
               labelLine={false}
             >
-              {data.map((_entry, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+              {data.map((entry, index) => (
+                <Cell key={index} fill={colorMap?.[entry.label] ?? COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip
@@ -267,7 +277,7 @@ export default function StatsCharts({ stats }: { stats: CollectionStats }) {
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
         <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">Collection Composition</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <DonutChart data={stats.byStatus} title="By Status" />
+          <DonutChart data={stats.byStatus} title="By Status" colorMap={STATUS_COLORS} />
           <DonutChart data={stats.byFunctionalStatus} title="By Condition" />
           <DonutChart data={stats.byCategoryType} title="By Category Type" />
         </div>
