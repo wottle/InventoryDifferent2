@@ -89,6 +89,16 @@ IMPORTANT: When users ask for superlatives (most/least valuable, oldest/newest, 
 - Recently acquired: sortBy='dateAcquired', sortOrder='desc', limit=1
 - If asked about a specific device property that doesn't support sorting, use the the list_devices tool with the appropriate filter.
 
+MAKING CHANGES:
+- You can update devices, add notes, and log maintenance tasks using the write tools
+- Always search for the device first to confirm the correct ID before making changes
+- For high-impact changes (marking as SOLD, changing estimated value), briefly state what you're about to do, then call the tool
+- After making a change, confirm what was updated (e.g., "Done! Logged today as the last power-on date for your Mac 512k")
+- For "I just sold X for $Y": set status=SOLD, soldPrice=Y, soldDate=today's ISO date
+- For "I powered on X today": set lastPowerOnDate=today's ISO date
+- For maintenance tasks: use a descriptive label (e.g., "Recap analog board", "Replaced PRAM battery")
+- Today's date in ISO format: ${new Date().toISOString()}
+
 Be enthusiastic about vintage computing while staying concise and helpful!`,
     messages,
     tools: {
@@ -655,6 +665,178 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
             };
           } catch (error) {
             return { error: `Failed to get financial summary: ${error}` };
+          }
+        },
+      }),
+
+      update_device: tool({
+        description: 'Update a device in the collection. Use for logging power-ons, updating estimated value, marking as sold, changing status, updating functional status, or changing location.',
+        parameters: z.object({
+          deviceId: z.number().describe('The device ID to update'),
+          lastPowerOnDate: z.string().optional().describe('ISO date string for when the device was last powered on (e.g., "2026-03-30T00:00:00.000Z")'),
+          estimatedValue: z.number().optional().describe('Updated estimated value in dollars'),
+          status: z.enum(['COLLECTION', 'FOR_SALE', 'PENDING_SALE', 'SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED']).optional().describe('New device status'),
+          soldPrice: z.number().optional().describe('Price the device was sold for'),
+          soldDate: z.string().optional().describe('ISO date string for when the device was sold'),
+          listPrice: z.number().optional().describe('Asking price for devices listed for sale'),
+          functionalStatus: z.enum(['YES', 'PARTIAL', 'NO']).optional().describe('Updated functional status'),
+          location: z.string().optional().describe('Where the device is stored or located'),
+        }),
+        execute: async (params) => {
+          try {
+            const input: any = { id: params.deviceId };
+            if (params.lastPowerOnDate !== undefined) input.lastPowerOnDate = params.lastPowerOnDate;
+            if (params.estimatedValue !== undefined) input.estimatedValue = params.estimatedValue;
+            if (params.status !== undefined) input.status = params.status;
+            if (params.soldPrice !== undefined) input.soldPrice = params.soldPrice;
+            if (params.soldDate !== undefined) input.soldDate = params.soldDate;
+            if (params.listPrice !== undefined) input.listPrice = params.listPrice;
+            if (params.functionalStatus !== undefined) input.functionalStatus = params.functionalStatus;
+            if (params.location !== undefined) input.location = params.location;
+
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
+              body: JSON.stringify({
+                query: `
+                  mutation UpdateDevice($input: DeviceUpdateInput!) {
+                    updateDevice(input: $input) {
+                      id name additionalName lastPowerOnDate estimatedValue
+                      status soldPrice soldDate listPrice functionalStatus location
+                    }
+                  }
+                `,
+                variables: { input },
+              }),
+            });
+
+            const data = await response.json();
+            if (data.errors) {
+              return { error: `Failed to update device: ${data.errors[0]?.message}` };
+            }
+            const device = data.data?.updateDevice;
+            if (!device) return { error: 'Update failed — no device returned' };
+
+            return {
+              success: true,
+              device: {
+                id: device.id,
+                name: device.additionalName ? `${device.name} (${device.additionalName})` : device.name,
+                lastPowerOnDate: device.lastPowerOnDate,
+                estimatedValue: decimalToNumber(device.estimatedValue),
+                status: device.status,
+                soldPrice: decimalToNumber(device.soldPrice),
+                soldDate: device.soldDate,
+                listPrice: decimalToNumber(device.listPrice),
+                functionalStatus: device.functionalStatus,
+                location: device.location,
+              },
+            };
+          } catch (error) {
+            return { error: `Failed to update device: ${error}` };
+          }
+        },
+      }),
+
+      add_note: tool({
+        description: 'Add a note to a device. Use for recording observations, work done, provenance info, or any free-form notes about a device.',
+        parameters: z.object({
+          deviceId: z.number().describe('The device ID to add a note to'),
+          content: z.string().describe('The note content'),
+        }),
+        execute: async (params) => {
+          try {
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
+              body: JSON.stringify({
+                query: `
+                  mutation CreateNote($input: NoteCreateInput!) {
+                    createNote(input: $input) { id content date }
+                  }
+                `,
+                variables: {
+                  input: {
+                    deviceId: params.deviceId,
+                    content: params.content,
+                    date: new Date().toISOString(),
+                  },
+                },
+              }),
+            });
+
+            const data = await response.json();
+            if (data.errors) {
+              return { error: `Failed to add note: ${data.errors[0]?.message}` };
+            }
+            const note = data.data?.createNote;
+            if (!note) return { error: 'Add note failed — no note returned' };
+
+            return { success: true, noteId: note.id, content: note.content, date: note.date };
+          } catch (error) {
+            return { error: `Failed to add note: ${error}` };
+          }
+        },
+      }),
+
+      add_maintenance_task: tool({
+        description: 'Log a completed maintenance task for a device. Use for recording repairs, recaps, cleaning, part replacements, etc.',
+        parameters: z.object({
+          deviceId: z.number().describe('The device ID'),
+          label: z.string().describe('Short description of the task (e.g., "Recap analog board", "Replaced PRAM battery", "Screen cleaning")'),
+          dateCompleted: z.string().describe('ISO date string for when the task was completed (e.g., "2026-03-30T00:00:00.000Z")'),
+          notes: z.string().optional().describe('Additional notes about the task'),
+          cost: z.number().optional().describe('Cost of the task in dollars (parts, labor, etc.)'),
+        }),
+        execute: async (params) => {
+          try {
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
+              body: JSON.stringify({
+                query: `
+                  mutation CreateMaintenanceTask($input: MaintenanceTaskCreateInput!) {
+                    createMaintenanceTask(input: $input) { id label dateCompleted notes cost }
+                  }
+                `,
+                variables: {
+                  input: {
+                    deviceId: params.deviceId,
+                    label: params.label,
+                    dateCompleted: params.dateCompleted,
+                    ...(params.notes !== undefined && { notes: params.notes }),
+                    ...(params.cost !== undefined && { cost: params.cost }),
+                  },
+                },
+              }),
+            });
+
+            const data = await response.json();
+            if (data.errors) {
+              return { error: `Failed to add maintenance task: ${data.errors[0]?.message}` };
+            }
+            const task = data.data?.createMaintenanceTask;
+            if (!task) return { error: 'Add maintenance task failed — no task returned' };
+
+            return {
+              success: true,
+              taskId: task.id,
+              label: task.label,
+              dateCompleted: task.dateCompleted,
+              notes: task.notes,
+              cost: task.cost ? decimalToNumber(task.cost) : null,
+            };
+          } catch (error) {
+            return { error: `Failed to add maintenance task: ${error}` };
           }
         },
       }),
