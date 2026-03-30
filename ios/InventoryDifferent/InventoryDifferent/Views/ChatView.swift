@@ -214,14 +214,14 @@ struct ChatView: View {
         let userMessage = ChatMessage(content: inputText, isUser: true)
         messages.append(userMessage)
 
-        let messageToSend = inputText
+        let history = messages  // snapshot including the new user message
         inputText = ""
         isLoading = true
         error = nil
 
         Task {
             do {
-                let response = try await ChatService.shared.sendMessage(messageToSend)
+                let response = try await ChatService.shared.sendMessage(history: history)
                 await MainActor.run {
                     messages.append(ChatMessage(content: response, isUser: false))
                     isLoading = false

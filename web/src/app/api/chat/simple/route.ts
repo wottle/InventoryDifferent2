@@ -28,10 +28,14 @@ const API_URL = (process.env.API_URL || 'http://api:4000') + '/graphql';
 
 export async function POST(req: Request) {
   try {
-    const { message } = await req.json();
+    const body = await req.json();
     const authHeader = req.headers.get('authorization') || '';
 
-    if (!message) {
+    // Accept either a messages array (conversation history) or a bare message string
+    const messages: { role: 'user' | 'assistant'; content: string }[] =
+      body.messages ?? [{ role: 'user', content: body.message }];
+
+    if (!messages.length || !messages[messages.length - 1]?.content) {
       return new Response(JSON.stringify({ error: 'Message is required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -79,7 +83,7 @@ IMPORTANT: When users ask for superlatives (most/least valuable, oldest/newest, 
 - Recently acquired: sortBy='dateAcquired', sortOrder='desc', limit=1
 
 Be enthusiastic about vintage computing while staying concise and helpful!`,
-      prompt: message,
+      messages,
       tools: {
         search_devices: tool({
           description: 'Search the vintage computer collection. Can filter by text query, status, category type, functional status, manufacturer, and tags. Can sort results by various fields.',
