@@ -70,9 +70,10 @@ function DonutChart({ data, title }: { data: StatsBucket[]; title: string }) {
               cy="50%"
               innerRadius="45%"
               outerRadius="70%"
-              label={({ label, count }) =>
-                `${label} (${total > 0 ? Math.round((count / total) * 100) : 0}%)`
-              }
+              label={({ label, count, percent }) => {
+                if ((percent ?? 0) < 0.08) return '';
+                return `${label} (${Math.round((percent ?? 0) * 100)}%)`;
+              }}
               labelLine={false}
             >
               {data.map((_entry, index) => (
