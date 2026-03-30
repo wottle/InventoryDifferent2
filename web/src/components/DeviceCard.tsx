@@ -110,40 +110,6 @@ export function DeviceCard({ device }: DeviceCardProps) {
         );
     };
 
-    // Mobile status indicator - shows all statuses with color coding
-    const getMobileStatusIndicator = (isPositive: boolean, type: 'normal' | 'pram' | 'favorite') => {
-        if (type === 'favorite') {
-            // Yellow for favorite, gray for not
-            return isPositive
-                ? 'bg-yellow-500'
-                : 'bg-gray-600 dark:bg-gray-400';
-        }
-        if (type === 'pram') {
-            // Green if removed (positive), red if not removed (negative)
-            return isPositive
-                ? 'bg-green-500'
-                : 'bg-red-500';
-        }
-        // Normal: green for positive, gray for negative
-        return isPositive
-            ? 'bg-green-500'
-            : 'bg-gray-600 dark:bg-gray-400';
-    };
-
-    // Get functional status color for mobile
-    const getMobileFunctionalColor = (status: string) => {
-        switch (status) {
-            case 'YES':
-                return 'bg-green-500';
-            case 'PARTIAL':
-                return 'bg-yellow-500';
-            case 'NO':
-                return 'bg-red-500';
-            default:
-                return 'bg-gray-600 dark:bg-gray-400';
-        }
-    };
-
     // Format currency
     const formatPrice = (price: number | null | undefined) => {
         if (price == null) return null;
@@ -276,9 +242,8 @@ export function DeviceCard({ device }: DeviceCardProps) {
         </div>
     );
 
-    // Desktop card view (hidden only on very small screens < 360px)
     const DesktopCard = () => (
-        <div className="hidden min-[360px]:flex overflow-hidden rounded border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md h-full flex-col card-retro">
+        <div className="flex overflow-hidden rounded border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md h-full flex-col card-retro">
             <div className="aspect-square w-full bg-[var(--muted)] object-cover relative overflow-hidden">
                 <div className="flex h-full items-center justify-center text-[var(--muted-foreground)]">
                     {thumbnail ? (
@@ -340,74 +305,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
         </div>
     );
 
-    // Mobile card view (horizontal layout, shown only on very small screens < 360px)
-    const MobileCard = () => (
-        <div className="flex min-[360px]:hidden overflow-hidden rounded border border-[var(--border)] bg-[var(--card)] shadow-sm transition-shadow hover:shadow-md card-retro">
-            {/* Thumbnail - 20% width, centered vertically */}
-            <div className="w-[20%] min-w-[60px] flex items-center justify-center flex-shrink-0 p-2">
-                <div className="aspect-square w-full rounded-lg overflow-hidden bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)]">
-                    {thumbnail ? (
-                        <img
-                            src={`${API_BASE_URL}${thumbnail}`}
-                            alt={device.name}
-                            className="h-full w-full object-cover"
-                        />
-                    ) : (
-                        <span className="text-[10px]">No Image</span>
-                    )}
-                </div>
-            </div>
-
-            {/* Device info - remaining width */}
-            <div className="flex-1 p-2 flex flex-col justify-center min-w-0">
-                {/* Name */}
-                <h2 className="line-clamp-1 text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--apple-blue)] transition-colors">
-                    {device.name}
-                </h2>
-
-                {/* Additional name */}
-                {device.additionalName && (
-                    <p className="line-clamp-1 text-xs text-[var(--muted-foreground)]">
-                        {device.additionalName}
-                    </p>
-                )}
-
-                {/* Category and release year */}
-                <p className="text-[11px] text-[var(--muted-foreground)]">
-                    {device.category.name}{device.releaseYear ? ` • ${device.releaseYear}` : ''}
-                </p>
-
-                {/* Condition and Rarity */}
-                <div className="flex items-center gap-2 text-[11px] mb-1">
-                    {device.condition && (
-                        <span className="text-gray-500 dark:text-gray-400">
-                            {conditionLabel(device.condition)}
-                        </span>
-                    )}
-                    {(device.rarity === "VERY_RARE" || device.rarity === "EXTREMELY_RARE") && (
-                        <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                            ✦ {device.rarity === "EXTREMELY_RARE" ? "Ext. Rare" : "V. Rare"}
-                        </span>
-                    )}
-                </div>
-
-                {/* Value/Sale info */}
-                <div className="text-[11px]">
-                    <ValueSaleInfo />
-                </div>
-
-                {/* Status indicators row */}
-                <div className="flex items-center gap-2 mt-1.5">
-                    <StatusIconsRow />
-                </div>
-            </div>
-        </div>
-    );
-
     return (
         <Link href={`/devices/${device.id}`} className="block group">
             <DesktopCard />
-            <MobileCard />
         </Link>
     );
 }

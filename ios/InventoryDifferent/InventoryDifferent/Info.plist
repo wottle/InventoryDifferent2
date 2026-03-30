@@ -40,6 +40,10 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera access is needed to scan barcodes and QR codes to quickly find devices.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is needed to speak questions to your collection assistant.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Speech recognition is used to convert your voice to text when chatting with your collection assistant.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Saving to the Photo library is needed to save asset tags to photo library</string>
 	<key>UIAppFonts</key>

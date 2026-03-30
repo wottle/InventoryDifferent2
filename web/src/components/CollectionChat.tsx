@@ -4,6 +4,7 @@ import { useChat } from 'ai/react';
 import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../lib/auth-context';
+import { useVoiceChat } from '../hooks/useVoiceChat';
 
 const TOOL_LABELS: Record<string, string> = {
   search_devices: 'Searching collection',
@@ -15,7 +16,7 @@ const TOOL_LABELS: Record<string, string> = {
 
 export function CollectionChat() {
   const { isAuthenticated, isLoading: authLoading, getAccessToken } = useAuth();
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error, setInput } = useChat({
     api: '/api/chat',
     headers: {
       ...(getAccessToken() ? { Authorization: `Bearer ${getAccessToken()}` } : {}),
@@ -26,6 +27,55 @@ export function CollectionChat() {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const wasLoadingRef = useRef(false);
+  const prevListeningRef = useRef(false);
+
+  const {
+    isListening,
+    isSpeaking,
+    isMuted,
+    transcript,
+    isSupported,
+    autoListen,
+    setAutoListen,
+    startListening,
+    stopListening,
+    speak,
+    stopSpeaking,
+    toggleMute,
+  } = useVoiceChat();
+
+  // Populate input from voice transcript
+  useEffect(() => {
+    if (transcript) {
+      setInput(transcript);
+    }
+  }, [transcript, setInput]);
+
+  // Auto-submit when listening stops with content
+  useEffect(() => {
+    if (prevListeningRef.current && !isListening && input.trim()) {
+      formRef.current?.requestSubmit();
+    }
+    prevListeningRef.current = isListening;
+  }, [isListening, input]);
+
+  // Speak the latest assistant message when streaming completes
+  useEffect(() => {
+    if (wasLoadingRef.current && !isLoading) {
+      const last = messages[messages.length - 1];
+      if (last?.role === 'assistant' && last.content) {
+        speak(last.content, () => {
+          // After TTS ends, restart mic if in conversation mode
+          if (autoListen) {
+            setTimeout(() => startListening(), 400);
+          }
+        });
+      }
+    }
+    wasLoadingRef.current = isLoading;
+  }, [isLoading, messages, speak, autoListen, startListening]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -59,6 +109,30 @@ export function CollectionChat() {
     return null;
   }
 
+  const handleMicClick = () => {
+    stopSpeaking();
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  const handleConversationToggle = () => {
+    if (autoListen) {
+      setAutoListen(false);
+      stopListening();
+      stopSpeaking();
+    } else {
+      setAutoListen(true);
+      if (!isListening) startListening();
+    }
+  };
+
+  const statusLabel = autoListen
+    ? isListening ? 'Listening...' : isSpeaking ? 'Speaking...' : isLoading ? 'Thinking...' : 'Conversation mode'
+    : null;
+
   const chatContent = (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -68,17 +142,58 @@ export function CollectionChat() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
           <h2 className="font-semibold text-[var(--foreground)]">Collection Assistant</h2>
+          {statusLabel && (
+            <span className="text-xs text-blue-500 font-normal">{statusLabel}</span>
+          )}
         </div>
-        {isMobile && (
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-1 hover:bg-[var(--card)] rounded text-[var(--foreground)]"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
+        <div className="flex items-center gap-1">
+          {/* Conversation mode toggle */}
+          {isSupported && (
+            <button
+              onClick={handleConversationToggle}
+              className={`p-1.5 rounded transition-colors ${
+                autoListen
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'text-[var(--muted-foreground)] hover:bg-[var(--card)]'
+              }`}
+              title={autoListen ? 'Exit conversation mode' : 'Start conversation mode (hands-free)'}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+              </svg>
+            </button>
+          )}
+          {/* Mute toggle */}
+          {isSupported && (
+            <button
+              onClick={toggleMute}
+              className="p-1.5 hover:bg-[var(--card)] rounded text-[var(--foreground)]"
+              title={isMuted ? 'Unmute voice' : 'Mute voice'}
+            >
+              {isMuted ? (
+                <svg className="w-4 h-4 text-[var(--muted-foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 12.414a2 2 0 010-2.828l4.243-4.243" />
+                </svg>
+              )}
+            </button>
+          )}
+          {isMobile && (
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-[var(--card)] rounded text-[var(--foreground)]"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Messages */}
@@ -143,10 +258,10 @@ export function CollectionChat() {
                       li: ({ children }) => <li className="mb-1">{children}</li>,
                       code: ({ children }) => <code className="bg-[var(--muted)] px-1 rounded text-xs">{children}</code>,
                       a: ({ href, children }) => (
-                        <a 
-                          href={href} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 underline"
                         >
                           {children}
@@ -181,13 +296,37 @@ export function CollectionChat() {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t border-[var(--border)]">
-        <div className="flex gap-2">
+      <form ref={formRef} onSubmit={handleSubmit} className="p-4 border-t border-[var(--border)]">
+        <div className="flex gap-2 items-center">
+          {/* Mic button */}
+          {isSupported && (
+            <button
+              type="button"
+              onClick={handleMicClick}
+              className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+                isListening
+                  ? 'bg-red-100 text-red-600 animate-pulse'
+                  : 'text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-blue-600'
+              }`}
+              title={isListening ? 'Stop listening' : 'Speak your question'}
+            >
+              {isListening ? (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              )}
+            </button>
+          )}
           <input
             type="text"
             value={input}
-            onChange={handleInputChange}
-            placeholder="Ask about your collection..."
+            onChange={(e) => { stopSpeaking(); handleInputChange(e); }}
+            placeholder={isListening ? 'Listening...' : 'Ask about your collection...'}
             className="flex-1 px-4 py-2 border border-[var(--border)] bg-[var(--input)] text-[var(--foreground)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-[var(--muted-foreground)]"
             disabled={isLoading}
           />
@@ -201,6 +340,14 @@ export function CollectionChat() {
             </svg>
           </button>
         </div>
+        {isSpeaking && (
+          <div className="flex items-center gap-1.5 mt-2 text-xs text-[var(--muted-foreground)]">
+            <svg className="w-3 h-3 animate-pulse text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+            </svg>
+            <span>Speaking{autoListen ? ' — will listen when done' : ''}...</span>
+          </div>
+        )}
       </form>
     </div>
   );
