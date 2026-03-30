@@ -134,16 +134,14 @@ struct EditDeviceView: View {
                 accessoriesSection
                 linksSection
 
-                if let error = error {
-                    Section {
-                        Text(error)
-                            .foregroundColor(.red)
-                            .font(.caption)
-                    }
-                }
             }
             .navigationTitle("Edit Device")
             .navigationBarTitleDisplayMode(.inline)
+            .alert("Save Failed", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
+                Button("OK") { error = nil }
+            } message: {
+                if let error { Text(error) }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -499,8 +497,8 @@ struct EditDeviceView: View {
 
             input["status"] = status.rawValue
             input["functionalStatus"] = functionalStatus.rawValue
-            input["condition"] = condition?.rawValue as Any
-            input["rarity"] = rarity?.rawValue as Any
+            input["condition"] = (condition?.rawValue as Any?) ?? NSNull()
+            input["rarity"] = (rarity?.rawValue as Any?) ?? NSNull()
             input["isFavorite"] = isFavorite
             input["isAssetTagged"] = isAssetTagged
             
