@@ -110,7 +110,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
             // Build GraphQL query with filters
             const response = await fetch(API_URL, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
               body: JSON.stringify({
                 query: `
                   query SearchDevices($where: DeviceWhereInput) {
@@ -271,7 +274,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
           try {
             const response = await fetch(API_URL, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
               body: JSON.stringify({
                 query: `
                   query GetDevice($where: DeviceWhereInput) {
@@ -451,7 +457,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
 
             const response = await fetch(API_URL, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
               body: JSON.stringify({
                 query: `
                   query ListDevices($where: DeviceWhereInput) {
@@ -531,7 +540,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
 
             const response = await fetch(API_URL, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                ...(authHeader && { 'Authorization': authHeader }),
+              },
               body: JSON.stringify({
                 query: `
                   query ListAllDevices($where: DeviceWhereInput) {
