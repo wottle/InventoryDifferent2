@@ -283,15 +283,6 @@ export default function ShopHome({ contactEmail }: ShopHomeProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <a
-                href="/looking-for"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full border border-[var(--apple-blue)] text-[var(--apple-blue)] hover:bg-[var(--apple-blue)] hover:text-white transition-colors"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                Looking For
-              </a>
               <StatusFilter
                 selectedStatuses={selectedStatuses}
                 onStatusChange={setSelectedStatuses}
