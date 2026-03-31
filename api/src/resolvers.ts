@@ -312,10 +312,12 @@ export const resolvers = {
         templates: async (_parent: any, _args: any, context: Context) => {
             // Templates require auth
             requireAuth(context);
-            return (context.prisma as any).template.findMany({
-                orderBy: { name: 'asc' },
+            const templates = await (context.prisma as any).template.findMany({
                 include: { category: true },
             });
+            return templates.sort((a: any, b: any) =>
+                a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+            );
         },
         financialOverview: async (_parent: any, _args: any, context: Context) => {
             // Financial data requires auth
