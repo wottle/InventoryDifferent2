@@ -326,7 +326,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Stats**: summary cards (total devices, working %, avg value, top category); bar charts for status, condition, category type, acquisition year, release decade, top manufacturers
 
-**AI Chat**: natural language queries about inventory via MCP, streaming responses, conversation history
+**AI Chat**: natural language queries about inventory via MCP, streaming responses, conversation history; voice input (speech-to-text via SFSpeechRecognizer) and voice output (text-to-speech via AVSpeechSynthesizer); conversation mode for hands-free back-and-forth; mic pulse animation while listening; toggle to mute/unmute spoken responses
 
 **Timeline**: horizontal scroll view of devices by release year with historical milestones
 
@@ -341,10 +341,18 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 ### MCP Server (AI Integration)
 
 Tools available to Claude and other AI assistants:
+
+**Read tools:**
+- `list_all_devices`: compact dump of every device — for whole-collection reasoning
 - `search_devices`: text + filter search (status, functionalStatus, category, manufacturer, tag), up to 50 results
-- `get_device_details`: full device data by ID
+- `get_device_details`: full device data by ID (notes, tasks, images)
 - `get_financial_summary`: aggregate financial metrics
 - `list_devices`: flexible field selection with filtering and sorting
+
+**Write tools:**
+- `update_device`: update any device fields (status, estimatedValue, location, specs, flags, etc.) by device ID
+- `add_note`: append a timestamped note to a device
+- `add_maintenance_task`: log a completed maintenance task (label, date, notes, cost) to a device
 
 Used by both the web CollectionChat component and the iOS ChatView.
 

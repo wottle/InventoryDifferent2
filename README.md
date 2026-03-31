@@ -20,7 +20,7 @@ A self-hosted inventory management system for vintage computer collections. Trac
 
 **Storefront:** public product grid for items listed for sale, search, filter by status/category, item detail with specs and condition, "Looking For" page from your wishlist.
 
-**iOS app:** device list with search/filter/sort, detail view, image management, add/edit device, financials, stats, AI chat, barcode scanner, value history chart.
+**iOS app:** device list with search/filter/sort, detail view, image management, add/edit device, financials, stats, AI chat with voice input/output and hands-free conversation mode, barcode scanner, value history chart.
 
 ---
 
@@ -241,6 +241,8 @@ The server communicates over **stdio** (not HTTP), so agents launch it as a subp
 
 ### Available Tools
 
+**Read tools:**
+
 | Tool | Description |
 |---|---|
 | `list_all_devices` | Compact dump of every device — use for whole-collection reasoning |
@@ -248,6 +250,14 @@ The server communicates over **stdio** (not HTTP), so agents launch it as a subp
 | `get_device_details` | Full details for one device (notes, tasks, images) |
 | `list_devices` | All devices with flexible field selection |
 | `get_financial_summary` | Total spent, received, net position, profit |
+
+**Write tools:**
+
+| Tool | Description |
+|---|---|
+| `update_device` | Update any device fields (status, value, location, specs, flags, etc.) by ID |
+| `add_note` | Append a timestamped note to a device |
+| `add_maintenance_task` | Log a completed maintenance task (label, date, notes, optional cost) |
 
 ### Option A — Docker exec into the running container (recommended for NAS deployments)
 
