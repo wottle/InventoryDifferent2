@@ -23,8 +23,9 @@ uploads/
 .vscode/
 .idea/
 
-# Local Claude Code settings
-.claude/
+# Local Claude Code settings (plans/memory are personal; commands are shared)
+.claude/projects/
+.claude/plans/
 
 # Database backups (may contain real data)
 *.backup.sql

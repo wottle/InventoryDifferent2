@@ -191,6 +191,19 @@ Run all applicable builds after making changes to verify nothing is broken befor
 - Always end with: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
 - Use a HEREDOC to pass the commit message to ensure proper formatting
 
+## Release Notes Workflow
+
+The app displays a version number in the web footer (clickable for release notes). The source of truth is `web/src/lib/releaseNotes.ts`.
+
+**During development:** Whenever a notable feature, enhancement, or bug fix is committed, add a bullet to the `Unreleased` entry at the top of the `releaseNotes` array in `web/src/lib/releaseNotes.ts`. Do this at commit time, not retroactively. Also keep `CHANGELOG.md` in sync.
+
+**To cut a release:** Use the `/package_release` skill, which will:
+1. Prompt for the new version number
+2. Rename the `Unreleased` entry to the new version + today's date
+3. Prepend a fresh `Unreleased` entry
+4. Apply the same changes to `CHANGELOG.md`
+5. Commit both files
+
 ## Environment Variables: NEXT_PUBLIC_* Rule
 
 **NEVER use `NEXT_PUBLIC_*` environment variables for values that deployers need to configure at runtime.** Next.js bakes `NEXT_PUBLIC_*` values in at build time, so they cannot be changed after the Docker image is built.
