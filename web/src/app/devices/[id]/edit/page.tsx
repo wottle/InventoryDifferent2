@@ -23,6 +23,8 @@ const GET_DEVICE = gql`
       externalUrl
       status
       functionalStatus
+      condition
+      rarity
       hasOriginalBox
       isAssetTagged
       dateAcquired

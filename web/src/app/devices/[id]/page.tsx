@@ -33,6 +33,8 @@ const GET_DEVICE = gql`
       externalUrl
       status
       functionalStatus
+      condition
+      rarity
       hasOriginalBox
       isAssetTagged
       dateAcquired
@@ -1882,6 +1884,8 @@ export default function DeviceDetail() {
                             <DetailRow label="Device ID" value={device.id} />
                             <DetailRow label="Serial Number" value={device.serialNumber} />
                             <DetailRow label="Release Year" value={device.releaseYear} />
+                            <DetailRow label="Condition" value={device.condition ? device.condition.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null} />
+                            <DetailRow label="Rarity" value={device.rarity ? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null} />
                             <DetailRow label="Location" value={device.location} />
                             {device.lastPowerOnDate && (
                                 <DetailRow
