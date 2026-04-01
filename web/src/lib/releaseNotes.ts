@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'iOS: persistent field labels on add/edit device and wishlist forms — fields are now identifiable even when filled',
+    ],
     changed: [],
     fixed: [
       'Condition and rarity fields now display on device detail page and pre-populate correctly in edit form',

@@ -107,12 +107,11 @@ struct AddEditWishlistItemView: View {
                 }
 
                 Section("Basic Info") {
-                    TextField("Name", text: $name)
-                    TextField("Additional Name", text: $additionalName)
-                    TextField("Manufacturer", text: $manufacturer)
-                    TextField("Model Number", text: $modelNumber)
-                    TextField("Release Year", text: $releaseYear)
-                        .keyboardType(.numberPad)
+                    LabeledField(label: "Name", text: $name)
+                    LabeledField(label: "Additional Name", text: $additionalName)
+                    LabeledField(label: "Manufacturer", text: $manufacturer)
+                    LabeledField(label: "Model Number", text: $modelNumber)
+                    LabeledField(label: "Release Year", text: $releaseYear, keyboardType: .numberPad)
                 }
 
                 Section("Details") {
@@ -129,8 +128,7 @@ struct AddEditWishlistItemView: View {
                         }
                     }
 
-                    TextField("Group", text: $group)
-                        .autocorrectionDisabled()
+                    LabeledField(label: "Group", text: $group)
                     // Autocomplete suggestions
                     let suggestions = existingGroups.filter { g in
                         !g.isEmpty && (group.isEmpty || g.localizedCaseInsensitiveContains(group)) && g != group
@@ -152,33 +150,25 @@ struct AddEditWishlistItemView: View {
                         }
                     }
 
-                    TextField("Target Price ($)", text: $targetPrice)
-                        .keyboardType(.decimalPad)
+                    LabeledField(label: "Target Price ($)", text: $targetPrice, prompt: "0.00", keyboardType: .decimalPad)
                 }
 
                 Section("Source") {
-                    TextField("Source URL", text: $sourceUrl)
-                        .keyboardType(.URL)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                    TextField("Source Notes", text: $sourceNotes)
+                    LabeledField(label: "Source URL", text: $sourceUrl, keyboardType: .URL)
+                    LabeledField(label: "Source Notes", text: $sourceNotes)
                 }
 
                 Section("Notes") {
-                    TextEditor(text: $notes)
-                        .frame(minHeight: 80)
+                    LabeledTextEditor(label: "Notes", text: $notes, placeholder: "Notes...")
                 }
 
                 Section("Specifications") {
-                    TextField("CPU", text: $cpu)
-                    TextField("RAM", text: $ram)
-                    TextField("Graphics", text: $graphics)
-                    TextField("Storage", text: $storage)
-                    TextField("Operating System", text: $operatingSystem)
-                    TextField("External URL", text: $externalUrl)
-                        .keyboardType(.URL)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
+                    LabeledField(label: "CPU", text: $cpu)
+                    LabeledField(label: "RAM", text: $ram)
+                    LabeledField(label: "Graphics", text: $graphics)
+                    LabeledField(label: "Storage", text: $storage)
+                    LabeledField(label: "Operating System", text: $operatingSystem)
+                    LabeledField(label: "External URL", text: $externalUrl, keyboardType: .URL)
                     Toggle("WiFi Enabled", isOn: $isWifiEnabled)
                     Toggle("PRAM Battery Removed", isOn: $isPramBatteryRemoved)
                 }

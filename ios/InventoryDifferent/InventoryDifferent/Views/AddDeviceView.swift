@@ -206,14 +206,13 @@ struct AddDeviceView: View {
     
     private var basicInfoSection: some View {
         Section {
-            TextField("Name", text: $name)
-            TextField("Additional Name", text: $additionalName)
-            TextField("Manufacturer", text: $manufacturer)
-            TextField("Model Number", text: $modelNumber)
-            TextField("Serial Number", text: $serialNumber)
-            TextField("Release Year", text: $releaseYear)
-                .keyboardType(.numberPad)
-            TextField("Location", text: $location)
+            LabeledField(label: "Name", text: $name)
+            LabeledField(label: "Additional Name", text: $additionalName)
+            LabeledField(label: "Manufacturer", text: $manufacturer)
+            LabeledField(label: "Model Number", text: $modelNumber)
+            LabeledField(label: "Serial Number", text: $serialNumber)
+            LabeledField(label: "Release Year", text: $releaseYear, keyboardType: .numberPad)
+            LabeledField(label: "Location", text: $location)
 
             Picker("Category", selection: $selectedCategoryId) {
                 Text("Select a category")
@@ -223,17 +222,8 @@ struct AddDeviceView: View {
                 }
             }
             .disabled(isLoadingCategories)
-            
-            ZStack(alignment: .topLeading) {
-                if info.isEmpty {
-                    Text("Additional information...")
-                        .foregroundColor(Color(.placeholderText))
-                        .padding(.top, 8)
-                        .padding(.leading, 4)
-                }
-                TextEditor(text: $info)
-                    .frame(minHeight: 100)
-            }
+
+            LabeledTextEditor(label: "Info", text: $info)
         } header: {
             Text("Basic Information")
         }
@@ -362,11 +352,9 @@ struct AddDeviceView: View {
             }
             .foregroundColor(.accentColor)
             
-            TextField("Where Acquired", text: $whereAcquired)
-            TextField("Price Acquired", text: $priceAcquired)
-                .keyboardType(.decimalPad)
-            TextField("Estimated Value", text: $estimatedValue)
-                .keyboardType(.decimalPad)
+            LabeledField(label: "Where Acquired", text: $whereAcquired)
+            LabeledField(label: "Price Acquired", text: $priceAcquired, prompt: "0.00", keyboardType: .decimalPad)
+            LabeledField(label: "Estimated Value", text: $estimatedValue, prompt: "0.00", keyboardType: .decimalPad)
         } header: {
             Text("Acquisition & Value")
         }
@@ -375,13 +363,11 @@ struct AddDeviceView: View {
     private var salesSection: some View {
         Section {
             if status != .DONATED {
-                TextField("List Price", text: $listPrice)
-                    .keyboardType(.decimalPad)
+                LabeledField(label: "List Price", text: $listPrice, prompt: "0.00", keyboardType: .decimalPad)
             }
             
             if status == .SOLD {
-                TextField("Sold Price", text: $soldPrice)
-                    .keyboardType(.decimalPad)
+                LabeledField(label: "Sold Price", text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
                 
                 DatePicker("Sold Date", selection: Binding(
                     get: { soldDate ?? Date() },
@@ -411,11 +397,11 @@ struct AddDeviceView: View {
     
     private var computerSpecsSection: some View {
         Section {
-            TextField("CPU", text: $cpu)
-            TextField("RAM", text: $ram)
-            TextField("Graphics", text: $graphics)
-            TextField("Storage", text: $storage)
-            TextField("Operating System", text: $operatingSystem)
+            LabeledField(label: "CPU", text: $cpu)
+            LabeledField(label: "RAM", text: $ram)
+            LabeledField(label: "Graphics", text: $graphics)
+            LabeledField(label: "Storage", text: $storage)
+            LabeledField(label: "Operating System", text: $operatingSystem)
             Toggle("WiFi Enabled", isOn: $isWifiEnabled)
             Toggle("PRAM Battery Removed", isOn: $isPramBatteryRemoved)
             
