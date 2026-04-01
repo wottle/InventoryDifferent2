@@ -195,7 +195,7 @@ Run all applicable builds after making changes to verify nothing is broken befor
 
 The app displays a version number in the web footer (clickable for release notes). The source of truth is `web/src/lib/releaseNotes.ts`.
 
-**During development:** Whenever a notable feature, enhancement, or bug fix is committed, add a bullet to the `Unreleased` entry at the top of the `releaseNotes` array in `web/src/lib/releaseNotes.ts`. Do this at commit time, not retroactively. Also keep `CHANGELOG.md` in sync.
+**During development:** Every commit that adds a feature, changes behaviour, or fixes a bug MUST also update the `Unreleased` entry in `web/src/lib/releaseNotes.ts`. Add the bullet in the same commit as the code change — never leave it for later. Use `added` for new features, `changed` for behaviour changes, and `fixed` for bug fixes. Also keep `CHANGELOG.md` in sync.
 
 **To cut a release:** Use the `/package_release` skill, which will:
 1. Prompt for the new version number
