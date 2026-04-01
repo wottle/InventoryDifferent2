@@ -14,7 +14,10 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Condition and rarity fields now display on device detail page and pre-populate correctly in edit form',
+      'Template sorting on manage templates page is now case-insensitive',
+    ],
   },
   {
     version: '1.0.0',
