@@ -23,3 +23,16 @@ vi.mock('next/navigation', () => ({
 vi.mock('@/lib/config', () => ({
     API_BASE_URL: 'http://localhost:4000',
 }));
+
+// Mock window.matchMedia (not available in jsdom)
+Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+    })),
+});
