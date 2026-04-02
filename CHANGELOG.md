@@ -4,6 +4,22 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.0.1] - 2026-04-01
+
+### Added
+- iOS: persistent field labels on add/edit device and wishlist forms — fields are now identifiable even when filled
+- Light/dark mode thumbnails — set separate thumbnails for light and dark mode; web, iOS, and storefront automatically display the correct one based on the current color scheme
+
+### Fixed
+- Condition and rarity fields now display on device detail page and pre-populate correctly in edit form
+- Template sorting on manage templates page is now case-insensitive
+
+---
+
+## [1.0.0] - 2026-03-31
+
 ### Added
 - Wishlist page with priority badges, grouping, and "Mark as Acquired" flow
 - Stats page with collection composition charts (status, condition, category, acquisition year, manufacturer)
