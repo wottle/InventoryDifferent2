@@ -59,6 +59,7 @@ const GET_DEVICES = gql`
         caption
         dateTaken
         isThumbnail
+        thumbnailMode
         isShopImage
       }
       notes {

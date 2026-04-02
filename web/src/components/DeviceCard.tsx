@@ -1,5 +1,9 @@
+'use client';
+
 import Link from "next/link";
 import { API_BASE_URL } from "../lib/config";
+import { useIsDarkMode } from "../lib/useIsDarkMode";
+import { pickThumbnail } from "../lib/pickThumbnail";
 
 interface DeviceCardProps {
     device: {
@@ -25,6 +29,7 @@ interface DeviceCardProps {
             path: string;
             thumbnailPath?: string | null;
             isThumbnail: boolean;
+            thumbnailMode?: string | null;
         }[];
         isFavorite?: boolean;
         accessories?: Array<{id: number, name: string}>;
@@ -45,7 +50,8 @@ function conditionLabel(condition: string): string {
 }
 
 export function DeviceCard({ device }: DeviceCardProps) {
-    const thumbImage = device.images.find((i) => i.isThumbnail);
+    const isDark = useIsDarkMode();
+    const thumbImage = pickThumbnail(device.images, isDark);
     const thumbnail = thumbImage?.thumbnailPath || thumbImage?.path;
 
     const getFunctionalStatusIcon = (status: string) => {

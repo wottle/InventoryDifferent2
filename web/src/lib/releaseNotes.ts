@@ -14,6 +14,7 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [
       'iOS: persistent field labels on add/edit device and wishlist forms — fields are now identifiable even when filled',
+      'Light/dark mode thumbnails — set separate thumbnails for light and dark mode; web, iOS, and storefront automatically display the correct one based on the current color scheme',
     ],
     changed: [],
     fixed: [

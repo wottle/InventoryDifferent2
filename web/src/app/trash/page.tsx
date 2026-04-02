@@ -23,6 +23,7 @@ const GET_DELETED_DEVICES = gql`
         path
         thumbnailPath
         isThumbnail
+        thumbnailMode
       }
     }
   }

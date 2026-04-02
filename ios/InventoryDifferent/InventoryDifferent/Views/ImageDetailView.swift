@@ -154,6 +154,7 @@ extension Collection {
                 caption: "Front view",
                 isShopImage: false,
                 isThumbnail: true,
+                thumbnailMode: "BOTH",
                 isListingImage: false
             ),
             allImages: []

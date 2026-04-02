@@ -1,4 +1,7 @@
+'use client';
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../lib/config";
 
 interface ProductCardProps {
@@ -23,17 +26,34 @@ interface ProductCardProps {
             path: string;
             thumbnailPath?: string | null;
             isThumbnail: boolean;
+            thumbnailMode?: string | null;
             isShopImage: boolean;
             isListingImage: boolean;
         }[];
     };
 }
 
+function pickThumbnail<T extends { isThumbnail: boolean; thumbnailMode?: string | null }>(images: T[], isDark: boolean): T | undefined {
+    const targetMode = isDark ? 'DARK' : 'LIGHT';
+    const modeSpecific = images.find(i => i.isThumbnail && i.thumbnailMode === targetMode);
+    const both = images.find(i => i.isThumbnail && (i.thumbnailMode === 'BOTH' || !i.thumbnailMode));
+    return modeSpecific || both || images.find(i => i.isThumbnail) || images[0];
+}
+
 export function ProductCard({ device }: ProductCardProps) {
-    // Prefer listing image, then first shop image, then thumbnail
+    const [isDark, setIsDark] = useState(false);
+    useEffect(() => {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        setIsDark(mq.matches);
+        const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }, []);
+
+    // Prefer listing image, then first shop image, then color-scheme-aware thumbnail
     const listingImage = device.images.find((i) => i.isListingImage);
     const shopImage = device.images.find((i) => i.isShopImage);
-    const thumbImage = device.images.find((i) => i.isThumbnail);
+    const thumbImage = pickThumbnail(device.images, isDark);
     const displayImage = listingImage || shopImage || thumbImage;
     const thumbnail = displayImage?.thumbnailPath || displayImage?.path;
 
@@ -155,7 +175,7 @@ export function ProductCard({ device }: ProductCardProps) {
                             </svg>
                         </div>
                     )}
-                    
+
                     {/* Status Badge Overlay */}
                     <div className="absolute top-2 right-2">
                         {getStatusBadge()}

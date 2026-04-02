@@ -36,6 +36,12 @@ export const typeDefs = gql`
     EXTREMELY_RARE
   }
 
+  enum ThumbnailMode {
+    BOTH
+    LIGHT
+    DARK
+  }
+
   enum TransactionType {
     ACQUISITION
     SALE
@@ -127,6 +133,7 @@ export const typeDefs = gql`
     caption: String
     isShopImage: Boolean!
     isThumbnail: Boolean!
+    thumbnailMode: ThumbnailMode!
     isListingImage: Boolean!
   }
 
@@ -485,6 +492,7 @@ export const typeDefs = gql`
     path: String!
     caption: String
     isThumbnail: Boolean
+    thumbnailMode: ThumbnailMode
     isShopImage: Boolean
   }
 
@@ -492,6 +500,7 @@ export const typeDefs = gql`
     id: Int!
     caption: String
     isThumbnail: Boolean
+    thumbnailMode: ThumbnailMode
     isShopImage: Boolean
     isListingImage: Boolean
   }

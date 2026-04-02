@@ -61,6 +61,7 @@ class DeviceService {
                     path
                     thumbnailPath
                     isThumbnail
+                    thumbnailMode
                 }
             }
         }
@@ -133,6 +134,7 @@ class DeviceService {
                     caption
                     isShopImage
                     isThumbnail
+                    thumbnailMode
                     isListingImage
                 }
                 notes {
@@ -222,6 +224,7 @@ class DeviceService {
                     caption
                     isShopImage
                     isThumbnail
+                    thumbnailMode
                     isListingImage
                 }
                 notes {
@@ -487,6 +490,7 @@ class DeviceService {
                     caption
                     isShopImage
                     isThumbnail
+                    thumbnailMode
                     isListingImage
                 }
                 notes {
@@ -549,7 +553,7 @@ class DeviceService {
         return response.deleteDevice
     }
     
-    func updateImage(id: Int, isThumbnail: Bool? = nil, isShopImage: Bool? = nil, isListingImage: Bool? = nil) async throws -> DeviceImage {
+    func updateImage(id: Int, isThumbnail: Bool? = nil, thumbnailMode: String? = nil, isShopImage: Bool? = nil, isListingImage: Bool? = nil) async throws -> DeviceImage {
         let mutation = """
         mutation UpdateImage($input: ImageUpdateInput!) {
             updateImage(input: $input) {
@@ -560,15 +564,19 @@ class DeviceService {
                 caption
                 isShopImage
                 isThumbnail
+                thumbnailMode
                 isListingImage
             }
         }
         """
-        
+
         var input: [String: Any] = ["id": id]
-        
+
         if let isThumbnail = isThumbnail {
             input["isThumbnail"] = isThumbnail
+        }
+        if let thumbnailMode = thumbnailMode {
+            input["thumbnailMode"] = thumbnailMode
         }
         if let isShopImage = isShopImage {
             input["isShopImage"] = isShopImage
@@ -576,13 +584,13 @@ class DeviceService {
         if let isListingImage = isListingImage {
             input["isListingImage"] = isListingImage
         }
-        
+
         let variables: [String: Any] = ["input": input]
-        
+
         struct Response: Decodable {
             let updateImage: DeviceImage
         }
-        
+
         let response: Response = try await api.execute(query: mutation, variables: variables)
         return response.updateImage
     }
@@ -816,6 +824,7 @@ class DeviceService {
                     caption
                     isShopImage
                     isThumbnail
+                    thumbnailMode
                     isListingImage
                 }
                 notes {
@@ -973,6 +982,7 @@ class DeviceService {
                     caption
                     isShopImage
                     isThumbnail
+                    thumbnailMode
                     isListingImage
                 }
                 notes {

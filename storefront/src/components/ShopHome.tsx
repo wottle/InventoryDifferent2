@@ -32,6 +32,7 @@ const GET_SHOP_DEVICES = gql`
         path
         thumbnailPath
         isThumbnail
+        thumbnailMode
         isShopImage
         isListingImage
       }

@@ -1049,16 +1049,67 @@ export const resolvers = {
                     ...(dateTaken ? { dateTaken } : {}),
                     caption: caption || null,
                     isThumbnail: shouldBeThumbnail,
+                    thumbnailMode: 'BOTH',
                     isShopImage: isShopImage || false,
                 },
             });
         },
         updateImage: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
-            const { id, caption, isThumbnail, isShopImage, isListingImage } = args.input;
+            const { id, caption, isThumbnail, thumbnailMode, isShopImage, isListingImage } = args.input;
 
-            // If setting as thumbnail, unset other thumbnails for this device
-            if (isThumbnail) {
+            // Thumbnail exclusivity logic:
+            // Valid end states per device: none, one BOTH, or one LIGHT + one DARK (always paired).
+            if (isThumbnail && thumbnailMode) {
+                const image = await context.prisma.image.findUnique({ where: { id } });
+                if (image) {
+                    const existingThumbs = await (context.prisma as any).image.findMany({
+                        where: { deviceId: image.deviceId, isThumbnail: true },
+                    });
+                    const bothThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'BOTH');
+                    const lightThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'LIGHT');
+                    const darkThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'DARK');
+
+                    if (thumbnailMode === 'BOTH') {
+                        // Replace: unset all existing thumbnails
+                        await context.prisma.image.updateMany({
+                            where: { deviceId: image.deviceId, isThumbnail: true },
+                            data: { isThumbnail: false },
+                        });
+                    } else if (thumbnailMode === 'LIGHT') {
+                        if (bothThumb) {
+                            // Promote BOTH → DARK (it keeps isThumbnail: true)
+                            await (context.prisma as any).image.update({
+                                where: { id: bothThumb.id },
+                                data: { thumbnailMode: 'DARK' },
+                            });
+                        } else if (lightThumb) {
+                            // Replace existing LIGHT thumbnail
+                            await context.prisma.image.update({
+                                where: { id: lightThumb.id },
+                                data: { isThumbnail: false },
+                            });
+                        }
+                        // If DARK exists without BOTH, leave it (paired with new LIGHT)
+                    } else if (thumbnailMode === 'DARK') {
+                        if (bothThumb) {
+                            // Promote BOTH → LIGHT (it keeps isThumbnail: true)
+                            await (context.prisma as any).image.update({
+                                where: { id: bothThumb.id },
+                                data: { thumbnailMode: 'LIGHT' },
+                            });
+                        } else if (darkThumb) {
+                            // Replace existing DARK thumbnail
+                            await context.prisma.image.update({
+                                where: { id: darkThumb.id },
+                                data: { isThumbnail: false },
+                            });
+                        }
+                        // If LIGHT exists without BOTH, leave it (paired with new DARK)
+                    }
+                }
+            } else if (isThumbnail) {
+                // No thumbnailMode specified — treat as BOTH (replace all existing thumbnails)
                 const image = await context.prisma.image.findUnique({ where: { id } });
                 if (image) {
                     await context.prisma.image.updateMany({
@@ -1082,6 +1133,7 @@ export const resolvers = {
             const updateData: any = {};
             if (caption !== undefined) updateData.caption = caption;
             if (isThumbnail !== undefined) updateData.isThumbnail = isThumbnail;
+            if (thumbnailMode !== undefined) updateData.thumbnailMode = thumbnailMode;
             if (isShopImage !== undefined) updateData.isShopImage = isShopImage;
             if (isListingImage !== undefined) updateData.isListingImage = isListingImage;
 

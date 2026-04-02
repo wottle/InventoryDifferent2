@@ -210,6 +210,7 @@ struct ImageManagementView: View {
             caption: nil,
             isShopImage: false,
             isThumbnail: false,
+            thumbnailMode: nil,
             isListingImage: false
         ),
         onUpdate: { _ in },

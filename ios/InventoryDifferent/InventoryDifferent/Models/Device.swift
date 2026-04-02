@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct DeviceAccessory: Codable, Identifiable, Hashable {
     let id: Int
@@ -139,6 +140,7 @@ struct DeviceImage: Codable, Identifiable {
     let caption: String?
     let isShopImage: Bool
     let isThumbnail: Bool
+    let thumbnailMode: String?
     let isListingImage: Bool
 }
 
@@ -147,6 +149,7 @@ struct DeviceThumbnail: Codable, Identifiable, Hashable {
     let path: String
     let thumbnailPath: String?
     let isThumbnail: Bool
+    let thumbnailMode: String?
 }
 
 struct Note: Codable, Identifiable {
@@ -246,7 +249,17 @@ struct Device: Codable, Identifiable, Hashable {
     }
     
     var thumbnailImage: DeviceImage? {
-        images.first(where: { $0.isThumbnail }) ?? images.first
+        images.first(where: { $0.isThumbnail && ($0.thumbnailMode == "BOTH" || $0.thumbnailMode == nil) })
+            ?? images.first(where: { $0.isThumbnail })
+            ?? images.first
+    }
+
+    func thumbnailImage(for colorScheme: ColorScheme) -> DeviceImage? {
+        let mode = colorScheme == .dark ? "DARK" : "LIGHT"
+        return images.first(where: { $0.isThumbnail && $0.thumbnailMode == mode })
+            ?? images.first(where: { $0.isThumbnail && ($0.thumbnailMode == "BOTH" || $0.thumbnailMode == nil) })
+            ?? images.first(where: { $0.isThumbnail })
+            ?? images.first
     }
 }
 
@@ -283,7 +296,17 @@ struct DeviceListItem: Codable, Identifiable, Hashable {
     let thumbnails: [DeviceThumbnail]
 
     var thumbnailImage: DeviceThumbnail? {
-        thumbnails.first(where: { $0.isThumbnail }) ?? thumbnails.first
+        thumbnails.first(where: { $0.isThumbnail && ($0.thumbnailMode == "BOTH" || $0.thumbnailMode == nil) })
+            ?? thumbnails.first(where: { $0.isThumbnail })
+            ?? thumbnails.first
+    }
+
+    func thumbnailImage(for colorScheme: ColorScheme) -> DeviceThumbnail? {
+        let mode = colorScheme == .dark ? "DARK" : "LIGHT"
+        return thumbnails.first(where: { $0.isThumbnail && $0.thumbnailMode == mode })
+            ?? thumbnails.first(where: { $0.isThumbnail && ($0.thumbnailMode == "BOTH" || $0.thumbnailMode == nil) })
+            ?? thumbnails.first(where: { $0.isThumbnail })
+            ?? thumbnails.first
     }
 }
 

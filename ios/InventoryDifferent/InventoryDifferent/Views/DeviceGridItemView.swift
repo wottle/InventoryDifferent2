@@ -7,6 +7,7 @@ import SwiftUI
 
 struct DeviceGridItemView: View {
     let device: DeviceListItem
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -55,7 +56,7 @@ struct DeviceGridItemView: View {
     }
 
     private var thumbnailURL: URL? {
-        guard let thumbnail = device.thumbnailImage else { return nil }
+        guard let thumbnail = device.thumbnailImage(for: colorScheme) else { return nil }
         let path = thumbnail.thumbnailPath ?? thumbnail.path
         return APIService.shared.imageURL(for: path)
     }

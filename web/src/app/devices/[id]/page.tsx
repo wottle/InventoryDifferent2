@@ -14,6 +14,8 @@ import { API_BASE_URL } from "../../../lib/config";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { DeepLinkBanner } from "../../../components/DeepLinkBanner";
 import { useAuth } from "../../../lib/auth-context";
+import { useIsDarkMode } from "../../../lib/useIsDarkMode";
+import { pickThumbnail } from "../../../lib/pickThumbnail";
 
 const DeviceValueChart = dynamic(() => import("../../../components/DeviceValueChart"), { ssr: false });
 
@@ -64,6 +66,7 @@ const GET_DEVICE = gql`
         caption
         dateTaken
         isThumbnail
+        thumbnailMode
         isShopImage
         isListingImage
       }
@@ -412,6 +415,7 @@ export default function DeviceDetail() {
     const params = useParams();
     const id = params.id;
     const { isAuthenticated } = useAuth();
+    const isDark = useIsDarkMode();
     const [selectedImage, setSelectedImage] = useState(0);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxZoom, setLightboxZoom] = useState(1);
@@ -896,7 +900,7 @@ export default function DeviceDetail() {
 
     const existingTagNames = new Set((device.tags ?? []).map((t: any) => (t?.name ?? '').toLowerCase()));
 
-    const thumbnailImage = images.find((i: any) => i.isThumbnail);
+    const thumbnailImage = pickThumbnail(images, isDark);
 
     // Sort images for the management grid: thumbnail first, then remaining images by dateTaken descending
     // Use id as tiebreaker for stable sorting when dates are equal

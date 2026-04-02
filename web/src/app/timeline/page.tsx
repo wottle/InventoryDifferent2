@@ -18,6 +18,7 @@ const GET_TIMELINE = gql`
         path
         thumbnailPath
         isThumbnail
+        thumbnailMode
       }
       category {
         name

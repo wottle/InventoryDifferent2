@@ -1,7 +1,11 @@
+'use client';
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../lib/config";
 import { SortColumn } from "./DeviceFilterPanel";
+import { useIsDarkMode } from "../lib/useIsDarkMode";
+import { pickThumbnail } from "../lib/pickThumbnail";
 
 interface DeviceTableProps {
   devices: any[];
@@ -12,6 +16,7 @@ interface DeviceTableProps {
 
 export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }: DeviceTableProps) {
   const router = useRouter();
+  const isDark = useIsDarkMode();
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -432,7 +437,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
           </thead>
           <tbody className="divide-y divide-[var(--border)]">
             {sortedDevices.map((device) => {
-              const thumbImage = device.images.find((i: any) => i.isThumbnail);
+              const thumbImage = pickThumbnail(device.images, isDark) as any;
               const thumbnail = thumbImage?.thumbnailPath || thumbImage?.path;
               return (
                 <tr 

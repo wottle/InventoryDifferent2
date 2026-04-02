@@ -137,6 +137,8 @@ struct DeviceDetailView: View {
     @State private var isImageManagementMode = false
     @State private var imageToDelete: DeviceImage?
     @State private var showDeleteImageAlert = false
+    @State private var imageForThumbnailChoice: DeviceImage?
+    @State private var showThumbnailChoiceSheet = false
     @State private var showGenerateImageSheet = false
     @State private var openaiEnabled = false
     
@@ -318,6 +320,7 @@ struct DeviceDetailView: View {
                             id: img.id, path: img.path, thumbnailPath: img.thumbnailPath,
                             dateTaken: img.dateTaken, caption: img.caption,
                             isShopImage: img.isShopImage, isThumbnail: false,
+                            thumbnailMode: img.thumbnailMode,
                             isListingImage: img.isListingImage
                         )
                     }
@@ -351,6 +354,28 @@ struct DeviceDetailView: View {
             }
         } message: {
             Text("Are you sure you want to delete this image? This action cannot be undone.")
+        }
+        .confirmationDialog("Set Thumbnail", isPresented: $showThumbnailChoiceSheet, titleVisibility: .visible) {
+            Button("Replace (Both Modes)") {
+                if let image = imageForThumbnailChoice {
+                    Task { await setThumbnail(image, mode: "BOTH") }
+                }
+            }
+            Button("Set as Light Mode Thumbnail") {
+                if let image = imageForThumbnailChoice {
+                    Task { await setThumbnail(image, mode: "LIGHT") }
+                }
+            }
+            Button("Set as Dark Mode Thumbnail") {
+                if let image = imageForThumbnailChoice {
+                    Task { await setThumbnail(image, mode: "DARK") }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                imageForThumbnailChoice = nil
+            }
+        } message: {
+            Text("Choose how this image should be used as a thumbnail.")
         }
         .sheet(isPresented: $showAddTagSheet) {
             AddTagView(deviceId: device.id, existingTags: tags) { updatedDevice in
@@ -658,7 +683,7 @@ struct DeviceDetailView: View {
     private var heroImage: some View {
         ZStack(alignment: .bottomLeading) {
             Group {
-                if let thumbnail = device.thumbnailImage {
+                if let thumbnail = device.thumbnailImage(for: colorScheme) {
                     let path = thumbnail.thumbnailPath ?? thumbnail.path
                     AsyncImage(url: APIService.shared.imageURL(for: path)) { phase in
                         switch phase {
@@ -1165,8 +1190,13 @@ struct DeviceDetailView: View {
                                     HStack(spacing: 0) {
                                         // Top-left quadrant - Thumbnail
                                         Button {
-                                            Task {
-                                                await setThumbnail(image)
+                                            if image.isThumbnail {
+                                                // Already the thumbnail — nothing to do
+                                            } else if images.contains(where: { $0.isThumbnail }) {
+                                                imageForThumbnailChoice = image
+                                                showThumbnailChoiceSheet = true
+                                            } else {
+                                                Task { await setThumbnail(image, mode: "BOTH") }
                                             }
                                         } label: {
                                             Color.clear
@@ -1417,37 +1447,22 @@ struct DeviceDetailView: View {
     }
     
     
-    private func setThumbnail(_ image: DeviceImage) async {
+    private func setThumbnail(_ image: DeviceImage, mode: String) async {
         do {
-            // Capture displaced thumbnail URL for cache eviction
-            let displacedThumbnailURL: URL? = images
-                .first(where: { $0.isThumbnail && $0.id != image.id })
-                .flatMap { APIService.shared.imageURL(for: $0.thumbnailPath ?? $0.path) }
+            // Capture all existing thumbnail URLs for cache eviction (they may change)
+            let existingThumbnailURLs: [URL] = images
+                .filter { $0.isThumbnail && $0.id != image.id }
+                .compactMap { APIService.shared.imageURL(for: $0.thumbnailPath ?? $0.path) }
 
-            // First, unset any existing thumbnail
-            if let currentThumbnail = images.first(where: { $0.isThumbnail && $0.id != image.id }) {
-                _ = try await DeviceService.shared.updateImage(
-                    id: currentThumbnail.id,
-                    isThumbnail: false,
-                    isShopImage: nil,
-                    isListingImage: nil
-                )
-            }
-
-            // Set this image as thumbnail
-            let updatedImage = try await DeviceService.shared.updateImage(
+            // API handles all exclusivity logic — just pass the desired mode
+            _ = try await DeviceService.shared.updateImage(
                 id: image.id,
-                isThumbnail: !image.isThumbnail,
-                isShopImage: nil,
-                isListingImage: nil
+                isThumbnail: true,
+                thumbnailMode: mode
             )
 
-            if let index = images.firstIndex(where: { $0.id == image.id }) {
-                images[index] = updatedImage
-            }
-
-            // Evict the old thumbnail from cache so it doesn't linger on disk
-            if let url = displacedThumbnailURL {
+            // Evict displaced thumbnails from cache
+            for url in existingThumbnailURLs {
                 await ImageCacheService.shared.removeImage(for: url)
             }
 

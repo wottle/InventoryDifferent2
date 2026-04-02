@@ -136,6 +136,7 @@ model Image {
   caption     String?
   isShopImage Boolean  @default(false)
   isThumbnail Boolean  @default(false)
+  thumbnailMode ThumbnailMode @default(BOTH)
   isListingImage Boolean @default(false)
 }
 
@@ -280,4 +281,10 @@ enum CategoryType {
   PERIPHERAL
   ACCESSORY
   OTHER
+}
+
+enum ThumbnailMode {
+  BOTH
+  LIGHT
+  DARK
 }

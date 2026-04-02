@@ -57,6 +57,7 @@ const GET_SHOP_DEVICE = gql`
         caption
         dateTaken
         isThumbnail
+        thumbnailMode
         isShopImage
         isListingImage
       }
