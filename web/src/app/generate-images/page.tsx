@@ -60,7 +60,7 @@ export default function GenerateImagesPage() {
   const [savedPrompt, setSavedPrompt] = useState(false);
   const [assignAsThumbnail, setAssignAsThumbnail] = useState(true);
   const [thumbnailMode, setThumbnailMode] = useState<"BOTH" | "LIGHT" | "DARK">("BOTH");
-  const [assignAsShopImage, setAssignAsShopImage] = useState(true);
+  const [assignAsShopImage, setAssignAsShopImage] = useState(false);
   const isDark = useIsDarkMode();
   const [assignAsListingImage, setAssignAsListingImage] = useState(false);
   const [filter, setFilter] = useState<"all" | "missing_any" | "missing_shop">("all");
