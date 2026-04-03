@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.0.5';
+export const APP_VERSION = '1.0.6';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,18 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.0.6',
+    date: '2026-04-03',
+    added: [],
+    changed: [
+      'Rarity indicator changed from gem to crown icon; color-coded by rarity level on web cards, list, and iOS',
+      'Functional status, rarity, and PRAM battery icons now shown next to their field labels on web and iOS device detail screens',
+      'Status indicators row added to iOS grid card view',
+      'iOS: sort by Condition and Rarity (most rare first)',
+    ],
     fixed: [],
   },
   {

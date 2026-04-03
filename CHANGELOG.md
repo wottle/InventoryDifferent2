@@ -6,6 +6,16 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.0.6] - 2026-04-03
+
+### Changed
+- Rarity indicator changed from gem to crown icon; color-coded by rarity level on web cards, list, and iOS
+- Functional status, rarity, and PRAM battery icons now shown next to their field labels on web and iOS device detail screens
+- Status indicators row added to iOS grid card view
+- iOS: sort by Condition and Rarity (most rare first)
+
+---
+
 ## [1.0.5] - 2026-04-03
 
 ### Changed
