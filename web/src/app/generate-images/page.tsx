@@ -7,6 +7,8 @@ import Link from "next/link";
 import { API_BASE_URL } from "../../lib/config";
 import { useAuth } from "../../lib/auth-context";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useIsDarkMode } from "../../lib/useIsDarkMode";
+import { pickThumbnail } from "../../lib/pickThumbnail";
 
 const DEFAULT_PROMPT =
   "Create a professional product photograph of this vintage computer device on a dark background (#282828) with a 1:1 ratio for square image use. Use studio lighting with soft, even illumination to eliminate harsh shadows. Position the product at a slight 30-degree angle to show dimension. High detail, sharp focus throughout, showing clear material texture. Photorealistic rendering for high-end e-commerce use.";
@@ -30,6 +32,7 @@ const GET_DEVICES = gql`
         path
         thumbnailPath
         isThumbnail
+        thumbnailMode
         isShopImage
       }
     }
@@ -44,7 +47,7 @@ interface DeviceRow {
   manufacturer?: string;
   releaseYear?: number;
   status: string;
-  images: { id: number; path: string; thumbnailPath?: string; isThumbnail: boolean; isShopImage: boolean }[];
+  images: { id: number; path: string; thumbnailPath?: string | null; isThumbnail: boolean; thumbnailMode?: string | null; isShopImage: boolean }[];
 }
 
 export default function GenerateImagesPage() {
@@ -56,7 +59,9 @@ export default function GenerateImagesPage() {
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
   const [savedPrompt, setSavedPrompt] = useState(false);
   const [assignAsThumbnail, setAssignAsThumbnail] = useState(true);
+  const [thumbnailMode, setThumbnailMode] = useState<"BOTH" | "LIGHT" | "DARK">("BOTH");
   const [assignAsShopImage, setAssignAsShopImage] = useState(true);
+  const isDark = useIsDarkMode();
   const [assignAsListingImage, setAssignAsListingImage] = useState(false);
   const [filter, setFilter] = useState<"all" | "missing_any" | "missing_shop">("all");
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -100,8 +105,13 @@ export default function GenerateImagesPage() {
   }
 
   function pickSourceImage(device: DeviceRow): number | undefined {
-    const thumb = device.images.find((i) => i.isThumbnail);
-    if (thumb) return thumb.id;
+    // Prefer BOTH thumbnail, then LIGHT, then DARK, then first image
+    const both = device.images.find((i) => i.isThumbnail && (i.thumbnailMode === "BOTH" || !i.thumbnailMode));
+    if (both) return both.id;
+    const light = device.images.find((i) => i.isThumbnail && i.thumbnailMode === "LIGHT");
+    if (light) return light.id;
+    const dark = device.images.find((i) => i.isThumbnail && i.thumbnailMode === "DARK");
+    if (dark) return dark.id;
     if (device.images.length > 0) return device.images[0].id;
     return undefined;
   }
@@ -129,6 +139,7 @@ export default function GenerateImagesPage() {
         deviceId,
         prompt,
         assignAsThumbnail,
+        thumbnailMode: assignAsThumbnail ? thumbnailMode : undefined,
         assignAsShopImage,
         assignAsListingImage,
       };
@@ -207,7 +218,12 @@ export default function GenerateImagesPage() {
 
         {/* Settings */}
         <div className="rounded border border-[var(--border)] bg-[var(--card)] p-5 space-y-4 card-retro">
-          <h2 className="text-sm font-semibold text-[var(--foreground)]">Settings</h2>
+          <div>
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">Settings</h2>
+            <p className="text-xs text-[var(--muted-foreground)] mt-1">
+              The existing thumbnail is used as the source image for generation — preferring the <strong>Both</strong> thumbnail, then <strong>Light</strong>, then <strong>Dark</strong>. If no thumbnail exists, the first image is used.
+            </p>
+          </div>
           <div>
             <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Prompt (applied to all)</label>
             <textarea
@@ -232,23 +248,52 @@ export default function GenerateImagesPage() {
               {savedPrompt && <span className="text-xs text-green-600 font-medium">✓ Saved!</span>}
             </div>
           </div>
-          <div className="flex flex-wrap gap-4">
-            {[
-              { label: "Set as thumbnail", value: assignAsThumbnail, set: setAssignAsThumbnail },
-              { label: "Set as shop image", value: assignAsShopImage, set: setAssignAsShopImage },
-              { label: "Set as listing image", value: assignAsListingImage, set: setAssignAsListingImage },
-            ].map(({ label, value, set }) => (
-              <label key={label} className="flex items-center gap-2 text-sm text-[var(--foreground)] cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={(e) => set(e.target.checked)}
-                  disabled={isRunning}
-                  className="rounded"
-                />
-                {label}
-              </label>
-            ))}
+          <div className="flex flex-wrap gap-4 items-center">
+            {/* Thumbnail checkbox + mode dropdown */}
+            <label className="flex items-center gap-2 text-sm text-[var(--foreground)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={assignAsThumbnail}
+                onChange={(e) => setAssignAsThumbnail(e.target.checked)}
+                disabled={isRunning}
+                className="rounded"
+              />
+              Set as thumbnail
+            </label>
+            {assignAsThumbnail && (
+              <select
+                value={thumbnailMode}
+                onChange={(e) => setThumbnailMode(e.target.value as "BOTH" | "LIGHT" | "DARK")}
+                disabled={isRunning}
+                className="text-xs rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[var(--apple-blue)] disabled:opacity-60"
+              >
+                <option value="BOTH">Both modes</option>
+                <option value="LIGHT">Light mode only</option>
+                <option value="DARK">Dark mode only</option>
+              </select>
+            )}
+            {/* Shop image */}
+            <label className="flex items-center gap-2 text-sm text-[var(--foreground)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={assignAsShopImage}
+                onChange={(e) => setAssignAsShopImage(e.target.checked)}
+                disabled={isRunning}
+                className="rounded"
+              />
+              Set as shop image
+            </label>
+            {/* Listing image */}
+            <label className="flex items-center gap-2 text-sm text-[var(--foreground)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={assignAsListingImage}
+                onChange={(e) => setAssignAsListingImage(e.target.checked)}
+                disabled={isRunning}
+                className="rounded"
+              />
+              Set as listing image
+            </label>
           </div>
         </div>
 
@@ -333,7 +378,7 @@ export default function GenerateImagesPage() {
                 {filteredDevices.map((device) => {
                   const rowStatus = statuses.get(device.id);
                   const errMsg = statusMessages.get(device.id);
-                  const thumbImg = device.images.find((i) => i.isThumbnail) || device.images[0];
+                  const thumbImg = pickThumbnail(device.images, isDark) || device.images[0];
 
                   return (
                     <tr

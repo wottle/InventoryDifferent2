@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'AI image generation page: thumbnail mode selector (Both/Light/Dark) and source image priority explanation',
+    ],
     changed: [],
     fixed: [],
   },
