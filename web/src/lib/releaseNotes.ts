@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.0.3';
+export const APP_VERSION = '1.0.4';
 
 export interface ReleaseEntry {
   version: string;
@@ -13,6 +13,15 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.0.4',
+    date: '2026-04-03',
+    added: [
+      'Rarity gem icon on device cards and list view — color-coded from gray (common) to yellow (uncommon) to green (rare); also shown in iOS device list',
+    ],
     changed: [],
     fixed: [
       'Sort by condition and rarity now works — fields were missing from the device list query',
