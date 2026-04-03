@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.0.4';
+export const APP_VERSION = '1.0.5';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,16 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.0.5',
+    date: '2026-04-03',
+    added: [],
+    changed: [
+      'Rarity gem icon repositioned to status indicators row (between functional status and asset tag); now uses custom faceted gem shape on web and iOS',
+      'Rarity sort puts most rare first when sorting ascending (web and iOS)',
+    ],
     fixed: [],
   },
   {
