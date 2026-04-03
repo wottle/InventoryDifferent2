@@ -389,8 +389,8 @@ function DetailRow({ label, value, icon }: { label: string; value: React.ReactNo
     return (
         <div className="flex justify-between py-3 border-b border-[var(--border)] last:border-0">
             <dt className="text-sm text-[var(--muted-foreground)] flex items-center gap-1.5">
-                {icon}
                 {label}
+                {icon}
             </dt>
             <dd className="text-sm font-medium text-[var(--foreground)]">{value}</dd>
         </div>
@@ -1906,7 +1906,7 @@ export default function DeviceDetail() {
                                 label="Rarity"
                                 value={device.rarity ? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null}
                                 icon={device.rarity ? (() => {
-                                    const colors: Record<string, string> = { COMMON: 'text-gray-400', UNCOMMON: 'text-yellow-500', RARE: 'text-green-300', VERY_RARE: 'text-green-500', EXTREMELY_RARE: 'text-green-700' };
+                                    const colors: Record<string, string> = { COMMON: 'text-gray-400', UNCOMMON: 'text-green-500', RARE: 'text-[#8fbc8f]', VERY_RARE: 'text-blue-500', EXTREMELY_RARE: 'text-purple-500' };
                                     return <svg className={`w-3.5 h-3.5 flex-shrink-0 ${colors[device.rarity] ?? 'text-gray-400'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/></svg>;
                                 })() : undefined}
                             />

@@ -202,10 +202,10 @@ export function DeviceCard({ device }: DeviceCardProps) {
             {device.rarity && (() => {
                 const rarityColors: Record<string, string> = {
                     COMMON: 'text-gray-400 dark:text-gray-500',
-                    UNCOMMON: 'text-yellow-500',
-                    RARE: 'text-green-300 dark:text-green-400',
-                    VERY_RARE: 'text-green-500',
-                    EXTREMELY_RARE: 'text-green-700 dark:text-green-600',
+                    UNCOMMON: 'text-green-500',
+                    RARE: 'text-[#8fbc8f]',
+                    VERY_RARE: 'text-blue-500',
+                    EXTREMELY_RARE: 'text-purple-500',
                 };
                 const rarityLabels: Record<string, string> = {
                     COMMON: 'Common',

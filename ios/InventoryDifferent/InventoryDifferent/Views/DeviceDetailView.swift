@@ -890,10 +890,10 @@ struct DeviceDetailView: View {
                     let rarityColor: Color = {
                         switch rarity {
                         case .COMMON: return Color.gray.opacity(0.4)
-                        case .UNCOMMON: return Color.yellow
-                        case .RARE: return Color(red: 0.55, green: 0.75, blue: 0.58)
-                        case .VERY_RARE: return Color.green
-                        case .EXTREMELY_RARE: return Color(red: 0.0, green: 0.45, blue: 0.1)
+                        case .UNCOMMON: return Color.green
+                        case .RARE: return Color(red: 0.56, green: 0.74, blue: 0.56)
+                        case .VERY_RARE: return Color.blue
+                        case .EXTREMELY_RARE: return Color.purple
                         }
                     }()
                     HStack {
