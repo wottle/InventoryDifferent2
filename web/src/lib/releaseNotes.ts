@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.0.7';
+export const APP_VERSION = '1.1.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.1.0',
+    date: '2026-04-03',
     added: [
       'i18n infrastructure: LANGUAGE env var (en/de) controls UI language across web app; enum labels (status, condition, rarity, functional status) and filter panel now fully translated',
     ],
