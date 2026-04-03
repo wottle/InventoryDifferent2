@@ -82,11 +82,13 @@ export default function GenerateImagesPage() {
 
   const devices: DeviceRow[] = data?.devices ?? [];
 
-  const filteredDevices = devices.filter((d) => {
-    if (filter === "missing_any") return d.images.length === 0;
-    if (filter === "missing_shop") return !d.images.some((i) => i.isShopImage);
-    return true;
-  });
+  const filteredDevices = devices
+    .filter((d) => {
+      if (filter === "missing_any") return d.images.length === 0;
+      if (filter === "missing_shop") return !d.images.some((i) => i.isShopImage);
+      return true;
+    })
+    .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
   function toggleSelect(id: number) {
     setSelected((prev) => {
