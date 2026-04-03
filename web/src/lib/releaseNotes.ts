@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.0.1';
+export const APP_VERSION = '1.0.2';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.0.2',
+    date: '2026-04-02',
     added: [
       'AI image generation page: thumbnail mode selector (Both/Light/Dark) and source image priority explanation',
     ],

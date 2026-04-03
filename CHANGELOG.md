@@ -6,6 +6,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.0.2] - 2026-04-02
+
+### Added
+- AI image generation page: thumbnail mode selector (Both/Light/Dark) and source image priority explanation
+
+---
+
 ## [1.0.1] - 2026-04-01
 
 ### Added
