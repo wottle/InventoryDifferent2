@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.0.2';
+export const APP_VERSION = '1.0.3';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.0.3',
+    date: '2026-04-02',
     added: [
       'Sort devices by condition or rarity on the inventory page',
     ],

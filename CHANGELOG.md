@@ -6,6 +6,16 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.0.3] - 2026-04-02
+
+### Added
+- Sort devices by condition or rarity on the inventory page
+
+### Fixed
+- Filtering by condition or rarity now correctly applies to the API query
+
+---
+
 ## [1.0.2] - 2026-04-02
 
 ### Added
