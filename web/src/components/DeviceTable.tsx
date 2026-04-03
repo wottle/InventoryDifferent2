@@ -131,6 +131,22 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
           primaryResult = aStatus.localeCompare(bStatus);
         }
         break;
+      case 'condition':
+        {
+          const conditionOrder = ['NEW', 'LIKE_NEW', 'VERY_GOOD', 'GOOD', 'ACCEPTABLE', 'FOR_PARTS'];
+          const aIdx = conditionOrder.indexOf(a.condition || '');
+          const bIdx = conditionOrder.indexOf(b.condition || '');
+          primaryResult = (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+        }
+        break;
+      case 'rarity':
+        {
+          const rarityOrder = ['COMMON', 'UNCOMMON', 'RARE', 'VERY_RARE', 'EXTREMELY_RARE'];
+          const aIdx = rarityOrder.indexOf(a.rarity || '');
+          const bIdx = rarityOrder.indexOf(b.rarity || '');
+          primaryResult = (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+        }
+        break;
       default:
         primaryResult = 0;
     }

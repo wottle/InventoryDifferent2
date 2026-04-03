@@ -185,6 +185,14 @@ export default function Home() {
       where.functionalStatus = { in: filters.functionalStatuses };
     }
 
+    if (filters.conditions.length > 0) {
+      where.condition = { in: filters.conditions };
+    }
+
+    if (filters.rarities.length > 0) {
+      where.rarity = { in: filters.rarities };
+    }
+
     return where;
   };
 
@@ -262,6 +270,22 @@ export default function Home() {
         case 'status':
           if (statusA !== statusB) return dir * statusA.localeCompare(statusB);
           return secondarySort();
+        case 'condition': {
+          const conditionOrder = ['NEW', 'LIKE_NEW', 'VERY_GOOD', 'GOOD', 'ACCEPTABLE', 'FOR_PARTS'];
+          const aIdx = conditionOrder.indexOf(a.condition || '');
+          const bIdx = conditionOrder.indexOf(b.condition || '');
+          const diff = (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+          if (diff !== 0) return dir * diff;
+          return secondarySort();
+        }
+        case 'rarity': {
+          const rarityOrder = ['COMMON', 'UNCOMMON', 'RARE', 'VERY_RARE', 'EXTREMELY_RARE'];
+          const aIdx = rarityOrder.indexOf(a.rarity || '');
+          const bIdx = rarityOrder.indexOf(b.rarity || '');
+          const diff = (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+          if (diff !== 0) return dir * diff;
+          return secondarySort();
+        }
         case 'category':
         default:
           if (catA !== catB) return dir * (catA - catB);

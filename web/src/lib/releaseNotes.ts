@@ -12,9 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'Sort devices by condition or rarity on the inventory page',
+    ],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Filtering by condition or rarity now correctly applies to the API query',
+    ],
   },
   {
     version: '1.0.2',

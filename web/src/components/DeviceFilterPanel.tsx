@@ -11,7 +11,7 @@ export interface FilterState {
   searchTerm: string;
 }
 
-export type SortColumn = 'category' | 'name' | 'manufacturer' | 'releaseYear' | 'dateAcquired' | 'estimatedValue' | 'location' | 'available' | 'status';
+export type SortColumn = 'category' | 'name' | 'manufacturer' | 'releaseYear' | 'dateAcquired' | 'estimatedValue' | 'location' | 'available' | 'status' | 'condition' | 'rarity';
 
 interface DeviceFilterPanelProps {
   isOpen: boolean;
@@ -55,6 +55,8 @@ export function DeviceFilterPanel({
     { value: 'location', label: 'Location' },
     { value: 'available', label: 'Availability' },
     { value: 'status', label: 'Functional Status' },
+    { value: 'condition', label: 'Condition' },
+    { value: 'rarity', label: 'Rarity' },
   ];
 
   const statusOptions = [
