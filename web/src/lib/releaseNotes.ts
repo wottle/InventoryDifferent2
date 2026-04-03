@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Sort by condition and rarity now works — fields were missing from the device list query',
+    ],
   },
   {
     version: '1.0.3',
