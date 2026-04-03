@@ -6,6 +6,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.1.1] - 2026-04-03
+
+### Fixed
+- LANGUAGE env var now correctly applied at runtime — setting it in docker-compose no longer requires a rebuild
+
+---
+
 ## [1.1.0] - 2026-04-03
 
 ### Added

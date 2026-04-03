@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.0';
+export const APP_VERSION = '1.1.1';
 
 export interface ReleaseEntry {
   version: string;
@@ -15,6 +15,15 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [],
     changed: [],
     fixed: [],
+  },
+  {
+    version: '1.1.1',
+    date: '2026-04-03',
+    added: [],
+    changed: [],
+    fixed: [
+      'LANGUAGE env var now correctly applied at runtime — setting it in docker-compose no longer requires a rebuild',
+    ],
   },
   {
     version: '1.1.0',
