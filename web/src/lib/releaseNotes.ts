@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'i18n infrastructure: LANGUAGE env var (en/de) controls UI language across web app; enum labels (status, condition, rarity, functional status) and filter panel now fully translated',
+    ],
     changed: [],
     fixed: [],
   },

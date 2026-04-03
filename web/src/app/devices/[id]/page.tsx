@@ -16,6 +16,7 @@ import { DeepLinkBanner } from "../../../components/DeepLinkBanner";
 import { useAuth } from "../../../lib/auth-context";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
+import { useT } from "../../../i18n/context";
 
 const DeviceValueChart = dynamic(() => import("../../../components/DeviceValueChart"), { ssr: false });
 
@@ -278,6 +279,7 @@ function linkifyText(text: string) {
 }
 
 function StatusBadge({ status }: { status: string }) {
+    const t = useT();
     const styles: Record<string, string> = {
         COLLECTION: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
         FOR_SALE: "bg-amber-50 text-amber-700 ring-amber-600/20",
@@ -287,25 +289,21 @@ function StatusBadge({ status }: { status: string }) {
     };
     return (
         <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${styles[status] || styles.COLLECTION}`}>
-            {status.replace(/_/g, " ")}
+            {t.status[status as keyof typeof t.status] ?? status.replace(/_/g, " ")}
         </span>
     );
 }
 
 function FunctionalBadge({ status }: { status: string }) {
+    const t = useT();
     const styles: Record<string, string> = {
         YES: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
         PARTIAL: "bg-amber-50 text-amber-700 ring-amber-600/20",
         NO: "bg-red-50 text-red-700 ring-red-600/20",
     };
-    const labels: Record<string, string> = {
-        YES: "Fully Functional",
-        PARTIAL: "Partially Functional",
-        NO: "Not Functional",
-    };
     return (
         <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${styles[status] || styles.YES}`}>
-            {labels[status] || status}
+            {t.functionalStatus[status as keyof typeof t.functionalStatus] ?? status}
         </span>
     );
 }
@@ -419,6 +417,7 @@ export default function DeviceDetail() {
     const id = params.id;
     const { isAuthenticated } = useAuth();
     const isDark = useIsDarkMode();
+    const t = useT();
     const [selectedImage, setSelectedImage] = useState(0);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxZoom, setLightboxZoom] = useState(1);
@@ -1891,10 +1890,10 @@ export default function DeviceDetail() {
                             <DetailRow label="Device ID" value={device.id} />
                             <DetailRow label="Serial Number" value={device.serialNumber} />
                             <DetailRow label="Release Year" value={device.releaseYear} />
-                            <DetailRow label="Condition" value={device.condition ? device.condition.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null} />
+                            <DetailRow label="Condition" value={device.condition ? (t.condition[device.condition as keyof typeof t.condition] ?? device.condition.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())) : null} />
                             <DetailRow
                                 label="Functional Status"
-                                value={device.functionalStatus === 'YES' ? 'Fully Functional' : device.functionalStatus === 'PARTIAL' ? 'Partially Functional' : device.functionalStatus === 'NO' ? 'Not Functional' : null}
+                                value={device.functionalStatus ? (t.functionalStatus[device.functionalStatus as keyof typeof t.functionalStatus] ?? null) : null}
                                 icon={
                                     device.functionalStatus === 'YES' ? <svg className="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83v7.84C7 18.95 8.05 20 9.34 20h8.11c.7 0 1.36-.37 1.72-.97l2.66-6.15z"/></svg>
                                     : device.functionalStatus === 'PARTIAL' ? <svg className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
@@ -1904,7 +1903,7 @@ export default function DeviceDetail() {
                             />
                             <DetailRow
                                 label="Rarity"
-                                value={device.rarity ? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null}
+                                value={device.rarity ? (t.rarity[device.rarity as keyof typeof t.rarity] ?? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())) : null}
                                 icon={device.rarity ? (() => {
                                     const colors: Record<string, string> = { COMMON: 'text-gray-400', UNCOMMON: 'text-yellow-400', RARE: 'text-green-500', VERY_RARE: 'text-blue-500', EXTREMELY_RARE: 'text-purple-500' };
                                     return <svg className={`w-3.5 h-3.5 flex-shrink-0 ${colors[device.rarity] ?? 'text-gray-400'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/></svg>;

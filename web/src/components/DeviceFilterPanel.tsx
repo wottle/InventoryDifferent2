@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useT } from "../i18n/context";
 
 export interface FilterState {
   categoryIds: number[];
@@ -34,6 +35,7 @@ export function DeviceFilterPanel({
   sortDirection,
   onSortChange,
 }: DeviceFilterPanelProps) {
+  const t = useT();
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
   const [localSortColumn, setLocalSortColumn] = useState<SortColumn>(sortColumn);
   const [localSortDirection, setLocalSortDirection] = useState<'asc' | 'desc'>(sortDirection);
@@ -46,50 +48,50 @@ export function DeviceFilterPanel({
   }, [filters, sortColumn, sortDirection, isOpen]);
 
   const sortOptions = [
-    { value: 'category', label: 'Category' },
-    { value: 'name', label: 'Name' },
-    { value: 'manufacturer', label: 'Manufacturer & Model' },
-    { value: 'releaseYear', label: 'Release Year' },
-    { value: 'dateAcquired', label: 'Date Acquired' },
-    { value: 'estimatedValue', label: 'Estimated Value' },
-    { value: 'location', label: 'Location' },
-    { value: 'available', label: 'Availability' },
-    { value: 'status', label: 'Functional Status' },
-    { value: 'condition', label: 'Condition' },
-    { value: 'rarity', label: 'Rarity' },
+    { value: 'category', label: t.sort.category },
+    { value: 'name', label: t.sort.name },
+    { value: 'manufacturer', label: t.sort.manufacturer },
+    { value: 'releaseYear', label: t.sort.releaseYear },
+    { value: 'dateAcquired', label: t.sort.dateAcquired },
+    { value: 'estimatedValue', label: t.sort.estimatedValue },
+    { value: 'location', label: t.sort.location },
+    { value: 'available', label: t.sort.available },
+    { value: 'status', label: t.sort.status },
+    { value: 'condition', label: t.sort.condition },
+    { value: 'rarity', label: t.sort.rarity },
   ];
 
   const statusOptions = [
-    { value: "COLLECTION", label: "In Collection" },
-    { value: "FOR_SALE", label: "For Sale" },
-    { value: "PENDING_SALE", label: "Pending Sale" },
-    { value: "IN_REPAIR", label: "In Repair" },
-    { value: "SOLD", label: "Sold" },
-    { value: "DONATED", label: "Donated" },
-    { value: "RETURNED", label: "Returned" },
+    { value: "COLLECTION", label: t.status.COLLECTION },
+    { value: "FOR_SALE", label: t.status.FOR_SALE },
+    { value: "PENDING_SALE", label: t.status.PENDING_SALE },
+    { value: "IN_REPAIR", label: t.status.IN_REPAIR },
+    { value: "SOLD", label: t.status.SOLD },
+    { value: "DONATED", label: t.status.DONATED },
+    { value: "RETURNED", label: t.status.RETURNED },
   ];
 
   const functionalStatusOptions = [
-    { value: "YES", label: "Fully Functional" },
-    { value: "PARTIAL", label: "Partially Functional" },
-    { value: "NO", label: "Not Functional" },
+    { value: "YES", label: t.functionalStatus.YES },
+    { value: "PARTIAL", label: t.functionalStatus.PARTIAL },
+    { value: "NO", label: t.functionalStatus.NO },
   ];
 
   const conditionOptions = [
-    { value: "NEW", label: "New" },
-    { value: "LIKE_NEW", label: "Like New" },
-    { value: "VERY_GOOD", label: "Very Good" },
-    { value: "GOOD", label: "Good" },
-    { value: "ACCEPTABLE", label: "Acceptable" },
-    { value: "FOR_PARTS", label: "For Parts" },
+    { value: "NEW", label: t.condition.NEW },
+    { value: "LIKE_NEW", label: t.condition.LIKE_NEW },
+    { value: "VERY_GOOD", label: t.condition.VERY_GOOD },
+    { value: "GOOD", label: t.condition.GOOD },
+    { value: "ACCEPTABLE", label: t.condition.ACCEPTABLE },
+    { value: "FOR_PARTS", label: t.condition.FOR_PARTS },
   ];
 
   const rarityOptions = [
-    { value: "COMMON", label: "Common" },
-    { value: "UNCOMMON", label: "Uncommon" },
-    { value: "RARE", label: "Rare" },
-    { value: "VERY_RARE", label: "Very Rare" },
-    { value: "EXTREMELY_RARE", label: "Extremely Rare" },
+    { value: "COMMON", label: t.rarity.COMMON },
+    { value: "UNCOMMON", label: t.rarity.UNCOMMON },
+    { value: "RARE", label: t.rarity.RARE },
+    { value: "VERY_RARE", label: t.rarity.VERY_RARE },
+    { value: "EXTREMELY_RARE", label: t.rarity.EXTREMELY_RARE },
   ];
 
   const handleCategoryChange = (categoryId: number) => {
@@ -150,7 +152,7 @@ export function DeviceFilterPanel({
       <div className="bg-[var(--card)] rounded shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto card-retro">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">Filter Devices</h2>
+            <h2 className="text-lg font-semibold text-[var(--foreground)]">{t.filter.title}</h2>
             <button
               onClick={onClose}
               className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -163,7 +165,7 @@ export function DeviceFilterPanel({
 
           {/* Status */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Status</h3>
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">{t.filter.status}</h3>
             <div className="space-y-2">
               {statusOptions.map((status) => (
                 <label key={status.value} className="flex items-center">
@@ -183,13 +185,13 @@ export function DeviceFilterPanel({
 
           {/* Categories */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Category</h3>
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">{t.filter.category}</h3>
             <select
               value={localFilters.categoryIds[0] || ''}
               onChange={(e) => handleCategoryChange(parseInt(e.target.value) || 0)}
               className="select-flat w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--ring)] text-[var(--foreground)]"
             >
-              <option value="">All Categories</option>
+              <option value="">{t.filter.allCategories}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -200,13 +202,13 @@ export function DeviceFilterPanel({
 
           {/* Functional Status */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Functional Status</h3>
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">{t.filter.functionalStatus}</h3>
             <select
               value={localFilters.functionalStatuses[0] || ''}
               onChange={(e) => handleFunctionalStatusChange(e.target.value)}
               className="select-flat w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--ring)] text-[var(--foreground)]"
             >
-              <option value="">All Functional Statuses</option>
+              <option value="">{t.filter.allFunctionalStatuses}</option>
               {functionalStatusOptions.map((status) => (
                 <option key={status.value} value={status.value}>
                   {status.label}
@@ -217,7 +219,7 @@ export function DeviceFilterPanel({
 
           {/* Condition */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Condition</h3>
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">{t.filter.condition}</h3>
             <div className="space-y-2">
               {conditionOptions.map((condition) => (
                 <label key={condition.value} className="flex items-center">
@@ -237,7 +239,7 @@ export function DeviceFilterPanel({
 
           {/* Rarity */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Rarity</h3>
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">{t.filter.rarity}</h3>
             <div className="space-y-2">
               {rarityOptions.map((rarity) => (
                 <label key={rarity.value} className="flex items-center">
@@ -257,7 +259,7 @@ export function DeviceFilterPanel({
 
           {/* Sort By */}
           <div className="mb-4">
-            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Sort By</h3>
+            <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">{t.filter.sortBy}</h3>
             <select
               value={localSortColumn}
               onChange={(e) => setLocalSortColumn(e.target.value as SortColumn)}
@@ -277,13 +279,13 @@ export function DeviceFilterPanel({
               onClick={() => setLocalSortDirection('asc')}
               className={`flex-1 py-1.5 text-sm rounded border transition-colors ${localSortDirection === 'asc' ? 'bg-[var(--apple-blue)] text-white border-[#007acc]' : 'btn-retro text-[var(--foreground)]'}`}
             >
-              ↑ Ascending
+              {t.filter.ascending}
             </button>
             <button
               onClick={() => setLocalSortDirection('desc')}
               className={`flex-1 py-1.5 text-sm rounded border transition-colors ${localSortDirection === 'desc' ? 'bg-[var(--apple-blue)] text-white border-[#007acc]' : 'btn-retro text-[var(--foreground)]'}`}
             >
-              ↓ Descending
+              {t.filter.descending}
             </button>
           </div>
 
@@ -293,13 +295,13 @@ export function DeviceFilterPanel({
               onClick={handleClear}
               className="btn-retro px-4 py-2 text-sm font-medium text-[var(--foreground)]"
             >
-              Clear All
+              {t.filter.clearAll}
             </button>
             <button
               onClick={handleApply}
               className="px-4 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc]"
             >
-              Apply Filters
+              {t.filter.applyFilters}
             </button>
           </div>
         </div>

@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- i18n infrastructure: LANGUAGE env var (en/de) controls UI language across web app; enum labels (status, condition, rarity, functional status) and filter panel now fully translated
+
 ---
 
 ## [1.0.7] - 2026-04-03

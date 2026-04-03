@@ -6,6 +6,7 @@ import { API_BASE_URL } from "../lib/config";
 import { SortColumn } from "./DeviceFilterPanel";
 import { useIsDarkMode } from "../lib/useIsDarkMode";
 import { pickThumbnail } from "../lib/pickThumbnail";
+import { useT } from "../i18n/context";
 
 interface DeviceTableProps {
   devices: any[];
@@ -17,6 +18,7 @@ interface DeviceTableProps {
 export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }: DeviceTableProps) {
   const router = useRouter();
   const isDark = useIsDarkMode();
+  const t = useT();
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -207,15 +209,8 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
             VERY_RARE: 'text-blue-500',
             EXTREMELY_RARE: 'text-purple-500',
           };
-          const rarityLabels: Record<string, string> = {
-            COMMON: 'Common',
-            UNCOMMON: 'Uncommon',
-            RARE: 'Rare',
-            VERY_RARE: 'Very Rare',
-            EXTREMELY_RARE: 'Extremely Rare',
-          };
           const color = rarityColors[device.rarity] ?? 'text-gray-400';
-          const label = rarityLabels[device.rarity] ?? device.rarity;
+          const label = t.rarity[device.rarity as keyof typeof t.rarity] ?? device.rarity;
           return (
             <span title={`Rarity: ${label}`}>
               <svg className={`w-5 h-5 ${color}`} fill="currentColor" viewBox="0 0 24 24">
@@ -284,43 +279,43 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
       case 'COLLECTION':
         return (
           <span className="text-green-600 dark:text-green-400 font-medium text-xs">
-            Available
+            {t.card.available}
           </span>
         );
       case 'FOR_SALE':
         return (
           <span className="text-orange-600 dark:text-orange-400 font-medium text-xs">
-            For Sale
+            {t.status.FOR_SALE}
           </span>
         );
       case 'PENDING_SALE':
         return (
           <span className="text-yellow-600 dark:text-yellow-400 font-medium text-xs">
-            Pending
+            {t.card.pending}
           </span>
         );
       case 'SOLD':
         return (
           <span className="text-red-600 dark:text-red-400 font-medium text-xs">
-            Sold
+            {t.status.SOLD}
           </span>
         );
       case 'DONATED':
         return (
           <span className="text-purple-600 dark:text-purple-400 font-medium text-xs">
-            Donated
+            {t.status.DONATED}
           </span>
         );
       case 'IN_REPAIR':
         return (
           <span className="text-teal-600 dark:text-teal-400 font-medium text-xs">
-            In Repair
+            {t.status.IN_REPAIR}
           </span>
         );
       case 'RETURNED':
         return (
           <span className="text-red-600 dark:text-red-400 font-medium text-xs">
-            Returned
+            {t.status.RETURNED}
           </span>
         );
       default:

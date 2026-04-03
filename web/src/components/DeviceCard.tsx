@@ -4,6 +4,7 @@ import Link from "next/link";
 import { API_BASE_URL } from "../lib/config";
 import { useIsDarkMode } from "../lib/useIsDarkMode";
 import { pickThumbnail } from "../lib/pickThumbnail";
+import { useT } from "../i18n/context";
 
 interface DeviceCardProps {
     device: {
@@ -37,20 +38,9 @@ interface DeviceCardProps {
     };
 }
 
-function conditionLabel(condition: string): string {
-    const labels: Record<string, string> = {
-        NEW: "New",
-        LIKE_NEW: "Like New",
-        VERY_GOOD: "Very Good",
-        GOOD: "Good",
-        ACCEPTABLE: "Acceptable",
-        FOR_PARTS: "For Parts",
-    };
-    return labels[condition] ?? condition;
-}
-
 export function DeviceCard({ device }: DeviceCardProps) {
     const isDark = useIsDarkMode();
+    const t = useT();
     const thumbImage = pickThumbnail(device.images, isDark);
     const thumbnail = thumbImage?.thumbnailPath || thumbImage?.path;
 
@@ -128,43 +118,43 @@ export function DeviceCard({ device }: DeviceCardProps) {
             case 'COLLECTION':
                 return device.estimatedValue ? (
                     <span className="text-green-600 dark:text-green-400 font-medium">
-                        Est. Value: {formatPrice(device.estimatedValue)}
+                        {t.card.estValue}: {formatPrice(device.estimatedValue)}
                     </span>
                 ) : null;
             case 'FOR_SALE':
                 return (
                     <span className="text-orange-600 dark:text-orange-400 font-medium">
-                        For Sale: {formatPrice(device.listPrice) || 'TBD'}
+                        {t.status.FOR_SALE}: {formatPrice(device.listPrice) || 'TBD'}
                     </span>
                 );
             case 'PENDING_SALE':
                 return (
                     <span className="text-yellow-600 dark:text-yellow-400 font-medium">
-                        Pending: {formatPrice(device.listPrice) || 'TBD'}
+                        {t.card.pending}: {formatPrice(device.listPrice) || 'TBD'}
                     </span>
                 );
             case 'SOLD':
                 return (
                     <span className="text-red-600 dark:text-red-400 font-medium">
-                        Sold: {formatPrice(device.soldPrice) || 'N/A'}
+                        {t.status.SOLD}: {formatPrice(device.soldPrice) || 'N/A'}
                     </span>
                 );
             case 'DONATED':
                 return (
                     <span className="text-purple-600 dark:text-purple-400 font-medium">
-                        Donated
+                        {t.status.DONATED}
                     </span>
                 );
             case 'IN_REPAIR':
                 return (
                     <span className="text-amber-600 dark:text-amber-400 font-medium">
-                        In Repair
+                        {t.status.IN_REPAIR}
                     </span>
                 );
             case 'RETURNED':
                 return (
                     <span className="text-teal-600 dark:text-teal-400 font-medium">
-                        Returned
+                        {t.status.RETURNED}
                     </span>
                 );
             default:
@@ -207,15 +197,8 @@ export function DeviceCard({ device }: DeviceCardProps) {
                     VERY_RARE: 'text-blue-500',
                     EXTREMELY_RARE: 'text-purple-500',
                 };
-                const rarityLabels: Record<string, string> = {
-                    COMMON: 'Common',
-                    UNCOMMON: 'Uncommon',
-                    RARE: 'Rare',
-                    VERY_RARE: 'Very Rare',
-                    EXTREMELY_RARE: 'Extremely Rare',
-                };
                 const color = rarityColors[device.rarity] ?? 'text-gray-400';
-                const label = rarityLabels[device.rarity] ?? device.rarity;
+                const label = t.rarity[device.rarity as keyof typeof t.rarity] ?? device.rarity;
                 return (
                     <span title={`Rarity: ${label}`}>
                         <svg className={`w-4 h-4 ${color}`} fill="currentColor" viewBox="0 0 24 24">
@@ -286,7 +269,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                             className="h-full w-full object-cover transition-transform group-hover:scale-105 rounded-lg"
                         />
                     ) : (
-                        <span className="text-xs">No Image</span>
+                        <span className="text-xs">{t.card.noImage}</span>
                     )}
                 </div>
                 <div className="absolute top-1 right-1 flex flex-col items-end gap-1">
@@ -320,7 +303,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 </p>
                 {device.condition && (
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        {conditionLabel(device.condition)}
+                        {t.condition[device.condition as keyof typeof t.condition] ?? device.condition}
                     </p>
                 )}
                 <div className="text-xs mb-1">
