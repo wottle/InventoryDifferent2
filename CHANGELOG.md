@@ -6,6 +6,14 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.0.7] - 2026-04-03
+
+### Changed
+- Rarity color scheme: common=gray, uncommon=green, rare=sage, very rare=blue, extremely rare=purple (web and iOS)
+- Rarity icon moved to right of label on web device detail screen
+
+---
+
 ## [1.0.6] - 2026-04-03
 
 ### Changed

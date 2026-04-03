@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.0.6';
+export const APP_VERSION = '1.0.7';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,16 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.0.7',
+    date: '2026-04-03',
+    added: [],
+    changed: [
+      'Rarity color scheme: common=gray, uncommon=green, rare=sage, very rare=blue, extremely rare=purple (web and iOS)',
+      'Rarity icon moved to right of label on web device detail screen',
+    ],
     fixed: [],
   },
   {
