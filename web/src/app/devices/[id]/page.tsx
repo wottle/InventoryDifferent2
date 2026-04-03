@@ -1906,7 +1906,7 @@ export default function DeviceDetail() {
                                 label="Rarity"
                                 value={device.rarity ? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null}
                                 icon={device.rarity ? (() => {
-                                    const colors: Record<string, string> = { COMMON: 'text-gray-400', UNCOMMON: 'text-green-500', RARE: 'text-[#8fbc8f]', VERY_RARE: 'text-blue-500', EXTREMELY_RARE: 'text-purple-500' };
+                                    const colors: Record<string, string> = { COMMON: 'text-gray-400', UNCOMMON: 'text-yellow-400', RARE: 'text-green-500', VERY_RARE: 'text-blue-500', EXTREMELY_RARE: 'text-purple-500' };
                                     return <svg className={`w-3.5 h-3.5 flex-shrink-0 ${colors[device.rarity] ?? 'text-gray-400'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/></svg>;
                                 })() : undefined}
                             />
