@@ -44,6 +44,8 @@ struct DeviceGridItemView: View {
                     .foregroundColor(.secondary)
                     .lineLimit(1)
 
+                StatusIndicatorsRow(device: device)
+
                 ValueSaleInfo(device: device)
                     .font(.caption2)
             }

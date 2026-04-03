@@ -872,20 +872,42 @@ struct DeviceDetailView: View {
                 DetailRow(label: "Serial Number", value: device.serialNumber)
                 DetailRow(label: "Release Year", value: device.releaseYear.map { String($0) })
                 DetailRow(label: "Location", value: device.location)
-                DetailRow(label: "Functional Status", value: device.functionalStatus.displayName)
+                HStack {
+                    Text("Functional Status")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    FunctionalStatusIcon(status: device.functionalStatus)
+                    Spacer()
+                    Text(device.functionalStatus.displayName)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .padding(.vertical, 8)
                 if let condition = device.condition {
                     DetailRow(label: "Condition", value: condition.displayName)
                 }
                 if let rarity = device.rarity {
+                    let rarityColor: Color = {
+                        switch rarity {
+                        case .COMMON: return Color.gray.opacity(0.4)
+                        case .UNCOMMON: return Color.yellow
+                        case .RARE: return Color(red: 0.55, green: 0.75, blue: 0.58)
+                        case .VERY_RARE: return Color.green
+                        case .EXTREMELY_RARE: return Color(red: 0.0, green: 0.45, blue: 0.1)
+                        }
+                    }()
                     HStack {
                         Text("Rarity")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(rarityColor)
                         Spacer()
                         Text(rarity.displayName)
                             .font(.subheadline)
                             .fontWeight(.medium)
-                            .foregroundColor(rarity.isRare ? .yellow : .primary)
+                            .foregroundColor(rarityColor)
                     }
                     .padding(.vertical, 8)
                 }
@@ -966,7 +988,19 @@ struct DeviceDetailView: View {
                         DetailRow(label: "WiFi Enabled", value: isWifi ? "Yes" : "No")
                     }
                     if let isPram = device.isPramBatteryRemoved {
-                        DetailRow(label: "PRAM Battery Removed", value: isPram ? "Yes" : "No")
+                        HStack {
+                            Text("PRAM Battery Removed")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Image(systemName: "battery.100")
+                                .font(.system(size: 12))
+                                .foregroundColor(isPram ? .green : .red)
+                            Spacer()
+                            Text(isPram ? "Yes" : "No")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                        .padding(.vertical, 8)
                     }
                 }
             }

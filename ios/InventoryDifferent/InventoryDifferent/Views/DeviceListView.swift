@@ -333,21 +333,20 @@ struct StatusIndicatorsRow: View {
             // Functional Status
             FunctionalStatusIcon(status: device.functionalStatus)
             
-            // Rarity - custom faceted gem shape
+            // Rarity - crown icon
             if let rarity = device.rarity {
                 let rarityColor: Color = {
                     switch rarity {
                     case .COMMON: return .gray.opacity(0.4)
                     case .UNCOMMON: return .yellow
-                    case .RARE: return Color(red: 0.4, green: 0.85, blue: 0.4)
+                    case .RARE: return Color(red: 0.55, green: 0.75, blue: 0.58)
                     case .VERY_RARE: return .green
-                    case .EXTREMELY_RARE: return Color(red: 0.2, green: 1.0, blue: 0.6)
+                    case .EXTREMELY_RARE: return Color(red: 0.0, green: 0.45, blue: 0.1)
                     }
                 }()
-                GemShape()
-                    .fill(style: FillStyle(eoFill: true))
+                Image(systemName: "crown.fill")
+                    .font(.system(size: 12))
                     .foregroundColor(rarityColor)
-                    .frame(width: 12, height: 12)
                     .help("Rarity: \(rarity.displayName)")
             }
 
@@ -394,57 +393,6 @@ struct FunctionalStatusIcon: View {
                 .font(.system(size: 12))
                 .foregroundColor(.red)
         }
-    }
-}
-
-// Gem shape matching the web SVG icon (flat-top, faceted cut gem)
-struct GemShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        let sx = rect.width / 24
-        let sy = rect.height / 24
-        func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
-            CGPoint(x: rect.minX + x * sx, y: rect.minY + y * sy)
-        }
-        var path = Path()
-        // Outer silhouette: flat top, wide girdle at y=8, pointed bottom
-        path.move(to: pt(6, 2))
-        path.addLine(to: pt(2, 8))
-        path.addLine(to: pt(12, 22))
-        path.addLine(to: pt(22, 8))
-        path.addLine(to: pt(18, 2))
-        path.closeSubpath()
-        // Top-left facet
-        path.move(to: pt(5.65, 4))
-        path.addLine(to: pt(8.54, 4))
-        path.addLine(to: pt(7, 7.3))
-        path.closeSubpath()
-        // Top-center facet
-        path.move(to: pt(9.46, 4))
-        path.addLine(to: pt(14.54, 4))
-        path.addLine(to: pt(12, 7.69))
-        path.closeSubpath()
-        // Top-right facet
-        path.move(to: pt(13, 4))
-        path.addLine(to: pt(15.89, 4))
-        path.addLine(to: pt(17, 7.3))
-        path.addLine(to: pt(13.54, 4))
-        path.closeSubpath()
-        // Bottom-left facet
-        path.move(to: pt(4.5, 8))
-        path.addLine(to: pt(7.59, 8))
-        path.addLine(to: pt(10.09, 16.5))
-        path.closeSubpath()
-        // Bottom-center facet
-        path.move(to: pt(10.12, 8))
-        path.addLine(to: pt(13.88, 8))
-        path.addLine(to: pt(12, 16.5))
-        path.closeSubpath()
-        // Bottom-right facet
-        path.move(to: pt(16.41, 8))
-        path.addLine(to: pt(19.5, 8))
-        path.addLine(to: pt(13.91, 16.5))
-        path.closeSubpath()
-        return path
     }
 }
 

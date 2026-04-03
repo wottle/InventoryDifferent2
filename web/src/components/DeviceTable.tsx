@@ -203,9 +203,9 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
           const rarityColors: Record<string, string> = {
             COMMON: 'text-gray-400 dark:text-gray-500',
             UNCOMMON: 'text-yellow-500',
-            RARE: 'text-green-400',
+            RARE: 'text-green-300 dark:text-green-400',
             VERY_RARE: 'text-green-500',
-            EXTREMELY_RARE: 'text-emerald-400',
+            EXTREMELY_RARE: 'text-green-700 dark:text-green-600',
           };
           const rarityLabels: Record<string, string> = {
             COMMON: 'Common',
@@ -219,7 +219,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
           return (
             <span title={`Rarity: ${label}`}>
               <svg className={`w-5 h-5 ${color}`} fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 2L2 8l10 14L22 8l-4-6H6zm-.35 2h2.89L7 7.3 5.65 4zM4.5 8h3.09l2.5 8.5L4.5 8zm5.62 0h3.76L12 16.5 10.12 8zM13 4h2.89L17 7.3 13.54 4H13zm3.41 4H19.5l-5.59 8.5L16.41 8zM9.46 4h5.08L12 7.69 9.46 4z"/>
+                <path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/>
               </svg>
             </span>
           );

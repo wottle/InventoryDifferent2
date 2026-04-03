@@ -384,11 +384,14 @@ function StatusIndicatorIcons({ device }: { device: any }) {
     );
 }
 
-function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
+function DetailRow({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) {
     if (!value) return null;
     return (
         <div className="flex justify-between py-3 border-b border-[var(--border)] last:border-0">
-            <dt className="text-sm text-[var(--muted-foreground)]">{label}</dt>
+            <dt className="text-sm text-[var(--muted-foreground)] flex items-center gap-1.5">
+                {icon}
+                {label}
+            </dt>
             <dd className="text-sm font-medium text-[var(--foreground)]">{value}</dd>
         </div>
     );
@@ -1889,7 +1892,24 @@ export default function DeviceDetail() {
                             <DetailRow label="Serial Number" value={device.serialNumber} />
                             <DetailRow label="Release Year" value={device.releaseYear} />
                             <DetailRow label="Condition" value={device.condition ? device.condition.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null} />
-                            <DetailRow label="Rarity" value={device.rarity ? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null} />
+                            <DetailRow
+                                label="Functional Status"
+                                value={device.functionalStatus === 'YES' ? 'Fully Functional' : device.functionalStatus === 'PARTIAL' ? 'Partially Functional' : device.functionalStatus === 'NO' ? 'Not Functional' : null}
+                                icon={
+                                    device.functionalStatus === 'YES' ? <svg className="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83v7.84C7 18.95 8.05 20 9.34 20h8.11c.7 0 1.36-.37 1.72-.97l2.66-6.15z"/></svg>
+                                    : device.functionalStatus === 'PARTIAL' ? <svg className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                                    : device.functionalStatus === 'NO' ? <svg className="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+                                    : undefined
+                                }
+                            />
+                            <DetailRow
+                                label="Rarity"
+                                value={device.rarity ? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : null}
+                                icon={device.rarity ? (() => {
+                                    const colors: Record<string, string> = { COMMON: 'text-gray-400', UNCOMMON: 'text-yellow-500', RARE: 'text-green-300', VERY_RARE: 'text-green-500', EXTREMELY_RARE: 'text-green-700' };
+                                    return <svg className={`w-3.5 h-3.5 flex-shrink-0 ${colors[device.rarity] ?? 'text-gray-400'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/></svg>;
+                                })() : undefined}
+                            />
                             <DetailRow label="Location" value={device.location} />
                             {device.lastPowerOnDate && (
                                 <DetailRow
@@ -1921,7 +1941,11 @@ export default function DeviceDetail() {
                                     <DetailRow label="WiFi Enabled" value={device.isWifiEnabled ? "Yes" : "No"} />
                                 )}
                                 {device.isPramBatteryRemoved !== null && (
-                                    <DetailRow label="PRAM Battery Removed" value={device.isPramBatteryRemoved ? "Yes" : "No"} />
+                                    <DetailRow
+                                        label="PRAM Battery Removed"
+                                        value={device.isPramBatteryRemoved ? "Yes" : "No"}
+                                        icon={<svg className={`w-3.5 h-3.5 flex-shrink-0 ${device.isPramBatteryRemoved ? 'text-green-500' : 'text-red-500'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>}
+                                    />
                                 )}
                             </dl>
                         </div>
