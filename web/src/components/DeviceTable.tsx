@@ -202,8 +202,8 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         {device.rarity && (() => {
           const rarityColors: Record<string, string> = {
             COMMON: 'text-gray-400 dark:text-gray-500',
-            UNCOMMON: 'text-green-500',
-            RARE: 'text-[#8fbc8f]',
+            UNCOMMON: 'text-yellow-400',
+            RARE: 'text-green-500',
             VERY_RARE: 'text-blue-500',
             EXTREMELY_RARE: 'text-purple-500',
           };

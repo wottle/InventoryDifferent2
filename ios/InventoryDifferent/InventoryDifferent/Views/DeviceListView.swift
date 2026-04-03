@@ -337,11 +337,11 @@ struct StatusIndicatorsRow: View {
             if let rarity = device.rarity {
                 let rarityColor: Color = {
                     switch rarity {
-                    case .COMMON: return .gray.opacity(0.4)
-                    case .UNCOMMON: return .green
-                    case .RARE: return Color(red: 0.56, green: 0.74, blue: 0.56)
-                    case .VERY_RARE: return .blue
-                    case .EXTREMELY_RARE: return .purple
+                    case .COMMON: return Color.gray.opacity(0.4)
+                    case .UNCOMMON: return Color.yellow
+                    case .RARE: return Color.green
+                    case .VERY_RARE: return Color.blue
+                    case .EXTREMELY_RARE: return Color.purple
                     }
                 }()
                 Image(systemName: "crown.fill")
