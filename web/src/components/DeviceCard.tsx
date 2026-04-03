@@ -198,6 +198,33 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 </span>
             )}
 
+            {/* Rarity - diamond icon, only shown when rarity is set */}
+            {device.rarity && (() => {
+                const rarityColors: Record<string, string> = {
+                    COMMON: 'text-gray-400 dark:text-gray-500',
+                    UNCOMMON: 'text-yellow-500',
+                    RARE: 'text-green-400',
+                    VERY_RARE: 'text-green-500',
+                    EXTREMELY_RARE: 'text-emerald-400',
+                };
+                const rarityLabels: Record<string, string> = {
+                    COMMON: 'Common',
+                    UNCOMMON: 'Uncommon',
+                    RARE: 'Rare',
+                    VERY_RARE: 'Very Rare',
+                    EXTREMELY_RARE: 'Extremely Rare',
+                };
+                const color = rarityColors[device.rarity] ?? 'text-gray-400';
+                const label = rarityLabels[device.rarity] ?? device.rarity;
+                return (
+                    <span title={`Rarity: ${label}`}>
+                        <svg className={`w-4 h-4 ${color}`} fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 2L2 8l10 14L22 8l-4-6H6zm-.35 2h2.89L7 7.3 5.65 4zM4.5 8h3.09l2.5 8.5L4.5 8zm5.62 0h3.76L12 16.5 10.12 8zM13 4h2.89L17 7.3 13.54 4H13zm3.41 4H19.5l-5.59 8.5L16.41 8zM9.46 4h5.08L12 7.69 9.46 4z"/>
+                        </svg>
+                    </span>
+                );
+            })()}
+
             {/* Asset Tagged - tag icon */}
             <span title={device.isAssetTagged ? 'Asset Tagged' : 'Not Asset Tagged'}>
                 <svg 
@@ -237,9 +264,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
 
             {/* Favorite - star icon */}
             <span title={device.isFavorite ? 'Favorite' : 'Not a Favorite'}>
-                <svg 
-                    className={`w-4 h-4 ${device.isFavorite ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`} 
-                    fill="currentColor" 
+                <svg
+                    className={`w-4 h-4 ${device.isFavorite ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`}
+                    fill="currentColor"
                     viewBox="0 0 24 24"
                 >
                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
@@ -263,11 +290,6 @@ export function DeviceCard({ device }: DeviceCardProps) {
                     )}
                 </div>
                 <div className="absolute top-1 right-1 flex flex-col items-end gap-1">
-                    {(device.rarity === "VERY_RARE" || device.rarity === "EXTREMELY_RARE") && (
-                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm">
-                            ✦ {device.rarity === "EXTREMELY_RARE" ? "Extremely Rare" : "Very Rare"}
-                        </span>
-                    )}
                     <span
                         className={`text-[10px] font-bold px-1 py-0.5 rounded shadow-sm bg-gray-700 ${
                             device.status === "COLLECTION" ? "text-[var(--apple-green)]" :

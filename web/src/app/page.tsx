@@ -281,7 +281,7 @@ export default function Home() {
           return secondarySort();
         }
         case 'rarity': {
-          const rarityOrder = ['COMMON', 'UNCOMMON', 'RARE', 'VERY_RARE', 'EXTREMELY_RARE'];
+          const rarityOrder = ['EXTREMELY_RARE', 'VERY_RARE', 'RARE', 'UNCOMMON', 'COMMON'];
           const aIdx = rarityOrder.indexOf(a.rarity || '');
           const bIdx = rarityOrder.indexOf(b.rarity || '');
           const diff = (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);

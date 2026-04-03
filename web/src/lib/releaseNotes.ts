@@ -20,7 +20,8 @@ export const releaseNotes: ReleaseEntry[] = [
     version: '1.0.4',
     date: '2026-04-03',
     added: [
-      'Rarity gem icon on device cards and list view — color-coded from gray (common) to yellow (uncommon) to green (rare); also shown in iOS device list',
+      'Rarity diamond icon in status indicators — color-coded from gray (common) to yellow (uncommon) to green (rare); shown on web cards, list view, and iOS device list',
+      'iOS: sort by Condition and Rarity',
     ],
     changed: [],
     fixed: [

@@ -15,6 +15,8 @@ enum SortOption: String, CaseIterable {
     case manufacturer = "Manufacturer"
     case releaseYear = "Release Year"
     case status = "Status"
+    case condition = "Condition"
+    case rarity = "Rarity"
 }
 
 enum SortDirection: String, CaseIterable {
@@ -173,6 +175,43 @@ class DeviceStore: ObservableObject {
                 }
                 let aRank = statusRank(a.status)
                 let bRank = statusRank(b.status)
+                if aRank != bRank {
+                    primaryComparison = aRank < bRank ? .orderedAscending : .orderedDescending
+                } else {
+                    primaryComparison = .orderedSame
+                }
+            case .condition:
+                func conditionRank(_ c: Condition?) -> Int {
+                    switch c {
+                    case .NEW: return 0
+                    case .LIKE_NEW: return 1
+                    case .VERY_GOOD: return 2
+                    case .GOOD: return 3
+                    case .ACCEPTABLE: return 4
+                    case .FOR_PARTS: return 5
+                    case nil: return 99
+                    }
+                }
+                let aRank = conditionRank(a.condition)
+                let bRank = conditionRank(b.condition)
+                if aRank != bRank {
+                    primaryComparison = aRank < bRank ? .orderedAscending : .orderedDescending
+                } else {
+                    primaryComparison = .orderedSame
+                }
+            case .rarity:
+                func rarityRank(_ r: Rarity?) -> Int {
+                    switch r {
+                    case .EXTREMELY_RARE: return 0
+                    case .VERY_RARE: return 1
+                    case .RARE: return 2
+                    case .UNCOMMON: return 3
+                    case .COMMON: return 4
+                    case nil: return 99
+                    }
+                }
+                let aRank = rarityRank(a.rarity)
+                let bRank = rarityRank(b.rarity)
                 if aRank != bRank {
                     primaryComparison = aRank < bRank ? .orderedAscending : .orderedDescending
                 } else {

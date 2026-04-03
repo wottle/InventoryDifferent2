@@ -141,7 +141,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         break;
       case 'rarity':
         {
-          const rarityOrder = ['COMMON', 'UNCOMMON', 'RARE', 'VERY_RARE', 'EXTREMELY_RARE'];
+          const rarityOrder = ['EXTREMELY_RARE', 'VERY_RARE', 'RARE', 'UNCOMMON', 'COMMON'];
           const aIdx = rarityOrder.indexOf(a.rarity || '');
           const bIdx = rarityOrder.indexOf(b.rarity || '');
           primaryResult = (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
@@ -198,11 +198,38 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         {/* Functional Status - thumbs up/caution/thumbs down */}
         {getFunctionalStatusIcon(device.functionalStatus)}
 
+        {/* Rarity - diamond icon, only shown when rarity is set */}
+        {device.rarity && (() => {
+          const rarityColors: Record<string, string> = {
+            COMMON: 'text-gray-400 dark:text-gray-500',
+            UNCOMMON: 'text-yellow-500',
+            RARE: 'text-green-400',
+            VERY_RARE: 'text-green-500',
+            EXTREMELY_RARE: 'text-emerald-400',
+          };
+          const rarityLabels: Record<string, string> = {
+            COMMON: 'Common',
+            UNCOMMON: 'Uncommon',
+            RARE: 'Rare',
+            VERY_RARE: 'Very Rare',
+            EXTREMELY_RARE: 'Extremely Rare',
+          };
+          const color = rarityColors[device.rarity] ?? 'text-gray-400';
+          const label = rarityLabels[device.rarity] ?? device.rarity;
+          return (
+            <span title={`Rarity: ${label}`}>
+              <svg className={`w-5 h-5 ${color}`} fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 2L2 8l10 14L22 8l-4-6H6zm-.35 2h2.89L7 7.3 5.65 4zM4.5 8h3.09l2.5 8.5L4.5 8zm5.62 0h3.76L12 16.5 10.12 8zM13 4h2.89L17 7.3 13.54 4H13zm3.41 4H19.5l-5.59 8.5L16.41 8zM9.46 4h5.08L12 7.69 9.46 4z"/>
+              </svg>
+            </span>
+          );
+        })()}
+
         {/* Asset Tagged - tag icon */}
         <span title={device.isAssetTagged ? 'Asset Tagged' : 'Not Asset Tagged'}>
-          <svg 
-            className={`w-5 h-5 ${device.isAssetTagged ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`} 
-            fill="currentColor" 
+          <svg
+            className={`w-5 h-5 ${device.isAssetTagged ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}
+            fill="currentColor"
             viewBox="0 0 24 24"
           >
             <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
@@ -239,9 +266,9 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
 
         {/* Favorite - star icon */}
         <span title={device.isFavorite ? 'Favorite' : 'Not a Favorite'}>
-          <svg 
-            className={`w-5 h-5 ${device.isFavorite ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`} 
-            fill="currentColor" 
+          <svg
+            className={`w-5 h-5 ${device.isFavorite ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`}
+            fill="currentColor"
             viewBox="0 0 24 24"
           >
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>

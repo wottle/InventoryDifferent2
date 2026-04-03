@@ -9,7 +9,8 @@ All notable changes to InventoryDifferent will be documented here.
 ## [1.0.4] - 2026-04-03
 
 ### Added
-- Rarity gem icon on device cards and list view — color-coded from gray (common) to yellow (uncommon) to green (rare); also shown in iOS device list
+- Rarity diamond icon in status indicators — color-coded from gray (common) to yellow (uncommon) to green (rare); shown on web cards, list view, and iOS device list
+- iOS: sort by Condition and Rarity
 
 ### Fixed
 - Sort by condition and rarity now works — fields were missing from the device list query
