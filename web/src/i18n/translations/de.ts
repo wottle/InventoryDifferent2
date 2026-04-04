@@ -111,6 +111,14 @@ export const de: Translations = {
     sort: "Sortierung",
     type: "Typ",
   },
+  scanner: {
+    title: "Barcode scannen",
+    close: "Schließen",
+    cancel: "Abbrechen",
+    pointCamera: "Richten Sie die Kamera auf den Barcode.",
+    notSupported: "Barcode-Scannen wird von diesem Browser nicht unterstützt.",
+    cameraError: "Kamera kann nicht zugegriffen werden.",
+  },
   nav: {
     wishlist: "Wunschliste",
     financials: "Finanzen",

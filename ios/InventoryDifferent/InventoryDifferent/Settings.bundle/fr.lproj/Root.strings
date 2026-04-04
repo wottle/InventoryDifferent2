@@ -2,10 +2,10 @@
 "APP_SETTINGS_GROUP" = "InventoryDifferent";
 
 /* Language picker label */
-"LANGUAGE_TITLE" = "Language";
+"LANGUAGE_TITLE" = "Langue";
 
 /* Language options */
-"LANGUAGE_SYSTEM" = "System Default";
+"LANGUAGE_SYSTEM" = "Par défaut du système";
 "LANGUAGE_EN" = "English";
 "LANGUAGE_DE" = "Deutsch";
 "LANGUAGE_FR" = "Français";

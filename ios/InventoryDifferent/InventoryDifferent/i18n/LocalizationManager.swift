@@ -21,7 +21,7 @@ final class LocalizationManager: ObservableObject {
     static let userDefaultsKey = "app_language"
 
     /// Languages the app has full translations for.
-    static let supported = ["en", "de"]
+    static let supported = ["en", "de", "fr"]
 
     /// The active translations object. Views observe this via @EnvironmentObject.
     @Published private(set) var t: Translations
@@ -60,7 +60,11 @@ final class LocalizationManager: ObservableObject {
     }
 
     static func translations(for lang: String) -> Translations {
-        lang == "de" ? .de : .en
+        switch lang {
+        case "de": return .de
+        case "fr": return .fr
+        default: return .en
+        }
     }
 
     // MARK: - Reload on UserDefaults change

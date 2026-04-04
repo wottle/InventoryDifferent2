@@ -242,7 +242,12 @@ struct Translations {
     // MARK: - Barcode Scanner
 
     struct BarcodeScannerT {
+        let title: String
+        let cancel: String
         let lookingUp: String
+        let pointCamera: String
+        let scannedEmpty: String
+        let notFound: String
     }
 
     // MARK: - Timeline
@@ -260,7 +265,7 @@ struct Translations {
     // MARK: - Settings (in-app label for Settings app entry)
 
     struct SettingsT {
-        let languageLabel, system_, english, german: String
+        let languageLabel, system_, english, german, french: String
     }
 
     // MARK: - Root

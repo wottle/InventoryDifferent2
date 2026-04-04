@@ -182,7 +182,16 @@ struct FinancialsView: View {
                     lm.t.financials.netPositionLine: Color.blue
                 ])
                 .chartYAxis {
-                    AxisMarks(format: .currency(code: "USD"))
+                    let currencySymbol = lm.t.common.currencySymbol
+
+                    if( currencySymbol == "$") {
+                        AxisMarks(format: .currency(code: "USD"))
+                    } else if ( currencySymbol == "€") {
+                        AxisMarks(format: .currency(code: "EUR"))
+                    } else {
+                        AxisMarks(format: .currency(code: "USD"))
+
+                    }
                 }
                 .chartXAxis {
                     // Pick ~5 evenly spaced indices to label so the axis stays readable

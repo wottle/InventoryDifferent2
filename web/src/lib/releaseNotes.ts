@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.5';
+export const APP_VERSION = '1.1.6';
 
 export interface ReleaseEntry {
   version: string;
@@ -13,10 +13,24 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.1.6',
+    date: '2026-04-04',
+    added: [
+      'French language support (Français) — full translations for iOS app and web app',
+      'iOS: Settings.bundle now includes French language option',
+      'Web: French translation file (fr.ts) with complete UI translations',
+      'Documentation: language switching instructions added to README and CLAUDE.md',
+    ],
     changed: [
       'iOS: date fields now use app language locale (not device locale) in device detail, task rows, and note rows',
-      'iOS: currency symbol now respects app language setting (€ for German, $ for English)',
-      'iOS: add/edit device and edit device screens fully translated (en/de)',
+      'iOS: currency symbol now respects app language setting (€ for German/French, $ for English)',
+      'iOS: add/edit device and edit device screens fully translated (en/de/fr)',
+      'iOS: barcode scanner view fully translated (en/de/fr)',
+      'Web: barcode scanner modal fully translated (en/de/fr)',
     ],
     fixed: [],
   },

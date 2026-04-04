@@ -8,6 +8,7 @@ import SwiftUI
 struct AddEditWishlistItemView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var deviceStore: DeviceStore
+    @EnvironmentObject var lm: LocalizationManager
 
     let item: WishlistItem?
     let categories: [Category]
@@ -72,11 +73,12 @@ struct AddEditWishlistItemView: View {
     }
 
     var body: some View {
+        let t = lm.t
         NavigationStack {
             Form {
                 // Template picker
                 Section {
-                    TextField("Search templates...", text: $templateSearchText)
+                    TextField(t.addEditWishlist.searchTemplates, text: $templateSearchText)
                         .textInputAutocapitalization(.never)
                     if !filteredTemplates.isEmpty {
                         ForEach(filteredTemplates.prefix(5)) { template in
@@ -97,38 +99,38 @@ struct AddEditWishlistItemView: View {
                         }
                     }
                 } header: {
-                    Text("Template (Optional)")
+                    Text(t.addEditWishlist.templateOptional)
                 } footer: {
                     if selectedTemplate != nil {
-                        Text("Template applied. Modify any fields below.")
+                        Text(t.addEditWishlist.templateApplied)
                     } else if !templateSearchText.isEmpty && filteredTemplates.isEmpty {
-                        Text("No templates found")
+                        Text(t.addEditWishlist.noTemplates)
                     }
                 }
 
-                Section("Basic Info") {
-                    LabeledField(label: "Name", text: $name)
-                    LabeledField(label: "Additional Name", text: $additionalName)
-                    LabeledField(label: "Manufacturer", text: $manufacturer)
-                    LabeledField(label: "Model Number", text: $modelNumber)
-                    LabeledField(label: "Release Year", text: $releaseYear, keyboardType: .numberPad)
+                Section(t.addEditWishlist.basicInfo) {
+                    LabeledField(label: t.addEditWishlist.name, text: $name)
+                    LabeledField(label: t.addEditWishlist.additionalName, text: $additionalName)
+                    LabeledField(label: t.addEditWishlist.manufacturer, text: $manufacturer)
+                    LabeledField(label: t.addEditWishlist.modelNumber, text: $modelNumber)
+                    LabeledField(label: t.addEditWishlist.releaseYear, text: $releaseYear, keyboardType: .numberPad)
                 }
 
-                Section("Details") {
-                    Picker("Priority", selection: $priority) {
-                        Text("High").tag(1)
-                        Text("Medium").tag(2)
-                        Text("Low").tag(3)
+                Section(t.addEditWishlist.details) {
+                    Picker(t.addEditWishlist.priority, selection: $priority) {
+                        Text(t.priority.high).tag(1)
+                        Text(t.priority.medium).tag(2)
+                        Text(t.priority.low).tag(3)
                     }
 
-                    Picker("Category", selection: $selectedCategoryId) {
-                        Text("None").tag(Int?.none)
+                    Picker(t.addEditWishlist.category, selection: $selectedCategoryId) {
+                        Text(t.addEditWishlist.none_).tag(Int?.none)
                         ForEach(categories) { category in
                             Text(category.name).tag(Optional(category.id))
                         }
                     }
 
-                    LabeledField(label: "Group", text: $group)
+                    LabeledField(label: t.addEditWishlist.group, text: $group)
                     // Autocomplete suggestions
                     let suggestions = existingGroups.filter { g in
                         !g.isEmpty && (group.isEmpty || g.localizedCaseInsensitiveContains(group)) && g != group
@@ -150,27 +152,27 @@ struct AddEditWishlistItemView: View {
                         }
                     }
 
-                    LabeledField(label: "Target Price ($)", text: $targetPrice, prompt: "0.00", keyboardType: .decimalPad)
+                    LabeledField(label: t.addEditWishlist.targetPrice, text: $targetPrice, prompt: "0.00", keyboardType: .decimalPad)
                 }
 
-                Section("Source") {
-                    LabeledField(label: "Source URL", text: $sourceUrl, keyboardType: .URL)
-                    LabeledField(label: "Source Notes", text: $sourceNotes)
+                Section(t.addEditWishlist.source) {
+                    LabeledField(label: t.addEditWishlist.sourceURL, text: $sourceUrl, keyboardType: .URL)
+                    LabeledField(label: t.addEditWishlist.sourceNotes, text: $sourceNotes)
                 }
 
-                Section("Notes") {
-                    LabeledTextEditor(label: "Notes", text: $notes, placeholder: "Notes...")
+                Section(t.addEditWishlist.notes) {
+                    LabeledTextEditor(label: t.addEditWishlist.notes, text: $notes, placeholder: t.addEditWishlist.notesPlaceholder)
                 }
 
-                Section("Specifications") {
-                    LabeledField(label: "CPU", text: $cpu)
-                    LabeledField(label: "RAM", text: $ram)
-                    LabeledField(label: "Graphics", text: $graphics)
-                    LabeledField(label: "Storage", text: $storage)
-                    LabeledField(label: "Operating System", text: $operatingSystem)
-                    LabeledField(label: "External URL", text: $externalUrl, keyboardType: .URL)
-                    Toggle("WiFi Enabled", isOn: $isWifiEnabled)
-                    Toggle("PRAM Battery Removed", isOn: $isPramBatteryRemoved)
+                Section(t.addEditWishlist.specifications) {
+                    LabeledField(label: t.addEditWishlist.cpu, text: $cpu)
+                    LabeledField(label: t.addEditWishlist.ram, text: $ram)
+                    LabeledField(label: t.addEditWishlist.graphics, text: $graphics)
+                    LabeledField(label: t.addEditWishlist.storage, text: $storage)
+                    LabeledField(label: t.addEditWishlist.os, text: $operatingSystem)
+                    LabeledField(label: t.addEditWishlist.externalURL, text: $externalUrl, keyboardType: .URL)
+                    Toggle(t.addEditWishlist.wifiEnabled, isOn: $isWifiEnabled)
+                    Toggle(t.addEditWishlist.pramRemoved, isOn: $isPramBatteryRemoved)
                 }
 
                 if isEditing {
@@ -178,7 +180,7 @@ struct AddEditWishlistItemView: View {
                         Button {
                             showingAddDevice = true
                         } label: {
-                            Label("Mark as Acquired", systemImage: "checkmark.circle")
+                            Label(t.addEditWishlist.markAcquired, systemImage: "checkmark.circle")
                                 .foregroundColor(.green)
                         }
                     }
@@ -192,14 +194,14 @@ struct AddEditWishlistItemView: View {
                     }
                 }
             }
-            .navigationTitle(isEditing ? "Edit Wishlist Item" : "New Wishlist Item")
+            .navigationTitle(isEditing ? t.addEditWishlist.editTitle : t.addEditWishlist.newTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(t.common.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(t.common.save) {
                         Task { await save() }
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || isSaving)

@@ -26,12 +26,14 @@
                 <string>LANGUAGE_SYSTEM</string>
                 <string>LANGUAGE_EN</string>
                 <string>LANGUAGE_DE</string>
+                <string>LANGUAGE_FR</string>
             </array>
             <key>Values</key>
             <array>
                 <string>system</string>
                 <string>en</string>
                 <string>de</string>
+                <string>fr</string>
             </array>
         </dict>
     </array>

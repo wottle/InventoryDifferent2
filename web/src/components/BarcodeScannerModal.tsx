@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BarcodeDetector } from "barcode-detector";
+import { useT } from "../i18n/context";
 
 type BarcodeScannerModalProps = {
     open: boolean;
@@ -15,6 +16,7 @@ type BarcodeScannerModalProps = {
 const DEFAULT_FORMATS = ["code_128", "code_39", "ean_13", "ean_8", "upc_a", "upc_e", "itf"];
 
 export function BarcodeScannerModal({ open, onClose, onDetected, title, formats, message }: BarcodeScannerModalProps) {
+    const t = useT();
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const detectTimerRef = useRef<number | null>(null);
@@ -67,7 +69,7 @@ export function BarcodeScannerModal({ open, onClose, onDetected, title, formats,
         }
 
         if (!isSupported) {
-            setError("Barcode scanning is not supported on this browser.");
+            setError(t.scanner.notSupported);
             return;
         }
 
@@ -89,7 +91,7 @@ export function BarcodeScannerModal({ open, onClose, onDetected, title, formats,
 
                 const video = videoRef.current;
                 if (!video) {
-                    setError("Unable to start camera preview.");
+                    setError(t.scanner.cameraError);
                     return;
                 }
 
@@ -130,7 +132,7 @@ export function BarcodeScannerModal({ open, onClose, onDetected, title, formats,
                     }
                 }, 250);
             } catch (e: any) {
-                const msg = typeof e?.message === "string" ? e.message : "Unable to access the camera.";
+                const msg = typeof e?.message === "string" ? e.message : t.scanner.cameraError;
                 setError(msg);
             }
         };
@@ -152,14 +154,14 @@ export function BarcodeScannerModal({ open, onClose, onDetected, title, formats,
             <div className="relative w-full max-w-md rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
                 <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {title ?? "Scan Barcode"}
+                        {title ?? t.scanner.title}
                     </div>
                     <button
                         type="button"
                         onClick={onClose}
                         className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
-                        Close
+                        {t.scanner.close}
                     </button>
                 </div>
 
@@ -173,7 +175,7 @@ export function BarcodeScannerModal({ open, onClose, onDetected, title, formats,
                                 <video ref={videoRef} className="w-full h-64 object-cover" playsInline muted />
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                                Point the camera at the barcode.
+                                {t.scanner.pointCamera}
                             </div>
                         </div>
                     )}
@@ -184,7 +186,7 @@ export function BarcodeScannerModal({ open, onClose, onDetected, title, formats,
                             onClick={onClose}
                             className="px-3 py-2 rounded-lg text-sm bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
                         >
-                            Cancel
+                            {t.scanner.cancel}
                         </button>
                     </div>
                 </div>

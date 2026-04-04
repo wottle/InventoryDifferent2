@@ -454,7 +454,12 @@ extension Translations {
             referencePhoto: "Referenzfoto"
         ),
         barcodeScanner: .init(
-            lookingUp: "Gerät wird gesucht..."
+            title: "Gerät scannen",
+            cancel: "Abbrechen",
+            lookingUp: "Gerät wird gesucht...",
+            pointCamera: "Kamera auf Barcode oder QR-Code richten",
+            scannedEmpty: "Gescannter Wert ist leer",
+            notFound: "Kein Gerät gefunden für: "
         ),
         timeline: .init(
             title: "Zeitlinie",
@@ -470,7 +475,8 @@ extension Translations {
             languageLabel: "Sprache",
             system_: "Systemstandard",
             english: "Englisch",
-            german: "Deutsch"
+            german: "Deutsch",
+            french: "Français"
         )
     )
 }

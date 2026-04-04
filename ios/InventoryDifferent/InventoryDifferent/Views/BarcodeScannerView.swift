@@ -11,6 +11,7 @@ import AVFoundation
 struct BarcodeScannerView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var deviceStore: DeviceStore
+    @EnvironmentObject var lm: LocalizationManager
     
     @State private var scannedCode: String?
     @State private var isSearching = false
@@ -24,7 +25,8 @@ struct BarcodeScannerView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        let t = lm.t
+        return NavigationStack {
             ZStack {
                 // Camera preview
                 BarcodeScannerPreview(onCodeScanned: handleScannedCode)
@@ -47,7 +49,7 @@ struct BarcodeScannerView: View {
                         if isSearching {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            Text("Looking up device...")
+                            Text(t.barcodeScanner.lookingUp)
                                 .foregroundColor(.white)
                         } else if let error = errorMessage {
                             Text(error)
@@ -55,7 +57,7 @@ struct BarcodeScannerView: View {
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal)
                         } else {
-                            Text("Point camera at barcode or QR code")
+                            Text(t.barcodeScanner.pointCamera)
                                 .foregroundColor(.white)
                         }
                     }
@@ -65,14 +67,14 @@ struct BarcodeScannerView: View {
                     .padding(.bottom, 40)
                 }
             }
-            .navigationTitle("Scan Device")
+            .navigationTitle(t.barcodeScanner.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(Color.black.opacity(0.8), for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(t.barcodeScanner.cancel) {
                         dismiss()
                     }
                     .foregroundColor(.white)
@@ -163,7 +165,7 @@ struct BarcodeScannerView: View {
             print("[Scanner] Serial number is empty")
             await MainActor.run {
                 isSearching = false
-                errorMessage = "Scanned value is empty"
+                errorMessage = lm.t.barcodeScanner.scannedEmpty
             }
             return
         }
@@ -181,7 +183,7 @@ struct BarcodeScannerView: View {
         // Not found
         await MainActor.run {
             isSearching = false
-            errorMessage = "No device found for: \(serialNumber)"
+            errorMessage = lm.t.barcodeScanner.notFound + serialNumber
         }
         
         // Reset after delay to allow scanning again

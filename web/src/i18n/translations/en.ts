@@ -109,6 +109,14 @@ export type Translations = {
     sort: string;
     type: string;
   };
+  scanner: {
+    title: string;
+    close: string;
+    cancel: string;
+    pointCamera: string;
+    notSupported: string;
+    cameraError: string;
+  };
   nav: {
     wishlist: string;
     financials: string;
@@ -680,6 +688,14 @@ export const en: Translations = {
     name: "Name",
     sort: "Sort",
     type: "Type",
+  },
+  scanner: {
+    title: "Scan Barcode",
+    close: "Close",
+    cancel: "Cancel",
+    pointCamera: "Point the camera at the barcode.",
+    notSupported: "Barcode scanning is not supported on this browser.",
+    cameraError: "Unable to access the camera.",
   },
   nav: {
     wishlist: "Wishlist",

@@ -185,32 +185,41 @@ Run all applicable builds after making changes to verify nothing is broken befor
 
 ## Multi-Language (i18n) Support
 
-The app supports English and German (more languages can be added). Every user-visible string **must** go through the translation system — never hardcode UI text.
+The app supports English, German, and French. Every user-visible string **must** go through the translation system — never hardcode UI text.
 
 ### Web (Next.js)
 
-- **Translation files**: `web/src/i18n/translations/en.ts` and `de.ts`
+- **Translation files**: `web/src/i18n/translations/en.ts`, `de.ts`, and `fr.ts`
   - `en.ts` defines the `Translations` TypeScript type **and** the English values
-  - `de.ts` exports only values (shares the type from `en.ts`)
+  - `de.ts` and `fr.ts` export only values (share the type from `en.ts`)
 - **Consuming translations**: call `const t = useT()` (from `../../i18n/context`) in any client component, then use `t.<section>.<key>`
+- **Language selection**: The web app automatically detects the browser's language preference. To change the language:
+  1. Set your browser's preferred language to English (`en`), German (`de`), or French (`fr`)
+  2. Refresh the page
+  - **Chrome/Edge**: Settings → Languages → Add/reorder languages
+  - **Firefox**: Settings → Language → Choose your preferred language
+  - **Safari**: System Preferences → Language & Region → Preferred Languages
 - **Adding a new feature**: 
   1. Add the key(s) to the `Translations` type in `en.ts`
   2. Add the English values in `en.ts`
   3. Add the German values in `de.ts`
-  4. Use `t.<section>.<key>` in the component — never a hardcoded string
+  4. Add the French values in `fr.ts`
+  5. Use `t.<section>.<key>` in the component — never a hardcoded string
 - **Section naming convention**: top-level sections are `common`, `nav`, `home`, `detail`, `filter`, `sort`, `card`, `table`, `icons`, `form`, `login`, `chat`, and `pages.<pageName>` for page-specific strings
 - **Dynamic strings with counts/interpolation**: split into prefix/suffix keys or use JS concatenation — do not skip translation
 
 ### iOS (SwiftUI)
 
-- **Translation files**: `ios/.../i18n/Translations.swift` (struct definitions), `Translations+en.swift`, `Translations+de.swift`
+- **Translation files**: `ios/.../i18n/Translations.swift` (struct definitions), `Translations+en.swift`, `Translations+de.swift`, `Translations+fr.swift`
 - **Consuming translations**: all views have `@EnvironmentObject var lm: LocalizationManager` and use `let t = lm.t` at the top of `body` (or at the top of helper functions that return `some View`)
-- **Language selection**: via Settings.bundle — system default, English, or Deutsch. Runtime switching without restart.
+- **Language selection**: via Settings.bundle — system default, English, Deutsch, or Français. Runtime switching without restart.
+  - Open iOS Settings → scroll to InventoryDifferent → Language → select your preference
 - **Adding a new feature**:
   1. Add the key(s) to the appropriate struct in `Translations.swift`
   2. Add English values in `Translations+en.swift`
   3. Add German values in `Translations+de.swift`
-  4. Use `lm.t.<section>.<key>` in views — never hardcode strings
+  4. Add French values in `Translations+fr.swift`
+  5. Use `lm.t.<section>.<key>` in views — never hardcode strings
 - **Scope rule**: `let t = lm.t` must be declared at function scope (not inside a ViewBuilder closure) so it's visible to all sibling closures in the same function
 
 ### Enum display names

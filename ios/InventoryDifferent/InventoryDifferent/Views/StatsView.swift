@@ -101,6 +101,9 @@ struct StatsView: View {
 
     private func chartSection(title: String, data: [StatsBucket]) -> some View {
         let t = lm.t
+        let translatedData = data.map { bucket in
+            StatsBucket(label: translateLabel(bucket.label), count: bucket.count)
+        }
         return VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.headline)
@@ -112,7 +115,7 @@ struct StatsView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
             } else {
-                Chart(data) { bucket in
+                Chart(translatedData) { bucket in
                     BarMark(
                         x: .value(t.stats.chartLabel, bucket.label),
                         y: .value(t.stats.chartCount, bucket.count)
@@ -202,6 +205,9 @@ struct StatsView: View {
 
     private func rarityChartSection(_ data: [StatsBucket]) -> some View {
         let t = lm.t
+        let translatedData = data.map { bucket in
+            StatsBucket(label: translateLabel(bucket.label), count: bucket.count)
+        }
         return VStack(alignment: .leading, spacing: 12) {
             Text(t.stats.byRarity)
                 .font(.headline)
@@ -213,7 +219,7 @@ struct StatsView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
             } else {
-                Chart(data) { bucket in
+                Chart(translatedData) { bucket in
                     BarMark(
                         x: .value(t.stats.chartRarity, bucket.label),
                         y: .value(t.stats.chartCount, bucket.count)
@@ -247,6 +253,9 @@ struct StatsView: View {
 
     private func horizontalChartSection(title: String, data: [StatsBucket], color: Color) -> some View {
         let t = lm.t
+        let translatedData = data.map { bucket in
+            StatsBucket(label: translateLabel(bucket.label), count: bucket.count)
+        }
         return VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.headline)
@@ -258,7 +267,7 @@ struct StatsView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
             } else {
-                Chart(data) { bucket in
+                Chart(translatedData) { bucket in
                     BarMark(
                         x: .value(t.stats.chartCount, bucket.count),
                         y: .value(t.stats.chartLabel, bucket.label)
@@ -310,6 +319,46 @@ struct StatsView: View {
         formatter.numberStyle = .currency
         formatter.currencyCode = "USD"
         return formatter.string(from: NSNumber(value: value)) ?? "$0.00"
+    }
+
+    // MARK: - Translation Helpers
+
+    private func translateLabel(_ label: String) -> String {
+        let t = lm.t
+        
+        // Status translations
+        switch label {
+        case "COLLECTION", "In Collection": return t.status.COLLECTION
+        case "FOR_SALE", "For Sale": return t.status.FOR_SALE
+        case "PENDING_SALE", "Pending": return t.status.PENDING_SALE
+        case "IN_REPAIR", "In Repair": return t.status.IN_REPAIR
+        case "SOLD", "Sold": return t.status.SOLD
+        case "DONATED", "Donated": return t.status.DONATED
+        case "RETURNED", "Returned": return t.status.RETURNED
+        
+        // Functional Status translations
+        case "YES", "Working": return t.functionalStatus.YES
+        case "PARTIAL", "Partial": return t.functionalStatus.PARTIAL
+        case "NO", "Not Working": return t.functionalStatus.NO
+        
+        // Condition translations
+        case "NEW", "New": return t.condition.NEW
+        case "LIKE_NEW", "Like New": return t.condition.LIKE_NEW
+        case "VERY_GOOD", "Very Good": return t.condition.VERY_GOOD
+        case "GOOD", "Good": return t.condition.GOOD
+        case "ACCEPTABLE", "Acceptable": return t.condition.ACCEPTABLE
+        case "FOR_PARTS", "For Parts": return t.condition.FOR_PARTS
+        
+        // Rarity translations
+        case "COMMON", "Common": return t.rarity.COMMON
+        case "UNCOMMON", "Uncommon": return t.rarity.UNCOMMON
+        case "RARE", "Rare": return t.rarity.RARE
+        case "VERY_RARE", "Very Rare": return t.rarity.VERY_RARE
+        case "EXTREMELY_RARE", "Extremely Rare": return t.rarity.EXTREMELY_RARE
+        
+        // Default: return as-is (for manufacturers, years, categories, etc.)
+        default: return label
+        }
     }
 }
 

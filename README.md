@@ -178,6 +178,35 @@ Set these directly on the web or storefront containers in Portainer (not in `.en
 
 ---
 
+## Language Support
+
+The application supports **English**, **German (Deutsch)**, and **French (Français)** across all platforms.
+
+### Web App
+
+The web app automatically detects your browser's language preference. To change the language:
+
+1. Set your browser's preferred language to English (`en`), German (`de`), or French (`fr`)
+2. Refresh the page
+
+**How to change browser language:**
+- **Chrome/Edge**: Settings → Languages → Add/reorder languages
+- **Firefox**: Settings → Language → Choose your preferred language  
+- **Safari**: System Preferences → Language & Region → Preferred Languages
+
+### iOS App
+
+Change the language in iOS Settings:
+
+1. Open **Settings** app on your device
+2. Scroll down to **InventoryDifferent**
+3. Tap **Language**
+4. Select **System Default**, **English**, **Deutsch**, or **Français**
+
+The app will switch languages immediately without needing to restart.
+
+---
+
 ## iOS App
 
 The iOS app connects to your self-hosted API. No App Store account needed for local/TestFlight distribution.
