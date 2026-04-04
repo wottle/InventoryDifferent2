@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useT } from "../../i18n/context";
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -49,6 +50,7 @@ type Category = {
 const CATEGORY_TYPES = ["COMPUTER", "PERIPHERAL", "ACCESSORY", "OTHER"] as const;
 
 export default function CategoriesPage() {
+  const t = useT();
   const { data, loading, error, refetch } = useQuery(GET_CATEGORIES, {
     fetchPolicy: "cache-and-network",
   });
@@ -121,16 +123,16 @@ export default function CategoriesPage() {
     <div className="min-h-screen font-sans">
       <header className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Manage Categories</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">Add and edit categories (no delete yet).</p>
+          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.categories.title}</h1>
+          <p className="text-sm text-[var(--muted-foreground)]">{t.pages.categories.subtitle}</p>
         </div>
         <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-          Back
+          {t.common.back}
         </Link>
       </header>
 
       <section className="mb-6 rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-        <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">Add Category</h2>
+        <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{t.pages.categories.addSection}</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
           <input
             type="number"
@@ -141,7 +143,7 @@ export default function CategoriesPage() {
           <input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Name"
+            placeholder={t.common.name}
             className="input-retro w-full px-3 py-2 text-sm text-[var(--foreground)]"
           />
           <select
@@ -161,14 +163,14 @@ export default function CategoriesPage() {
             disabled={creating}
             className="inline-flex items-center justify-center rounded bg-[var(--apple-blue)] px-4 py-2 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50 border border-[#007acc]"
           >
-            Add
+            {t.common.add}
           </button>
         </div>
       </section>
 
       {loading && (
         <div className="p-4">
-          <LoadingPanel title="Loading categories…" subtitle="Building the index" />
+          <LoadingPanel title={t.pages.categories.loading} subtitle={t.pages.categories.loadingSubtitle} />
         </div>
       )}
       {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
@@ -178,10 +180,10 @@ export default function CategoriesPage() {
           <table className="w-full text-sm">
             <thead className="bg-[var(--muted)] text-[var(--foreground)]">
               <tr>
-                <th className="px-4 py-2 text-left font-medium">Sort</th>
-                <th className="px-4 py-2 text-left font-medium">Name</th>
-                <th className="px-4 py-2 text-left font-medium">Type</th>
-                <th className="px-4 py-2 text-right font-medium">Actions</th>
+                <th className="px-4 py-2 text-left font-medium">{t.pages.categories.sort}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.common.name}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.common.type}</th>
+                <th className="px-4 py-2 text-right font-medium">{t.pages.categories.actions}</th>
               </tr>
             </thead>
             <tbody className="bg-[var(--card)]">
@@ -238,7 +240,7 @@ export default function CategoriesPage() {
                             disabled={updating}
                             className="btn-retro px-3 py-1 text-sm disabled:opacity-50"
                           >
-                            Cancel
+                            {t.common.cancel}
                           </button>
                           <button
                             type="button"
@@ -246,7 +248,7 @@ export default function CategoriesPage() {
                             disabled={updating}
                             className="rounded bg-[var(--apple-blue)] px-3 py-1 text-sm text-white hover:brightness-110 disabled:opacity-50 border border-[#007acc]"
                           >
-                            Save
+                            {t.common.save}
                           </button>
                         </div>
                       ) : (
@@ -255,7 +257,7 @@ export default function CategoriesPage() {
                           onClick={() => startEdit(cat)}
                           className="btn-retro px-3 py-1 text-sm"
                         >
-                          Edit
+                          {t.common.edit}
                         </button>
                       )}
                     </td>

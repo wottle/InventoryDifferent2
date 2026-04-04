@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useT } from "../../i18n/context";
 
 const GET_TEMPLATES = gql`
   query GetTemplates {
@@ -101,14 +102,7 @@ type Category = {
   type: string;
 };
 
-const RARITY_OPTIONS = [
-  { value: "", label: "Not Set" },
-  { value: "COMMON", label: "Common" },
-  { value: "UNCOMMON", label: "Uncommon" },
-  { value: "RARE", label: "Rare" },
-  { value: "VERY_RARE", label: "Very Rare" },
-  { value: "EXTREMELY_RARE", label: "Extremely Rare" },
-];
+// RARITY_OPTIONS is now built inside the component using t (see below)
 
 type Template = {
   id: number;
@@ -161,6 +155,7 @@ const emptyFormState: TemplateFormState = {
 };
 
 export default function TemplatesPage() {
+  const t = useT();
   const { data, loading, error, refetch } = useQuery(GET_TEMPLATES, {
     fetchPolicy: "cache-and-network",
   });
@@ -175,6 +170,15 @@ export default function TemplatesPage() {
   const categoryTypeById = useMemo(() => {
     return new Map<number, string>(categories.map((c) => [c.id, c.type]));
   }, [categories]);
+
+  const RARITY_OPTIONS = useMemo(() => [
+    { value: "", label: t.pages.templates.rarityNotSet },
+    { value: "COMMON", label: t.rarity.COMMON },
+    { value: "UNCOMMON", label: t.rarity.UNCOMMON },
+    { value: "RARE", label: t.rarity.RARE },
+    { value: "VERY_RARE", label: t.rarity.VERY_RARE },
+    { value: "EXTREMELY_RARE", label: t.rarity.EXTREMELY_RARE },
+  ], [t]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -271,7 +275,7 @@ export default function TemplatesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this template?")) return;
+    if (!confirm(t.pages.templates.deleteConfirm)) return;
     await deleteTemplate({ variables: { id } });
     if (activeTemplateId === id) closeModal();
     await refetch();
@@ -281,8 +285,8 @@ export default function TemplatesPage() {
     <div className="min-h-screen font-sans">
       <header className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Manage Templates</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">Add, edit, and delete templates.</p>
+          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.templates.title}</h1>
+          <p className="text-sm text-[var(--muted-foreground)]">{t.pages.templates.subtitle}</p>
         </div>
         <div className="flex items-center gap-4">
           <button
@@ -290,17 +294,17 @@ export default function TemplatesPage() {
             onClick={openCreateModal}
             className="inline-flex items-center justify-center rounded bg-[var(--apple-blue)] px-4 py-2 text-sm font-medium text-white hover:brightness-110 border border-[#007acc]"
           >
-            New Template
+            {t.pages.templates.newTemplate}
           </button>
           <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-            Back
+            {t.common.back}
           </Link>
         </div>
       </header>
 
       {loading && (
         <div className="p-4">
-          <LoadingPanel title="Loading templates…" subtitle="Fetching your saved presets" />
+          <LoadingPanel title={t.pages.templates.loading} subtitle={t.pages.templates.loadingSubtitle} />
         </div>
       )}
       {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
@@ -310,14 +314,14 @@ export default function TemplatesPage() {
           <table className="w-full text-sm">
             <thead className="bg-[var(--muted)] text-[var(--foreground)]">
               <tr>
-                <th className="px-4 py-2 text-left font-medium">Name</th>
-                <th className="px-4 py-2 text-left font-medium">Additional</th>
-                <th className="px-4 py-2 text-left font-medium">Manufacturer</th>
-                <th className="px-4 py-2 text-left font-medium">Model</th>
-                <th className="px-4 py-2 text-left font-medium">Year</th>
-                <th className="px-4 py-2 text-left font-medium">Est. Value</th>
-                <th className="px-4 py-2 text-left font-medium">Category</th>
-                <th className="px-4 py-2 text-right font-medium">Actions</th>
+                <th className="px-4 py-2 text-left font-medium">{t.common.name}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.pages.templates.additional}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.form.manufacturerLabel}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.pages.templates.model}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.pages.templates.year}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.detail.estimatedValue}</th>
+                <th className="px-4 py-2 text-left font-medium">{t.filter.category}</th>
+                <th className="px-4 py-2 text-right font-medium">{t.pages.templates.actions}</th>
               </tr>
             </thead>
             <tbody className="bg-[var(--card)]">

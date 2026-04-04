@@ -6,6 +6,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useT } from "../../i18n/context";
 
 const FinancialChart = dynamic(() => import("../../components/FinancialChart"), {
   ssr: false,
@@ -40,11 +41,6 @@ const GET_FINANCIALS = gql`
   }
 `;
 
-function formatCurrency(value: number | null | undefined) {
-  if (value === null || value === undefined) return "";
-  return `$${Number(value).toFixed(2)}`;
-}
-
 function valueColorClass(value: number | null | undefined) {
   const n = Number(value ?? 0);
   if (!Number.isFinite(n) || n === 0) return "text-gray-900 dark:text-gray-100";
@@ -68,12 +64,18 @@ function dateMs(dateString: string | null | undefined) {
 }
 
 export default function FinancialsPage() {
+  const t = useT();
   const { data, loading, error } = useQuery(GET_FINANCIALS, {
     fetchPolicy: "cache-and-network",
   });
 
   const overview = data?.financialOverview;
   const transactions = data?.financialTransactions ?? [];
+
+  const formatCurrency = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return "";
+    return `${t.common.currencySymbol}${Number(value).toFixed(2)}`;
+  };
 
   const { transactionsWithCumulative, chartData } = useMemo(() => {
     const rows = transactions.map((t: any, idx: number) => {
@@ -136,19 +138,19 @@ export default function FinancialsPage() {
     <div className="min-h-screen font-sans">
       <header className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Financials</h1>
+          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.financials.title}</h1>
           <p className="text-sm text-[var(--muted-foreground)]">
-            Overview of spend, sales, and estimated collection position.
+            {t.pages.financials.subtitle}
           </p>
         </div>
         <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-          Back
+          {t.common.back}
         </Link>
       </header>
 
       {loading && (
         <div className="p-4">
-          <LoadingPanel title="Loading financials…" subtitle="Running the numbers" />
+          <LoadingPanel title={t.pages.financials.loading} subtitle={t.pages.financials.loadingSubtitle} />
         </div>
       )}
       {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
@@ -156,23 +158,23 @@ export default function FinancialsPage() {
       {!loading && !error && overview && (
         <div className="space-y-6">
           <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-            <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">Summary</h2>
+            <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{t.pages.financials.summary}</h2>
             <div className="space-y-3">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Total Spent</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">{t.pages.financials.totalSpent}</div>
                   <div className="mt-1 text-2xl font-light tabular-nums text-red-600 dark:text-red-400">
                     {formatCurrency(overview.totalSpent)}
                   </div>
                 </div>
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Total Received</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">{t.pages.financials.totalReceived}</div>
                   <div className="mt-1 text-2xl font-light tabular-nums text-green-600 dark:text-green-400">
                     {formatCurrency(overview.totalReceived)}
                   </div>
                 </div>
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Net Cash (Received + Spent)</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">{t.pages.financials.netCash}</div>
                   <div className={`mt-1 text-2xl font-light tabular-nums ${valueColorClass(overview.netCash)}`}>
                     {formatCurrency(overview.netCash)}
                   </div>
@@ -181,25 +183,25 @@ export default function FinancialsPage() {
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Estimated Value (Still Owned)</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">{t.pages.financials.estimatedValueOwned}</div>
                   <div className="mt-1 text-2xl font-light tabular-nums text-green-600 dark:text-green-400">
                     {formatCurrency(overview.estimatedValueOwned)}
                   </div>
                 </div>
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Maintenance Costs</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">{t.pages.financials.maintenanceCosts}</div>
                   <div className="mt-1 text-2xl font-light tabular-nums text-red-600 dark:text-red-400">
                     {formatCurrency(overview.totalMaintenanceCost)}
                   </div>
                 </div>
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Net Position (Owned Value + Net Cash − Maintenance)</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">{t.pages.financials.netPosition}</div>
                   <div className={`mt-1 text-2xl font-light tabular-nums ${valueColorClass(overview.netPosition)}`}>
                     {formatCurrency(overview.netPosition)}
                   </div>
                 </div>
                 <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
-                  <div className="text-xs text-[var(--muted-foreground)]">Realized Profit (Sold Devices Only)</div>
+                  <div className="text-xs text-[var(--muted-foreground)]">{t.pages.financials.realizedProfit}</div>
                   <div className={`mt-1 text-2xl font-light tabular-nums ${valueColorClass(overview.totalProfit)}`}>
                     {formatCurrency(overview.totalProfit)}
                   </div>
@@ -209,9 +211,9 @@ export default function FinancialsPage() {
           </section>
 
           <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-            <h2 className="mb-1 text-sm font-semibold text-[var(--foreground)]">Collection Value Over Time</h2>
+            <h2 className="mb-1 text-sm font-semibold text-[var(--foreground)]">{t.pages.financials.valueOverTime}</h2>
             <p className="mb-4 text-xs text-[var(--muted-foreground)]">
-              Track cumulative cash flow, estimated value, and net position as your collection grows.
+              {t.pages.financials.valueOverTimeDesc}
             </p>
             <FinancialChart data={chartData} />
           </section>
@@ -219,62 +221,62 @@ export default function FinancialsPage() {
           <section className="rounded border border-[var(--border)] bg-[var(--card)] overflow-hidden card-retro">
             <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] p-4">
               <div>
-                <h2 className="text-sm font-semibold text-[var(--foreground)]">Transaction History</h2>
+                <h2 className="text-sm font-semibold text-[var(--foreground)]">{t.pages.financials.transactionHistory}</h2>
                 <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                  Acquisitions are negative cash and positive estimated value. Sales and donations are negative estimated value (removed from collection).
+                  {t.pages.financials.transactionHistoryDesc}
                 </p>
               </div>
               <div className="text-xs text-[var(--muted-foreground)] tabular-nums">
-                {transactionsWithCumulative.length} rows
+                {transactionsWithCumulative.length} {t.pages.financials.rows}
               </div>
             </div>
 
             {transactionsWithCumulative.length === 0 ? (
-              <div className="p-4 text-sm text-[var(--muted-foreground)]">No transactions yet.</div>
+              <div className="p-4 text-sm text-[var(--muted-foreground)]">{t.pages.financials.noTransactions}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-[var(--muted)] text-[var(--foreground)]">
                     <tr>
-                      <th className="px-4 py-2 text-left font-medium">Date</th>
-                      <th className="px-4 py-2 text-left font-medium">Type</th>
-                      <th className="px-4 py-2 text-left font-medium">Device</th>
-                      <th className="px-4 py-2 text-right font-medium">Amount</th>
-                      <th className="px-4 py-2 text-right font-medium">Est. Value</th>
-                      <th className="px-4 py-2 text-right font-medium">Cumulative Net</th>
+                      <th className="px-4 py-2 text-left font-medium">{t.common.date}</th>
+                      <th className="px-4 py-2 text-left font-medium">{t.pages.financials.typeCol}</th>
+                      <th className="px-4 py-2 text-left font-medium">{t.pages.financials.device}</th>
+                      <th className="px-4 py-2 text-right font-medium">{t.pages.financials.amount}</th>
+                      <th className="px-4 py-2 text-right font-medium">{t.card.estValue}</th>
+                      <th className="px-4 py-2 text-right font-medium">{t.pages.financials.cumulativeNet}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-[var(--card)]">
-                    {transactionsWithCumulative.map((t: any) => (
-                      <tr key={`${t.type}-${t.deviceId}-${t.date ?? "nodate"}-${t.amount}-${t.estimatedValue}`} className="border-t border-[var(--border)]">
+                    {transactionsWithCumulative.map((tx: any) => (
+                      <tr key={`${tx.type}-${tx.deviceId}-${tx.date ?? "nodate"}-${tx.amount}-${tx.estimatedValue}`} className="border-t border-[var(--border)]">
                         <td className="px-4 py-2 text-[var(--foreground)] tabular-nums">
-                          {formatDate(t.date)}
+                          {formatDate(tx.date)}
                         </td>
                         <td className="px-4 py-2 text-[var(--foreground)]">
-                          {t.type === "SALE" ? "Sold" : t.type === "DONATION" ? "Donated" : t.type === "MAINTENANCE" ? "Maintenance" : t.type === "REPAIR_RETURN" ? "Repair Fee" : "Acquired"}
+                          {tx.type === "SALE" ? t.pages.financials.txSold : tx.type === "DONATION" ? t.pages.financials.txDonated : tx.type === "MAINTENANCE" ? t.pages.financials.txMaintenance : tx.type === "REPAIR_RETURN" ? t.pages.financials.txRepairFee : t.pages.financials.txAcquired}
                         </td>
                         <td className="px-4 py-2">
                           <Link
-                            href={`/devices/${t.deviceId}`}
+                            href={`/devices/${tx.deviceId}`}
                             className="text-[var(--apple-blue)] hover:underline"
                           >
-                            {t.deviceName}
-                            {t.additionalName && (
-                              <span className="text-[var(--muted-foreground)] ml-1">({t.additionalName})</span>
+                            {tx.deviceName}
+                            {tx.additionalName && (
+                              <span className="text-[var(--muted-foreground)] ml-1">({tx.additionalName})</span>
                             )}
                           </Link>
-                          {t.label && (
-                            <div className="text-xs text-[var(--muted-foreground)] mt-0.5">{t.label}</div>
+                          {tx.label && (
+                            <div className="text-xs text-[var(--muted-foreground)] mt-0.5">{tx.label}</div>
                           )}
                         </td>
-                        <td className={`px-4 py-2 text-right font-medium tabular-nums ${valueColorClass(t.amount)}`}>
-                          {formatCurrency(t.amount)}
+                        <td className={`px-4 py-2 text-right font-medium tabular-nums ${valueColorClass(tx.amount)}`}>
+                          {formatCurrency(tx.amount)}
                         </td>
-                        <td className={`px-4 py-2 text-right font-medium tabular-nums ${valueColorClass(t.estimatedValue)}`}>
-                          {formatCurrency(t.estimatedValue)}
+                        <td className={`px-4 py-2 text-right font-medium tabular-nums ${valueColorClass(tx.estimatedValue)}`}>
+                          {formatCurrency(tx.estimatedValue)}
                         </td>
-                        <td className={`px-4 py-2 text-right font-medium tabular-nums ${valueColorClass(t.cumulativeNet)}`}>
-                          {formatCurrency(t.cumulativeNet)}
+                        <td className={`px-4 py-2 text-right font-medium tabular-nums ${valueColorClass(tx.cumulativeNet)}`}>
+                          {formatCurrency(tx.cumulativeNet)}
                         </td>
                       </tr>
                     ))}

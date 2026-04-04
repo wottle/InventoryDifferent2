@@ -13,7 +13,9 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'i18n: all remaining sub-pages (timeline, stats, usage, trash, categories, financials, wishlist, custom fields, templates, print) and device form fully translated (en/de)',
+    ],
     fixed: [],
   },
   {

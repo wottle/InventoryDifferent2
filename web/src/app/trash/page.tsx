@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import Link from "next/link";
 import { API_BASE_URL } from "../../lib/config";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useT } from "../../i18n/context";
 
 const GET_DELETED_DEVICES = gql`
   query GetDeletedDevices {
@@ -45,8 +46,9 @@ const PERMANENTLY_DELETE_DEVICE = gql`
 `;
 
 export default function TrashPage() {
+  const t = useT();
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
-  
+
   const { data, loading, error, refetch } = useQuery(GET_DELETED_DEVICES);
   const [restoreDevice, { loading: restoring }] = useMutation(RESTORE_DEVICE);
   const [permanentlyDeleteDevice, { loading: deleting }] = useMutation(PERMANENTLY_DELETE_DEVICE);
@@ -88,14 +90,14 @@ export default function TrashPage() {
       <header className="sticky top-0 z-30 bg-[var(--card)] border-b border-[var(--border)] px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Trash</h1>
+            <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.trash.title}</h1>
             <p className="text-sm text-[var(--muted-foreground)]">
-              Deleted devices can be restored or permanently deleted.
+              {t.pages.trash.subtitle}
             </p>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-              Back
+              {t.common.back}
             </Link>
           </div>
         </div>
@@ -104,7 +106,7 @@ export default function TrashPage() {
       <main className="p-4">
         {loading && (
           <div className="p-8">
-            <LoadingPanel title="Loading deleted devices…" subtitle="Checking the trash" />
+            <LoadingPanel title={t.pages.trash.loading} subtitle={t.pages.trash.loadingSubtitle} />
           </div>
         )}
 
@@ -129,8 +131,8 @@ export default function TrashPage() {
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
-            <p className="text-lg font-medium">Trash is empty</p>
-            <p className="text-sm mt-1">Deleted devices will appear here.</p>
+            <p className="text-lg font-medium">{t.pages.trash.emptyTitle}</p>
+            <p className="text-sm mt-1">{t.pages.trash.emptyText}</p>
           </div>
         )}
 
@@ -138,7 +140,7 @@ export default function TrashPage() {
           <div className="bg-[var(--card)] rounded border border-[var(--border)] overflow-hidden card-retro">
             <div className="px-4 py-3 bg-[var(--muted)] border-b border-[var(--border)]">
               <p className="text-sm text-[var(--muted-foreground)]">
-                {deletedDevices.length} deleted device{deletedDevices.length !== 1 ? "s" : ""}
+                {deletedDevices.length} {deletedDevices.length !== 1 ? t.pages.trash.deletedDevices : t.pages.trash.deletedDevice}
               </p>
             </div>
             <div className="divide-y divide-[var(--border)]">
@@ -188,7 +190,7 @@ export default function TrashPage() {
                           #{device.id}
                         </span>
                         <span className="text-xs bg-[var(--muted)] text-[var(--muted-foreground)] px-2 py-0.5 rounded">
-                          {device.category?.name || "Unknown"}
+                          {device.category?.name || t.pages.trash.unknownCategory}
                         </span>
                       </div>
                       <p className="font-medium text-[var(--foreground)] truncate">
@@ -200,7 +202,7 @@ export default function TrashPage() {
                         </p>
                       )}
                       <p className="text-xs text-[var(--muted-foreground)]">
-                        Acquired: {formatDate(device.dateAcquired)}
+                        {t.pages.trash.acquiredLabel} {formatDate(device.dateAcquired)}
                       </p>
                     </div>
 
@@ -209,20 +211,20 @@ export default function TrashPage() {
                       {isConfirming ? (
                         <>
                           <span className="text-sm text-red-600 dark:text-red-400 mr-2">
-                            Delete permanently?
+                            {t.pages.trash.confirmDelete}
                           </span>
                           <button
                             onClick={() => handlePermanentDelete(device.id)}
                             disabled={deleting}
                             className="px-3 py-1.5 text-sm font-medium text-white bg-[var(--apple-red)] hover:brightness-110 disabled:opacity-50 rounded border border-[#c02020]"
                           >
-                            {deleting ? "Deleting..." : "Yes, Delete"}
+                            {deleting ? t.common.deleting : t.pages.trash.yesDelete}
                           </button>
                           <button
                             onClick={() => setConfirmDelete(null)}
                             className="btn-retro px-3 py-1.5 text-sm font-medium"
                           >
-                            Cancel
+                            {t.common.cancel}
                           </button>
                         </>
                       ) : (
@@ -232,13 +234,13 @@ export default function TrashPage() {
                             disabled={restoring}
                             className="px-3 py-1.5 text-sm font-medium text-white bg-[var(--apple-green)] hover:brightness-110 disabled:opacity-50 rounded border border-[#4a9c2e]"
                           >
-                            Restore
+                            {t.pages.trash.restore}
                           </button>
                           <button
                             onClick={() => setConfirmDelete(device.id)}
                             className="px-3 py-1.5 text-sm font-medium text-[var(--apple-red)] bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 rounded border border-[var(--apple-red)]"
                           >
-                            Delete Forever
+                            {t.pages.trash.deleteForever}
                           </button>
                         </>
                       )}

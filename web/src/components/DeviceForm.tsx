@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { BarcodeScannerModal } from "./BarcodeScannerModal";
+import { useT } from "../i18n/context";
 
 const GET_CUSTOM_FIELDS = gql`
   query GetCustomFields {
@@ -290,6 +291,7 @@ const getLocalDateInputValue = () => {
 };
 
 export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
+    const t = useT();
     const router = useRouter();
     const { data: categoriesData } = useQuery(GET_CATEGORIES);
     const { data: templatesData } = useQuery(GET_TEMPLATES);
@@ -626,8 +628,8 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
     const categoryType = categoriesData?.categories?.find((c: any) => c.id === formData.categoryId)?.type ?? "";
     const accessorySuggestions = categoryType === 'COMPUTER'
-        ? ["Original Box", "Keyboard", "Mouse", "Power Cable/Adapter", "Power Supply", "Manual/Documentation", "Software Disks", "Monitor"]
-        : ["Original Box", "Power Cable", "Cables/Adapters", "Manual"];
+        ? t.detail.accessorySuggestionsComputer
+        : t.detail.accessorySuggestionsOther;
 
     const handleAddAccessory = async (name: string) => {
         if (!name.trim() || accessories.some(a => a.name === name.trim())) return;
@@ -674,7 +676,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         <form onSubmit={handleSubmit} className="max-w-4xl">
             <BarcodeScannerModal
                 open={barcodeScannerOpen}
-                title="Scan Serial Number"
+                title={t.form.scanSerialTitle}
                 onClose={() => setBarcodeScannerOpen(false)}
                 onDetected={(value) => {
                     setFormData(prev => ({
@@ -690,23 +692,23 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
             {mode === "create" && (
                 <>
-                    <SectionHeader>Template</SectionHeader>
+                    <SectionHeader>{t.form.templateSection}</SectionHeader>
                     <div className="mb-8">
                         <div className="max-w-2xl">
-                            <FormField label="Search">
+                            <FormField label={t.form.searchLabel}>
                                 <div className="space-y-2">
                                     <input
                                         type="text"
                                         value={templateQuery}
                                         onChange={(e) => setTemplateQuery(e.target.value)}
                                         className={inputClass}
-                                        placeholder="Search templates (name, nickname, manufacturer, model number)"
+                                        placeholder={t.form.templateSearchPlaceholder}
                                     />
 
                                     {selectedTemplateId !== 0 && selectedTemplate && (
                                         <div className="flex items-center justify-between text-sm text-[var(--foreground)]">
                                             <span>
-                                                Selected:{' '}
+                                                {t.form.selectedPrefix}{' '}
                                                 {selectedTemplate.additionalName
                                                     ? `${selectedTemplate.name} (${selectedTemplate.additionalName})`
                                                     : selectedTemplate.name}
@@ -719,7 +721,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                     setTemplateQuery("");
                                                 }}
                                             >
-                                                Clear
+                                                {t.form.clearTemplate}
                                             </button>
                                         </div>
                                     )}
@@ -727,7 +729,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                     {showTemplateResults && (
                                         <div className="border border-[var(--border)] rounded max-h-60 overflow-auto bg-[var(--card)]">
                                             {filteredTemplates.length === 0 ? (
-                                                <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">No matching templates.</div>
+                                                <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">{t.form.noMatchingTemplates}</div>
                                             ) : (
                                                 filteredTemplates.map((tpl) => {
                                                     const title = tpl.additionalName ? `${tpl.name} (${tpl.additionalName})` : tpl.name;
@@ -757,7 +759,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                     )}
 
                                     {!showTemplateResults && selectedTemplateId === 0 && (
-                                        <div className="text-sm text-[var(--muted-foreground)]">Start typing to search templates.</div>
+                                        <div className="text-sm text-[var(--muted-foreground)]">{t.form.startTypingSearch}</div>
                                     )}
                                 </div>
                             </FormField>
@@ -766,17 +768,17 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 </>
             )}
 
-            <SectionHeader>Basic Information</SectionHeader>
+            <SectionHeader>{t.form.basicInformation}</SectionHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                <FormField label="Category" required>
+                <FormField label={t.filter.category} required>
                     <select
                         name="categoryId"
                         value={formData.categoryId}
                         onChange={handleChange}
                         className={`${selectClass} ${errors.categoryId ? "border-red-500" : ""}`}
                     >
-                        <option value={0}>Select a category</option>
+                        <option value={0}>{t.form.selectCategory}</option>
                         {categories.map(cat => (
                             <option key={cat.id} value={cat.id}>
                                 {cat.name}
@@ -786,54 +788,54 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>}
                 </FormField>
 
-                <FormField label="Name" required>
+                <FormField label={t.common.name} required>
                     <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
                         className={`${inputClass} ${errors.name ? "border-red-500" : ""}`}
-                        placeholder="e.g., Macintosh SE"
+                        placeholder={t.form.namePlaceholder}
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </FormField>
 
-                <FormField label="Additional Name">
+                <FormField label={t.form.additionalNameLabel}>
                     <input
                         type="text"
                         name="additionalName"
                         value={formData.additionalName}
                         onChange={handleChange}
                         className={inputClass}
-                        placeholder="e.g., FDHD"
+                        placeholder={t.form.additionalNamePlaceholder}
                     />
                 </FormField>
 
-                <FormField label="Manufacturer">
+                <FormField label={t.form.manufacturerLabel}>
                     <input
                         type="text"
                         name="manufacturer"
                         value={formData.manufacturer}
                         onChange={handleChange}
                         className={`${inputClass} ${errors.manufacturer ? "border-red-500" : ""}`}
-                        placeholder="e.g., Apple"
+                        placeholder={t.form.manufacturerPlaceholder}
                     />
                     {errors.manufacturer && <p className="text-red-500 text-xs mt-1">{errors.manufacturer}</p>}
                 </FormField>
 
-                <FormField label="Model Number">
+                <FormField label={t.form.modelNumberLabel}>
                     <input
                         type="text"
                         name="modelNumber"
                         value={formData.modelNumber}
                         onChange={handleChange}
                         className={`${inputClass} ${errors.modelNumber ? "border-red-500" : ""}`}
-                        placeholder="e.g., M5011"
+                        placeholder={t.form.modelNumberPlaceholder}
                     />
                     {errors.modelNumber && <p className="text-red-500 text-xs mt-1">{errors.modelNumber}</p>}
                 </FormField>
 
-                <FormField label="Serial Number">
+                <FormField label={t.detail.serialNumber}>
                     <div className="flex gap-2">
                         <input
                             type="text"
@@ -850,13 +852,13 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                 barcodeSupported ? "" : "opacity-50 cursor-not-allowed"
                             }`}
                         >
-                            Scan
+                            {t.form.scanBtn}
                         </button>
                     </div>
                     {errors.serialNumber && <p className="text-red-500 text-xs mt-1">{errors.serialNumber}</p>}
                 </FormField>
 
-                <FormField label="Release Year">
+                <FormField label={t.detail.releaseYear}>
                     <input
                         type="number"
                         name="releaseYear"
@@ -869,19 +871,19 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     {errors.releaseYear && <p className="text-red-500 text-xs mt-1">{errors.releaseYear}</p>}
                 </FormField>
 
-                <FormField label="Location">
+                <FormField label={t.detail.locationLabel}>
                     <input
                         type="text"
                         name="location"
                         value={formData.location}
                         onChange={handleChange}
                         className={`${inputClass} ${errors.location ? "border-red-500" : ""}`}
-                        placeholder="e.g., Shelf A"
+                        placeholder={t.form.locationPlaceholder}
                     />
                     {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
                 </FormField>
 
-                <FormField label="Last Power On Date">
+                <FormField label={t.form.lastPowerOnLabel}>
                     <input
                         type="date"
                         name="lastPowerOnDate"
@@ -893,68 +895,68 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 
             </div>
 
-            <SectionHeader>Status & Condition</SectionHeader>
+            <SectionHeader>{t.form.statusCondition}</SectionHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField label="Status">
+                <FormField label={t.filter.status}>
                     <select
                         name="status"
                         value={formData.status}
                         onChange={handleChange}
                         className={selectClass}
                     >
-                        <option value="COLLECTION">In Collection</option>
-                        <option value="FOR_SALE">For Sale</option>
-                        <option value="PENDING_SALE">Pending Sale</option>
-                        <option value="IN_REPAIR">In Repair</option>
-                        <option value="SOLD">Sold</option>
-                        <option value="DONATED">Donated</option>
-                        <option value="RETURNED">Returned</option>
+                        <option value="COLLECTION">{t.status.COLLECTION}</option>
+                        <option value="FOR_SALE">{t.status.FOR_SALE}</option>
+                        <option value="PENDING_SALE">{t.status.PENDING_SALE}</option>
+                        <option value="IN_REPAIR">{t.status.IN_REPAIR}</option>
+                        <option value="SOLD">{t.status.SOLD}</option>
+                        <option value="DONATED">{t.status.DONATED}</option>
+                        <option value="RETURNED">{t.status.RETURNED}</option>
                     </select>
                 </FormField>
 
-                <FormField label="Functional Status">
+                <FormField label={t.filter.functionalStatus}>
                     <select
                         name="functionalStatus"
                         value={formData.functionalStatus}
                         onChange={handleChange}
                         className={selectClass}
                     >
-                        <option value="YES">Fully Functional</option>
-                        <option value="PARTIAL">Partially Functional</option>
-                        <option value="NO">Not Functional</option>
+                        <option value="YES">{t.functionalStatus.YES}</option>
+                        <option value="PARTIAL">{t.functionalStatus.PARTIAL}</option>
+                        <option value="NO">{t.functionalStatus.NO}</option>
                     </select>
                 </FormField>
 
-                <FormField label="Condition">
+                <FormField label={t.filter.condition}>
                     <select
                         name="condition"
                         value={formData.condition}
                         onChange={handleChange}
                         className={selectClass}
                     >
-                        <option value="">— Not Set —</option>
-                        <option value="NEW">New</option>
-                        <option value="LIKE_NEW">Like New</option>
-                        <option value="VERY_GOOD">Very Good</option>
-                        <option value="GOOD">Good</option>
-                        <option value="ACCEPTABLE">Acceptable</option>
-                        <option value="FOR_PARTS">For Parts</option>
+                        <option value="">{t.form.notSet}</option>
+                        <option value="NEW">{t.condition.NEW}</option>
+                        <option value="LIKE_NEW">{t.condition.LIKE_NEW}</option>
+                        <option value="VERY_GOOD">{t.condition.VERY_GOOD}</option>
+                        <option value="GOOD">{t.condition.GOOD}</option>
+                        <option value="ACCEPTABLE">{t.condition.ACCEPTABLE}</option>
+                        <option value="FOR_PARTS">{t.condition.FOR_PARTS}</option>
                     </select>
                 </FormField>
 
-                <FormField label="Rarity">
+                <FormField label={t.filter.rarity}>
                     <select
                         name="rarity"
                         value={formData.rarity}
                         onChange={handleChange}
                         className={selectClass}
                     >
-                        <option value="">— Not Set —</option>
-                        <option value="COMMON">Common</option>
-                        <option value="UNCOMMON">Uncommon</option>
-                        <option value="RARE">Rare</option>
-                        <option value="VERY_RARE">Very Rare</option>
-                        <option value="EXTREMELY_RARE">Extremely Rare</option>
+                        <option value="">{t.form.notSet}</option>
+                        <option value="COMMON">{t.rarity.COMMON}</option>
+                        <option value="UNCOMMON">{t.rarity.UNCOMMON}</option>
+                        <option value="RARE">{t.rarity.RARE}</option>
+                        <option value="VERY_RARE">{t.rarity.VERY_RARE}</option>
+                        <option value="EXTREMELY_RARE">{t.rarity.EXTREMELY_RARE}</option>
                     </select>
                 </FormField>
 
@@ -967,7 +969,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                             onChange={handleChange}
                             className="w-4 h-4 rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--apple-blue)]"
                         />
-                        <span className="text-sm text-[var(--foreground)]">Favorite</span>
+                        <span className="text-sm text-[var(--foreground)]">{t.form.favoriteLabel}</span>
                     </label>
 
                     <label className="flex items-center gap-2 cursor-pointer">
@@ -978,14 +980,14 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                             onChange={handleChange}
                             className="w-4 h-4 rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--apple-blue)]"
                         />
-                        <span className="text-sm text-[var(--foreground)]">Asset Tagged</span>
+                        <span className="text-sm text-[var(--foreground)]">{t.form.assetTaggedLabel}</span>
                     </label>
                 </div>
             </div>
 
-            <SectionHeader>Acquisition</SectionHeader>
+            <SectionHeader>{t.detail.acquisition}</SectionHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField label="Date Acquired">
+                <FormField label={t.detail.dateAcquired}>
                     <input
                         type="date"
                         name="dateAcquired"
@@ -995,18 +997,18 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     />
                 </FormField>
 
-                <FormField label="Where Acquired">
+                <FormField label={t.detail.whereAcquired}>
                     <input
                         type="text"
                         name="whereAcquired"
                         value={formData.whereAcquired}
                         onChange={handleChange}
                         className={inputClass}
-                        placeholder="e.g., eBay, Estate Sale"
+                        placeholder={t.form.whereAcquiredPlaceholder}
                     />
                 </FormField>
 
-                <FormField label="Price Acquired">
+                <FormField label={t.detail.priceAcquired}>
                     <input
                         type="number"
                         name="priceAcquired"
@@ -1019,7 +1021,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     />
                 </FormField>
 
-                <FormField label="Estimated Value">
+                <FormField label={t.detail.estimatedValue}>
                     <input
                         type="number"
                         name="estimatedValue"
@@ -1035,9 +1037,9 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
             {showRepairFeeField && (
                 <>
-                    <SectionHeader>Repair Information</SectionHeader>
+                    <SectionHeader>{t.form.repairInformation}</SectionHeader>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField label="Repair Fee Charged">
+                        <FormField label={t.form.repairFeeLabel}>
                             <input
                                 type="number"
                                 name="soldPrice"
@@ -1049,7 +1051,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                 placeholder="0.00"
                             />
                         </FormField>
-                        <FormField label="Returned Date">
+                        <FormField label={t.form.returnedDateLabel}>
                             <input
                                 type="date"
                                 name="soldDate"
@@ -1064,10 +1066,10 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
             {showSalesFields && (
                 <>
-                    <SectionHeader>{showDonatedFields ? "Donation Information" : "Sales Information"}</SectionHeader>
+                    <SectionHeader>{showDonatedFields ? t.form.donationInformation : t.form.salesInformation}</SectionHeader>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {!showDonatedFields && (
-                            <FormField label="List Price">
+                            <FormField label={t.detail.listPrice}>
                                 <input
                                     type="number"
                                     name="listPrice"
@@ -1082,7 +1084,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         )}
 
                         {showSoldFields && (
-                            <FormField label="Sold Price">
+                            <FormField label={t.detail.soldPrice}>
                                 <input
                                     type="number"
                                     name="soldPrice"
@@ -1097,7 +1099,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         )}
 
                         {showDateField && (
-                            <FormField label={showDonatedFields ? "Donated Date" : "Sold Date"}>
+                            <FormField label={showDonatedFields ? t.detail.donatedDate : t.detail.soldDate}>
                                 <input
                                     type="date"
                                     name="soldDate"
@@ -1113,7 +1115,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
             {isComputerCategory && (
                 <>
-                    <SectionHeader>Computer Specifications</SectionHeader>
+                    <SectionHeader>{t.detail.computerSpecs}</SectionHeader>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField label="CPU">
                             <input
@@ -1122,7 +1124,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                 value={formData.cpu}
                                 onChange={handleChange}
                                 className={inputClass}
-                                placeholder="e.g., Motorola 68000 8MHz"
+                                placeholder={t.form.cpuPlaceholder}
                             />
                         </FormField>
 
@@ -1133,7 +1135,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                 value={formData.ram}
                                 onChange={handleChange}
                                 className={inputClass}
-                                placeholder="e.g., 4MB"
+                                placeholder={t.form.ramPlaceholder}
                             />
                         </FormField>
 
@@ -1144,7 +1146,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                 value={formData.graphics}
                                 onChange={handleChange}
                                 className={inputClass}
-                                placeholder='e.g., Built-in 9" CRT'
+                                placeholder={t.form.graphicsPlaceholder}
                             />
                         </FormField>
 
@@ -1155,7 +1157,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                 value={formData.storage}
                                 onChange={handleChange}
                                 className={inputClass}
-                                placeholder="e.g., 20MB SCSI HDD"
+                                placeholder={t.form.storagePlaceholder}
                             />
                         </FormField>
 
@@ -1166,7 +1168,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                 value={formData.operatingSystem}
                                 onChange={handleChange}
                                 className={inputClass}
-                                placeholder="e.g., System 6.0.8"
+                                placeholder={t.form.osPlaceholder}
                             />
                         </FormField>
 
@@ -1179,7 +1181,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                     onChange={handleChange}
                                     className="w-4 h-4 rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--apple-blue)]"
                                 />
-                                <span className="text-sm text-[var(--foreground)]">WiFi Enabled</span>
+                                <span className="text-sm text-[var(--foreground)]">{t.detail.wifiEnabled}</span>
                             </label>
 
                             <label className="flex items-center gap-2 cursor-pointer">
@@ -1190,7 +1192,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                     onChange={handleChange}
                                     className="w-4 h-4 rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--apple-blue)]"
                                 />
-                                <span className="text-sm text-[var(--foreground)]">PRAM Battery Removed</span>
+                                <span className="text-sm text-[var(--foreground)]">{t.detail.pramBatteryRemoved}</span>
                             </label>
                         </div>
                     </div>
@@ -1199,7 +1201,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
             {customFieldsData?.customFields?.length > 0 && (
                 <>
-                    <SectionHeader>Custom Fields</SectionHeader>
+                    <SectionHeader>{t.detail.customFields}</SectionHeader>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {customFieldsData.customFields.map((field: any) => (
                             <FormField key={field.id} label={field.name}>
@@ -1220,7 +1222,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 </>
             )}
 
-            <SectionHeader>Accessories</SectionHeader>
+            <SectionHeader>{t.detail.accessories}</SectionHeader>
             <div>
                 <div className="flex flex-wrap gap-2 mb-3">
                     {accessories.map((acc, i) => (
@@ -1245,16 +1247,16 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         onChange={e => setNewAccessoryName(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddAccessory(newAccessoryName); }}}
                         className={`${inputClass} flex-1`}
-                        placeholder="Custom accessory..."
+                        placeholder={t.form.accessoryCustomPlaceholder}
                     />
                     <button type="button" onClick={() => handleAddAccessory(newAccessoryName)}
                         className="px-3 py-2 text-sm bg-[var(--apple-blue)] text-white rounded border border-[#007acc] hover:brightness-110 whitespace-nowrap">
-                        Add
+                        {t.common.add}
                     </button>
                 </div>
             </div>
 
-            <SectionHeader>Reference Links</SectionHeader>
+            <SectionHeader>{t.detail.referenceLinks}</SectionHeader>
             <div>
                 {links.length > 0 && (
                     <div className="space-y-2 mb-3">
@@ -1275,7 +1277,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         list="link-label-suggestions"
                         className={`${inputClass} flex-1`}
                         style={{ minWidth: '120px' }}
-                        placeholder="Label (e.g. EveryMac)"
+                        placeholder={t.form.linkLabelPlaceholder}
                     />
                     <datalist id="link-label-suggestions">
                         {linkLabelSuggestions.map(s => <option key={s} value={s} />)}
@@ -1286,24 +1288,24 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         onChange={e => setNewLinkUrl(e.target.value)}
                         className={`${inputClass} flex-1`}
                         style={{ minWidth: '120px' }}
-                        placeholder="https://..."
+                        placeholder={t.form.linkUrlPlaceholder}
                     />
                     <button type="button" onClick={handleAddLink}
                         className="px-3 py-2 text-sm bg-[var(--apple-blue)] text-white rounded border border-[#007acc] hover:brightness-110 whitespace-nowrap">
-                        Add
+                        {t.common.add}
                     </button>
                 </div>
             </div>
 
-            <SectionHeader>Additional Information</SectionHeader>
+            <SectionHeader>{t.form.additionalInformation}</SectionHeader>
             <div className="grid grid-cols-1 gap-4">
-                <FormField label="Description / Notes">
+                <FormField label={t.form.descriptionLabel}>
                     <textarea
                         name="info"
                         value={formData.info}
                         onChange={handleChange}
                         className={`${inputClass} min-h-[100px]`}
-                        placeholder="Add any additional information about this device..."
+                        placeholder={t.form.descriptionPlaceholder}
                     />
                 </FormField>
             </div>
@@ -1314,7 +1316,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     disabled={loading}
                     className="px-6 py-2 bg-[var(--apple-blue)] text-white rounded border border-[#007acc] text-sm font-medium hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                    {loading ? "Saving..." : mode === "create" ? "Create Device" : "Save Changes"}
+                    {loading ? t.form.saving : mode === "create" ? t.form.createDevice : t.form.saveChanges}
                 </button>
 
                 <button
@@ -1322,7 +1324,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     onClick={() => router.back()}
                     className="btn-retro px-6 py-2 text-sm font-medium"
                 >
-                    Cancel
+                    {t.common.cancel}
                 </button>
             </div>
         </form>

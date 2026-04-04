@@ -101,6 +101,13 @@ export type Translations = {
     date: string;
     cost: string;
     currencySymbol: string;
+    back: string;
+    save: string;
+    edit: string;
+    actions: string;
+    name: string;
+    sort: string;
+    type: string;
   };
   nav: {
     wishlist: string;
@@ -193,6 +200,268 @@ export type Translations = {
     accessorySuggestionsComputer: string[];
     accessorySuggestionsOther: string[];
   };
+  pages: {
+    timeline: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+    };
+    stats: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      loadingCharts: string;
+      loadingChartsSubtitle: string;
+      atAGlance: string;
+      totalDevices: string;
+      working: string;
+      avgEstValue: string;
+      topCategory: string;
+    };
+    usage: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      dataCounts: string;
+      storage: string;
+      devices: string;
+      images: string;
+      maintenanceTasks: string;
+      categories: string;
+      templates: string;
+      tags: string;
+      totalImageStorage: string;
+      bytes: string;
+    };
+    trash: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      emptyTitle: string;
+      emptyText: string;
+      acquiredLabel: string;
+      unknownCategory: string;
+      confirmDelete: string;
+      yesDelete: string;
+      restore: string;
+      deleteForever: string;
+      deletedDevice: string;
+      deletedDevices: string;
+    };
+    categories: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      addSection: string;
+      sort: string;
+      actions: string;
+    };
+    financials: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      loadingChart: string;
+      loadingChartSubtitle: string;
+      summary: string;
+      totalSpent: string;
+      totalReceived: string;
+      netCash: string;
+      estimatedValueOwned: string;
+      maintenanceCosts: string;
+      netPosition: string;
+      realizedProfit: string;
+      valueOverTime: string;
+      valueOverTimeDesc: string;
+      transactionHistory: string;
+      transactionHistoryDesc: string;
+      noTransactions: string;
+      rows: string;
+      typeCol: string;
+      device: string;
+      amount: string;
+      cumulativeNet: string;
+      txSold: string;
+      txDonated: string;
+      txMaintenance: string;
+      txRepairFee: string;
+      txAcquired: string;
+    };
+    wishlist: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      addItem: string;
+      newItem: string;
+      editPrefix: string;
+      emptyTitle: string;
+      emptySubtitle: string;
+      other: string;
+      templateSection: string;
+      templateSearch: string;
+      noTemplatesFound: string;
+      basicInfo: string;
+      specifications: string;
+      sourceAndNotes: string;
+      targetPriceLabel: string;
+      groupLabel: string;
+      sourceUrlLabel: string;
+      sourceNotesLabel: string;
+      high: string;
+      medium: string;
+      low: string;
+      noneOption: string;
+      targetPrefix: string;
+      sourcePrefix: string;
+      viewSource: string;
+      saving: string;
+      acquiredBtn: string;
+      deleteConfirmPre: string;
+      deleteConfirmPost: string;
+      itemSingular: string;
+      itemPlural: string;
+    };
+    customFields: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      addSection: string;
+      sortPlaceholder: string;
+      fieldNamePlaceholder: string;
+      publicLabel: string;
+      emptyState: string;
+      visibility: string;
+      publicBadge: string;
+      privateBadge: string;
+      deleteTitle: string;
+      deleteDescPre: string;
+      deleteDescPost: string;
+      deleteConfirmPre: string;
+      deleteConfirmPost: string;
+      deleteFieldBtn: string;
+    };
+    templates: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      newTemplate: string;
+      additional: string;
+      model: string;
+      year: string;
+      actions: string;
+      newTemplateTitle: string;
+      editTemplateTitle: string;
+      closeBtn: string;
+      selectCategory: string;
+      openLink: string;
+      rarityNotSet: string;
+      computerSpecs: string;
+      deleteConfirm: string;
+    };
+    print: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      filterBtn: string;
+      generateBtn: string;
+      backToSelection: string;
+      printBtn: string;
+      selectionInfoOf: string;
+      selectionInfoDesc: string;
+      collectionTitle: string;
+      generatedOn: string;
+      tableOfContents: string;
+      idHeader: string;
+      categoryHeader: string;
+      nameHeader: string;
+      yearHeader: string;
+      statusHeader: string;
+      imagesHeader: string;
+      tasksHeader: string;
+      functionalHeader: string;
+      identificationSection: string;
+      statusValueSection: string;
+      acquisitionSection: string;
+      specificationsSection: string;
+      descriptionSection: string;
+      tagsSection: string;
+      maintenanceSection: string;
+      manufacturerLabel: string;
+      modelLabel: string;
+      serialLabel: string;
+      locationLabel: string;
+      assetTaggedLabel: string;
+      functionalLabel: string;
+      originalBoxLabel: string;
+      pramRemovedLabel: string;
+      estValueLabel: string;
+      soldPriceLabel: string;
+      dateAcquiredLabel: string;
+      whereLabel: string;
+      pricePaidLabel: string;
+      osLabel: string;
+      taskHeader: string;
+      dateCompletedHeader: string;
+      functionalYes: string;
+      functionalPartial: string;
+      functionalNo: string;
+    };
+  };
+  form: {
+    templateSection: string;
+    searchLabel: string;
+    templateSearchPlaceholder: string;
+    selectedPrefix: string;
+    clearTemplate: string;
+    noMatchingTemplates: string;
+    startTypingSearch: string;
+    basicInformation: string;
+    statusCondition: string;
+    repairInformation: string;
+    additionalInformation: string;
+    additionalNameLabel: string;
+    manufacturerLabel: string;
+    modelNumberLabel: string;
+    scanBtn: string;
+    scanSerialTitle: string;
+    lastPowerOnLabel: string;
+    notSet: string;
+    favoriteLabel: string;
+    assetTaggedLabel: string;
+    selectCategory: string;
+    namePlaceholder: string;
+    additionalNamePlaceholder: string;
+    manufacturerPlaceholder: string;
+    modelNumberPlaceholder: string;
+    locationPlaceholder: string;
+    whereAcquiredPlaceholder: string;
+    repairFeeLabel: string;
+    returnedDateLabel: string;
+    donationInformation: string;
+    salesInformation: string;
+    cpuPlaceholder: string;
+    ramPlaceholder: string;
+    graphicsPlaceholder: string;
+    storagePlaceholder: string;
+    osPlaceholder: string;
+    accessoryCustomPlaceholder: string;
+    linkLabelPlaceholder: string;
+    linkUrlPlaceholder: string;
+    descriptionLabel: string;
+    descriptionPlaceholder: string;
+    saving: string;
+    createDevice: string;
+    saveChanges: string;
+  };
 };
 
 export const en: Translations = {
@@ -224,6 +493,30 @@ export const en: Translations = {
     RARE: "Rare",
     VERY_RARE: "Very Rare",
     EXTREMELY_RARE: "Extremely Rare",
+  },
+  icons: {
+    favorite: "Favorite",
+    notFavorite: "Not a Favorite",
+    hasOriginalBox: "Has Original Box",
+    noOriginalBox: "No Original Box",
+    pramRemoved: "PRAM Battery Removed",
+    pramNotRemoved: "PRAM Battery NOT Removed",
+    assetTagged: "Asset Tagged",
+    notAssetTagged: "Not Asset Tagged",
+    rarityPrefix: "Rarity: ",
+    functionalYes: "Functional: YES",
+    functionalPartial: "Functional: PARTIAL",
+    functionalNo: "Functional: NO",
+  },
+  table: {
+    thumbnail: "Thumbnail",
+    year: "Year",
+    manufacturerModel: "Manufacturer & Model",
+    dateAcquired: "Date Acquired",
+    estValue: "Est. Value",
+    location: "Location",
+    availability: "Availability",
+    indicators: "Indicators",
   },
   filter: {
     title: "Filter Devices",
@@ -259,30 +552,6 @@ export const en: Translations = {
     available: "Available",
     pending: "Pending",
   },
-  icons: {
-    favorite: "Favorite",
-    notFavorite: "Not a Favorite",
-    hasOriginalBox: "Has Original Box",
-    noOriginalBox: "No Original Box",
-    pramRemoved: "PRAM Battery Removed",
-    pramNotRemoved: "PRAM Battery NOT Removed",
-    assetTagged: "Asset Tagged",
-    notAssetTagged: "Not Asset Tagged",
-    rarityPrefix: "Rarity: ",
-    functionalYes: "Functional: YES",
-    functionalPartial: "Functional: PARTIAL",
-    functionalNo: "Functional: NO",
-  },
-  table: {
-    thumbnail: "Thumbnail",
-    year: "Year",
-    manufacturerModel: "Manufacturer & Model",
-    dateAcquired: "Date Acquired",
-    estValue: "Est. Value",
-    location: "Location",
-    availability: "Availability",
-    indicators: "Indicators",
-  },
   common: {
     cancel: "Cancel",
     delete: "Delete",
@@ -298,6 +567,13 @@ export const en: Translations = {
     date: "Date",
     cost: "Cost",
     currencySymbol: "$",
+    back: "Back",
+    save: "Save",
+    edit: "Edit",
+    actions: "Actions",
+    name: "Name",
+    sort: "Sort",
+    type: "Type",
   },
   nav: {
     wishlist: "Wishlist",
@@ -389,5 +665,267 @@ export const en: Translations = {
     customAccessoryPlaceholder: "Custom accessory…",
     accessorySuggestionsComputer: ['Original Box', 'Keyboard', 'Mouse', 'Power Cable/Adapter', 'Power Supply', 'Manual/Documentation', 'Software Disks', 'Monitor'],
     accessorySuggestionsOther: ['Original Box', 'Power Cable', 'Cables/Adapters', 'Manual'],
+  },
+  pages: {
+    timeline: {
+      title: "Collection Timeline",
+      subtitle: "Your collection in historical context.",
+      loading: "Loading timeline…",
+      loadingSubtitle: "Consulting the archives",
+    },
+    stats: {
+      title: "Collection Stats",
+      subtitle: "Visual breakdown of your collection composition and acquisition trends.",
+      loading: "Loading stats…",
+      loadingSubtitle: "Tallying the collection",
+      loadingCharts: "Loading charts…",
+      loadingChartsSubtitle: "Crunching the numbers",
+      atAGlance: "At a Glance",
+      totalDevices: "Total Devices",
+      working: "Working",
+      avgEstValue: "Avg. Est. Value",
+      topCategory: "Top Category",
+    },
+    usage: {
+      title: "System Usage",
+      subtitle: "Overview of your inventory data",
+      loading: "Loading usage data…",
+      loadingSubtitle: "Tallying things up",
+      dataCounts: "Data Counts",
+      storage: "Storage",
+      devices: "Devices",
+      images: "Images",
+      maintenanceTasks: "Maintenance Tasks",
+      categories: "Categories",
+      templates: "Templates",
+      tags: "Tags",
+      totalImageStorage: "Total Image Storage",
+      bytes: "bytes",
+    },
+    trash: {
+      title: "Trash",
+      subtitle: "Deleted devices can be restored or permanently deleted.",
+      loading: "Loading deleted devices…",
+      loadingSubtitle: "Checking the trash",
+      emptyTitle: "Trash is empty",
+      emptyText: "Deleted devices will appear here.",
+      acquiredLabel: "Acquired:",
+      unknownCategory: "Unknown",
+      confirmDelete: "Delete permanently?",
+      yesDelete: "Yes, Delete",
+      restore: "Restore",
+      deleteForever: "Delete Forever",
+      deletedDevice: "deleted device",
+      deletedDevices: "deleted devices",
+    },
+    categories: {
+      title: "Manage Categories",
+      subtitle: "Add and edit categories (no delete yet).",
+      loading: "Loading categories…",
+      loadingSubtitle: "Building the index",
+      addSection: "Add Category",
+      sort: "Sort",
+      actions: "Actions",
+    },
+    financials: {
+      title: "Financials",
+      subtitle: "Overview of spend, sales, and estimated collection position.",
+      loading: "Loading financials…",
+      loadingSubtitle: "Running the numbers",
+      loadingChart: "Loading chart…",
+      loadingChartSubtitle: "Plotting the lines",
+      summary: "Summary",
+      totalSpent: "Total Spent",
+      totalReceived: "Total Received",
+      netCash: "Net Cash (Received + Spent)",
+      estimatedValueOwned: "Estimated Value (Still Owned)",
+      maintenanceCosts: "Maintenance Costs",
+      netPosition: "Net Position (Owned Value + Net Cash − Maintenance)",
+      realizedProfit: "Realized Profit (Sold Devices Only)",
+      valueOverTime: "Collection Value Over Time",
+      valueOverTimeDesc: "Track cumulative cash flow, estimated value, and net position as your collection grows.",
+      transactionHistory: "Transaction History",
+      transactionHistoryDesc: "Acquisitions are negative cash and positive estimated value. Sales and donations are negative estimated value (removed from collection).",
+      noTransactions: "No transactions yet.",
+      rows: "rows",
+      typeCol: "Type",
+      device: "Device",
+      amount: "Amount",
+      cumulativeNet: "Cumulative Net",
+      txSold: "Sold",
+      txDonated: "Donated",
+      txMaintenance: "Maintenance",
+      txRepairFee: "Repair Fee",
+      txAcquired: "Acquired",
+    },
+    wishlist: {
+      title: "Wishlist",
+      subtitle: "Devices you want to acquire, with target prices and sources.",
+      loading: "Loading wishlist…",
+      loadingSubtitle: "Checking the want list",
+      addItem: "+ Add Item",
+      newItem: "New Wishlist Item",
+      editPrefix: "Edit:",
+      emptyTitle: "Your wishlist is empty.",
+      emptySubtitle: "Add devices you want to acquire.",
+      other: "Other",
+      templateSection: "Template (Optional)",
+      templateSearch: "Search templates to pre-fill specs…",
+      noTemplatesFound: "No templates found",
+      basicInfo: "Basic Info",
+      specifications: "Specifications",
+      sourceAndNotes: "Source & Notes",
+      targetPriceLabel: "Target Price",
+      groupLabel: "Group",
+      sourceUrlLabel: "Source URL",
+      sourceNotesLabel: "Source Notes",
+      high: "High",
+      medium: "Medium",
+      low: "Low",
+      noneOption: "— None —",
+      targetPrefix: "Target:",
+      sourcePrefix: "Source:",
+      viewSource: "View Source",
+      saving: "Saving…",
+      acquiredBtn: "Acquired",
+      deleteConfirmPre: 'Delete "',
+      deleteConfirmPost: '" from wishlist?',
+      itemSingular: "item",
+      itemPlural: "items",
+    },
+    customFields: {
+      title: "Manage Custom Fields",
+      subtitle: "Define custom attributes that can be set on any device.",
+      loading: "Loading custom fields...",
+      loadingSubtitle: "Fetching field definitions",
+      addSection: "Add Custom Field",
+      sortPlaceholder: "Sort",
+      fieldNamePlaceholder: "Field name",
+      publicLabel: "Public",
+      emptyState: "No custom fields defined yet. Add one above.",
+      visibility: "Visibility",
+      publicBadge: "Public",
+      privateBadge: "Private",
+      deleteTitle: "Delete Custom Field",
+      deleteDescPre: 'This will permanently delete the field "',
+      deleteDescPost: '" and remove its value from all devices. This action cannot be undone.',
+      deleteConfirmPre: "Type ",
+      deleteConfirmPost: " to confirm:",
+      deleteFieldBtn: "Delete Field",
+    },
+    templates: {
+      title: "Manage Templates",
+      subtitle: "Add, edit, and delete templates.",
+      loading: "Loading templates…",
+      loadingSubtitle: "Fetching your saved presets",
+      newTemplate: "New Template",
+      additional: "Additional",
+      model: "Model",
+      year: "Year",
+      actions: "Actions",
+      newTemplateTitle: "New Template",
+      editTemplateTitle: "Edit Template",
+      closeBtn: "Close",
+      selectCategory: "Select a category",
+      openLink: "Open link",
+      rarityNotSet: "Not Set",
+      computerSpecs: "Computer Specs",
+      deleteConfirm: "Delete this template?",
+    },
+    print: {
+      title: "Print List",
+      subtitle: "Select devices to generate a printable inventory list.",
+      loading: "Loading devices…",
+      loadingSubtitle: "Preparing the print list",
+      filterBtn: "Filter",
+      generateBtn: "Generate Print View",
+      backToSelection: "← Back to Selection",
+      printBtn: "Print",
+      selectionInfoOf: "of",
+      selectionInfoDesc: "devices selected for printing. Use the Filter button to narrow down the selection.",
+      collectionTitle: "Device Collection Inventory",
+      generatedOn: "Generated on",
+      tableOfContents: "Table of Contents",
+      idHeader: "ID",
+      categoryHeader: "Category",
+      nameHeader: "Name",
+      yearHeader: "Year",
+      statusHeader: "Status",
+      imagesHeader: "Images",
+      tasksHeader: "Tasks",
+      functionalHeader: "Functional",
+      identificationSection: "Identification",
+      statusValueSection: "Status & Value",
+      acquisitionSection: "Acquisition",
+      specificationsSection: "Specifications",
+      descriptionSection: "Description",
+      tagsSection: "Tags",
+      maintenanceSection: "Maintenance Tasks",
+      manufacturerLabel: "Manufacturer:",
+      modelLabel: "Model:",
+      serialLabel: "Serial:",
+      locationLabel: "Location:",
+      assetTaggedLabel: "Asset Tagged:",
+      functionalLabel: "Functional:",
+      originalBoxLabel: "Original Box:",
+      pramRemovedLabel: "PRAM Removed:",
+      estValueLabel: "Est. Value:",
+      soldPriceLabel: "Sold Price:",
+      dateAcquiredLabel: "Date Acquired:",
+      whereLabel: "Where:",
+      pricePaidLabel: "Price Paid:",
+      osLabel: "OS:",
+      taskHeader: "Task",
+      dateCompletedHeader: "Date Completed",
+      functionalYes: "Functional",
+      functionalPartial: "Partially Functional",
+      functionalNo: "Not Functional",
+    },
+  },
+  form: {
+    templateSection: "Template",
+    searchLabel: "Search",
+    templateSearchPlaceholder: "Search templates (name, nickname, manufacturer, model number)",
+    selectedPrefix: "Selected:",
+    clearTemplate: "Clear",
+    noMatchingTemplates: "No matching templates.",
+    startTypingSearch: "Start typing to search templates.",
+    basicInformation: "Basic Information",
+    statusCondition: "Status & Condition",
+    repairInformation: "Repair Information",
+    additionalInformation: "Additional Information",
+    additionalNameLabel: "Additional Name",
+    manufacturerLabel: "Manufacturer",
+    modelNumberLabel: "Model Number",
+    scanBtn: "Scan",
+    scanSerialTitle: "Scan Serial Number",
+    lastPowerOnLabel: "Last Power On Date",
+    notSet: "— Not Set —",
+    favoriteLabel: "Favorite",
+    assetTaggedLabel: "Asset Tagged",
+    selectCategory: "Select a category",
+    namePlaceholder: "e.g., Macintosh SE",
+    additionalNamePlaceholder: "e.g., FDHD",
+    manufacturerPlaceholder: "e.g., Apple",
+    modelNumberPlaceholder: "e.g., M5011",
+    locationPlaceholder: "e.g., Shelf A",
+    whereAcquiredPlaceholder: "e.g., eBay, Estate Sale",
+    repairFeeLabel: "Repair Fee Charged",
+    returnedDateLabel: "Returned Date",
+    donationInformation: "Donation Information",
+    salesInformation: "Sales Information",
+    cpuPlaceholder: "e.g., Motorola 68000 8MHz",
+    ramPlaceholder: "e.g., 4MB",
+    graphicsPlaceholder: 'e.g., Built-in 9" CRT',
+    storagePlaceholder: "e.g., 20MB SCSI HDD",
+    osPlaceholder: "e.g., System 6.0.8",
+    accessoryCustomPlaceholder: "Custom accessory...",
+    linkLabelPlaceholder: "Label (e.g. EveryMac)",
+    linkUrlPlaceholder: "https://...",
+    descriptionLabel: "Description / Notes",
+    descriptionPlaceholder: "Add any additional information about this device...",
+    saving: "Saving...",
+    createDevice: "Create Device",
+    saveChanges: "Save Changes",
   },
 };

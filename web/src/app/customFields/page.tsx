@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useT } from "../../i18n/context";
 
 const GET_CUSTOM_FIELDS = gql`
   query GetCustomFields {
@@ -53,6 +54,7 @@ type CustomField = {
 };
 
 export default function CustomFieldsPage() {
+  const t = useT();
   const { data, loading, error, refetch } = useQuery(GET_CUSTOM_FIELDS, {
     fetchPolicy: "cache-and-network",
   });
@@ -148,28 +150,28 @@ export default function CustomFieldsPage() {
     <div className="min-h-screen font-sans">
       <header className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Manage Custom Fields</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">Define custom attributes that can be set on any device.</p>
+          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.customFields.title}</h1>
+          <p className="text-sm text-[var(--muted-foreground)]">{t.pages.customFields.subtitle}</p>
         </div>
         <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-          Back
+          {t.common.back}
         </Link>
       </header>
 
       <section className="mb-6 rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-        <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">Add Custom Field</h2>
+        <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{t.pages.customFields.addSection}</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-5">
           <input
             type="number"
             value={newSortOrder}
             onChange={(e) => setNewSortOrder(parseInt(e.target.value || "0", 10))}
-            placeholder="Sort"
+            placeholder={t.pages.customFields.sortPlaceholder}
             className="input-retro w-full px-3 py-2 text-sm text-[var(--foreground)]"
           />
           <input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Field name"
+            placeholder={t.pages.customFields.fieldNamePlaceholder}
             className="input-retro w-full px-3 py-2 text-sm text-[var(--foreground)] sm:col-span-2"
           />
           <label className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--foreground)] cursor-pointer">
@@ -179,7 +181,7 @@ export default function CustomFieldsPage() {
               onChange={(e) => setNewIsPublic(e.target.checked)}
               className="accent-[var(--apple-blue)]"
             />
-            Public
+            {t.pages.customFields.publicLabel}
           </label>
           <button
             type="button"
@@ -187,14 +189,14 @@ export default function CustomFieldsPage() {
             disabled={creating || !newName.trim()}
             className="inline-flex items-center justify-center rounded bg-[var(--apple-blue)] px-4 py-2 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50 border border-[#007acc]"
           >
-            Add
+            {t.common.add}
           </button>
         </div>
       </section>
 
       {loading && (
         <div className="p-4">
-          <LoadingPanel title="Loading custom fields..." subtitle="Fetching field definitions" />
+          <LoadingPanel title={t.pages.customFields.loading} subtitle={t.pages.customFields.loadingSubtitle} />
         </div>
       )}
       {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
@@ -203,16 +205,16 @@ export default function CustomFieldsPage() {
         <section className="overflow-hidden rounded border border-[var(--border)] card-retro">
           {customFields.length === 0 ? (
             <div className="p-8 text-center text-sm text-[var(--muted-foreground)]">
-              No custom fields defined yet. Add one above.
+              {t.pages.customFields.emptyState}
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead className="bg-[var(--muted)] text-[var(--foreground)]">
                 <tr>
-                  <th className="px-4 py-2 text-left font-medium">Sort</th>
-                  <th className="px-4 py-2 text-left font-medium">Name</th>
-                  <th className="px-4 py-2 text-left font-medium">Visibility</th>
-                  <th className="px-4 py-2 text-right font-medium">Actions</th>
+                  <th className="px-4 py-2 text-left font-medium">{t.common.sort}</th>
+                  <th className="px-4 py-2 text-left font-medium">{t.common.name}</th>
+                  <th className="px-4 py-2 text-left font-medium">{t.pages.customFields.visibility}</th>
+                  <th className="px-4 py-2 text-right font-medium">{t.pages.categories.actions}</th>
                 </tr>
               </thead>
               <tbody className="bg-[var(--card)]">
@@ -252,7 +254,7 @@ export default function CustomFieldsPage() {
                               onChange={(e) => setEditIsPublic(e.target.checked)}
                               className="accent-[var(--apple-blue)]"
                             />
-                            Public
+                            {t.pages.customFields.publicLabel}
                           </label>
                         ) : (
                           <span className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${
@@ -260,7 +262,7 @@ export default function CustomFieldsPage() {
                               ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                               : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
                           }`}>
-                            {field.isPublic ? "Public" : "Private"}
+                            {field.isPublic ? t.pages.customFields.publicBadge : t.pages.customFields.privateBadge}
                           </span>
                         )}
                       </td>
@@ -273,7 +275,7 @@ export default function CustomFieldsPage() {
                               disabled={updating}
                               className="btn-retro px-3 py-1 text-sm disabled:opacity-50"
                             >
-                              Cancel
+                              {t.common.cancel}
                             </button>
                             <button
                               type="button"
@@ -281,7 +283,7 @@ export default function CustomFieldsPage() {
                               disabled={updating}
                               className="rounded bg-[var(--apple-blue)] px-3 py-1 text-sm text-white hover:brightness-110 disabled:opacity-50 border border-[#007acc]"
                             >
-                              Save
+                              {t.common.save}
                             </button>
                           </div>
                         ) : (
@@ -291,14 +293,14 @@ export default function CustomFieldsPage() {
                               onClick={() => startEdit(field)}
                               className="btn-retro px-3 py-1 text-sm"
                             >
-                              Edit
+                              {t.common.edit}
                             </button>
                             <button
                               type="button"
                               onClick={() => { setDeleteField(field); setDeleteConfirmText(""); }}
                               className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700 border border-red-700"
                             >
-                              Delete
+                              {t.common.delete}
                             </button>
                           </div>
                         )}
@@ -316,12 +318,12 @@ export default function CustomFieldsPage() {
       {deleteField && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-md rounded-lg border border-[var(--border)] bg-[var(--card)] p-6 shadow-xl card-retro">
-            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">Delete Custom Field</h3>
+            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">{t.pages.customFields.deleteTitle}</h3>
             <p className="text-sm text-[var(--muted-foreground)] mb-4">
-              This will permanently delete the field <strong>&quot;{deleteField.name}&quot;</strong> and remove its value from all devices. This action cannot be undone.
+              {t.pages.customFields.deleteDescPre}<strong>&quot;{deleteField.name}&quot;</strong>{t.pages.customFields.deleteDescPost}
             </p>
             <p className="text-sm text-[var(--foreground)] mb-2">
-              Type <strong>{deleteField.name}</strong> to confirm:
+              {t.pages.customFields.deleteConfirmPre}<strong>{deleteField.name}</strong>{t.pages.customFields.deleteConfirmPost}
             </p>
             <input
               value={deleteConfirmText}
@@ -336,7 +338,7 @@ export default function CustomFieldsPage() {
                 onClick={() => { setDeleteField(null); setDeleteConfirmText(""); }}
                 className="btn-retro px-4 py-2 text-sm"
               >
-                Cancel
+                {t.common.cancel}
               </button>
               <button
                 type="button"
@@ -344,7 +346,7 @@ export default function CustomFieldsPage() {
                 disabled={deleteConfirmText !== deleteField.name || deleting}
                 className="rounded bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50 border border-red-700"
               >
-                Delete Field
+                {t.pages.customFields.deleteFieldBtn}
               </button>
             </div>
           </div>

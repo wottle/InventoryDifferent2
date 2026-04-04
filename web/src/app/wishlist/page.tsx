@@ -5,6 +5,7 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useT } from "../../i18n/context";
 
 const GET_WISHLIST = gql`
   query GetWishlistItems {
@@ -140,7 +141,7 @@ interface WishlistItem {
   isPramBatteryRemoved?: boolean;
 }
 
-const PRIORITY_LABELS: Record<number, string> = { 1: "High", 2: "Medium", 3: "Low" };
+// PRIORITY_LABELS is now derived from t inside components that need it
 const PRIORITY_CLASSES: Record<number, string> = {
   1: "bg-rose-100 text-rose-700 border border-rose-300 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700",
   2: "bg-amber-100 text-amber-700 border border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700",
@@ -170,11 +171,6 @@ const emptyForm = {
   isPramBatteryRemoved: false,
 };
 
-function formatCurrency(value: number | null | undefined) {
-  if (value === null || value === undefined) return "";
-  return `$${Number(value).toFixed(2)}`;
-}
-
 interface WishlistFormProps {
   categories: Category[];
   templates: Template[];
@@ -186,8 +182,14 @@ interface WishlistFormProps {
 }
 
 function WishlistForm({ categories, templates, existingGroups, initialValues, onSave, onCancel, saving }: WishlistFormProps) {
+  const t = useT();
   const [form, setForm] = useState({ ...emptyForm, ...initialValues });
   const [templateQuery, setTemplateQuery] = useState("");
+
+  const formatCurrency = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return "";
+    return `${t.common.currencySymbol}${Number(value).toFixed(2)}`;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -260,81 +262,81 @@ function WishlistForm({ categories, templates, existingGroups, initialValues, on
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Template picker */}
       <div>
-        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-2">Template (Optional)</p>
+        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-2">{t.pages.wishlist.templateSection}</p>
         <input
           type="text"
           value={templateQuery}
           onChange={e => setTemplateQuery(e.target.value)}
-          placeholder="Search templates to pre-fill specs…"
+          placeholder={t.pages.wishlist.templateSearch}
           className={inputClass}
         />
         {filteredTemplates.length > 0 && (
           <div className="mt-1 border border-[var(--border)] rounded divide-y divide-[var(--border)] bg-[var(--card)]">
-            {filteredTemplates.map(t => (
+            {filteredTemplates.map(tpl => (
               <button
-                key={t.id}
+                key={tpl.id}
                 type="button"
-                onClick={() => applyTemplate(t)}
+                onClick={() => applyTemplate(tpl)}
                 className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--accent)] transition-colors"
               >
-                <span className="font-medium text-[var(--foreground)]">{t.name}</span>
-                {t.manufacturer && <span className="text-[var(--muted-foreground)] ml-2">· {t.manufacturer}</span>}
+                <span className="font-medium text-[var(--foreground)]">{tpl.name}</span>
+                {tpl.manufacturer && <span className="text-[var(--muted-foreground)] ml-2">· {tpl.manufacturer}</span>}
               </button>
             ))}
           </div>
         )}
         {templateQuery && filteredTemplates.length === 0 && (
-          <p className="text-xs text-[var(--muted-foreground)] mt-1">No templates found</p>
+          <p className="text-xs text-[var(--muted-foreground)] mt-1">{t.pages.wishlist.noTemplatesFound}</p>
         )}
       </div>
 
       {/* Basic info */}
       <div>
-        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Basic Info</p>
+        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">{t.pages.wishlist.basicInfo}</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className={labelClass}>Name <span className="text-[var(--apple-red)]">*</span></label>
+            <label className={labelClass}>{t.common.name} <span className="text-[var(--apple-red)]">*</span></label>
             <input name="name" value={form.name} onChange={handleChange} required className={inputClass} placeholder="e.g. Apple Macintosh Plus" />
           </div>
           <div>
-            <label className={labelClass}>Additional Name</label>
+            <label className={labelClass}>{t.form.additionalNameLabel}</label>
             <input name="additionalName" value={form.additionalName} onChange={handleChange} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Manufacturer</label>
+            <label className={labelClass}>{t.form.manufacturerLabel}</label>
             <input name="manufacturer" value={form.manufacturer} onChange={handleChange} className={inputClass} placeholder="e.g. Apple" />
           </div>
           <div>
-            <label className={labelClass}>Model Number</label>
+            <label className={labelClass}>{t.form.modelNumberLabel}</label>
             <input name="modelNumber" value={form.modelNumber} onChange={handleChange} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Release Year</label>
+            <label className={labelClass}>{t.detail.releaseYear}</label>
             <input name="releaseYear" type="number" value={form.releaseYear} onChange={handleChange} className={inputClass} placeholder="e.g. 1986" min="1900" max="2099" />
           </div>
           <div>
-            <label className={labelClass}>Target Price ($)</label>
+            <label className={labelClass}>{t.pages.wishlist.targetPriceLabel}</label>
             <input name="targetPrice" type="number" step="0.01" value={form.targetPrice} onChange={handleChange} className={inputClass} placeholder="0.00" />
           </div>
           <div>
             <label className={labelClass}>Priority</label>
             <select name="priority" value={form.priority} onChange={handleChange} className={selectClass}>
-              <option value={1}>High</option>
-              <option value={2}>Medium</option>
-              <option value={3}>Low</option>
+              <option value={1}>{t.pages.wishlist.high}</option>
+              <option value={2}>{t.pages.wishlist.medium}</option>
+              <option value={3}>{t.pages.wishlist.low}</option>
             </select>
           </div>
           <div>
-            <label className={labelClass}>Category</label>
+            <label className={labelClass}>{t.filter.category}</label>
             <select name="categoryId" value={form.categoryId} onChange={handleChange} className={selectClass}>
-              <option value="">— None —</option>
+              <option value="">{t.pages.wishlist.noneOption}</option>
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className={labelClass}>Group</label>
+            <label className={labelClass}>{t.pages.wishlist.groupLabel}</label>
             <input
               name="group"
               value={form.group}
@@ -355,26 +357,26 @@ function WishlistForm({ categories, templates, existingGroups, initialValues, on
 
       {/* Specifications */}
       <div>
-        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Specifications</p>
+        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">{t.pages.wishlist.specifications}</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className={labelClass}>CPU</label>
+            <label className={labelClass}>{t.detail.cpu}</label>
             <input name="cpu" value={form.cpu} onChange={handleChange} className={inputClass} placeholder="e.g. Motorola 68000" />
           </div>
           <div>
-            <label className={labelClass}>RAM</label>
+            <label className={labelClass}>{t.detail.ram}</label>
             <input name="ram" value={form.ram} onChange={handleChange} className={inputClass} placeholder="e.g. 4 MB" />
           </div>
           <div>
-            <label className={labelClass}>Graphics</label>
+            <label className={labelClass}>{t.detail.graphics}</label>
             <input name="graphics" value={form.graphics} onChange={handleChange} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Storage</label>
+            <label className={labelClass}>{t.detail.storage}</label>
             <input name="storage" value={form.storage} onChange={handleChange} className={inputClass} placeholder="e.g. 40 MB HDD" />
           </div>
           <div>
-            <label className={labelClass}>Operating System</label>
+            <label className={labelClass}>{t.detail.operatingSystem}</label>
             <input name="operatingSystem" value={form.operatingSystem} onChange={handleChange} className={inputClass} placeholder="e.g. System 7" />
           </div>
           <div>
@@ -384,11 +386,11 @@ function WishlistForm({ categories, templates, existingGroups, initialValues, on
           <div className="flex gap-6">
             <label className={checkboxLabel}>
               <input type="checkbox" name="isWifiEnabled" checked={!!form.isWifiEnabled} onChange={handleChange} className="rounded" />
-              WiFi Enabled
+              {t.detail.wifiEnabled}
             </label>
             <label className={checkboxLabel}>
               <input type="checkbox" name="isPramBatteryRemoved" checked={!!form.isPramBatteryRemoved} onChange={handleChange} className="rounded" />
-              PRAM Battery Removed
+              {t.detail.pramBatteryRemoved}
             </label>
           </div>
         </div>
@@ -396,18 +398,18 @@ function WishlistForm({ categories, templates, existingGroups, initialValues, on
 
       {/* Source & Notes */}
       <div>
-        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Source & Notes</p>
+        <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">{t.pages.wishlist.sourceAndNotes}</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className={labelClass}>Source URL</label>
+            <label className={labelClass}>{t.pages.wishlist.sourceUrlLabel}</label>
             <input name="sourceUrl" type="url" value={form.sourceUrl} onChange={handleChange} className={inputClass} placeholder="https://..." />
           </div>
           <div>
-            <label className={labelClass}>Source Notes</label>
+            <label className={labelClass}>{t.pages.wishlist.sourceNotesLabel}</label>
             <input name="sourceNotes" value={form.sourceNotes} onChange={handleChange} className={inputClass} placeholder="Where to find it, seller details, etc." />
           </div>
           <div className="sm:col-span-2">
-            <label className={labelClass}>Notes</label>
+            <label className={labelClass}>{t.common.notes}</label>
             <textarea name="notes" value={form.notes} onChange={handleChange} className={inputClass} rows={3} placeholder="Condition requirements, variant notes, etc." />
           </div>
         </div>
@@ -415,10 +417,10 @@ function WishlistForm({ categories, templates, existingGroups, initialValues, on
 
       <div className="flex gap-2 pt-2">
         <button type="submit" disabled={saving} className="btn-retro text-sm px-4 py-1.5">
-          {saving ? "Saving…" : "Save"}
+          {saving ? t.pages.wishlist.saving : t.common.save}
         </button>
         <button type="button" onClick={onCancel} className="btn-retro text-sm px-4 py-1.5">
-          Cancel
+          {t.common.cancel}
         </button>
       </div>
     </form>
@@ -434,7 +436,19 @@ function WishlistItemCard({
   onEdit: (item: WishlistItem) => void;
   onDelete: (item: WishlistItem) => void;
 }) {
+  const t = useT();
   const router = useRouter();
+
+  const formatCurrency = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return "";
+    return `${t.common.currencySymbol}${Number(value).toFixed(2)}`;
+  };
+
+  const PRIORITY_LABELS: Record<number, string> = {
+    1: t.pages.wishlist.high,
+    2: t.pages.wishlist.medium,
+    3: t.pages.wishlist.low,
+  };
 
   const handleMarkAcquired = () => {
     const params = new URLSearchParams();
@@ -483,7 +497,7 @@ function WishlistItemCard({
               </div>
             )}
             {item.targetPrice != null && (
-              <div>Target: <span className="text-[var(--foreground)]">{formatCurrency(item.targetPrice)}</span></div>
+              <div>{t.pages.wishlist.targetPrefix} <span className="text-[var(--foreground)]">{formatCurrency(item.targetPrice)}</span></div>
             )}
             {hasSpecs && (
               <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
@@ -494,7 +508,7 @@ function WishlistItemCard({
               </div>
             )}
             {item.sourceNotes && (
-              <div className="truncate">Source: {item.sourceNotes}</div>
+              <div className="truncate">{t.pages.wishlist.sourcePrefix} {item.sourceNotes}</div>
             )}
             {item.notes && (
               <div className="text-[var(--muted-foreground)] line-clamp-2">{item.notes}</div>
@@ -502,7 +516,7 @@ function WishlistItemCard({
             {item.sourceUrl && (
               <div>
                 <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--apple-blue)] hover:underline">
-                  View Source
+                  {t.pages.wishlist.viewSource}
                 </a>
               </div>
             )}
@@ -510,13 +524,13 @@ function WishlistItemCard({
         </div>
         <div className="flex gap-1 shrink-0">
           <button onClick={handleMarkAcquired} className="btn-retro text-xs px-2 py-1" title="Mark as Acquired — create a new device from this wishlist item">
-            Acquired
+            {t.pages.wishlist.acquiredBtn}
           </button>
           <button onClick={() => onEdit(item)} className="btn-retro text-xs px-2 py-1">
-            Edit
+            {t.common.edit}
           </button>
           <button onClick={() => onDelete(item)} className="btn-retro text-xs px-2 py-1 text-[var(--apple-red)]">
-            Delete
+            {t.common.delete}
           </button>
         </div>
       </div>
@@ -525,6 +539,7 @@ function WishlistItemCard({
 }
 
 export default function WishlistPage() {
+  const t = useT();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
 
@@ -567,7 +582,7 @@ export default function WishlistPage() {
   };
 
   const handleDelete = async (item: WishlistItem) => {
-    if (!confirm(`Delete "${item.name}" from wishlist?`)) return;
+    if (!confirm(`${t.pages.wishlist.deleteConfirmPre}${item.name}${t.pages.wishlist.deleteConfirmPost}`)) return;
     await deleteItem({ variables: { id: item.id } });
     refetch();
   };
@@ -601,9 +616,9 @@ export default function WishlistPage() {
 
       <header className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Wishlist</h1>
+          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.wishlist.title}</h1>
           <p className="text-sm text-[var(--muted-foreground)]">
-            Devices you want to acquire, with target prices and sources.
+            {t.pages.wishlist.subtitle}
           </p>
         </div>
         <div className="flex gap-2">
@@ -611,17 +626,17 @@ export default function WishlistPage() {
             onClick={() => { setShowForm(true); setEditingItem(null); }}
             className="btn-retro text-sm px-3 py-1.5"
           >
-            + Add Item
+            {t.pages.wishlist.addItem}
           </button>
           <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-            Back
+            {t.common.back}
           </Link>
         </div>
       </header>
 
       {loading && (
         <div className="p-4">
-          <LoadingPanel title="Loading wishlist…" subtitle="Checking the want list" />
+          <LoadingPanel title={t.pages.wishlist.loading} subtitle={t.pages.wishlist.loadingSubtitle} />
         </div>
       )}
       {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
@@ -629,7 +644,7 @@ export default function WishlistPage() {
       {/* Add form */}
       {showForm && (
         <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro mb-6">
-          <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">New Wishlist Item</h2>
+          <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.wishlist.newItem}</h2>
           <WishlistForm
             categories={categories}
             templates={templates}
@@ -644,7 +659,7 @@ export default function WishlistPage() {
       {/* Edit form */}
       {editingItem && (
         <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro mb-6">
-          <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">Edit: {editingItem.name}</h2>
+          <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.wishlist.editPrefix} {editingItem.name}</h2>
           <WishlistForm
             categories={categories}
             templates={templates}
@@ -660,8 +675,8 @@ export default function WishlistPage() {
       {!loading && !error && items.length === 0 && !showForm && (
         <div className="text-center py-16 text-[var(--muted-foreground)]">
           <div className="text-4xl mb-4">✦</div>
-          <p className="text-sm">Your wishlist is empty.</p>
-          <p className="text-xs mt-1">Add devices you want to acquire.</p>
+          <p className="text-sm">{t.pages.wishlist.emptyTitle}</p>
+          <p className="text-xs mt-1">{t.pages.wishlist.emptySubtitle}</p>
         </div>
       )}
 
@@ -670,12 +685,12 @@ export default function WishlistPage() {
         <div className="space-y-6">
           {groupKeys.map(groupKey => {
             const groupItems = grouped[groupKey];
-            const groupLabel = groupKey === "__other__" ? "Other" : groupKey;
+            const groupLabel = groupKey === "__other__" ? t.pages.wishlist.other : groupKey;
             return (
               <section key={groupKey} className="rounded border border-[var(--border)] bg-[var(--card)] overflow-hidden card-retro">
                 <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
                   <h2 className="text-sm font-semibold text-[var(--foreground)]">{groupLabel}</h2>
-                  <span className="text-xs text-[var(--muted-foreground)]">{groupItems.length} item{groupItems.length !== 1 ? "s" : ""}</span>
+                  <span className="text-xs text-[var(--muted-foreground)]">{groupItems.length} {groupItems.length !== 1 ? t.pages.wishlist.itemPlural : t.pages.wishlist.itemSingular}</span>
                 </div>
                 <div className="p-4 space-y-3">
                   {groupItems.map(item => (
