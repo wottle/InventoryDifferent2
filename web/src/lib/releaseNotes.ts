@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.1';
+export const APP_VERSION = '1.1.2';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.1.2',
+    date: '2026-04-03',
     added: [],
     changed: [
       'i18n: main menu, nav tooltips, inventory footer, device detail section headers, field labels, forms, and all inline buttons now translated (en/de)',
