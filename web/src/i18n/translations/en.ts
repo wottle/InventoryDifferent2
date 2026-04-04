@@ -481,6 +481,46 @@ export type Translations = {
       functionalNo: string;
     };
   };
+  login: {
+    adminLogin: string;
+    username: string;
+    password: string;
+    signingIn: string;
+    signIn: string;
+    continueAsGuest: string;
+    loginFailed: string;
+  };
+  chat: {
+    title: string;
+    toolSearching: string;
+    toolLoadingInventory: string;
+    toolLoadingDevices: string;
+    toolLoadingDetails: string;
+    toolLoadingFinancials: string;
+    conversationModeExit: string;
+    conversationModeStart: string;
+    unmuteVoice: string;
+    muteVoice: string;
+    statusListening: string;
+    statusSpeaking: string;
+    statusThinking: string;
+    statusConversation: string;
+    emptyPrompt: string;
+    emptyExamplesTitle: string;
+    example1: string;
+    example2: string;
+    example3: string;
+    example4: string;
+    stopListeningTitle: string;
+    speakQuestionTitle: string;
+    inputPlaceholderListening: string;
+    inputPlaceholder: string;
+    speakingStatus: string;
+    speakingListenAfter: string;
+    openAssistantTitle: string;
+    devicesCount: string;
+    resultsCount: string;
+  };
   form: {
     templateSection: string;
     searchLabel: string;
@@ -1012,6 +1052,46 @@ export const en: Translations = {
       functionalPartial: "Partially Functional",
       functionalNo: "Not Functional",
     },
+  },
+  login: {
+    adminLogin: "Admin Login",
+    username: "Username",
+    password: "Password",
+    signingIn: "Signing in...",
+    signIn: "Sign in",
+    continueAsGuest: "Continue as guest (view only)",
+    loginFailed: "Login failed",
+  },
+  chat: {
+    title: "Collection Assistant",
+    toolSearching: "Searching collection",
+    toolLoadingInventory: "Loading full inventory",
+    toolLoadingDevices: "Loading devices",
+    toolLoadingDetails: "Loading device details",
+    toolLoadingFinancials: "Loading financials",
+    conversationModeExit: "Exit conversation mode",
+    conversationModeStart: "Start conversation mode (hands-free)",
+    unmuteVoice: "Unmute voice",
+    muteVoice: "Mute voice",
+    statusListening: "Listening...",
+    statusSpeaking: "Speaking...",
+    statusThinking: "Thinking...",
+    statusConversation: "Conversation mode",
+    emptyPrompt: "Ask me about your collection!",
+    emptyExamplesTitle: "Try questions like:",
+    example1: "\"What Macintosh computers do I have?\"",
+    example2: "\"Show me devices for sale\"",
+    example3: "\"What's my financial summary?\"",
+    example4: "\"Find devices with 68040 CPU\"",
+    stopListeningTitle: "Stop listening",
+    speakQuestionTitle: "Speak your question",
+    inputPlaceholderListening: "Listening...",
+    inputPlaceholder: "Ask about your collection...",
+    speakingStatus: "Speaking",
+    speakingListenAfter: " — will listen when done",
+    openAssistantTitle: "Open Collection Assistant",
+    devicesCount: "devices",
+    resultsCount: "results",
   },
   form: {
     templateSection: "Template",

@@ -4,8 +4,10 @@ import { useState, FormEvent, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
+import { useT } from '../../i18n/context';
 
 function LoginForm() {
+    const t = useT();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -27,7 +29,7 @@ function LoginForm() {
             const redirectTo = searchParams.get('redirect') || '/';
             window.location.href = redirectTo;
         } else {
-            setError(result.error || 'Login failed');
+            setError(result.error || t.login.loginFailed);
             setIsSubmitting(false);
         }
     };
@@ -48,7 +50,7 @@ function LoginForm() {
                         InventoryDifferent
                     </h1>
                     <h2 className="mt-2 text-center text-xl text-[var(--muted-foreground)]">
-                        Admin Login
+                        {t.login.adminLogin}
                     </h2>
                 </div>
 
@@ -56,7 +58,7 @@ function LoginForm() {
                     {usernameRequired && (
                         <div>
                             <label htmlFor="username" className="sr-only">
-                                Username
+                                {t.login.username}
                             </label>
                             <input
                                 id="username"
@@ -67,14 +69,14 @@ function LoginForm() {
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="appearance-none relative block w-full px-3 py-3 border border-[var(--border)] placeholder-[var(--muted-foreground)] text-[var(--foreground)] bg-[var(--input)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 text-lg"
-                                placeholder="Username"
+                                placeholder={t.login.username}
                                 disabled={isSubmitting}
                             />
                         </div>
                     )}
                     <div>
                         <label htmlFor="password" className="sr-only">
-                            Password
+                            {t.login.password}
                         </label>
                         <input
                             id="password"
@@ -85,7 +87,7 @@ function LoginForm() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="appearance-none relative block w-full px-3 py-3 border border-[var(--border)] placeholder-[var(--muted-foreground)] text-[var(--foreground)] bg-[var(--input)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 text-lg"
-                            placeholder="Password"
+                            placeholder={t.login.password}
                             disabled={isSubmitting}
                         />
                     </div>
@@ -108,10 +110,10 @@ function LoginForm() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Signing in...
+                                    {t.login.signingIn}
                                 </span>
                             ) : (
-                                'Sign in'
+                                t.login.signIn
                             )}
                         </button>
                     </div>
@@ -122,7 +124,7 @@ function LoginForm() {
                         href="/"
                         className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                     >
-                        Continue as guest (view only)
+                        {t.login.continueAsGuest}
                     </Link>
                 </div>
             </div>

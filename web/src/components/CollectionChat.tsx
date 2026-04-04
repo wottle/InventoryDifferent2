@@ -5,16 +5,10 @@ import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../lib/auth-context';
 import { useVoiceChat } from '../hooks/useVoiceChat';
-
-const TOOL_LABELS: Record<string, string> = {
-  search_devices: 'Searching collection',
-  list_all_devices: 'Loading full inventory',
-  list_devices: 'Loading devices',
-  get_device_details: 'Loading device details',
-  get_financial_summary: 'Loading financials',
-};
+import { useT } from '../i18n/context';
 
 export function CollectionChat() {
+  const t = useT();
   const { isAuthenticated, isLoading: authLoading, getAccessToken } = useAuth();
   const { messages, input, handleInputChange, handleSubmit, isLoading, error, setInput } = useChat({
     api: '/api/chat',
@@ -104,6 +98,14 @@ export function CollectionChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const TOOL_LABELS: Record<string, string> = {
+    search_devices: t.chat.toolSearching,
+    list_all_devices: t.chat.toolLoadingInventory,
+    list_devices: t.chat.toolLoadingDevices,
+    get_device_details: t.chat.toolLoadingDetails,
+    get_financial_summary: t.chat.toolLoadingFinancials,
+  };
+
   // Don't render anything if not authenticated, chat is disabled, or still checking
   if (authLoading || !isAuthenticated || isChecking || !isEnabled) {
     return null;
@@ -130,7 +132,7 @@ export function CollectionChat() {
   };
 
   const statusLabel = autoListen
-    ? isListening ? 'Listening...' : isSpeaking ? 'Speaking...' : isLoading ? 'Thinking...' : 'Conversation mode'
+    ? isListening ? t.chat.statusListening : isSpeaking ? t.chat.statusSpeaking : isLoading ? t.chat.statusThinking : t.chat.statusConversation
     : null;
 
   const chatContent = (
@@ -141,7 +143,7 @@ export function CollectionChat() {
           <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
-          <h2 className="font-semibold text-[var(--foreground)]">Collection Assistant</h2>
+          <h2 className="font-semibold text-[var(--foreground)]">{t.chat.title}</h2>
           {statusLabel && (
             <span className="text-xs text-blue-500 font-normal">{statusLabel}</span>
           )}
@@ -156,7 +158,7 @@ export function CollectionChat() {
                   ? 'bg-blue-100 text-blue-600'
                   : 'text-[var(--muted-foreground)] hover:bg-[var(--card)]'
               }`}
-              title={autoListen ? 'Exit conversation mode' : 'Start conversation mode (hands-free)'}
+              title={autoListen ? t.chat.conversationModeExit : t.chat.conversationModeStart}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
@@ -168,7 +170,7 @@ export function CollectionChat() {
             <button
               onClick={toggleMute}
               className="p-1.5 hover:bg-[var(--card)] rounded text-[var(--foreground)]"
-              title={isMuted ? 'Unmute voice' : 'Mute voice'}
+              title={isMuted ? t.chat.unmuteVoice : t.chat.muteVoice}
             >
               {isMuted ? (
                 <svg className="w-4 h-4 text-[var(--muted-foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,13 +202,13 @@ export function CollectionChat() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-center text-[var(--muted-foreground)] mt-8">
-            <p className="mb-2">Ask me about your collection!</p>
-            <p className="text-sm">Try questions like:</p>
+            <p className="mb-2">{t.chat.emptyPrompt}</p>
+            <p className="text-sm">{t.chat.emptyExamplesTitle}</p>
             <ul className="text-sm mt-2 space-y-1">
-              <li className="text-blue-600">"What Macintosh computers do I have?"</li>
-              <li className="text-blue-600">"Show me devices for sale"</li>
-              <li className="text-blue-600">"What's my financial summary?"</li>
-              <li className="text-blue-600">"Find devices with 68040 CPU"</li>
+              <li className="text-blue-600">{t.chat.example1}</li>
+              <li className="text-blue-600">{t.chat.example2}</li>
+              <li className="text-blue-600">{t.chat.example3}</li>
+              <li className="text-blue-600">{t.chat.example4}</li>
             </ul>
           </div>
         )}
@@ -230,10 +232,10 @@ export function CollectionChat() {
                 )}
                 <span>{TOOL_LABELS[invocation.toolName] ?? invocation.toolName}</span>
                 {invocation.state === 'result' && invocation.result?.totalCount != null && (
-                  <span className="opacity-60">— {invocation.result.totalCount} devices</span>
+                  <span className="opacity-60">— {invocation.result.totalCount} {t.chat.devicesCount}</span>
                 )}
                 {invocation.state === 'result' && invocation.result?.count != null && (
-                  <span className="opacity-60">— {invocation.result.count} results</span>
+                  <span className="opacity-60">— {invocation.result.count} {t.chat.resultsCount}</span>
                 )}
               </div>
             ))}
@@ -308,7 +310,7 @@ export function CollectionChat() {
                   ? 'bg-red-100 text-red-600 animate-pulse'
                   : 'text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-blue-600'
               }`}
-              title={isListening ? 'Stop listening' : 'Speak your question'}
+              title={isListening ? t.chat.stopListeningTitle : t.chat.speakQuestionTitle}
             >
               {isListening ? (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -326,7 +328,7 @@ export function CollectionChat() {
             type="text"
             value={input}
             onChange={(e) => { stopSpeaking(); handleInputChange(e); }}
-            placeholder={isListening ? 'Listening...' : 'Ask about your collection...'}
+            placeholder={isListening ? t.chat.inputPlaceholderListening : t.chat.inputPlaceholder}
             className="flex-1 px-4 py-2 border border-[var(--border)] bg-[var(--input)] text-[var(--foreground)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-[var(--muted-foreground)]"
             disabled={isLoading}
           />
@@ -345,7 +347,7 @@ export function CollectionChat() {
             <svg className="w-3 h-3 animate-pulse text-blue-500" fill="currentColor" viewBox="0 0 24 24">
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
             </svg>
-            <span>Speaking{autoListen ? ' — will listen when done' : ''}...</span>
+            <span>{t.chat.speakingStatus}{autoListen ? t.chat.speakingListenAfter : ''}...</span>
           </div>
         )}
       </form>
@@ -392,7 +394,7 @@ export function CollectionChat() {
         <button
           onClick={() => setIsOpen(true)}
           className="fixed right-0 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-2 py-4 rounded-l-lg shadow-lg hover:bg-blue-700 transition-colors z-40"
-          title="Open Collection Assistant"
+          title={t.chat.openAssistantTitle}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />

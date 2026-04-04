@@ -9,6 +9,7 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Changed
 - Web: financials chart legend/labels, stats chart section headings, backup/export page, print page, and template form all use translation keys (en/de)
+- Web: login page and chat panel fully translated (en/de)
 
 ---
 
