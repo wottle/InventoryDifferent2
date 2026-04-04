@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.3';
+export const APP_VERSION = '1.1.4';
 
 export interface ReleaseEntry {
   version: string;
@@ -15,6 +15,15 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [],
     changed: [],
     fixed: [],
+  },
+  {
+    version: '1.1.4',
+    date: '2026-04-04',
+    added: [],
+    changed: [],
+    fixed: [
+      'DeviceCard test updated to expect translated status label',
+    ],
   },
   {
     version: '1.1.3',

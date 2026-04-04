@@ -6,6 +6,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.1.4] - 2026-04-04
+
+### Fixed
+- DeviceCard test updated to expect translated status label
+
+---
+
 ## [1.1.3] - 2026-04-04
 
 ### Changed
