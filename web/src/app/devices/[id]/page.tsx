@@ -1253,7 +1253,7 @@ export default function DeviceDetail() {
                                                     <p className="text-sm text-[var(--muted-foreground)] mt-1 whitespace-pre-wrap">{task.notes}</p>
                                                 )}
                                                 {task.cost != null && (
-                                                    <p className="text-xs text-[var(--muted-foreground)] mt-1">{t.detail.costPrefix} ${Number(task.cost).toFixed(2)}</p>
+                                                    <p className="text-xs text-[var(--muted-foreground)] mt-1">{t.detail.costPrefix} {t.common.currencySymbol}{Number(task.cost).toFixed(2)}</p>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -1730,8 +1730,8 @@ export default function DeviceDetail() {
                         {isAuthenticated && (() => {
                             const categoryType = device.category?.type ?? '';
                             const suggestions = categoryType === 'COMPUTER'
-                                ? ['Original Box', 'Keyboard', 'Mouse', 'Power Cable/Adapter', 'Power Supply', 'Manual/Documentation', 'Software Disks', 'Monitor']
-                                : ['Original Box', 'Power Cable', 'Cables/Adapters', 'Manual'];
+                                ? t.detail.accessorySuggestionsComputer
+                                : t.detail.accessorySuggestionsOther;
                             const existing = new Set((device.accessories ?? []).map((a: any) => a.name));
                             return (
                                 <div className="space-y-2">
@@ -1958,12 +1958,12 @@ export default function DeviceDetail() {
                                 )}
                                 <DetailRow label={t.detail.whereAcquired} value={device.whereAcquired} />
                                 {device.priceAcquired !== null && device.priceAcquired !== undefined && (
-                                    <DetailRow label={t.detail.priceAcquired} value={`$${Number(device.priceAcquired).toFixed(2)}`} />
+                                    <DetailRow label={t.detail.priceAcquired} value={`${t.common.currencySymbol}${Number(device.priceAcquired).toFixed(2)}`} />
                                 )}
                                 {device.estimatedValue !== null && device.estimatedValue !== undefined && (
                                     <DetailRow label={t.detail.estimatedValue} value={
                                         <span className="flex items-center gap-2">
-                                            <span>${Number(device.estimatedValue).toFixed(2)}</span>
+                                            <span>{t.common.currencySymbol}{Number(device.estimatedValue).toFixed(2)}</span>
                                             <a
                                                 href={`https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent([device.manufacturer, device.name, device.modelNumber].filter(Boolean).join(" "))}&LH_Sold=1&LH_Complete=1`}
                                                 target="_blank"
@@ -2003,10 +2003,10 @@ export default function DeviceDetail() {
                             </h2>
                             <dl>
                                 {device.listPrice !== null && device.listPrice !== undefined && (
-                                    <DetailRow label={t.detail.listPrice} value={`$${Number(device.listPrice).toFixed(2)}`} />
+                                    <DetailRow label={t.detail.listPrice} value={`${t.common.currencySymbol}${Number(device.listPrice).toFixed(2)}`} />
                                 )}
                                 {device.status === "SOLD" && device.soldPrice !== null && device.soldPrice !== undefined && (
-                                    <DetailRow label={t.detail.soldPrice} value={`$${Number(device.soldPrice).toFixed(2)}`} />
+                                    <DetailRow label={t.detail.soldPrice} value={`${t.common.currencySymbol}${Number(device.soldPrice).toFixed(2)}`} />
                                 )}
                                 {(device.status === "SOLD" || device.status === "DONATED") && device.soldDate && (
                                     <DetailRow

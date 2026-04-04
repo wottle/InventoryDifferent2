@@ -28,6 +28,30 @@ export type Translations = {
     VERY_RARE: string;
     EXTREMELY_RARE: string;
   };
+  icons: {
+    favorite: string;
+    notFavorite: string;
+    hasOriginalBox: string;
+    noOriginalBox: string;
+    pramRemoved: string;
+    pramNotRemoved: string;
+    assetTagged: string;
+    notAssetTagged: string;
+    rarityPrefix: string;
+    functionalYes: string;
+    functionalPartial: string;
+    functionalNo: string;
+  };
+  table: {
+    thumbnail: string;
+    year: string;
+    manufacturerModel: string;
+    dateAcquired: string;
+    estValue: string;
+    location: string;
+    availability: string;
+    indicators: string;
+  };
   filter: {
     title: string;
     status: string;
@@ -76,6 +100,7 @@ export type Translations = {
     notes: string;
     date: string;
     cost: string;
+    currencySymbol: string;
   };
   nav: {
     wishlist: string;
@@ -165,6 +190,8 @@ export type Translations = {
     noAccessories: string;
     noLinks: string;
     customAccessoryPlaceholder: string;
+    accessorySuggestionsComputer: string[];
+    accessorySuggestionsOther: string[];
   };
 };
 
@@ -232,6 +259,30 @@ export const en: Translations = {
     available: "Available",
     pending: "Pending",
   },
+  icons: {
+    favorite: "Favorite",
+    notFavorite: "Not a Favorite",
+    hasOriginalBox: "Has Original Box",
+    noOriginalBox: "No Original Box",
+    pramRemoved: "PRAM Battery Removed",
+    pramNotRemoved: "PRAM Battery NOT Removed",
+    assetTagged: "Asset Tagged",
+    notAssetTagged: "Not Asset Tagged",
+    rarityPrefix: "Rarity: ",
+    functionalYes: "Functional: YES",
+    functionalPartial: "Functional: PARTIAL",
+    functionalNo: "Functional: NO",
+  },
+  table: {
+    thumbnail: "Thumbnail",
+    year: "Year",
+    manufacturerModel: "Manufacturer & Model",
+    dateAcquired: "Date Acquired",
+    estValue: "Est. Value",
+    location: "Location",
+    availability: "Availability",
+    indicators: "Indicators",
+  },
   common: {
     cancel: "Cancel",
     delete: "Delete",
@@ -246,6 +297,7 @@ export const en: Translations = {
     notes: "Notes",
     date: "Date",
     cost: "Cost",
+    currencySymbol: "$",
   },
   nav: {
     wishlist: "Wishlist",
@@ -335,5 +387,7 @@ export const en: Translations = {
     noAccessories: "No accessories",
     noLinks: "No links",
     customAccessoryPlaceholder: "Custom accessory…",
+    accessorySuggestionsComputer: ['Original Box', 'Keyboard', 'Mouse', 'Power Cable/Adapter', 'Power Supply', 'Manual/Documentation', 'Software Disks', 'Monitor'],
+    accessorySuggestionsOther: ['Original Box', 'Power Cable', 'Cables/Adapters', 'Manual'],
   },
 };

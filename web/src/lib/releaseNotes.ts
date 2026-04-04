@@ -15,6 +15,7 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [],
     changed: [
       'i18n: main menu, nav tooltips, inventory footer, device detail section headers, field labels, forms, and all inline buttons now translated (en/de)',
+      'i18n: status badge on card view, table column headers, icon tooltips, currency symbol, and accessory suggestions now translated (en/de)',
     ],
     fixed: [],
   },

@@ -31,7 +31,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
 
   const formatCurrency = (value: number | null | undefined) => {
     if (value === null || value === undefined) return '';
-    return `$${Number(value).toFixed(2)}`;
+    return `${t.common.currencySymbol}${Number(value).toFixed(2)}`;
   };
 
   const handleSort = (column: SortColumn) => {
@@ -166,7 +166,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
     switch (status) {
       case 'YES':
         return (
-          <span title="Functional: YES">
+          <span title={t.icons.functionalYes}>
             <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
               <path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83v7.84C7 18.95 8.05 20 9.34 20h8.11c.7 0 1.36-.37 1.72-.97l2.66-6.15z"/>
             </svg>
@@ -174,7 +174,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         );
       case 'PARTIAL':
         return (
-          <span title="Functional: PARTIAL">
+          <span title={t.icons.functionalPartial}>
             <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
               <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
             </svg>
@@ -182,7 +182,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         );
       case 'NO':
         return (
-          <span title="Functional: NO">
+          <span title={t.icons.functionalNo}>
             <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
               <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
             </svg>
@@ -212,7 +212,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
           const color = rarityColors[device.rarity] ?? 'text-gray-400';
           const label = t.rarity[device.rarity as keyof typeof t.rarity] ?? device.rarity;
           return (
-            <span title={`Rarity: ${label}`}>
+            <span title={`${t.icons.rarityPrefix}${label}`}>
               <svg className={`w-5 h-5 ${color}`} fill="currentColor" viewBox="0 0 24 24">
                 <path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/>
               </svg>
@@ -221,7 +221,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         })()}
 
         {/* Asset Tagged - tag icon */}
-        <span title={device.isAssetTagged ? 'Asset Tagged' : 'Not Asset Tagged'}>
+        <span title={device.isAssetTagged ? t.icons.assetTagged : t.icons.notAssetTagged}>
           <svg
             className={`w-5 h-5 ${device.isAssetTagged ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}
             fill="currentColor"
@@ -232,7 +232,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         </span>
 
         {/* Original Box - box icon */}
-        <span title={device.accessories?.some((a: any) => a.name === 'Original Box') ? 'Has Original Box' : 'No Original Box'}>
+        <span title={device.accessories?.some((a: any) => a.name === 'Original Box') ? t.icons.hasOriginalBox : t.icons.noOriginalBox}>
           <svg
             className={`w-5 h-5 ${device.accessories?.some((a: any) => a.name === 'Original Box') ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}
             fill="none" 
@@ -246,7 +246,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
 
         {/* PRAM Battery - battery icon, only for computers; placeholder for non-computers */}
         {device.category.type === 'COMPUTER' ? (
-          <span title={device.isPramBatteryRemoved ? 'PRAM Battery Removed' : 'PRAM Battery NOT Removed'}>
+          <span title={device.isPramBatteryRemoved ? t.icons.pramRemoved : t.icons.pramNotRemoved}>
             <svg 
               className={`w-5 h-5 ${device.isPramBatteryRemoved ? 'text-green-500' : 'text-red-500'}`} 
               fill="currentColor" 
@@ -260,7 +260,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         )}
 
         {/* Favorite - star icon */}
-        <span title={device.isFavorite ? 'Favorite' : 'Not a Favorite'}>
+        <span title={device.isFavorite ? t.icons.favorite : t.icons.notFavorite}>
           <svg
             className={`w-5 h-5 ${device.isFavorite ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`}
             fill="currentColor"
@@ -342,7 +342,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('category')}
               >
                 <div className="flex items-center gap-1">
-                  Category
+                  {t.sort.category}
                   {sortColumn === 'category' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -350,7 +350,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                   )}
                 </div>
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider hidden sm:table-cell">Thumbnail</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider hidden sm:table-cell">{t.table.thumbnail}</th>
               <th
                 className={`px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-[var(--button-highlight)] transition-colors ${
                   sortColumn === 'name'
@@ -360,7 +360,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('name')}
               >
                 <div className="flex items-center gap-1">
-                  Name
+                  {t.sort.name}
                   {sortColumn === 'name' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -377,7 +377,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('releaseYear')}
               >
                 <div className="flex items-center gap-1">
-                  Year
+                  {t.table.year}
                   {sortColumn === 'releaseYear' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -394,7 +394,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('manufacturer')}
               >
                 <div className="flex items-center gap-1">
-                  Manufacturer & Model
+                  {t.table.manufacturerModel}
                   {sortColumn === 'manufacturer' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -411,7 +411,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('dateAcquired')}
               >
                 <div className="flex items-center gap-1">
-                  Date Acquired
+                  {t.table.dateAcquired}
                   {sortColumn === 'dateAcquired' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -428,7 +428,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('estimatedValue')}
               >
                 <div className="flex items-center gap-1">
-                  Est. Value
+                  {t.table.estValue}
                   {sortColumn === 'estimatedValue' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -445,7 +445,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('location')}
               >
                 <div className="flex items-center gap-1">
-                  Location
+                  {t.table.location}
                   {sortColumn === 'location' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -462,7 +462,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                 onClick={() => handleSort('available')}
               >
                 <div className="flex items-center gap-1">
-                  Availability
+                  {t.table.availability}
                   {sortColumn === 'available' && (
                     <span className="text-xs">
                       {sortDirection === 'asc' ? '↑' : '↓'}
@@ -470,7 +470,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                   )}
                 </div>
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider hidden sm:table-cell">Indicators</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider hidden sm:table-cell">{t.table.indicators}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border)]">

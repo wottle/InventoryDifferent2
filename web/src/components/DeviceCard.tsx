@@ -109,7 +109,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
     // Format currency
     const formatPrice = (price: number | null | undefined) => {
         if (price == null) return null;
-        return `$${price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+        return `${t.common.currencySymbol}${price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     };
 
     // Value/Sale info line component
@@ -167,21 +167,21 @@ export function DeviceCard({ device }: DeviceCardProps) {
         <div className="flex items-center gap-2">
             {/* Functional Status - thumbs up/caution/thumbs down */}
             {device.functionalStatus === 'YES' && (
-                <span title="Functional: YES">
+                <span title={t.icons.functionalYes}>
                     <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83v7.84C7 18.95 8.05 20 9.34 20h8.11c.7 0 1.36-.37 1.72-.97l2.66-6.15z"/>
                     </svg>
                 </span>
             )}
             {device.functionalStatus === 'PARTIAL' && (
-                <span title="Functional: PARTIAL">
+                <span title={t.icons.functionalPartial}>
                     <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                     </svg>
                 </span>
             )}
             {device.functionalStatus === 'NO' && (
-                <span title="Functional: NO">
+                <span title={t.icons.functionalNo}>
                     <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
                     </svg>
@@ -200,7 +200,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 const color = rarityColors[device.rarity] ?? 'text-gray-400';
                 const label = t.rarity[device.rarity as keyof typeof t.rarity] ?? device.rarity;
                 return (
-                    <span title={`Rarity: ${label}`}>
+                    <span title={`${t.icons.rarityPrefix}${label}`}>
                         <svg className={`w-4 h-4 ${color}`} fill="currentColor" viewBox="0 0 24 24">
                             <path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/>
                         </svg>
@@ -209,7 +209,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             })()}
 
             {/* Asset Tagged - tag icon */}
-            <span title={device.isAssetTagged ? 'Asset Tagged' : 'Not Asset Tagged'}>
+            <span title={device.isAssetTagged ? t.icons.assetTagged : t.icons.notAssetTagged}>
                 <svg 
                     className={`w-4 h-4 ${device.isAssetTagged ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`} 
                     fill="currentColor" 
@@ -220,7 +220,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             </span>
 
             {/* Original Box - box icon */}
-            <span title={device.accessories?.some((a: any) => a.name === 'Original Box') ? 'Has Original Box' : 'No Original Box'}>
+            <span title={device.accessories?.some((a: any) => a.name === 'Original Box') ? t.icons.hasOriginalBox : t.icons.noOriginalBox}>
                 <svg
                     className={`w-4 h-4 ${device.accessories?.some((a: any) => a.name === 'Original Box') ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}
                     fill="none" 
@@ -234,7 +234,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
 
             {/* PRAM Battery - battery icon, only for computers */}
             {device.category.type === 'COMPUTER' && (
-                <span title={device.isPramBatteryRemoved ? 'PRAM Battery Removed' : 'PRAM Battery NOT Removed'}>
+                <span title={device.isPramBatteryRemoved ? t.icons.pramRemoved : t.icons.pramNotRemoved}>
                     <svg 
                         className={`w-4 h-4 ${device.isPramBatteryRemoved ? 'text-green-500' : 'text-red-500'}`} 
                         fill="currentColor" 
@@ -246,7 +246,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             )}
 
             {/* Favorite - star icon */}
-            <span title={device.isFavorite ? 'Favorite' : 'Not a Favorite'}>
+            <span title={device.isFavorite ? t.icons.favorite : t.icons.notFavorite}>
                 <svg
                     className={`w-4 h-4 ${device.isFavorite ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`}
                     fill="currentColor"
@@ -285,7 +285,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                             "text-[var(--muted-foreground)]"
                         }`}
                     >
-                        {device.status}
+                        {t.status[device.status as keyof typeof t.status] ?? device.status}
                     </span>
                 </div>
             </div>
