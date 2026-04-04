@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.4';
+export const APP_VERSION = '1.1.5';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.1.5',
+    date: '2026-04-04',
     added: [
       'iOS: full i18n support — LocalizationManager with runtime language switching, Translations structs (en/de), Settings.bundle language picker (System Default / English / Deutsch), all views updated to use localized strings',
     ],
