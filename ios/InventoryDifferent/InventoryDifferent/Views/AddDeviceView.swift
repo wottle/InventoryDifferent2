@@ -10,6 +10,8 @@ import SwiftUI
 struct AddDeviceView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var deviceStore: DeviceStore
+    @EnvironmentObject var lm: LocalizationManager
+    private var t: Translations { lm.t }
 
     // Optional prefill values (from wishlist "Mark as Acquired")
     var prefillName: String?
@@ -104,17 +106,17 @@ struct AddDeviceView: View {
                     }
                 }
             }
-            .navigationTitle("Add Device")
+            .navigationTitle(t.addEditDevice.addTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(t.common.cancel) {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(t.common.save) {
                         Task {
                             await saveDevice()
                         }
@@ -158,10 +160,11 @@ struct AddDeviceView: View {
     }
     
     private var templateSection: some View {
-        Section {
-            TextField("Search templates...", text: $templateSearchText)
+        let t = lm.t
+        return Section {
+            TextField(t.addEditDevice.searchTemplates, text: $templateSearchText)
                 .textInputAutocapitalization(.never)
-            
+
             if !filteredTemplates.isEmpty {
                 ForEach(filteredTemplates.prefix(5)) { template in
                     Button {
@@ -194,28 +197,29 @@ struct AddDeviceView: View {
                 }
             }
         } header: {
-            Text("Template (Optional)")
+            Text(t.addEditDevice.templateOptional)
         } footer: {
             if selectedTemplate != nil {
-                Text("Template applied. You can modify any fields below.")
+                Text(t.addEditDevice.templateApplied)
             } else if !templateSearchText.isEmpty && filteredTemplates.isEmpty {
-                Text("No templates found")
+                Text(t.addEditDevice.noTemplates)
             }
         }
     }
     
     private var basicInfoSection: some View {
-        Section {
-            LabeledField(label: "Name", text: $name)
-            LabeledField(label: "Additional Name", text: $additionalName)
-            LabeledField(label: "Manufacturer", text: $manufacturer)
-            LabeledField(label: "Model Number", text: $modelNumber)
-            LabeledField(label: "Serial Number", text: $serialNumber)
-            LabeledField(label: "Release Year", text: $releaseYear, keyboardType: .numberPad)
-            LabeledField(label: "Location", text: $location)
+        let t = lm.t
+        return Section {
+            LabeledField(label: t.addEditDevice.name, text: $name)
+            LabeledField(label: t.addEditDevice.additionalName, text: $additionalName)
+            LabeledField(label: t.addEditDevice.manufacturer, text: $manufacturer)
+            LabeledField(label: t.addEditDevice.modelNumber, text: $modelNumber)
+            LabeledField(label: t.addEditDevice.serialNumber, text: $serialNumber)
+            LabeledField(label: t.addEditDevice.releaseYear, text: $releaseYear, keyboardType: .numberPad)
+            LabeledField(label: t.addEditDevice.location, text: $location)
 
-            Picker("Category", selection: $selectedCategoryId) {
-                Text("Select a category")
+            Picker(t.addEditDevice.category, selection: $selectedCategoryId) {
+                Text(t.addEditDevice.selectCategory)
                     .tag(nil as Int?)
                 ForEach(categories) { category in
                     Text(category.name).tag(category.id as Int?)
@@ -223,15 +227,16 @@ struct AddDeviceView: View {
             }
             .disabled(isLoadingCategories)
 
-            LabeledTextEditor(label: "Info", text: $info)
+            LabeledTextEditor(label: t.addEditDevice.info, text: $info)
         } header: {
-            Text("Basic Information")
+            Text(t.addEditDevice.basicInformation)
         }
     }
     
     private var statusSection: some View {
-        Section {
-            Picker("Status", selection: $status) {
+        let t = lm.t
+        return Section {
+            Picker(t.addEditDevice.status, selection: $status) {
                 ForEach(Status.allCases, id: \.self) { status in
                     Text(status.displayName).tag(status)
                 }
@@ -242,43 +247,45 @@ struct AddDeviceView: View {
                 }
             }
 
-            Picker("Functional Status", selection: $functionalStatus) {
+            Picker(t.addEditDevice.functionalStatus, selection: $functionalStatus) {
                 ForEach(FunctionalStatus.allCases, id: \.self) { status in
                     Text(status.displayName).tag(status)
                 }
             }
 
-            Picker("Condition", selection: $condition) {
-                Text("Not Set").tag(Optional<Condition>.none)
+            Picker(t.addEditDevice.condition, selection: $condition) {
+                Text(t.addEditDevice.notSet).tag(Optional<Condition>.none)
                 ForEach(Condition.allCases, id: \.self) { c in
                     Text(c.displayName).tag(Optional<Condition>.some(c))
                 }
             }
 
-            Picker("Rarity", selection: $rarity) {
-                Text("Not Set").tag(Optional<Rarity>.none)
+            Picker(t.addEditDevice.rarity, selection: $rarity) {
+                Text(t.addEditDevice.notSet).tag(Optional<Rarity>.none)
                 ForEach(Rarity.allCases, id: \.self) { r in
                     Text(r.displayName).tag(Optional<Rarity>.some(r))
                 }
             }
         } header: {
-            Text("Status")
+            Text(t.addEditDevice.status)
         }
     }
     
     private var flagsSection: some View {
-        Section {
-            Toggle("Favorite", isOn: $isFavorite)
-            Toggle("Asset Tagged", isOn: $isAssetTagged)
+        let t = lm.t
+        return Section {
+            Toggle(t.addEditDevice.favorite, isOn: $isFavorite)
+            Toggle(t.addEditDevice.assetTagged, isOn: $isAssetTagged)
         } header: {
-            Text("Flags")
+            Text(t.addEditDevice.flags)
         }
     }
 
     private var accessoriesSection: some View {
-        Section {
+        let t = lm.t
+        return Section {
             if localAccessories.isEmpty {
-                Text("No accessories yet")
+                Text(t.addEditDevice.noAccessoriesYet)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             } else {
@@ -295,19 +302,20 @@ struct AddDeviceView: View {
                     }
                 }
             }
-            Button("Add Accessory") {
+            Button(t.addEditDevice.addAccessory) {
                 showAddAccessorySheet = true
             }
             .foregroundColor(.accentColor)
         } header: {
-            Text("Accessories")
+            Text(t.addEditDevice.accessories)
         }
     }
 
     private var linksSection: some View {
-        Section {
+        let t = lm.t
+        return Section {
             if localLinks.isEmpty {
-                Text("No links yet")
+                Text(t.addEditDevice.noLinksYet)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             } else {
@@ -331,91 +339,94 @@ struct AddDeviceView: View {
                     }
                 }
             }
-            Button("Add Reference Link") {
+            Button(t.addEditDevice.addLink) {
                 showAddLinkSheet = true
             }
             .foregroundColor(.accentColor)
         } header: {
-            Text("Reference Links")
+            Text(t.addEditDevice.referenceLinks)
         }
     }
     
     private var acquisitionSection: some View {
-        Section {
-            DatePicker("Date Acquired", selection: Binding(
+        let t = lm.t
+        return Section {
+            DatePicker(t.addEditDevice.dateAcquired, selection: Binding(
                 get: { dateAcquired ?? Date() },
                 set: { dateAcquired = $0 }
             ), displayedComponents: .date)
-            
-            Button(dateAcquired == nil ? "Set Date Acquired" : "Clear Date Acquired") {
+
+            Button(dateAcquired == nil ? t.addEditDevice.setDateAcquired : t.addEditDevice.clearDateAcquired) {
                 dateAcquired = dateAcquired == nil ? Date() : nil
             }
             .foregroundColor(.accentColor)
-            
-            LabeledField(label: "Where Acquired", text: $whereAcquired)
-            LabeledField(label: "Price Acquired", text: $priceAcquired, prompt: "0.00", keyboardType: .decimalPad)
-            LabeledField(label: "Estimated Value", text: $estimatedValue, prompt: "0.00", keyboardType: .decimalPad)
+
+            LabeledField(label: t.addEditDevice.whereAcquired, text: $whereAcquired)
+            LabeledField(label: t.addEditDevice.priceAcquired, text: $priceAcquired, prompt: "0.00", keyboardType: .decimalPad)
+            LabeledField(label: t.addEditDevice.estimatedValue, text: $estimatedValue, prompt: "0.00", keyboardType: .decimalPad)
         } header: {
-            Text("Acquisition & Value")
+            Text(t.addEditDevice.acquisitionValue)
         }
     }
     
     private var salesSection: some View {
-        Section {
+        let t = lm.t
+        return Section {
             if status != .DONATED {
-                LabeledField(label: "List Price", text: $listPrice, prompt: "0.00", keyboardType: .decimalPad)
+                LabeledField(label: t.addEditDevice.listPrice, text: $listPrice, prompt: "0.00", keyboardType: .decimalPad)
             }
-            
+
             if status == .SOLD {
-                LabeledField(label: "Sold Price", text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
-                
-                DatePicker("Sold Date", selection: Binding(
+                LabeledField(label: t.addEditDevice.soldPrice, text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
+
+                DatePicker(t.addEditDevice.soldDate, selection: Binding(
                     get: { soldDate ?? Date() },
                     set: { soldDate = $0 }
                 ), displayedComponents: .date)
-                
-                Button(soldDate == nil ? "Set Sold Date" : "Clear Sold Date") {
+
+                Button(soldDate == nil ? t.addEditDevice.setSoldDate : t.addEditDevice.clearSoldDate) {
                     soldDate = soldDate == nil ? Date() : nil
                 }
                 .foregroundColor(.accentColor)
             }
             else if status == .DONATED {
-                DatePicker("Donated Date", selection: Binding(
+                DatePicker(t.addEditDevice.donatedDate, selection: Binding(
                     get: { soldDate ?? Date() },
                     set: { soldDate = $0 }
                 ), displayedComponents: .date)
-                
-                Button(soldDate == nil ? "Set Donated Date" : "Clear Donated Date") {
+
+                Button(soldDate == nil ? t.addEditDevice.setDonatedDate : t.addEditDevice.clearDonatedDate) {
                     soldDate = soldDate == nil ? Date() : nil
                 }
                 .foregroundColor(.accentColor)
             }
         } header: {
-            Text(status == .DONATED ? "Donation Information" : "Sales")
+            Text(status == .DONATED ? t.addEditDevice.donationInformation : t.addEditDevice.sales)
         }
     }
     
     private var computerSpecsSection: some View {
-        Section {
-            LabeledField(label: "CPU", text: $cpu)
-            LabeledField(label: "RAM", text: $ram)
-            LabeledField(label: "Graphics", text: $graphics)
-            LabeledField(label: "Storage", text: $storage)
-            LabeledField(label: "Operating System", text: $operatingSystem)
-            Toggle("WiFi Enabled", isOn: $isWifiEnabled)
-            Toggle("PRAM Battery Removed", isOn: $isPramBatteryRemoved)
-            
-            DatePicker("Last Power On Date", selection: Binding(
+        let t = lm.t
+        return Section {
+            LabeledField(label: t.addEditDevice.cpu, text: $cpu)
+            LabeledField(label: t.addEditDevice.ram, text: $ram)
+            LabeledField(label: t.addEditDevice.graphics, text: $graphics)
+            LabeledField(label: t.addEditDevice.storage, text: $storage)
+            LabeledField(label: t.addEditDevice.os, text: $operatingSystem)
+            Toggle(t.addEditDevice.wifiEnabled, isOn: $isWifiEnabled)
+            Toggle(t.addEditDevice.pramRemoved, isOn: $isPramBatteryRemoved)
+
+            DatePicker(t.addEditDevice.lastPowerOn, selection: Binding(
                 get: { lastPowerOnDate ?? Date() },
                 set: { lastPowerOnDate = $0 }
             ), displayedComponents: .date)
-            
-            Button(lastPowerOnDate == nil ? "Set Last Power On Date" : "Clear Last Power On Date") {
+
+            Button(lastPowerOnDate == nil ? t.addEditDevice.setLastPowerOn : t.addEditDevice.clearLastPowerOn) {
                 lastPowerOnDate = lastPowerOnDate == nil ? Date() : nil
             }
             .foregroundColor(.accentColor)
         } header: {
-            Text("Computer Specifications")
+            Text(t.addEditDevice.computerSpecs)
         }
     }
     
@@ -626,6 +637,7 @@ struct AddDeviceView: View {
 
 private struct AddLocalAccessorySheet: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
     let onAdded: (String) -> Void
 
     @State private var customName = ""
@@ -636,9 +648,10 @@ private struct AddLocalAccessorySheet: View {
     ]
 
     var body: some View {
-        NavigationStack {
+        let t = lm.t
+        return NavigationStack {
             Form {
-                Section("Suggestions") {
+                Section(t.addEditDevice.accessorySuggestions) {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(suggestions, id: \.self) { suggestion in
@@ -660,10 +673,10 @@ private struct AddLocalAccessorySheet: View {
                     }
                 }
 
-                Section("Custom") {
+                Section(t.addEditDevice.accessoryCustom) {
                     HStack {
-                        TextField("Accessory name", text: $customName)
-                        Button("Add") {
+                        TextField(t.addEditDevice.accessoryNamePlaceholder, text: $customName)
+                        Button(t.common.add) {
                             let trimmed = customName.trimmingCharacters(in: .whitespaces)
                             if !trimmed.isEmpty {
                                 onAdded(trimmed)
@@ -674,11 +687,11 @@ private struct AddLocalAccessorySheet: View {
                     }
                 }
             }
-            .navigationTitle("Add Accessory")
+            .navigationTitle(t.addEditDevice.addAccessory)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(t.common.cancel) { dismiss() }
                 }
             }
         }
@@ -687,30 +700,32 @@ private struct AddLocalAccessorySheet: View {
 
 private struct AddLocalLinkSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
     let onAdded: (String, String) -> Void
 
     @State private var label = ""
     @State private var url = ""
 
     var body: some View {
-        NavigationStack {
+        let t = lm.t
+        return NavigationStack {
             Form {
-                Section("Link Details") {
-                    TextField("Label (e.g. EveryMac)", text: $label)
-                    TextField("URL", text: $url)
+                Section(t.addEditDevice.linkDetails) {
+                    TextField(t.addEditDevice.linkLabelPlaceholder, text: $label)
+                    TextField(t.addEditDevice.linkURLPlaceholder, text: $url)
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 }
             }
-            .navigationTitle("Add Reference Link")
+            .navigationTitle(t.addEditDevice.addLink)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(t.common.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(t.common.add) {
                         let trimmedLabel = label.trimmingCharacters(in: .whitespaces)
                         let trimmedUrl = url.trimmingCharacters(in: .whitespaces)
                         if !trimmedLabel.isEmpty && !trimmedUrl.isEmpty {

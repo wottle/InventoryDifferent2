@@ -227,6 +227,11 @@ extension Translations {
             clearDonatedDate: "Spendedatum löschen",
             donationInformation: "Spendeinformationen",
             repair: "Reparatur",
+            repairInformation: "Reparaturinformationen",
+            repairFeeCharged: "Reparaturgebühr",
+            returnedDate: "Rückgabedatum",
+            setReturnedDate: "Rückgabedatum festlegen",
+            clearReturnedDate: "Rückgabedatum löschen",
             computerSpecs: "Computerspezifikationen",
             cpu: "CPU",
             ram: "RAM",
@@ -238,7 +243,13 @@ extension Translations {
             lastPowerOn: "Letztes Einschaltdatum",
             setLastPowerOn: "Letztes Einschaltdatum festlegen",
             clearLastPowerOn: "Letztes Einschaltdatum löschen",
-            customFields: "Benutzerdefinierte Felder"
+            customFields: "Benutzerdefinierte Felder",
+            accessorySuggestions: "Vorschläge",
+            accessoryCustom: "Benutzerdefiniert",
+            accessoryNamePlaceholder: "Zubehörname",
+            linkDetails: "Linkdetails",
+            linkLabelPlaceholder: "Bezeichnung (z. B. EveryMac)",
+            linkURLPlaceholder: "URL"
         ),
         financials: .init(
             title: "Finanzen",

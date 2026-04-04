@@ -13,7 +13,11 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'iOS: date fields now use app language locale (not device locale) in device detail, task rows, and note rows',
+      'iOS: currency symbol now respects app language setting (€ for German, $ for English)',
+      'iOS: add/edit device and edit device screens fully translated (en/de)',
+    ],
     fixed: [],
   },
   {

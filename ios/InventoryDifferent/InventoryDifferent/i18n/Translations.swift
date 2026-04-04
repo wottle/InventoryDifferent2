@@ -101,10 +101,13 @@ struct Translations {
         let sales, listPrice, soldPrice, soldDate, setSoldDate, clearSoldDate: String
         let donatedDate, setDonatedDate, clearDonatedDate, donationInformation: String
         let repair: String
+        let repairInformation, repairFeeCharged, returnedDate, setReturnedDate, clearReturnedDate: String
         let computerSpecs, cpu, ram, graphics, storage, os: String
         let wifiEnabled, pramRemoved: String
         let lastPowerOn, setLastPowerOn, clearLastPowerOn: String
         let customFields: String
+        let accessorySuggestions, accessoryCustom, accessoryNamePlaceholder: String
+        let linkDetails, linkLabelPlaceholder, linkURLPlaceholder: String
     }
 
     // MARK: - Financials

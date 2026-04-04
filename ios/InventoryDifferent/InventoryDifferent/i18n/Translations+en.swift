@@ -227,6 +227,11 @@ extension Translations {
             clearDonatedDate: "Clear Donated Date",
             donationInformation: "Donation Information",
             repair: "Repair",
+            repairInformation: "Repair Information",
+            repairFeeCharged: "Repair Fee Charged",
+            returnedDate: "Returned Date",
+            setReturnedDate: "Set Returned Date",
+            clearReturnedDate: "Clear Returned Date",
             computerSpecs: "Computer Specifications",
             cpu: "CPU",
             ram: "RAM",
@@ -238,7 +243,13 @@ extension Translations {
             lastPowerOn: "Last Power On Date",
             setLastPowerOn: "Set Last Power On Date",
             clearLastPowerOn: "Clear Last Power On Date",
-            customFields: "Custom Fields"
+            customFields: "Custom Fields",
+            accessorySuggestions: "Suggestions",
+            accessoryCustom: "Custom",
+            accessoryNamePlaceholder: "Accessory name",
+            linkDetails: "Link Details",
+            linkLabelPlaceholder: "Label (e.g. EveryMac)",
+            linkURLPlaceholder: "URL"
         ),
         financials: .init(
             title: "Financials",

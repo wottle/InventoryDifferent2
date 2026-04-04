@@ -11,6 +11,8 @@ struct EditDeviceView: View {
     let device: Device
     let onDeviceUpdated: (Device) -> Void
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
+    private var t: Translations { lm.t }
     
     @State private var name: String
     @State private var additionalName: String
@@ -135,22 +137,22 @@ struct EditDeviceView: View {
                 linksSection
 
             }
-            .navigationTitle("Edit Device")
+            .navigationTitle(t.addEditDevice.editTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .alert("Save Failed", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
-                Button("OK") { error = nil }
+            .alert(t.addEditDevice.saveFailed, isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
+                Button(t.common.ok) { error = nil }
             } message: {
                 if let error { Text(error) }
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(t.common.cancel) {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(t.common.save) {
                         Task {
                             await submitChanges()
                         }
@@ -177,31 +179,33 @@ struct EditDeviceView: View {
     }
     
     private var basicInfoSection: some View {
-        Section {
-            LabeledField(label: "Name", text: $name)
-            LabeledField(label: "Additional Name", text: $additionalName)
-            LabeledField(label: "Manufacturer", text: $manufacturer)
-            LabeledField(label: "Model Number", text: $modelNumber)
-            LabeledField(label: "Serial Number", text: $serialNumber)
-            LabeledField(label: "Release Year", text: $releaseYear, keyboardType: .numberPad)
-            LabeledField(label: "Location", text: $location)
+        let t = lm.t
+        return Section {
+            LabeledField(label: t.addEditDevice.name, text: $name)
+            LabeledField(label: t.addEditDevice.additionalName, text: $additionalName)
+            LabeledField(label: t.addEditDevice.manufacturer, text: $manufacturer)
+            LabeledField(label: t.addEditDevice.modelNumber, text: $modelNumber)
+            LabeledField(label: t.addEditDevice.serialNumber, text: $serialNumber)
+            LabeledField(label: t.addEditDevice.releaseYear, text: $releaseYear, keyboardType: .numberPad)
+            LabeledField(label: t.addEditDevice.location, text: $location)
 
-            Picker("Category", selection: $selectedCategoryId) {
+            Picker(t.addEditDevice.category, selection: $selectedCategoryId) {
                 ForEach(categories) { category in
                     Text(category.name).tag(category.id)
                 }
             }
             .disabled(isLoadingCategories)
 
-            LabeledTextEditor(label: "Info", text: $info)
+            LabeledTextEditor(label: t.addEditDevice.info, text: $info)
         } header: {
-            Text("Basic Information")
+            Text(t.addEditDevice.basicInformation)
         }
     }
     
     private var statusSection: some View {
-        Section {
-            Picker("Status", selection: $status) {
+        let t = lm.t
+        return Section {
+            Picker(t.addEditDevice.status, selection: $status) {
                 ForEach(Status.allCases, id: \.self) { status in
                     Text(status.displayName).tag(status)
                 }
@@ -212,43 +216,45 @@ struct EditDeviceView: View {
                 }
             }
 
-            Picker("Functional Status", selection: $functionalStatus) {
+            Picker(t.addEditDevice.functionalStatus, selection: $functionalStatus) {
                 ForEach(FunctionalStatus.allCases, id: \.self) { status in
                     Text(status.displayName).tag(status)
                 }
             }
 
-            Picker("Condition", selection: $condition) {
-                Text("Not Set").tag(Optional<Condition>.none)
+            Picker(t.addEditDevice.condition, selection: $condition) {
+                Text(t.addEditDevice.notSet).tag(Optional<Condition>.none)
                 ForEach(Condition.allCases, id: \.self) { c in
                     Text(c.displayName).tag(Optional<Condition>.some(c))
                 }
             }
 
-            Picker("Rarity", selection: $rarity) {
-                Text("Not Set").tag(Optional<Rarity>.none)
+            Picker(t.addEditDevice.rarity, selection: $rarity) {
+                Text(t.addEditDevice.notSet).tag(Optional<Rarity>.none)
                 ForEach(Rarity.allCases, id: \.self) { r in
                     Text(r.displayName).tag(Optional<Rarity>.some(r))
                 }
             }
         } header: {
-            Text("Status")
+            Text(t.addEditDevice.status)
         }
     }
     
     private var flagsSection: some View {
-        Section {
-            Toggle("Favorite", isOn: $isFavorite)
-            Toggle("Asset Tagged", isOn: $isAssetTagged)
+        let t = lm.t
+        return Section {
+            Toggle(t.addEditDevice.favorite, isOn: $isFavorite)
+            Toggle(t.addEditDevice.assetTagged, isOn: $isAssetTagged)
         } header: {
-            Text("Flags")
+            Text(t.addEditDevice.flags)
         }
     }
 
     private var accessoriesSection: some View {
-        Section {
+        let t = lm.t
+        return Section {
             if accessories.isEmpty {
-                Text("No accessories recorded")
+                Text(t.addEditDevice.noAccessoriesRecorded)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             } else {
@@ -265,19 +271,20 @@ struct EditDeviceView: View {
                     }
                 }
             }
-            Button("Add Accessory") {
+            Button(t.addEditDevice.addAccessory) {
                 showAddAccessorySheet = true
             }
             .foregroundColor(.accentColor)
         } header: {
-            Text("Accessories")
+            Text(t.addEditDevice.accessories)
         }
     }
 
     private var linksSection: some View {
-        Section {
+        let t = lm.t
+        return Section {
             if links.isEmpty {
-                Text("No links recorded")
+                Text(t.addEditDevice.noLinksRecorded)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             } else {
@@ -301,96 +308,100 @@ struct EditDeviceView: View {
                     }
                 }
             }
-            Button("Add Reference Link") {
+            Button(t.addEditDevice.addLink) {
                 showAddLinkSheet = true
             }
             .foregroundColor(.accentColor)
         } header: {
-            Text("Reference Links")
+            Text(t.addEditDevice.referenceLinks)
         }
     }
     
     private var acquisitionSection: some View {
-        Section {
-            DatePicker("Date Acquired", selection: Binding(
+        let t = lm.t
+        return Section {
+            DatePicker(t.addEditDevice.dateAcquired, selection: Binding(
                 get: { dateAcquired ?? Date() },
                 set: { dateAcquired = $0 }
             ), displayedComponents: .date)
-            
-            Button(dateAcquired == nil ? "Set Date Acquired" : "Clear Date Acquired") {
+
+            Button(dateAcquired == nil ? t.addEditDevice.setDateAcquired : t.addEditDevice.clearDateAcquired) {
                 dateAcquired = dateAcquired == nil ? Date() : nil
             }
             .foregroundColor(.accentColor)
-            
-            LabeledField(label: "Where Acquired", text: $whereAcquired)
-            LabeledField(label: "Price Acquired", text: $priceAcquired, prompt: "0.00", keyboardType: .decimalPad)
-            LabeledField(label: "Estimated Value", text: $estimatedValue, prompt: "0.00", keyboardType: .decimalPad)
+
+            LabeledField(label: t.addEditDevice.whereAcquired, text: $whereAcquired)
+            LabeledField(label: t.addEditDevice.priceAcquired, text: $priceAcquired, prompt: "0.00", keyboardType: .decimalPad)
+            LabeledField(label: t.addEditDevice.estimatedValue, text: $estimatedValue, prompt: "0.00", keyboardType: .decimalPad)
         } header: {
-            Text("Acquisition & Value")
+            Text(t.addEditDevice.acquisitionValue)
         }
     }
     
     private var salesSection: some View {
-        Section {
+        let t = lm.t
+        return Section {
             if status != .DONATED {
-                LabeledField(label: "List Price", text: $listPrice, prompt: "0.00", keyboardType: .decimalPad)
+                LabeledField(label: t.addEditDevice.listPrice, text: $listPrice, prompt: "0.00", keyboardType: .decimalPad)
             }
-            
+
             if status == .SOLD {
-                LabeledField(label: "Sold Price", text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
-                
-                DatePicker("Sold Date", selection: Binding(
+                LabeledField(label: t.addEditDevice.soldPrice, text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
+
+                DatePicker(t.addEditDevice.soldDate, selection: Binding(
                     get: { soldDate ?? Date() },
                     set: { soldDate = $0 }
                 ), displayedComponents: .date)
-                
-                Button(soldDate == nil ? "Set Sold Date" : "Clear Sold Date") {
+
+                Button(soldDate == nil ? t.addEditDevice.setSoldDate : t.addEditDevice.clearSoldDate) {
                     soldDate = soldDate == nil ? Date() : nil
                 }
                 .foregroundColor(.accentColor)
             }
             else if status == .DONATED {
-                DatePicker("Donated Date", selection: Binding(
+                DatePicker(t.addEditDevice.donatedDate, selection: Binding(
                     get: { soldDate ?? Date() },
                     set: { soldDate = $0 }
                 ), displayedComponents: .date)
-                
-                Button(soldDate == nil ? "Set Donated Date" : "Clear Donated Date") {
+
+                Button(soldDate == nil ? t.addEditDevice.setDonatedDate : t.addEditDevice.clearDonatedDate) {
                     soldDate = soldDate == nil ? Date() : nil
                 }
                 .foregroundColor(.accentColor)
             }
         } header: {
-            Text(status == .DONATED ? "Donation Information" : "Sales")
+            Text(status == .DONATED ? t.addEditDevice.donationInformation : t.addEditDevice.sales)
         }
     }
     
     private var computerSpecsSection: some View {
-        Section {
-            LabeledField(label: "CPU", text: $cpu)
-            LabeledField(label: "RAM", text: $ram)
-            LabeledField(label: "Graphics", text: $graphics)
-            LabeledField(label: "Storage", text: $storage)
-            LabeledField(label: "Operating System", text: $operatingSystem)
-            Toggle("WiFi Enabled", isOn: $isWifiEnabled)
-            Toggle("PRAM Battery Removed", isOn: $isPramBatteryRemoved)
-            
-            DatePicker("Last Power On Date", selection: Binding(
+        let t = lm.t
+        return Section {
+            LabeledField(label: t.addEditDevice.cpu, text: $cpu)
+            LabeledField(label: t.addEditDevice.ram, text: $ram)
+            LabeledField(label: t.addEditDevice.graphics, text: $graphics)
+            LabeledField(label: t.addEditDevice.storage, text: $storage)
+            LabeledField(label: t.addEditDevice.os, text: $operatingSystem)
+            Toggle(t.addEditDevice.wifiEnabled, isOn: $isWifiEnabled)
+            Toggle(t.addEditDevice.pramRemoved, isOn: $isPramBatteryRemoved)
+
+            DatePicker(t.addEditDevice.lastPowerOn, selection: Binding(
                 get: { lastPowerOnDate ?? Date() },
                 set: { lastPowerOnDate = $0 }
             ), displayedComponents: .date)
-            
-            Button(lastPowerOnDate == nil ? "Set Last Power On Date" : "Clear Last Power On Date") {
+
+            Button(lastPowerOnDate == nil ? t.addEditDevice.setLastPowerOn : t.addEditDevice.clearLastPowerOn) {
                 lastPowerOnDate = lastPowerOnDate == nil ? Date() : nil
             }
             .foregroundColor(.accentColor)
         } header: {
-            Text("Computer Specifications")
+            Text(t.addEditDevice.computerSpecs)
         }
     }
     
     private var customFieldsSection: some View {
-        Section {
+        let t = lm.t
+        return Section {
             ForEach(customFieldDefinitions) { field in
                 LabeledField(label: field.name, text: Binding(
                     get: { customFieldFormValues[field.id] ?? "" },
@@ -398,20 +409,21 @@ struct EditDeviceView: View {
                 ))
             }
         } header: {
-            Text("Custom Fields")
+            Text(t.addEditDevice.customFields)
         }
     }
 
     private var repairSection: some View {
-        Section("Repair Information") {
-            LabeledField(label: "Repair Fee Charged", text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
+        let t = lm.t
+        return Section(t.addEditDevice.repairInformation) {
+            LabeledField(label: t.addEditDevice.repairFeeCharged, text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
 
-            DatePicker("Returned Date", selection: Binding(
+            DatePicker(t.addEditDevice.returnedDate, selection: Binding(
                 get: { soldDate ?? Date() },
                 set: { soldDate = $0 }
             ), displayedComponents: .date)
 
-            Button(soldDate == nil ? "Set Returned Date" : "Clear Returned Date") {
+            Button(soldDate == nil ? t.addEditDevice.setReturnedDate : t.addEditDevice.clearReturnedDate) {
                 soldDate = soldDate == nil ? Date() : nil
             }
             .foregroundColor(.accentColor)

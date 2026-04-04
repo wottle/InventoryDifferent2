@@ -1634,32 +1634,34 @@ struct DeviceDetailView: View {
     
     private func formatDate(_ dateString: String?) -> String? {
         guard let dateString = dateString else { return nil }
-        
+
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        
+        let locale = Locale(identifier: LocalizationManager.shared.currentLanguage)
+
         if let date = formatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
+            displayFormatter.locale = locale
             return displayFormatter.string(from: date)
         }
-        
+
         // Try without fractional seconds
         formatter.formatOptions = [.withInternetDateTime]
         if let date = formatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
+            displayFormatter.locale = locale
             return displayFormatter.string(from: date)
         }
-        
+
         return dateString
     }
-    
+
     private func formatCurrency(_ value: Double?) -> String? {
         guard let value = value else { return nil }
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        return formatter.string(from: NSNumber(value: value))
+        let symbol = lm.t.common.currencySymbol
+        return "\(symbol)\(String(format: "%.2f", value))"
     }
 }
 
@@ -1816,20 +1818,23 @@ struct TaskRowView: View {
     private func formatDate(_ dateString: String) -> String {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        
+        let locale = Locale(identifier: LocalizationManager.shared.currentLanguage)
+
         if let date = formatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
+            displayFormatter.locale = locale
             return displayFormatter.string(from: date)
         }
-        
+
         formatter.formatOptions = [.withInternetDateTime]
         if let date = formatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
+            displayFormatter.locale = locale
             return displayFormatter.string(from: date)
         }
-        
+
         return dateString
     }
 }
@@ -1916,49 +1921,54 @@ struct NoteRowView: View {
     private func formatDateTime(_ dateString: String) -> String {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        
+        let locale = Locale(identifier: LocalizationManager.shared.currentLanguage)
+
         if let date = formatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
             displayFormatter.timeStyle = .short
+            displayFormatter.locale = locale
             return displayFormatter.string(from: date)
         }
-        
+
         formatter.formatOptions = [.withInternetDateTime]
         if let date = formatter.date(from: dateString) {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
             displayFormatter.timeStyle = .short
+            displayFormatter.locale = locale
             return displayFormatter.string(from: date)
         }
-        
+
         return dateString
     }
 }
 
 private struct MarkSoldSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
     @State private var saleDate = Date()
     @State private var salePriceText = ""
     let onSubmit: (Date, Double?) -> Void
 
     var body: some View {
-        NavigationStack {
+        let t = lm.t
+        return NavigationStack {
             Form {
-                DatePicker("Sale Date", selection: $saleDate, displayedComponents: .date)
+                DatePicker(t.addEditDevice.soldDate, selection: $saleDate, displayedComponents: .date)
                     .datePickerStyle(.compact)
 
-                TextField("Sale Price", text: $salePriceText)
+                TextField(t.addEditDevice.soldPrice, text: $salePriceText)
                     .keyboardType(.decimalPad)
             }
-            .navigationTitle("Mark as Sold")
+            .navigationTitle(t.deviceDetail.markSold)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(t.common.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Mark Sold") {
+                    Button(t.deviceDetail.markSold) {
                         let price = Double(salePriceText)
                         onSubmit(saleDate, price)
                         dismiss()
@@ -1971,23 +1981,25 @@ private struct MarkSoldSheet: View {
 
 private struct MarkForSaleSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
     @State private var listPriceText = ""
     let onSubmit: (Double) -> Void
 
     var body: some View {
-        NavigationStack {
+        let t = lm.t
+        return NavigationStack {
             Form {
-                TextField("List Price", text: $listPriceText)
+                TextField(t.addEditDevice.listPrice, text: $listPriceText)
                     .keyboardType(.decimalPad)
             }
-            .navigationTitle("Mark For Sale")
+            .navigationTitle(t.deviceDetail.markForSale)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(t.common.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Mark For Sale") {
+                    Button(t.deviceDetail.markForSale) {
                         if let price = Double(listPriceText) {
                             onSubmit(price)
                         }
@@ -2002,6 +2014,7 @@ private struct MarkForSaleSheet: View {
 
 struct AddAccessorySheet: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
     let deviceId: Int
     let onAdded: (DeviceAccessory) -> Void
 
@@ -2014,9 +2027,10 @@ struct AddAccessorySheet: View {
     ]
 
     var body: some View {
-        NavigationStack {
+        let t = lm.t
+        return NavigationStack {
             Form {
-                Section("Suggestions") {
+                Section(t.addEditDevice.accessorySuggestions) {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(suggestions, id: \.self) { suggestion in
@@ -2037,21 +2051,21 @@ struct AddAccessorySheet: View {
                     }
                 }
 
-                Section("Custom") {
+                Section(t.addEditDevice.accessoryCustom) {
                     HStack {
-                        TextField("Accessory name", text: $customName)
-                        Button("Add") {
+                        TextField(t.addEditDevice.accessoryNamePlaceholder, text: $customName)
+                        Button(t.common.add) {
                             Task { await addAccessory(name: customName) }
                         }
                         .disabled(customName.trimmingCharacters(in: .whitespaces).isEmpty || isSubmitting)
                     }
                 }
             }
-            .navigationTitle("Add Accessory")
+            .navigationTitle(t.addEditDevice.addAccessory)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(t.common.cancel) { dismiss() }
                 }
             }
             .disabled(isSubmitting)
@@ -2075,6 +2089,7 @@ struct AddAccessorySheet: View {
 
 struct AddLinkSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
     let deviceId: Int
     let onAdded: (DeviceLink) -> Void
 
@@ -2083,24 +2098,25 @@ struct AddLinkSheet: View {
     @State private var isSubmitting = false
 
     var body: some View {
-        NavigationStack {
+        let t = lm.t
+        return NavigationStack {
             Form {
-                Section("Link Details") {
-                    TextField("Label (e.g. EveryMac)", text: $label)
-                    TextField("URL", text: $url)
+                Section(t.addEditDevice.linkDetails) {
+                    TextField(t.addEditDevice.linkLabelPlaceholder, text: $label)
+                    TextField(t.addEditDevice.linkURLPlaceholder, text: $url)
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 }
             }
-            .navigationTitle("Add Reference Link")
+            .navigationTitle(t.addEditDevice.addLink)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(t.common.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(t.common.add) {
                         Task { await addLink() }
                     }
                     .disabled(label.trimmingCharacters(in: .whitespaces).isEmpty ||
@@ -2180,7 +2196,8 @@ struct ValueHistorySection: View {
                 AxisMarks { value in
                     if let v = value.as(Double.self) {
                         AxisValueLabel {
-                            Text(v >= 1000 ? "$\(String(format: "%.1f", v / 1000))k" : "$\(String(format: "%.0f", v))")
+                            let sym = lm.t.common.currencySymbol
+                            Text(v >= 1000 ? "\(sym)\(String(format: "%.1f", v / 1000))k" : "\(sym)\(String(format: "%.0f", v))")
                                 .font(.caption)
                         }
                         AxisGridLine()
