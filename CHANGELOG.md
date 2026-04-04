@@ -4,6 +4,10 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.1.3] - 2026-04-04
+
 ### Changed
 - i18n: all remaining sub-pages (timeline, stats, usage, trash, categories, financials, wishlist, custom fields, templates, print) and device form fully translated (en/de)
 
