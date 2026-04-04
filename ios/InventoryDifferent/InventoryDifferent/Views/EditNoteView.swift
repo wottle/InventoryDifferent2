@@ -11,7 +11,8 @@ struct EditNoteView: View {
     let note: Note
     let onNoteUpdated: (Note) -> Void
     @Environment(\.dismiss) private var dismiss
-    
+    @EnvironmentObject var lm: LocalizationManager
+
     @State private var content: String
     @State private var date: Date
     @State private var isSubmitting = false
@@ -39,18 +40,19 @@ struct EditNoteView: View {
     }
     
     var body: some View {
+        let t = lm.t
         NavigationStack {
             Form {
                 Section {
-                    DatePicker("Date & Time", selection: $date, displayedComponents: [.date, .hourAndMinute])
+                    DatePicker(t.note.dateTime, selection: $date, displayedComponents: [.date, .hourAndMinute])
                 } header: {
-                    Text("Date & Time")
+                    Text(t.note.dateTime)
                 }
-                
+
                 Section {
                     ZStack(alignment: .topLeading) {
                         if content.isEmpty {
-                            Text("Enter your note here...")
+                            Text(t.note.placeholder)
                                 .foregroundColor(Color(.placeholderText))
                                 .padding(.top, 8)
                                 .padding(.leading, 4)
@@ -59,9 +61,9 @@ struct EditNoteView: View {
                             .frame(minHeight: 150)
                     }
                 } header: {
-                    Text("Note Content")
+                    Text(t.note.content)
                 }
-                
+
                 if let error = error {
                     Section {
                         Text(error)
@@ -70,17 +72,17 @@ struct EditNoteView: View {
                     }
                 }
             }
-            .navigationTitle("Edit Note")
+            .navigationTitle(t.note.editTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(t.common.cancel) {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(t.common.save) {
                         Task {
                             await submitNote()
                         }

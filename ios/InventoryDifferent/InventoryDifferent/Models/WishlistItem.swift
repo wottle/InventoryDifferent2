@@ -33,10 +33,11 @@ struct WishlistItem: Codable, Identifiable {
     let isPramBatteryRemoved: Bool?
 
     var priorityLabel: String {
+        let p = LocalizationManager.shared.t.priority
         switch priority {
-        case 1: return "High"
-        case 3: return "Low"
-        default: return "Medium"
+        case 1: return p.high
+        case 3: return p.low
+        default: return p.medium
         }
     }
 }

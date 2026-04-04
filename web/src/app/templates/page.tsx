@@ -346,14 +346,14 @@ export default function TemplatesPage() {
                           onClick={() => openEditModal(tpl)}
                           className="btn-retro px-3 py-1 text-sm"
                         >
-                          Edit
+                          {t.common.edit}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDelete(tpl.id)}
                           className="rounded border border-[var(--apple-red)] bg-[var(--card)] px-3 py-1 text-sm text-[var(--apple-red)] hover:bg-red-50 dark:hover:bg-red-900/20"
                         >
-                          Delete
+                          {t.common.delete}
                         </button>
                       </div>
                     </td>
@@ -371,21 +371,21 @@ export default function TemplatesPage() {
           <div className="relative z-10 w-full max-w-3xl rounded border border-[var(--border)] bg-[var(--card)] shadow-xl card-retro">
             <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
               <h2 className="text-sm font-semibold text-[var(--foreground)]">
-                {modalMode === "create" ? "New Template" : "Edit Template"}
+                {modalMode === "create" ? t.pages.templates.newTemplateTitle : t.pages.templates.editTemplateTitle}
               </h2>
               <button
                 type="button"
                 onClick={closeModal}
                 className="btn-retro px-2 py-1 text-sm"
               >
-                Close
+                {t.pages.templates.closeBtn}
               </button>
             </div>
 
             <div className="px-4 py-4">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Category</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.filter.category}</label>
                   <select
                     value={form.categoryId}
                     onChange={(e) =>
@@ -396,7 +396,7 @@ export default function TemplatesPage() {
                     }
                     className="select-flat w-full px-4 py-2 text-sm text-[var(--foreground)]"
                   >
-                    <option value={0}>Select a category</option>
+                    <option value={0}>{t.pages.templates.selectCategory}</option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
@@ -406,7 +406,7 @@ export default function TemplatesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Name</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.common.name}</label>
                   <input
                     value={form.name}
                     onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
@@ -415,7 +415,7 @@ export default function TemplatesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Additional Name</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.form.additionalNameLabel}</label>
                   <input
                     value={form.additionalName}
                     onChange={(e) => setForm((prev) => ({ ...prev, additionalName: e.target.value }))}
@@ -424,7 +424,7 @@ export default function TemplatesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Manufacturer</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.form.manufacturerLabel}</label>
                   <input
                     value={form.manufacturer}
                     onChange={(e) => setForm((prev) => ({ ...prev, manufacturer: e.target.value }))}
@@ -433,7 +433,7 @@ export default function TemplatesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Model Number</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.form.modelNumberLabel}</label>
                   <input
                     value={form.modelNumber}
                     onChange={(e) => setForm((prev) => ({ ...prev, modelNumber: e.target.value }))}
@@ -442,7 +442,7 @@ export default function TemplatesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Release Year</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.detail.releaseYear}</label>
                   <input
                     type="number"
                     value={form.releaseYear}
@@ -452,7 +452,7 @@ export default function TemplatesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Estimated Value</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.detail.estimatedValue}</label>
                   <input
                     type="number"
                     value={form.estimatedValue}
@@ -476,14 +476,14 @@ export default function TemplatesPage() {
                         rel="noreferrer"
                         className="text-[var(--apple-blue)] hover:underline"
                       >
-                        Open link
+                        {t.pages.templates.openLink}
                       </a>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Rarity</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.filter.rarity}</label>
                   <select
                     value={form.rarity}
                     onChange={(e) => setForm((prev) => ({ ...prev, rarity: e.target.value }))}
@@ -500,10 +500,10 @@ export default function TemplatesPage() {
 
               {isComputer && (
                 <div className="mt-4">
-                  <div className="mb-2 text-xs font-semibold text-[var(--foreground)]">Computer Specs</div>
+                  <div className="mb-2 text-xs font-semibold text-[var(--foreground)]">{t.pages.templates.computerSpecs}</div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">CPU</label>
+                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.detail.cpu}</label>
                       <input
                         value={form.cpu}
                         onChange={(e) => setForm((prev) => ({ ...prev, cpu: e.target.value }))}
@@ -511,7 +511,7 @@ export default function TemplatesPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">RAM</label>
+                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.detail.ram}</label>
                       <input
                         value={form.ram}
                         onChange={(e) => setForm((prev) => ({ ...prev, ram: e.target.value }))}
@@ -519,7 +519,7 @@ export default function TemplatesPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Storage</label>
+                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.detail.storage}</label>
                       <input
                         value={form.storage}
                         onChange={(e) => setForm((prev) => ({ ...prev, storage: e.target.value }))}
@@ -527,7 +527,7 @@ export default function TemplatesPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Graphics</label>
+                      <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.detail.graphics}</label>
                       <input
                         value={form.graphics}
                         onChange={(e) => setForm((prev) => ({ ...prev, graphics: e.target.value }))}
@@ -549,7 +549,7 @@ export default function TemplatesPage() {
                     disabled={deleting}
                     className="rounded bg-[var(--apple-red)] px-3 py-1.5 text-sm text-white hover:brightness-110 disabled:opacity-50 border border-[#c02020]"
                   >
-                    Delete
+                    {t.common.delete}
                   </button>
                 )}
                 <button
@@ -557,7 +557,7 @@ export default function TemplatesPage() {
                   onClick={closeModal}
                   className="btn-retro px-3 py-1.5 text-sm"
                 >
-                  Cancel
+                  {t.common.cancel}
                 </button>
                 <button
                   type="button"
@@ -565,7 +565,7 @@ export default function TemplatesPage() {
                   disabled={creating || updating}
                   className="rounded bg-[var(--apple-blue)] px-3 py-1.5 text-sm text-white hover:brightness-110 disabled:opacity-50 border border-[#007acc]"
                 >
-                  Save
+                  {t.common.save}
                 </button>
               </div>
             </div>

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ChatView: View {
+    @EnvironmentObject var lm: LocalizationManager
     @State private var messages: [ChatMessage] = []
     @State private var inputText = ""
     @State private var isLoading = false
@@ -18,6 +19,7 @@ struct ChatView: View {
     @State private var isConversationMode = false
 
     var body: some View {
+        let t = lm.t
         VStack(spacing: 0) {
             ScrollViewReader { proxy in
                 ScrollView {
@@ -31,7 +33,7 @@ struct ChatView: View {
                             HStack {
                                 ProgressView()
                                     .padding(.horizontal, 8)
-                                Text("Thinking...")
+                                Text(t.chat.thinking)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                 Spacer()
@@ -70,7 +72,7 @@ struct ChatView: View {
                     Image(systemName: voice.isRecording ? "waveform" : voice.isSpeaking ? "speaker.wave.2" : "ellipsis")
                         .font(.caption)
                         .foregroundColor(.blue)
-                    Text(voice.isRecording ? "Listening..." : voice.isSpeaking ? "Speaking..." : isLoading ? "Thinking..." : "Tap mic to stop conversation")
+                    Text(voice.isRecording ? t.chat.listening : voice.isSpeaking ? t.chat.speaking : isLoading ? t.chat.thinking : t.chat.tapMicStop)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -103,7 +105,7 @@ struct ChatView: View {
                         )
                 }
 
-                TextField("Ask about your collection...", text: $inputText, axis: .vertical)
+                TextField(t.chat.placeholder, text: $inputText, axis: .vertical)
                     .textFieldStyle(.plain)
                     .padding(12)
                     .background(Color(.secondarySystemBackground))
@@ -125,7 +127,7 @@ struct ChatView: View {
             }
             .padding()
         }
-        .navigationTitle("Chat")
+        .navigationTitle(t.chat.title)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -170,7 +172,7 @@ struct ChatView: View {
         .onAppear {
             if messages.isEmpty {
                 messages.append(ChatMessage(
-                    content: "Hello! I can help you with information about your collection. Ask me anything!",
+                    content: lm.t.chat.welcomeMessage,
                     isUser: false
                 ))
             }

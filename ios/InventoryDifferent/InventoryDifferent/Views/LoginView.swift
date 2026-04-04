@@ -10,6 +10,7 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var authService: AuthService
     @EnvironmentObject var appSettings: AppSettings
+    @EnvironmentObject var lm: LocalizationManager
     @State private var serverURL: String = ""
     @State private var username: String = ""
     @State private var password: String = ""
@@ -18,6 +19,7 @@ struct LoginView: View {
     @State private var showPassword: Bool = false
 
     var body: some View {
+        let t = lm.t
         VStack(spacing: 32) {
             Spacer()
 
@@ -32,7 +34,7 @@ struct LoginView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
-                Text("Connect to Server")
+                Text(t.login.connectTitle)
                     .font(.title3)
                     .foregroundColor(.secondary)
             }
@@ -43,11 +45,11 @@ struct LoginView: View {
             VStack(spacing: 16) {
                 // Server URL field
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Server URL")
+                    Text(t.login.serverURL)
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    TextField("https://your-server.example.com", text: $serverURL)
+                    TextField(t.login.serverURLPlaceholder, text: $serverURL)
                         .textContentType(.URL)
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
@@ -59,11 +61,11 @@ struct LoginView: View {
 
                 // Username field (always shown)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Username (optional for guest access)")
+                    Text(t.login.usernameOptional)
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    TextField("Username", text: $username)
+                    TextField(t.login.username, text: $username)
                         .textContentType(.username)
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
@@ -74,17 +76,17 @@ struct LoginView: View {
 
                 // Password field
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Password (optional for guest access)")
+                    Text(t.login.passwordOptional)
                         .font(.caption)
                         .foregroundColor(.secondary)
 
                     HStack {
                         if showPassword {
-                            TextField("Password", text: $password)
+                            TextField(t.login.password, text: $password)
                                 .textContentType(.password)
                                 .autocapitalization(.none)
                         } else {
-                            SecureField("Password", text: $password)
+                            SecureField(t.login.password, text: $password)
                                 .textContentType(.password)
                         }
 
@@ -114,7 +116,7 @@ struct LoginView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .scaleEffect(0.8)
                         }
-                        Text(isSubmitting ? "Connecting..." : "Connect")
+                        Text(isSubmitting ? t.login.connecting : t.login.connect)
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
@@ -126,7 +128,7 @@ struct LoginView: View {
                 .disabled(serverURL.isEmpty || isSubmitting)
 
                 // Info text
-                Text("Leave username and password blank to browse as guest (view only)")
+                Text(t.login.guestHint)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -165,14 +167,14 @@ struct LoginView: View {
                 let connected = try await testConnection()
                 if !connected {
                     await MainActor.run {
-                        errorMessage = "Could not connect to server"
+                        errorMessage = lm.t.login.couldNotConnect
                         isSubmitting = false
                     }
                     return
                 }
             } catch {
                 await MainActor.run {
-                    errorMessage = "Connection failed: \(error.localizedDescription)"
+                    errorMessage = "\(lm.t.login.connectionFailed)\(error.localizedDescription)"
                     isSubmitting = false
                 }
                 return

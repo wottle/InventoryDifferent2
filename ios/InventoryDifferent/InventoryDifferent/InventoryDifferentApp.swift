@@ -12,6 +12,7 @@ struct InventoryDifferentApp: App {
     @StateObject private var deviceStore = DeviceStore()
     @StateObject private var appSettings = AppSettings.shared
     @StateObject private var authService = AuthService.shared
+    @StateObject private var lm = LocalizationManager.shared
     @State private var showSplash = true
     @State private var deepLinkDeviceId: Int?
 
@@ -23,6 +24,7 @@ struct InventoryDifferentApp: App {
                     LoginView()
                         .environmentObject(authService)
                         .environmentObject(appSettings)
+                        .environmentObject(lm)
                 } else if authService.isLoading {
                     // Still checking auth status
                     Color(.systemBackground)
@@ -31,12 +33,14 @@ struct InventoryDifferentApp: App {
                     LoginView()
                         .environmentObject(authService)
                         .environmentObject(appSettings)
+                        .environmentObject(lm)
                 } else {
                     // Ready to show main content
                     ContentView(deepLinkDeviceId: $deepLinkDeviceId)
                         .environmentObject(deviceStore)
                         .environmentObject(appSettings)
                         .environmentObject(authService)
+                        .environmentObject(lm)
                 }
 
                 // Splash screen overlay

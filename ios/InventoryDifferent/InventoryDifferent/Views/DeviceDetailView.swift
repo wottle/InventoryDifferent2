@@ -16,6 +16,7 @@ struct ImageIndex: Identifiable {
 struct DeviceDetailScreen: View {
     let deviceId: Int
     @EnvironmentObject var deviceStore: DeviceStore
+    @EnvironmentObject var lm: LocalizationManager
     @Environment(\.dismiss) private var dismiss
 
     @State private var device: Device?
@@ -24,22 +25,23 @@ struct DeviceDetailScreen: View {
     @State private var selectedTab = 0
 
     var body: some View {
+        let t = lm.t
         Group {
             if isLoading {
-                ProgressView("Loading device...")
+                ProgressView(t.deviceDetail.loading)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let error {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)
                         .foregroundColor(.orange)
-                    Text("Error loading device")
+                    Text(t.deviceDetail.errorLoading)
                         .font(.headline)
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                    Button("Retry") {
+                    Button(t.common.retry) {
                         Task { await load(force: true) }
                     }
                     .buttonStyle(.borderedProminent)
@@ -68,7 +70,7 @@ struct DeviceDetailScreen: View {
                 )
             } else {
                 ContentUnavailableView {
-                    Label("Device not found", systemImage: "desktopcomputer")
+                    Label(t.deviceDetail.notFound, systemImage: "desktopcomputer")
                 }
             }
         }
@@ -102,6 +104,7 @@ struct DeviceDetailView: View {
     let onDeviceChanged: ((Device) -> Void)?
     let onDeviceDeleted: (() -> Void)?
     @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
     @Environment(\.dismiss) private var dismiss
     
     @State private var device: Device
@@ -330,21 +333,21 @@ struct DeviceDetailView: View {
         .fullScreenCover(item: $selectedImageIndex) { imageIndex in
             ImageViewerView(images: images.sorted(by: { $0.id > $1.id }), initialIndex: imageIndex.value)
         }
-        .alert("Delete Device", isPresented: $showDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
+        .alert(lm.t.deviceDetail.deleteDevice, isPresented: $showDeleteAlert) {
+            Button(lm.t.common.cancel, role: .cancel) { }
+            Button(lm.t.common.delete, role: .destructive) {
                 Task {
                     await deleteDevice()
                 }
             }
         } message: {
-            Text("This will move the device to trash. You can restore it later.")
+            Text(lm.t.deviceDetail.deleteDeviceMessage)
         }
-        .alert("Delete Image", isPresented: $showDeleteImageAlert) {
-            Button("Cancel", role: .cancel) {
+        .alert(lm.t.deviceDetail.deleteImage, isPresented: $showDeleteImageAlert) {
+            Button(lm.t.common.cancel, role: .cancel) {
                 imageToDelete = nil
             }
-            Button("Delete", role: .destructive) {
+            Button(lm.t.common.delete, role: .destructive) {
                 if let image = imageToDelete {
                     Task {
                         await deleteImage(image)
@@ -353,29 +356,29 @@ struct DeviceDetailView: View {
                 }
             }
         } message: {
-            Text("Are you sure you want to delete this image? This action cannot be undone.")
+            Text(lm.t.deviceDetail.deleteImageMessage)
         }
-        .confirmationDialog("Set Thumbnail", isPresented: $showThumbnailChoiceSheet, titleVisibility: .visible) {
-            Button("Replace (Both Modes)") {
+        .confirmationDialog(lm.t.deviceDetail.setThumbnail, isPresented: $showThumbnailChoiceSheet, titleVisibility: .visible) {
+            Button(lm.t.deviceDetail.replaceBothModes) {
                 if let image = imageForThumbnailChoice {
                     Task { await setThumbnail(image, mode: "BOTH") }
                 }
             }
-            Button("Set as Light Mode Thumbnail") {
+            Button(lm.t.deviceDetail.setLightMode) {
                 if let image = imageForThumbnailChoice {
                     Task { await setThumbnail(image, mode: "LIGHT") }
                 }
             }
-            Button("Set as Dark Mode Thumbnail") {
+            Button(lm.t.deviceDetail.setDarkMode) {
                 if let image = imageForThumbnailChoice {
                     Task { await setThumbnail(image, mode: "DARK") }
                 }
             }
-            Button("Cancel", role: .cancel) {
+            Button(lm.t.common.cancel, role: .cancel) {
                 imageForThumbnailChoice = nil
             }
         } message: {
-            Text("Choose how this image should be used as a thumbnail.")
+            Text(lm.t.deviceDetail.chooseThumbnailMessage)
         }
         .sheet(isPresented: $showAddTagSheet) {
             AddTagView(deviceId: device.id, existingTags: tags) { updatedDevice in
@@ -408,16 +411,17 @@ struct DeviceDetailView: View {
             }
         } message: {
             if let tag = tagToRemove {
-                Text("Remove the tag \"\(tag.name)\" from this device?")
+                Text(String(format: lm.t.deviceDetail.removeTagFmt, tag.name))
             }
         }
         .overlay(alignment: .bottom) {
+            let t = lm.t
             Picker("Section", selection: $selectedTab) {
-                Text("Details").tag(0)
-                Text("Photos (\(images.count))").tag(1)
-                Text("Tasks (\(maintenanceTasks.count))").tag(2)
+                Text(t.deviceDetail.tabDetails).tag(0)
+                Text("\(t.deviceDetail.tabPhotos) (\(images.count))").tag(1)
+                Text("\(t.deviceDetail.tabTasks) (\(maintenanceTasks.count))").tag(2)
                 if( authService.isAuthenticated ) {
-                    Text("Notes (\(notes.count))").tag(3)
+                    Text("\(t.deviceDetail.tabNotes) (\(notes.count))").tag(3)
                 }
             }
             .pickerStyle(.segmented)
@@ -441,14 +445,15 @@ struct DeviceDetailView: View {
     // MARK: - Quick Actions
 
     private var quickActionsRow: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Quick Actions")
+        let t = lm.t
+        return VStack(alignment: .leading, spacing: 10) {
+            Text(t.deviceDetail.quickActions)
                 .font(.headline)
                 .foregroundColor(.primary)
 
             HStack(spacing: 12) {
                 QuickActionButton(
-                    title: device.isFavorite ? "Unfavorite" : "Favorite",
+                    title: device.isFavorite ? t.deviceDetail.unfavorite : t.deviceDetail.favorite,
                     systemImage: device.isFavorite ? "star.fill" : "star",
                     isLoading: isTogglingFavorite,
                     tintColor: device.isFavorite ? .yellow : nil
@@ -457,7 +462,7 @@ struct DeviceDetailView: View {
                 }
 
                 QuickActionButton(
-                    title: "Add Photo",
+                    title: t.deviceDetail.addPhoto,
                     systemImage: "camera"
                 ) {
                     quickActionSourceTab = selectedTab
@@ -466,7 +471,7 @@ struct DeviceDetailView: View {
                 }
 
                 QuickActionButton(
-                    title: "Add Task",
+                    title: t.deviceDetail.addTask,
                     systemImage: "wrench.and.screwdriver"
                 ) {
                     quickActionSourceTab = selectedTab
@@ -475,7 +480,7 @@ struct DeviceDetailView: View {
                 }
 
                 QuickActionButton(
-                    title: "Add Note",
+                    title: t.deviceDetail.addNote,
                     systemImage: "note.text.badge.plus"
                 ) {
                     quickActionSourceTab = selectedTab
@@ -484,7 +489,7 @@ struct DeviceDetailView: View {
                 }
 
                 QuickActionButton(
-                    title: "Powered On Today",
+                    title: t.deviceDetail.poweredOnToday,
                     systemImage: isUpdatingPowerDate ? "clock.arrow.circlepath" : "powerplug",
                     isLoading: isUpdatingPowerDate
                 ) {
@@ -493,7 +498,7 @@ struct DeviceDetailView: View {
 
                 if device.status == .COLLECTION {
                     QuickActionButton(
-                        title: "Mark For Sale",
+                        title: t.deviceDetail.markForSale,
                         systemImage: "tag",
                         isLoading: isUpdatingStatus
                     ) {
@@ -507,7 +512,7 @@ struct DeviceDetailView: View {
 
                 if device.status == .FOR_SALE {
                     QuickActionButton(
-                        title: "Mark Pending",
+                        title: t.deviceDetail.markPending,
                         systemImage: "clock.badge.checkmark",
                         isLoading: isUpdatingStatus
                     ) {
@@ -515,7 +520,7 @@ struct DeviceDetailView: View {
                     }
 
                     QuickActionButton(
-                        title: "Mark Sold",
+                        title: t.deviceDetail.markSold,
                         systemImage: "dollarsign.circle",
                         isLoading: isUpdatingStatus
                     ) {
@@ -525,7 +530,7 @@ struct DeviceDetailView: View {
 
                 if device.status == .PENDING_SALE {
                     QuickActionButton(
-                        title: "Mark For Sale",
+                        title: t.deviceDetail.markForSale,
                         systemImage: "tag",
                         isLoading: isUpdatingStatus
                     ) {
@@ -533,7 +538,7 @@ struct DeviceDetailView: View {
                     }
 
                     QuickActionButton(
-                        title: "Mark Sold",
+                        title: t.deviceDetail.markSold,
                         systemImage: "dollarsign.circle",
                         isLoading: isUpdatingStatus
                     ) {
@@ -796,9 +801,10 @@ struct DeviceDetailView: View {
             
             // Tags
             if authService.isAuthenticated || !tags.isEmpty {
+                let t = lm.t
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Text("Tags")
+                        Text(t.deviceDetail.tags)
                             .font(.headline)
                             .foregroundColor(.primary)
                         Spacer()
@@ -806,7 +812,7 @@ struct DeviceDetailView: View {
                             Button {
                                 showAddTagSheet = true
                             } label: {
-                                Label("Add Tag", systemImage: "plus")
+                                Label(t.tag.addTitle, systemImage: "plus")
                                     .font(.caption)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
@@ -819,7 +825,7 @@ struct DeviceDetailView: View {
                     .padding(.top, 8)
 
                     if tags.isEmpty {
-                        Text("No tags yet")
+                        Text(lm.t.deviceDetail.noTags)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     } else {
@@ -864,16 +870,17 @@ struct DeviceDetailView: View {
     // MARK: - Details Section
     
     private var detailsSection: some View {
-        VStack(spacing: 16) {
+        let t = lm.t
+        return VStack(spacing: 16) {
             // Basic Info
-            DetailSection(title: "Basic Information") {
-                DetailRow(label: "Device ID", value: String(device.id))
-                DetailRow(label: "Model Number", value: device.modelNumber)
-                DetailRow(label: "Serial Number", value: device.serialNumber)
-                DetailRow(label: "Release Year", value: device.releaseYear.map { String($0) })
-                DetailRow(label: "Location", value: device.location)
+            DetailSection(title: t.deviceDetail.basicInformation) {
+                DetailRow(label: t.deviceDetail.deviceId, value: String(device.id))
+                DetailRow(label: t.deviceDetail.modelNumber, value: device.modelNumber)
+                DetailRow(label: t.deviceDetail.serialNumber, value: device.serialNumber)
+                DetailRow(label: t.deviceDetail.releaseYear, value: device.releaseYear.map { String($0) })
+                DetailRow(label: t.deviceDetail.location, value: device.location)
                 HStack {
-                    Text("Functional Status")
+                    Text(t.deviceDetail.functionalStatus)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     FunctionalStatusIcon(status: device.functionalStatus)
@@ -884,7 +891,7 @@ struct DeviceDetailView: View {
                 }
                 .padding(.vertical, 8)
                 if let condition = device.condition {
-                    DetailRow(label: "Condition", value: condition.displayName)
+                    DetailRow(label: t.deviceDetail.condition, value: condition.displayName)
                 }
                 if let rarity = device.rarity {
                     let rarityColor: Color = {
@@ -897,7 +904,7 @@ struct DeviceDetailView: View {
                         }
                     }()
                     HStack {
-                        Text("Rarity")
+                        Text(t.deviceDetail.rarity)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         Image(systemName: "crown.fill")
@@ -911,18 +918,18 @@ struct DeviceDetailView: View {
                     }
                     .padding(.vertical, 8)
                 }
-                DetailRow(label: "Last Used Date", value: formatDate(device.lastPowerOnDate))
+                DetailRow(label: t.deviceDetail.lastUsedDate, value: formatDate(device.lastPowerOnDate))
             }
             
             
             // Acquisition Info
-            DetailSection(title: "Acquisition and Value") {
-                DetailRow(label: "Date Acquired", value: formatDate(device.dateAcquired))
-                DetailRow(label: "Where Acquired", value: device.whereAcquired)
-                DetailRow(label: "Price Acquired", value: formatCurrency(device.priceAcquired))
+            DetailSection(title: t.deviceDetail.acquisitionAndValue) {
+                DetailRow(label: t.deviceDetail.dateAcquired, value: formatDate(device.dateAcquired))
+                DetailRow(label: t.deviceDetail.whereAcquired, value: device.whereAcquired)
+                DetailRow(label: t.deviceDetail.priceAcquired, value: formatCurrency(device.priceAcquired))
                 if let value = device.estimatedValue {
                     HStack {
-                        Text("Estimated Value")
+                        Text(t.deviceDetail.estimatedValue)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         Spacer()
@@ -942,61 +949,62 @@ struct DeviceDetailView: View {
                     }
                     .padding(.vertical, 8)
                 } else {
-                    DetailRow(label: "Estimated Value", value: formatCurrency(device.estimatedValue))
+                    DetailRow(label: t.deviceDetail.estimatedValue, value: formatCurrency(device.estimatedValue))
                 }
             }
 
             if authService.isAuthenticated && valueSnapshots.count >= 2 {
                 ValueHistorySection(snapshots: valueSnapshots)
+                    .environmentObject(lm)
             }
 
             // Sales Info (if applicable)
             if device.status == .FOR_SALE || device.status == .PENDING_SALE || device.status == .SOLD {
-                DetailSection(title: "Sales") {
-                    DetailRow(label: "List Price", value: formatCurrency(device.listPrice))
+                DetailSection(title: t.deviceDetail.sales) {
+                    DetailRow(label: t.deviceDetail.listPrice, value: formatCurrency(device.listPrice))
                     if device.status == .SOLD {
-                        DetailRow(label: "Sold Price", value: formatCurrency(device.soldPrice))
-                        DetailRow(label: "Sold Date", value: formatDate(device.soldDate))
+                        DetailRow(label: t.deviceDetail.soldPrice, value: formatCurrency(device.soldPrice))
+                        DetailRow(label: t.deviceDetail.soldDate, value: formatDate(device.soldDate))
                     }
                 }
             }
             else if device.status == .DONATED {
-                DetailSection(title: "Donated") {
+                DetailSection(title: t.deviceDetail.donated) {
                     if device.status == .DONATED {
-                        DetailRow(label: "Donated Date", value: formatDate(device.soldDate))
+                        DetailRow(label: t.deviceDetail.donatedDate, value: formatDate(device.soldDate))
                     }
                 }
             }
             else if device.status == .RETURNED {
-                DetailSection(title: "Repair") {
-                    DetailRow(label: "Returned Date", value: formatDate(device.soldDate))
+                DetailSection(title: t.deviceDetail.repair) {
+                    DetailRow(label: t.deviceDetail.returnedDate, value: formatDate(device.soldDate))
                     if let fee = device.soldPrice, fee > 0 {
-                        DetailRow(label: "Repair Fee Charged", value: formatCurrency(fee))
+                        DetailRow(label: t.deviceDetail.repairFeeCharged, value: formatCurrency(fee))
                     }
                 }
             }
 
             // Computer Specs (if applicable)
             if hasComputerSpecs {
-                DetailSection(title: "Computer Specifications") {
-                    DetailRow(label: "CPU", value: device.cpu)
-                    DetailRow(label: "RAM", value: device.ram)
-                    DetailRow(label: "Graphics", value: device.graphics)
-                    DetailRow(label: "Storage", value: device.storage)
-                    DetailRow(label: "Operating System", value: device.operatingSystem)
+                DetailSection(title: t.deviceDetail.computerSpecs) {
+                    DetailRow(label: t.deviceDetail.cpu, value: device.cpu)
+                    DetailRow(label: t.deviceDetail.ram, value: device.ram)
+                    DetailRow(label: t.deviceDetail.graphics, value: device.graphics)
+                    DetailRow(label: t.deviceDetail.storage, value: device.storage)
+                    DetailRow(label: t.deviceDetail.operatingSystem, value: device.operatingSystem)
                     if let isWifi = device.isWifiEnabled {
-                        DetailRow(label: "WiFi Enabled", value: isWifi ? "Yes" : "No")
+                        DetailRow(label: t.deviceDetail.wifiEnabled, value: isWifi ? t.common.yes : t.common.no)
                     }
                     if let isPram = device.isPramBatteryRemoved {
                         HStack {
-                            Text("PRAM Battery Removed")
+                            Text(t.deviceDetail.pramBatteryRemoved)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                             Image(systemName: "battery.100")
                                 .font(.system(size: 12))
                                 .foregroundColor(isPram ? .green : .red)
                             Spacer()
-                            Text(isPram ? "Yes" : "No")
+                            Text(isPram ? t.common.yes : t.common.no)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                         }
@@ -1007,7 +1015,7 @@ struct DeviceDetailView: View {
             
             // Custom Fields
             if !device.customFieldValues.isEmpty {
-                DetailSection(title: "Custom Fields") {
+                DetailSection(title: t.deviceDetail.customFields) {
                     ForEach(device.customFieldValues.sorted(by: { $0.sortOrder == $1.sortOrder ? $0.customFieldName < $1.customFieldName : $0.sortOrder < $1.sortOrder })) { cfv in
                         DetailRow(label: cfv.customFieldName, value: cfv.value)
                     }
@@ -1016,7 +1024,7 @@ struct DeviceDetailView: View {
 
             // Info/Notes
             if let info = device.info, !info.isEmpty {
-                DetailSection(title: "Additional Info") {
+                DetailSection(title: t.deviceDetail.additionalInfo) {
                     Text(info)
                         .font(.body)
                         .foregroundColor(.primary)
@@ -1025,9 +1033,9 @@ struct DeviceDetailView: View {
             
             // Accessories
             if authService.isAuthenticated || !accessories.isEmpty {
-                DetailSection(title: "Accessories") {
+                DetailSection(title: t.deviceDetail.accessories) {
                     if accessories.isEmpty {
-                        Text("No accessories recorded")
+                        Text(t.deviceDetail.noAccessories)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     } else {
@@ -1067,7 +1075,7 @@ struct DeviceDetailView: View {
                         Button {
                             showAddAccessorySheet = true
                         } label: {
-                            Label("Add Accessory", systemImage: "plus")
+                            Label(t.deviceDetail.addAccessory, systemImage: "plus")
                                 .font(.caption)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
@@ -1082,9 +1090,9 @@ struct DeviceDetailView: View {
 
             // Reference Links
             if authService.isAuthenticated || !links.isEmpty {
-                DetailSection(title: "Reference Links") {
+                DetailSection(title: t.deviceDetail.referenceLinks) {
                     if links.isEmpty {
-                        Text("No links recorded")
+                        Text(t.deviceDetail.noLinks)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     } else {
@@ -1152,9 +1160,10 @@ struct DeviceDetailView: View {
             Button {
                 showDeleteAlert = true
             } label: {
+                let t = lm.t
                 HStack {
                     Image(systemName: "trash")
-                    Text("Delete Device")
+                    Text(t.deviceDetail.deleteDevice)
                 }
                 .font(.body)
                 .foregroundColor(.red)
@@ -1179,9 +1188,9 @@ struct DeviceDetailView: View {
         Group {
             if images.isEmpty {
                 ContentUnavailableView {
-                    Label("No Photos", systemImage: "photo.on.rectangle")
+                    Label(lm.t.deviceDetail.noPhotos, systemImage: "photo.on.rectangle")
                 } description: {
-                    Text("This device has no photos")
+                    Text(lm.t.deviceDetail.noPhotosMessage)
                 }
             } else {
                 LazyVGrid(columns: [
@@ -1354,17 +1363,18 @@ struct DeviceDetailView: View {
     // MARK: - Tasks Section
     
     private var tasksSection: some View {
-        VStack(spacing: 12) {
-            Text("Maintenance Tasks")
+        let t = lm.t
+        return VStack(spacing: 12) {
+            Text(t.deviceDetail.maintenanceTasks)
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 4)
             
             if maintenanceTasks.isEmpty {
                 ContentUnavailableView {
-                    Label("No Tasks", systemImage: "wrench.and.screwdriver")
+                    Label(t.deviceDetail.noTasks, systemImage: "wrench.and.screwdriver")
                 } description: {
-                    Text("No maintenance tasks recorded")
+                    Text(t.deviceDetail.noTasksMessage)
                 }
                 .frame(maxWidth: .infinity, minHeight: 200)
             } else {
@@ -1406,17 +1416,18 @@ struct DeviceDetailView: View {
     // MARK: - Notes Section
     
     private var notesSection: some View {
-        VStack(spacing: 12) {
-            Text("Notes")
+        let t = lm.t
+        return VStack(spacing: 12) {
+            Text(t.deviceDetail.notes)
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 4)
             
             if notes.isEmpty {
                 ContentUnavailableView {
-                    Label("No Notes", systemImage: "note.text")
+                    Label(t.deviceDetail.noNotes, systemImage: "note.text")
                 } description: {
-                    Text("No notes for this device")
+                    Text(t.deviceDetail.noNotesMessage)
                 }
                 .frame(maxWidth: .infinity, minHeight: 200)
             } else {
@@ -1729,6 +1740,7 @@ struct TaskRowView: View {
     let task: MaintenanceTask
     let onDelete: () -> Void
     @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
 
     @State private var showDeleteConfirmation = false
     
@@ -1778,18 +1790,18 @@ struct TaskRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 
                 VStack(spacing: 12) {
-                    Text("Delete this task?")
+                    Text(lm.t.deviceDetail.deleteTaskConfirm)
                         .font(.subheadline)
                         .foregroundColor(.white)
                     
                     HStack(spacing: 12) {
-                        Button("Cancel") {
+                        Button(lm.t.common.cancel) {
                             showDeleteConfirmation = false
                         }
                         .buttonStyle(.bordered)
                         .tint(.white)
                         
-                        Button("Delete") {
+                        Button(lm.t.common.delete) {
                             onDelete()
                         }
                         .buttonStyle(.borderedProminent)
@@ -1827,7 +1839,8 @@ struct NoteRowView: View {
     let onEdit: () -> Void
     let onDelete: () -> Void
     @EnvironmentObject var authService: AuthService
-
+    @EnvironmentObject var lm: LocalizationManager
+    
     @State private var showDeleteConfirmation = false
     
     var body: some View {
@@ -1877,18 +1890,18 @@ struct NoteRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 
                 VStack(spacing: 12) {
-                    Text("Delete this note?")
+                    Text(lm.t.deviceDetail.deleteNoteConfirm)
                         .font(.subheadline)
                         .foregroundColor(.white)
                     
                     HStack(spacing: 12) {
-                        Button("Cancel") {
+                        Button(lm.t.common.cancel) {
                             showDeleteConfirmation = false
                         }
                         .buttonStyle(.bordered)
                         .tint(.white)
                         
-                        Button("Delete") {
+                        Button(lm.t.common.delete) {
                             onDelete()
                         }
                         .buttonStyle(.borderedProminent)
@@ -2115,6 +2128,7 @@ struct AddLinkSheet: View {
 }
 
 struct ValueHistorySection: View {
+    @EnvironmentObject var lm: LocalizationManager
     let snapshots: [ValueSnapshot]
 
     private var isoFormatter: ISO8601DateFormatter {
@@ -2133,7 +2147,7 @@ struct ValueHistorySection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Value History")
+            Text(lm.t.deviceDetail.valueHistory)
                 .font(.headline)
                 .padding(.bottom, 2)
 

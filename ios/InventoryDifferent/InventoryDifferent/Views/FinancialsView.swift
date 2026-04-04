@@ -19,6 +19,7 @@ struct ChartDataPoint: Identifiable {
 }
 
 struct FinancialsView: View {
+    @EnvironmentObject var lm: LocalizationManager
     @State private var financialData: FinancialData?
     @State private var isLoading = true
     @State private var error: String?
@@ -26,21 +27,22 @@ struct FinancialsView: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     var body: some View {
+        let t = lm.t
         Group {
             if isLoading {
-                ProgressView("Loading financials...")
+                ProgressView(t.financials.loading)
             } else if let error = error {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)
                         .foregroundColor(.orange)
-                    Text("Error loading financials")
+                    Text(t.financials.errorLoading)
                         .font(.headline)
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                    Button("Retry") {
+                    Button(t.common.retry) {
                         Task {
                             await loadFinancials()
                         }
@@ -62,7 +64,7 @@ struct FinancialsView: View {
                 }
             }
         }
-        .navigationTitle("Financials")
+        .navigationTitle(t.financials.title)
         .navigationBarTitleDisplayMode(verticalSizeClass == .compact ? .inline : .large)
         .task {
             await loadFinancials()
@@ -119,28 +121,29 @@ struct FinancialsView: View {
     }
 
     private func chartSection(overview: FinancialOverview) -> some View {
-        VStack(spacing: 8) {
+        let t = lm.t
+        return VStack(spacing: 8) {
             // Compact summary row
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    compactSummaryCard(title: "Spent", value: overview.totalSpent, color: .red)
-                    compactSummaryCard(title: "Received", value: overview.totalReceived, color: .green)
-                    compactSummaryCard(title: "Net Cash", value: overview.netCash, color: valueColor(overview.netCash))
-                    compactSummaryCard(title: "Est. Value", value: overview.estimatedValueOwned, color: .green)
-                    compactSummaryCard(title: "Maint.", value: overview.totalMaintenanceCost, color: overview.totalMaintenanceCost > 0 ? .red : .primary)
-                    compactSummaryCard(title: "Net Position", value: overview.netPosition, color: valueColor(overview.netPosition))
-                    compactSummaryCard(title: "Profit", value: overview.totalProfit, color: valueColor(overview.totalProfit))
+                    compactSummaryCard(title: t.financials.spent, value: overview.totalSpent, color: .red)
+                    compactSummaryCard(title: t.financials.received, value: overview.totalReceived, color: .green)
+                    compactSummaryCard(title: t.financials.netCash, value: overview.netCash, color: valueColor(overview.netCash))
+                    compactSummaryCard(title: t.financials.estValue, value: overview.estimatedValueOwned, color: .green)
+                    compactSummaryCard(title: t.financials.maintenance, value: overview.totalMaintenanceCost, color: overview.totalMaintenanceCost > 0 ? .red : .primary)
+                    compactSummaryCard(title: t.financials.netPosition, value: overview.netPosition, color: valueColor(overview.netPosition))
+                    compactSummaryCard(title: t.financials.profit, value: overview.totalProfit, color: valueColor(overview.totalProfit))
                 }
                 .padding(.horizontal)
             }
 
-            Text("Collection Value Over Time")
+            Text(t.financials.valueOverTime)
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
             let points = chartDataPoints
             if points.count < 2 {
-                Text("Not enough data to display chart")
+                Text(t.financials.notEnoughData)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -150,7 +153,7 @@ struct FinancialsView: View {
                             x: .value("Index", point.index),
                             y: .value("Amount", point.cash)
                         )
-                        .foregroundStyle(by: .value("Series", "Cumulative Cash"))
+                        .foregroundStyle(by: .value("Series", lm.t.financials.cumulativeCash))
                         .interpolationMethod(.monotone)
                     }
                     ForEach(points) { point in
@@ -158,7 +161,7 @@ struct FinancialsView: View {
                             x: .value("Index", point.index),
                             y: .value("Amount", point.value)
                         )
-                        .foregroundStyle(by: .value("Series", "Cumulative Value"))
+                        .foregroundStyle(by: .value("Series", lm.t.financials.cumulativeValue))
                         .interpolationMethod(.monotone)
                     }
                     ForEach(points) { point in
@@ -166,17 +169,17 @@ struct FinancialsView: View {
                             x: .value("Index", point.index),
                             y: .value("Amount", point.net)
                         )
-                        .foregroundStyle(by: .value("Series", "Net Position"))
+                        .foregroundStyle(by: .value("Series", lm.t.financials.netPositionLine))
                         .interpolationMethod(.monotone)
                     }
-                    RuleMark(y: .value("Zero", 0))
+                    RuleMark(y: .value(lm.t.financials.zero, 0))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
                         .foregroundStyle(.gray.opacity(0.5))
                 }
                 .chartForegroundStyleScale([
-                    "Cumulative Cash": Color.red,
-                    "Cumulative Value": Color.green,
-                    "Net Position": Color.blue
+                    lm.t.financials.cumulativeCash: Color.red,
+                    lm.t.financials.cumulativeValue: Color.green,
+                    lm.t.financials.netPositionLine: Color.blue
                 ])
                 .chartYAxis {
                     AxisMarks(format: .currency(code: "USD"))
@@ -224,51 +227,52 @@ struct FinancialsView: View {
     }
     
     private func summarySection(overview: FinancialOverview) -> some View {
-        VStack(spacing: 16) {
-            Text("Summary")
+        let t = lm.t
+        return VStack(spacing: 16) {
+            Text(t.financials.summary)
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(spacing: 12) {
                 HStack(spacing: 12) {
                     summaryCard(
-                        title: "Total Spent",
+                        title: t.financials.totalSpent,
                         value: overview.totalSpent,
                         color: .red
                     )
                     summaryCard(
-                        title: "Total Received",
+                        title: t.financials.totalReceived,
                         value: overview.totalReceived,
                         color: .green
                     )
                 }
                 
                 summaryCard(
-                    title: "Net Cash",
+                    title: t.financials.netCash,
                     value: overview.netCash,
                     color: valueColor(overview.netCash)
                 )
                 
                 summaryCard(
-                    title: "Estimated Value (Owned)",
+                    title: t.financials.estimatedValueOwned,
                     value: overview.estimatedValueOwned,
                     color: .green
                 )
 
                 summaryCard(
-                    title: "Maintenance Costs",
+                    title: t.financials.maintenanceCosts,
                     value: overview.totalMaintenanceCost,
                     color: overview.totalMaintenanceCost > 0 ? .red : .primary
                 )
 
                 summaryCard(
-                    title: "Net Position (incl. Maintenance)",
+                    title: t.financials.netPosition,
                     value: overview.netPosition,
                     color: valueColor(overview.netPosition)
                 )
                 
                 summaryCard(
-                    title: "Realized Profit",
+                    title: t.financials.realizedProfit,
                     value: overview.totalProfit,
                     color: valueColor(overview.totalProfit)
                 )
@@ -299,12 +303,13 @@ struct FinancialsView: View {
     }
     
     private func transactionsSection() -> some View {
-        VStack(spacing: 16) {
+        let t = lm.t
+        return VStack(spacing: 16) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Transaction History")
+                    Text(t.financials.transactionHistory)
                         .font(.headline)
-                    Text("\(transactionsWithCumulative.count) transactions")
+                    Text("\(transactionsWithCumulative.count) \(t.financials.transactions)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -312,7 +317,7 @@ struct FinancialsView: View {
             }
             
             if transactionsWithCumulative.isEmpty {
-                Text("No transactions yet.")
+                Text(t.financials.noTransactions)
                     .foregroundColor(.secondary)
                     .padding()
             } else {
@@ -332,7 +337,8 @@ struct FinancialsView: View {
     }
     
     private func transactionRow(_ transaction: TransactionWithCumulative) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let t = lm.t
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(transaction.transaction.deviceName)
@@ -351,11 +357,11 @@ struct FinancialsView: View {
                 Spacer()
                 let typeName: String = {
                     switch transaction.transaction.type {
-                    case "SALE": return "Sold"
-                    case "DONATION": return "Donated"
-                    case "MAINTENANCE": return "Maintenance"
-                    case "REPAIR_RETURN": return "Repair Fee"
-                    default: return "Acquired"
+                    case "SALE": return t.financials.txSold
+                    case "DONATION": return t.financials.txDonated
+                    case "MAINTENANCE": return t.financials.txMaintenance
+                    case "REPAIR_RETURN": return t.financials.txRepairFee
+                    default: return t.financials.txAcquired
                     }
                 }()
                 let typeColor: Color = {
@@ -385,7 +391,7 @@ struct FinancialsView: View {
             HStack(spacing: 16) {
                 if let amount = transaction.transaction.amount {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Amount")
+                        Text(t.financials.amount)
                             .font(.caption2)
                             .foregroundColor(.secondary)
                         Text(formatCurrency(amount))
@@ -396,7 +402,7 @@ struct FinancialsView: View {
                 
                 if let estimatedValue = transaction.transaction.estimatedValue {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Est. Value")
+                        Text(t.financials.estValue)
                             .font(.caption2)
                             .foregroundColor(.secondary)
                         Text(formatCurrency(estimatedValue))
@@ -408,7 +414,7 @@ struct FinancialsView: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("Cumulative Net")
+                    Text(t.financials.cumNet)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                     Text(formatCurrency(transaction.cumulativeNet))
@@ -493,8 +499,11 @@ struct FinancialsView: View {
     private func formatCurrency(_ value: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: NSNumber(value: value)) ?? "$0.00"
+        // Use the currency symbol from translations
+        let currencySymbol = lm.t.common.currencySymbol
+        formatter.currencySymbol = currencySymbol
+        formatter.locale = Locale.current
+        return formatter.string(from: NSNumber(value: value)) ?? "\(currencySymbol)0.00"
     }
     
     private func formatDate(_ dateString: String) -> String {
@@ -504,6 +513,8 @@ struct FinancialsView: View {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
             displayFormatter.timeStyle = .none
+            // Use the current language for date formatting
+            displayFormatter.locale = Locale(identifier: lm.currentLanguage == "de" ? "de_DE" : "en_US")
             return displayFormatter.string(from: date)
         }
         
@@ -514,6 +525,8 @@ struct FinancialsView: View {
             let displayFormatter = DateFormatter()
             displayFormatter.dateStyle = .medium
             displayFormatter.timeStyle = .none
+            // Use the current language for date formatting
+            displayFormatter.locale = Locale(identifier: lm.currentLanguage == "de" ? "de_DE" : "en_US")
             return displayFormatter.string(from: date)
         }
         

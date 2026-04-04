@@ -47,6 +47,7 @@ class WishlistViewModel: ObservableObject {
 
 struct WishlistView: View {
     @StateObject private var viewModel = WishlistViewModel()
+    @EnvironmentObject var lm: LocalizationManager
     @State private var showingAddSheet = false
     @State private var editingItem: WishlistItem?
 
@@ -71,27 +72,28 @@ struct WishlistView: View {
                 if lhs.priority != rhs.priority { return lhs.priority < rhs.priority }
                 return lhs.name < rhs.name
             }
-            result.append(("Other", sorted))
+            result.append((lm.t.wishlist.other, sorted))
         }
         return result
     }
 
     var body: some View {
+        let t = lm.t
         Group {
             if viewModel.isLoading && viewModel.items.isEmpty {
-                ProgressView("Loading wishlist...")
+                ProgressView(t.wishlist.loading)
             } else if let error = viewModel.error {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)
                         .foregroundColor(.orange)
-                    Text("Error loading wishlist")
+                    Text(t.wishlist.errorLoading)
                         .font(.headline)
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                    Button("Retry") {
+                    Button(t.common.retry) {
                         Task { await viewModel.load() }
                     }
                     .buttonStyle(.borderedProminent)
@@ -102,9 +104,9 @@ struct WishlistView: View {
                     Image(systemName: "star.slash")
                         .font(.system(size: 48))
                         .foregroundColor(.secondary)
-                    Text("Wishlist is Empty")
+                    Text(t.wishlist.emptyTitle)
                         .font(.headline)
-                    Text("Tap + to add devices you want to acquire.")
+                    Text(t.wishlist.emptyMessage)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -124,7 +126,7 @@ struct WishlistView: View {
                                         Button(role: .destructive) {
                                             Task { await viewModel.delete(item: item) }
                                         } label: {
-                                            Label("Delete", systemImage: "trash")
+                                            Label(t.common.delete, systemImage: "trash")
                                         }
                                     }
                             }
@@ -134,7 +136,7 @@ struct WishlistView: View {
                 .listStyle(.insetGrouped)
             }
         }
-        .navigationTitle("Wishlist")
+        .navigationTitle(t.wishlist.title)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { DeviceFilterPanel, FilterState, SortColumn } from "../../components/DeviceFilterPanel";
 import { LoadingPanel } from "../../components/LoadingPanel";
 import { API_BASE_URL } from "../../lib/config";
+import { useT } from "../../i18n/context";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {
@@ -95,6 +96,7 @@ const defaultFilters: FilterState = {
 };
 
 export default function PrintListPage() {
+  const t = useT();
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortColumn, setSortColumn] = useState<SortColumn>('category');
@@ -151,7 +153,7 @@ export default function PrintListPage() {
 
   const formatCurrency = (value: number | null | undefined) => {
     if (value === null || value === undefined) return "";
-    return `$${Number(value).toFixed(2)}`;
+    return `${t.common.currencySymbol}${Number(value).toFixed(2)}`;
   };
 
   const getStatusColor = (status: string) => {
@@ -169,9 +171,9 @@ export default function PrintListPage() {
 
   const getFunctionalStatusText = (status: string) => {
     switch (status) {
-      case "YES": return "Functional";
-      case "PARTIAL": return "Partially Functional";
-      case "NO": return "Not Functional";
+      case "YES": return t.pages.print.functionalYes;
+      case "PARTIAL": return t.pages.print.functionalPartial;
+      case "NO": return t.pages.print.functionalNo;
       default: return status;
     }
   };
@@ -214,36 +216,36 @@ export default function PrintListPage() {
             onClick={() => setShowPrintView(false)}
             className="px-4 py-2 text-sm font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 rounded border border-gray-300"
           >
-            ← Back to Selection
+            {t.pages.print.backToSelection}
           </button>
           <button
             onClick={() => window.print()}
             className="px-4 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc]"
           >
-            Print
+            {t.pages.print.printBtn}
           </button>
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold mb-4 text-center">Device Collection Inventory</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">{t.pages.print.collectionTitle}</h1>
         <p className="text-sm text-gray-600 text-center mb-6">
-          Generated on {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-          {" • "}{filteredDevices.length} devices
+          {t.pages.print.generatedOn} {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+          {" • "}{filteredDevices.length} {t.home.devices}
         </p>
 
         {/* Table of Contents - Summary Table */}
         <div className="mb-8">
-          <h2 className="text-lg font-bold mb-2 border-b border-gray-300 pb-1">Table of Contents</h2>
+          <h2 className="text-lg font-bold mb-2 border-b border-gray-300 pb-1">{t.pages.print.tableOfContents}</h2>
           <table className="w-full text-xs border-collapse">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-2 py-1 text-left">ID</th>
-                <th className="border border-gray-300 px-2 py-1 text-left">Category</th>
-                <th className="border border-gray-300 px-2 py-1 text-left">Name</th>
-                <th className="border border-gray-300 px-2 py-1 text-left">Year</th>
-                <th className="border border-gray-300 px-2 py-1 text-left">Status</th>
-                <th className="border border-gray-300 px-2 py-1 text-left">Functional</th>
-                <th className="border border-gray-300 px-2 py-1 text-right">Est. Value</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.idHeader}</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.categoryHeader}</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.nameHeader}</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.yearHeader}</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.statusHeader}</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.functionalHeader}</th>
+                <th className="border border-gray-300 px-2 py-1 text-right">{t.card.estValue}</th>
               </tr>
             </thead>
             <tbody>
@@ -257,7 +259,7 @@ export default function PrintListPage() {
                   </td>
                   <td className="border border-gray-300 px-2 py-1">{device.releaseYear || ""}</td>
                   <td className={`border border-gray-300 px-2 py-1 ${getStatusColor(device.status)}`}>
-                    {device.status.replace("_", " ")}
+                    {(t.status as Record<string, string>)[device.status] ?? device.status.replace("_", " ")}
                   </td>
                   <td className="border border-gray-300 px-2 py-1">{getFunctionalStatusText(device.functionalStatus)}</td>
                   <td className="border border-gray-300 px-2 py-1 text-right">{formatCurrency(device.estimatedValue)}</td>
@@ -274,7 +276,7 @@ export default function PrintListPage() {
             <div className="flex items-center justify-between border-b-2 border-gray-400 pb-2 mb-4">
               <div className="text-4xl font-bold font-mono text-gray-800">#{device.id}</div>
               <div className={`text-lg font-semibold ${getStatusColor(device.status)}`}>
-                {device.status.replace("_", " ")}
+                {(t.status as Record<string, string>)[device.status] ?? device.status.replace("_", " ")}
               </div>
             </div>
 
@@ -293,56 +295,56 @@ export default function PrintListPage() {
             {/* Two-column layout for details */}
             <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
               <div className="avoid-break">
-                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Identification</h3>
+                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">{t.pages.print.identificationSection}</h3>
                 <table className="w-full">
                   <tbody>
-                    <tr><td className="text-gray-500 pr-2">Manufacturer:</td><td>{device.manufacturer || "—"}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">Model:</td><td>{device.modelNumber || "—"}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">Serial:</td><td>{device.serialNumber || "—"}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">Location:</td><td>{device.location || "—"}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">Asset Tagged:</td><td>{device.isAssetTagged ? "Yes" : "No"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.manufacturerLabel}</td><td>{device.manufacturer || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.modelLabel}</td><td>{device.modelNumber || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.serialLabel}</td><td>{device.serialNumber || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.locationLabel}</td><td>{device.location || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.assetTaggedLabel}</td><td>{device.isAssetTagged ? t.common.yes : t.common.no}</td></tr>
                   </tbody>
                 </table>
               </div>
 
               <div className="avoid-break">
-                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Status & Value</h3>
+                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">{t.pages.print.statusValueSection}</h3>
                 <table className="w-full">
                   <tbody>
-                    <tr><td className="text-gray-500 pr-2">Functional:</td><td>{getFunctionalStatusText(device.functionalStatus)}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">Original Box:</td><td>{device.hasOriginalBox ? "Yes" : "No"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.functionalLabel}</td><td>{getFunctionalStatusText(device.functionalStatus)}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.originalBoxLabel}</td><td>{device.hasOriginalBox ? t.common.yes : t.common.no}</td></tr>
                     {device.category.type === "COMPUTER" && (
-                      <tr><td className="text-gray-500 pr-2">PRAM Removed:</td><td>{device.isPramBatteryRemoved ? "Yes" : "No"}</td></tr>
+                      <tr><td className="text-gray-500 pr-2">{t.pages.print.pramRemovedLabel}</td><td>{device.isPramBatteryRemoved ? t.common.yes : t.common.no}</td></tr>
                     )}
-                    <tr><td className="text-gray-500 pr-2">Est. Value:</td><td>{formatCurrency(device.estimatedValue) || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.estValueLabel}</td><td>{formatCurrency(device.estimatedValue) || "—"}</td></tr>
                     {device.status === "SOLD" && (
-                      <tr><td className="text-gray-500 pr-2">Sold Price:</td><td>{formatCurrency(device.soldPrice) || "—"}</td></tr>
+                      <tr><td className="text-gray-500 pr-2">{t.pages.print.soldPriceLabel}</td><td>{formatCurrency(device.soldPrice) || "—"}</td></tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
               <div className="avoid-break">
-                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Acquisition</h3>
+                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">{t.pages.print.acquisitionSection}</h3>
                 <table className="w-full">
                   <tbody>
-                    <tr><td className="text-gray-500 pr-2">Date Acquired:</td><td>{formatDate(device.dateAcquired) || "—"}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">Where:</td><td>{device.whereAcquired || "—"}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">Price Paid:</td><td>{formatCurrency(device.priceAcquired) || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.dateAcquiredLabel}</td><td>{formatDate(device.dateAcquired) || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.whereLabel}</td><td>{device.whereAcquired || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.pricePaidLabel}</td><td>{formatCurrency(device.priceAcquired) || "—"}</td></tr>
                   </tbody>
                 </table>
               </div>
 
               {device.category.type === "COMPUTER" && (
                 <div className="avoid-break">
-                  <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Specifications</h3>
+                  <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">{t.pages.print.specificationsSection}</h3>
                   <table className="w-full">
                     <tbody>
-                      {device.cpu && <tr><td className="text-gray-500 pr-2">CPU:</td><td>{device.cpu}</td></tr>}
-                      {device.ram && <tr><td className="text-gray-500 pr-2">RAM:</td><td>{device.ram}</td></tr>}
-                      {device.graphics && <tr><td className="text-gray-500 pr-2">Graphics:</td><td>{device.graphics}</td></tr>}
-                      {device.storage && <tr><td className="text-gray-500 pr-2">Storage:</td><td>{device.storage}</td></tr>}
-                      {device.operatingSystem && <tr><td className="text-gray-500 pr-2">OS:</td><td>{device.operatingSystem}</td></tr>}
+                      {device.cpu && <tr><td className="text-gray-500 pr-2">{t.detail.cpu}:</td><td>{device.cpu}</td></tr>}
+                      {device.ram && <tr><td className="text-gray-500 pr-2">{t.detail.ram}:</td><td>{device.ram}</td></tr>}
+                      {device.graphics && <tr><td className="text-gray-500 pr-2">{t.detail.graphics}:</td><td>{device.graphics}</td></tr>}
+                      {device.storage && <tr><td className="text-gray-500 pr-2">{t.detail.storage}:</td><td>{device.storage}</td></tr>}
+                      {device.operatingSystem && <tr><td className="text-gray-500 pr-2">{t.pages.print.osLabel}</td><td>{device.operatingSystem}</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -352,7 +354,7 @@ export default function PrintListPage() {
             {/* Info/Description */}
             {device.info && (
               <div className="mb-4 avoid-break">
-                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">Description</h3>
+                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">{t.pages.print.descriptionSection}</h3>
                 <p className="text-sm whitespace-pre-wrap">{device.info}</p>
               </div>
             )}
@@ -360,7 +362,7 @@ export default function PrintListPage() {
             {/* Tags */}
             {device.tags && device.tags.length > 0 && (
               <div className="mb-4 avoid-break">
-                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">Tags</h3>
+                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">{t.pages.print.tagsSection}</h3>
                 <div className="flex flex-wrap gap-1">
                   {device.tags.map((tag: any) => (
                     <span key={tag.id} className="text-xs bg-gray-200 px-2 py-0.5 rounded">
@@ -374,13 +376,13 @@ export default function PrintListPage() {
             {/* Maintenance Tasks */}
             {device.maintenanceTasks && device.maintenanceTasks.length > 0 && (
               <div className="mb-4 avoid-break">
-                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">Maintenance Tasks</h3>
+                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">{t.pages.print.maintenanceSection}</h3>
                 <table className="w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-gray-100">
-                      <th className="border border-gray-300 px-2 py-1 text-left">Task</th>
-                      <th className="border border-gray-300 px-2 py-1 text-left">Date Completed</th>
-                      <th className="border border-gray-300 px-2 py-1 text-left">Notes</th>
+                      <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.taskHeader}</th>
+                      <th className="border border-gray-300 px-2 py-1 text-left">{t.pages.print.dateCompletedHeader}</th>
+                      <th className="border border-gray-300 px-2 py-1 text-left">{t.common.notes}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -440,8 +442,8 @@ export default function PrintListPage() {
       <header className="sticky top-0 z-30 bg-[var(--card)] border-b border-[var(--border)] px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Print List</h1>
-            <p className="text-sm text-[var(--muted-foreground)]">Select devices to generate a printable inventory list.</p>
+            <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.print.title}</h1>
+            <p className="text-sm text-[var(--muted-foreground)]">{t.pages.print.subtitle}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -451,7 +453,7 @@ export default function PrintListPage() {
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
-              Filter
+              {t.pages.print.filterBtn}
             </button>
             <button
               onClick={() => setShowPrintView(true)}
@@ -461,10 +463,10 @@ export default function PrintListPage() {
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
               </svg>
-              Generate Print View ({filteredDevices.length})
+              {t.pages.print.generateBtn} ({filteredDevices.length})
             </button>
             <Link href="/" className="btn-retro px-3 py-2 text-sm font-medium">
-              Back
+              {t.common.back}
             </Link>
           </div>
         </div>
@@ -473,13 +475,12 @@ export default function PrintListPage() {
       <main className="p-4">
         {loading ? (
           <div className="p-8">
-            <LoadingPanel title="Loading devices…" subtitle="Preparing the print list" />
+            <LoadingPanel title={t.pages.print.loading} subtitle={t.pages.print.loadingSubtitle} />
           </div>
         ) : (
           <>
             <div className="mb-4 text-sm text-[var(--muted-foreground)]">
-              {filteredDevices.length} of {devices.length} devices selected for printing.
-              Use the Filter button to narrow down the selection.
+              {filteredDevices.length} {t.pages.print.selectionInfoOf} {devices.length} {t.pages.print.selectionInfoDesc}
             </div>
 
             {/* Preview table */}
@@ -488,14 +489,14 @@ export default function PrintListPage() {
                 <table className="w-full">
                   <thead className="bg-[var(--muted)]">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">ID</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Category</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Year</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Images</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Notes</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Tasks</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.print.idHeader}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.print.categoryHeader}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.print.nameHeader}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.print.yearHeader}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.print.statusHeader}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.print.imagesHeader}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.common.notes}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.print.tasksHeader}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--border)]">
@@ -510,7 +511,7 @@ export default function PrintListPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.releaseYear || ""}</td>
-                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.status.replace("_", " ")}</td>
+                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{(t.status as Record<string, string>)[device.status] ?? device.status.replace("_", " ")}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.images?.length || 0}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.notes?.length || 0}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.maintenanceTasks?.length || 0}</td>

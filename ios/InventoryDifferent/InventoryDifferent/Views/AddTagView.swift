@@ -12,6 +12,7 @@ struct AddTagView: View {
     let existingTags: [Tag]
     let onDeviceUpdated: (Device) -> Void
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
 
     @State private var tagName = ""
     @State private var allTags: [Tag] = []
@@ -35,11 +36,12 @@ struct AddTagView: View {
     }
 
     var body: some View {
+        let t = lm.t
         NavigationStack {
             Form {
                 Section {
                     VStack(alignment: .leading, spacing: 4) {
-                        TextField("Tag Name", text: $tagName)
+                        TextField(t.tag.tagNamePlaceholder, text: $tagName)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .onChange(of: tagName) { _, _ in
@@ -79,7 +81,7 @@ struct AddTagView: View {
                         }
                     }
                 } header: {
-                    Text("New Tag")
+                    Text(t.tag.newTagHeader)
                 }
 
                 if !existingTags.isEmpty {
@@ -98,7 +100,7 @@ struct AddTagView: View {
                             }
                         }
                     } header: {
-                        Text("Current Tags")
+                        Text(t.tag.currentTagsHeader)
                     }
                 }
 
@@ -124,7 +126,7 @@ struct AddTagView: View {
                             }
                         }
                     } header: {
-                        Text("Available Tags")
+                        Text(t.tag.availableTagsHeader)
                     }
                 }
 
@@ -136,17 +138,17 @@ struct AddTagView: View {
                     }
                 }
             }
-            .navigationTitle("Add Tag")
+            .navigationTitle(t.tag.addTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(t.common.cancel) {
                         dismiss()
                     }
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(t.common.add) {
                         Task {
                             await addTag(name: tagName)
                         }

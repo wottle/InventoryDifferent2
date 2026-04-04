@@ -9,12 +9,14 @@ import SwiftUI
 
 struct SortOptionsView: View {
     @EnvironmentObject var deviceStore: DeviceStore
+    @EnvironmentObject var lm: LocalizationManager
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
+        let t = lm.t
         NavigationStack {
             Form {
-                Section("Sort By") {
+                Section(t.sort.sortBy) {
                     ForEach(SortOption.allCases, id: \.self) { option in
                         Button {
                             deviceStore.sortOption = option
@@ -32,7 +34,7 @@ struct SortOptionsView: View {
                     }
                 }
                 
-                Section("Direction") {
+                Section(t.sort.direction) {
                     ForEach(SortDirection.allCases, id: \.self) { direction in
                         Button {
                             deviceStore.sortDirection = direction
@@ -50,11 +52,11 @@ struct SortOptionsView: View {
                     }
                 }
             }
-            .navigationTitle("Sort Options")
+            .navigationTitle(t.sort.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button(t.common.done) {
                         dismiss()
                     }
                 }

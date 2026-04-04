@@ -45,14 +45,15 @@ enum Status: String, Codable, CaseIterable {
     case RETURNED
 
     var displayName: String {
+        let t = LocalizationManager.shared.t
         switch self {
-        case .COLLECTION: return "In Collection"
-        case .FOR_SALE: return "For Sale"
-        case .PENDING_SALE: return "Pending"
-        case .SOLD: return "Sold"
-        case .DONATED: return "Donated"
-        case .IN_REPAIR: return "In Repair"
-        case .RETURNED: return "Returned"
+        case .COLLECTION: return t.status.COLLECTION
+        case .FOR_SALE: return t.status.FOR_SALE
+        case .PENDING_SALE: return t.status.PENDING_SALE
+        case .SOLD: return t.status.SOLD
+        case .DONATED: return t.status.DONATED
+        case .IN_REPAIR: return t.status.IN_REPAIR
+        case .RETURNED: return t.status.RETURNED
         }
     }
 
@@ -75,10 +76,11 @@ enum FunctionalStatus: String, Codable, CaseIterable {
     case NO
 
     var displayName: String {
+        let t = LocalizationManager.shared.t
         switch self {
-        case .YES: return "Working"
-        case .PARTIAL: return "Partial"
-        case .NO: return "Not Working"
+        case .YES: return t.functionalStatus.YES
+        case .PARTIAL: return t.functionalStatus.PARTIAL
+        case .NO: return t.functionalStatus.NO
         }
     }
 }
@@ -92,13 +94,14 @@ enum Condition: String, Codable, CaseIterable {
     case FOR_PARTS = "FOR_PARTS"
 
     var displayName: String {
+        let t = LocalizationManager.shared.t
         switch self {
-        case .NEW: return "New"
-        case .LIKE_NEW: return "Like New"
-        case .VERY_GOOD: return "Very Good"
-        case .GOOD: return "Good"
-        case .ACCEPTABLE: return "Acceptable"
-        case .FOR_PARTS: return "For Parts"
+        case .NEW: return t.condition.NEW
+        case .LIKE_NEW: return t.condition.LIKE_NEW
+        case .VERY_GOOD: return t.condition.VERY_GOOD
+        case .GOOD: return t.condition.GOOD
+        case .ACCEPTABLE: return t.condition.ACCEPTABLE
+        case .FOR_PARTS: return t.condition.FOR_PARTS
         }
     }
 }
@@ -111,12 +114,13 @@ enum Rarity: String, Codable, CaseIterable {
     case EXTREMELY_RARE = "EXTREMELY_RARE"
 
     var displayName: String {
+        let t = LocalizationManager.shared.t
         switch self {
-        case .COMMON: return "Common"
-        case .UNCOMMON: return "Uncommon"
-        case .RARE: return "Rare"
-        case .VERY_RARE: return "Very Rare"
-        case .EXTREMELY_RARE: return "Extremely Rare"
+        case .COMMON: return t.rarity.COMMON
+        case .UNCOMMON: return t.rarity.UNCOMMON
+        case .RARE: return t.rarity.RARE
+        case .VERY_RARE: return t.rarity.VERY_RARE
+        case .EXTREMELY_RARE: return t.rarity.EXTREMELY_RARE
         }
     }
 

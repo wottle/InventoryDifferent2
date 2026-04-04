@@ -11,7 +11,8 @@ struct AddMaintenanceTaskView: View {
     let deviceId: Int
     let onTaskAdded: (MaintenanceTask) -> Void
     @Environment(\.dismiss) private var dismiss
-    
+    @EnvironmentObject var lm: LocalizationManager
+
     @State private var label = ""
     @State private var dateCompleted = Date()
     @State private var notes = ""
@@ -33,11 +34,12 @@ struct AddMaintenanceTaskView: View {
     }
     
     var body: some View {
+        let t = lm.t
         NavigationStack {
             Form {
                 Section {
                     VStack(alignment: .leading, spacing: 4) {
-                        TextField("Task Label", text: $label)
+                        TextField(t.maintenance.label, text: $label)
                             .textInputAutocapitalization(.words)
                             .autocorrectionDisabled()
                             .onChange(of: label) { _, _ in
@@ -46,7 +48,7 @@ struct AddMaintenanceTaskView: View {
                             .onSubmit {
                                 showSuggestions = false
                             }
-                        
+
                         if showSuggestions && !filteredSuggestions.isEmpty {
                             VStack(alignment: .leading, spacing: 0) {
                                 ForEach(filteredSuggestions, id: \.self) { suggestion in
@@ -64,7 +66,7 @@ struct AddMaintenanceTaskView: View {
                                         .contentShape(Rectangle())
                                     }
                                     .buttonStyle(.plain)
-                                    
+
                                     if suggestion != filteredSuggestions.last {
                                         Divider()
                                     }
@@ -75,22 +77,22 @@ struct AddMaintenanceTaskView: View {
                             .padding(.top, 4)
                         }
                     }
-                    
-                    DatePicker("Date Completed", selection: $dateCompleted, displayedComponents: .date)
+
+                    DatePicker(t.maintenance.dateCompleted, selection: $dateCompleted, displayedComponents: .date)
                     HStack {
-                        Text("$")
+                        Text(t.common.currencySymbol)
                             .foregroundColor(.secondary)
-                        TextField("Cost (optional)", text: $cost)
+                        TextField(t.maintenance.cost, text: $cost)
                             .keyboardType(.decimalPad)
                     }
                 } header: {
-                    Text("Task Information")
+                    Text(t.maintenance.taskInfo)
                 }
 
                 Section {
                     ZStack(alignment: .topLeading) {
                         if notes.isEmpty {
-                            Text("Optional notes about this task...")
+                            Text(t.maintenance.notesPlaceholder)
                                 .foregroundColor(Color(.placeholderText))
                                 .padding(.top, 8)
                                 .padding(.leading, 4)
@@ -99,9 +101,9 @@ struct AddMaintenanceTaskView: View {
                             .frame(minHeight: 100)
                     }
                 } header: {
-                    Text("Notes")
+                    Text(t.maintenance.notes)
                 }
-                
+
                 if let error = error {
                     Section {
                         Text(error)
@@ -110,17 +112,17 @@ struct AddMaintenanceTaskView: View {
                     }
                 }
             }
-            .navigationTitle("Add Maintenance Task")
+            .navigationTitle(t.maintenance.addTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(t.common.cancel) {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(t.common.add) {
                         Task {
                             await submitTask()
                         }

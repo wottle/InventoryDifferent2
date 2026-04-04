@@ -16,6 +16,7 @@ struct DeviceListView: View {
     @EnvironmentObject var deviceStore: DeviceStore
     @EnvironmentObject var appSettings: AppSettings
     @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
     @State private var showingFilters = false
     @State private var showingSortOptions = false
     @State private var showingAddDevice = false
@@ -26,21 +27,22 @@ struct DeviceListView: View {
     private let gridColumns = [GridItem(.adaptive(minimum: 160, maximum: 220))]
     
     var body: some View {
+        let t = lm.t
         Group {
             if deviceStore.isLoading && deviceStore.devices.isEmpty {
-                ProgressView("Loading devices...")
+                ProgressView(t.deviceList.loading)
             } else if let error = deviceStore.error {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)
                         .foregroundColor(.orange)
-                    Text("Error loading devices")
+                    Text(t.deviceList.errorLoading)
                         .font(.headline)
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                    Button("Retry") {
+                    Button(t.common.retry) {
                         Task {
                             await deviceStore.loadDevices()
                         }
@@ -52,7 +54,7 @@ struct DeviceListView: View {
                 deviceList
             }
         }
-        .navigationTitle("Devices")
+        .navigationTitle(t.deviceList.title)
         .overlay(alignment: .bottom) {
             if !(deviceStore.isLoading && deviceStore.devices.isEmpty) {
             HStack(spacing: 4) {
@@ -61,7 +63,7 @@ struct DeviceListView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
                         
-                        TextField("Search devices...", text: $deviceStore.searchText)
+                        TextField(t.deviceList.searchPlaceholder, text: $deviceStore.searchText)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .submitLabel(.search)
@@ -84,7 +86,7 @@ struct DeviceListView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
                         
-                        TextField("Search devices...", text: $deviceStore.searchText)
+                        TextField(t.deviceList.searchPlaceholder, text: $deviceStore.searchText)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .submitLabel(.search)
@@ -120,7 +122,7 @@ struct DeviceListView: View {
                             .background(.ultraThinMaterial, in: Circle())
                     }
                 }
-                .accessibilityLabel("Scan barcode or QR code")
+                .accessibilityLabel(t.deviceList.scanBarcode)
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 10)
@@ -167,6 +169,7 @@ struct DeviceListView: View {
                 .popover(isPresented: $showingMenu, arrowEdge: .top) {
                     MenuView(navigationPath: $navigationPath, showingMenu: $showingMenu)
                         .environmentObject(authService)
+                        .environmentObject(lm)
                         .presentationCompactAdaptation(.popover)
                 }
             }
@@ -195,18 +198,19 @@ struct DeviceListView: View {
     private var deviceList: some View {
         Group {
             if deviceStore.filteredDevices.isEmpty {
+                let t = lm.t
                 List {
                     ContentUnavailableView {
-                        Label("No Devices", systemImage: "desktopcomputer")
+                        Label(t.deviceList.noDevices, systemImage: "desktopcomputer")
                     } description: {
                         if hasActiveFilters {
-                            Text("No devices match your filters")
+                            Text(t.deviceList.noDevicesFilter)
                         } else {
-                            Text("No devices found")
+                            Text(t.deviceList.noDevicesFound)
                         }
                     } actions: {
                         if hasActiveFilters {
-                            Button("Clear Filters") {
+                            Button(t.deviceList.clearFilters) {
                                 deviceStore.clearFilters()
                             }
                         }
@@ -219,12 +223,13 @@ struct DeviceListView: View {
                         ForEach(deviceStore.filteredDevices) { device in
                             NavigationLink(value: device.id) {
                                 DeviceRowView(device: device)
+                                    .environmentObject(lm)
                             }
                             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
                         }
                     } header: {
-                        Text("\(deviceStore.filteredDevices.count) devices")
+                        Text("\(deviceStore.filteredDevices.count) \(lm.t.deviceList.title.lowercased())")
                     }
                 }
                 .listStyle(.plain)
@@ -234,6 +239,7 @@ struct DeviceListView: View {
                         ForEach(deviceStore.filteredDevices) { device in
                             NavigationLink(value: device.id) {
                                 DeviceGridItemView(device: device)
+                                    .environmentObject(lm)
                             }
                             .buttonStyle(.plain)
                         }
@@ -242,7 +248,7 @@ struct DeviceListView: View {
                     .padding(.top, 8)
                     .padding(.bottom, 80) // room for the floating search bar
                     .safeAreaInset(edge: .top) {
-                        Text("\(deviceStore.filteredDevices.count) devices")
+                        Text("\(deviceStore.filteredDevices.count) \(lm.t.deviceList.title.lowercased())")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -264,6 +270,7 @@ struct DeviceListView: View {
 struct DeviceRowView: View {
     let device: DeviceListItem
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject var lm: LocalizationManager
 
     var body: some View {
         HStack(spacing: 12) {
@@ -327,8 +334,10 @@ struct DeviceRowView: View {
 
 struct StatusIndicatorsRow: View {
     let device: any DeviceRowPresentable
+    @EnvironmentObject var lm: LocalizationManager
     
     var body: some View {
+        let t = lm.t
         HStack(spacing: 6) {
             // Functional Status
             FunctionalStatusIcon(status: device.functionalStatus)
@@ -347,7 +356,7 @@ struct StatusIndicatorsRow: View {
                 Image(systemName: "crown.fill")
                     .font(.system(size: 12))
                     .foregroundColor(rarityColor)
-                    .help("Rarity: \(rarity.displayName)")
+                    .help("\(t.deviceDetail.rarity): \(rarity.displayName)")
             }
 
             // Asset Tagged
@@ -398,43 +407,45 @@ struct FunctionalStatusIcon: View {
 
 struct ValueSaleInfo: View {
     let device: any DeviceRowPresentable
+    @EnvironmentObject var lm: LocalizationManager
     
     var body: some View {
+        let t = lm.t
         Group {
             switch device.status {
             case .COLLECTION:
                 if let value = device.estimatedValue {
-                    Text("Est. Value: \(formatPrice(value))")
+                    Text("\(t.deviceList.estValue): \(formatPrice(value))")
                         .font(.caption)
                         .foregroundColor(.green)
                 }
             case .FOR_SALE:
-                Text("For Sale: \(device.listPrice.map { formatPrice($0) } ?? "TBD")")
+                Text("\(t.deviceList.forSale): \(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
                     .font(.caption)
                     .foregroundColor(.orange)
             case .PENDING_SALE:
-                Text("Pending: \(device.listPrice.map { formatPrice($0) } ?? "TBD")")
+                Text("\(t.deviceList.pending): \(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
                     .font(.caption)
                     .foregroundColor(.yellow)
             case .SOLD:
-                Text("Sold: \(device.soldPrice.map { formatPrice($0) } ?? "N/A")")
+                Text("\(t.deviceList.sold): \(device.soldPrice.map { formatPrice($0) } ?? t.deviceList.na)")
                     .font(.caption)
                     .foregroundColor(.red)
             case .DONATED:
-                Text("Donated")
+                Text(t.deviceList.donated)
                     .font(.caption)
                     .foregroundColor(.purple)
             case .IN_REPAIR:
-                Text("In Repair")
+                Text(t.deviceList.inRepair)
                     .font(.caption)
                     .foregroundColor(.teal)
             case .RETURNED:
                 if let fee = device.soldPrice, fee > 0 {
-                    Text("Returned: \(formatPrice(fee))")
+                    Text("\(t.deviceList.returned): \(formatPrice(fee))")
                         .font(.caption)
                         .foregroundColor(.red)
                 } else {
-                    Text("Returned")
+                    Text(t.deviceList.returned)
                         .font(.caption)
                         .foregroundColor(.red)
                 }
@@ -443,7 +454,7 @@ struct ValueSaleInfo: View {
     }
 
     private func formatPrice(_ price: Double) -> String {
-        return "$\(Int(price).formatted())"
+        return "\(lm.t.common.currencySymbol)\(Int(price).formatted())"
     }
 }
 
@@ -493,4 +504,5 @@ struct StatusBadge: View {
     .environmentObject(DeviceStore())
     .environmentObject(AppSettings.shared)
     .environmentObject(AuthService.shared)
+    .environmentObject(LocalizationManager.shared)
 }

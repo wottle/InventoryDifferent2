@@ -1,0 +1,10 @@
+/* Settings group title */
+"APP_SETTINGS_GROUP" = "InventoryDifferent";
+
+/* Language picker label */
+"LANGUAGE_TITLE" = "Sprache";
+
+/* Language options */
+"LANGUAGE_SYSTEM" = "Systemstandard";
+"LANGUAGE_EN" = "Englisch";
+"LANGUAGE_DE" = "Deutsch";

@@ -12,16 +12,18 @@ struct MenuView: View {
     @Binding var showingMenu: Bool
     @EnvironmentObject var appSettings: AppSettings
     @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
     @State private var showingDisconnectAlert = false
     @State private var showingLogoutAlert = false
 
     var body: some View {
+        let t = lm.t
         VStack(spacing: 0) {
             // Only show Financials if authenticated
             if authService.isAuthenticated {
                 MenuButton(
                     icon: "star",
-                    title: "Wishlist",
+                    title: t.menu.wishlist,
                     color: .yellow
                 ) {
                     showingMenu = false
@@ -35,7 +37,7 @@ struct MenuView: View {
 
                 MenuButton(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Financials",
+                    title: t.menu.financials,
                     color: .green
                 ) {
                     showingMenu = false
@@ -50,7 +52,7 @@ struct MenuView: View {
 
                 MenuButton(
                     icon: "chart.bar.xaxis",
-                    title: "Stats",
+                    title: t.menu.stats,
                     color: .purple
                 ) {
                     showingMenu = false
@@ -64,7 +66,7 @@ struct MenuView: View {
 
                 MenuButton(
                     icon: "clock.arrow.circlepath",
-                    title: "Timeline",
+                    title: t.menu.timeline,
                     color: .teal
                 ) {
                     showingMenu = false
@@ -78,7 +80,7 @@ struct MenuView: View {
 
                 MenuButton(
                     icon: "bubble.left.and.bubble.right",
-                    title: "Chat",
+                    title: t.menu.chat,
                     color: .blue
                 ) {
                     showingMenu = false
@@ -97,7 +99,7 @@ struct MenuView: View {
             if authService.isAuthenticated {
                 MenuButton(
                     icon: "person.badge.minus",
-                    title: "Log Out",
+                    title: t.menu.logOut,
                     color: .orange
                 ) {
                     showingLogoutAlert = true
@@ -106,7 +108,7 @@ struct MenuView: View {
             } else if !authService.isAuthenticated {
                 MenuButton(
                     icon: "person.badge.plus",
-                    title: "Log In",
+                    title: t.menu.logIn,
                     color: .blue
                 ) {
                     showingMenu = false
@@ -121,14 +123,14 @@ struct MenuView: View {
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
-        .alert("Log Out?", isPresented: $showingLogoutAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Log Out", role: .destructive) {
+        .alert(t.menu.logOutTitle, isPresented: $showingLogoutAlert) {
+            Button(t.common.cancel, role: .cancel) { }
+            Button(t.menu.logOut, role: .destructive) {
                 authService.logout()
                 showingMenu = false
             }
         } message: {
-            Text("You will need to enter the password again to access admin features.")
+            Text(t.menu.logOutMessage)
         }
     }
 }

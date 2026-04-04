@@ -14,6 +14,7 @@ struct TimelineYear: Identifiable {
 
 struct TimelineView: View {
     @EnvironmentObject var deviceStore: DeviceStore
+    @EnvironmentObject var lm: LocalizationManager
     @State private var events: [TimelineEvent] = []
     @State private var isLoading = true
     @State private var error: String?
@@ -40,21 +41,22 @@ struct TimelineView: View {
     }
 
     var body: some View {
+        let t = lm.t
         Group {
             if isLoading {
-                ProgressView("Loading timeline...")
+                ProgressView(t.timeline.loading)
             } else if let error = error {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)
                         .foregroundColor(.orange)
-                    Text("Error loading timeline")
+                    Text(t.timeline.errorLoading)
                         .font(.headline)
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                    Button("Retry") {
+                    Button(t.common.retry) {
                         Task { await loadEvents() }
                     }
                     .buttonStyle(.borderedProminent)
@@ -81,7 +83,7 @@ struct TimelineView: View {
                 }
             }
         }
-        .navigationTitle("Timeline")
+        .navigationTitle(t.timeline.title)
         .navigationBarTitleDisplayMode(.large)
         .task {
             await loadEvents()
