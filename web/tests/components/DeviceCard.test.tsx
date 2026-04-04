@@ -37,7 +37,7 @@ describe('DeviceCard', () => {
 
     it('renders status badge', () => {
         render(<DeviceCard device={mockDevice} />);
-        const statusBadges = screen.getAllByText('COLLECTION');
+        const statusBadges = screen.getAllByText('In Collection');
         expect(statusBadges.length).toBeGreaterThan(0);
     });
 
