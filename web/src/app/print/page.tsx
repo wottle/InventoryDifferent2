@@ -401,7 +401,7 @@ export default function PrintListPage() {
             {/* Notes */}
             {device.notes && device.notes.length > 0 && (
               <div className="mb-4 avoid-break">
-                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">Notes</h3>
+                <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">{t.detail.notes}</h3>
                 {device.notes.map((note: any) => (
                   <div key={note.id} className="mb-2 text-sm">
                     <span className="text-gray-500 text-xs">{formatDate(note.date)}</span>
@@ -415,7 +415,7 @@ export default function PrintListPage() {
             {device.images && device.images.length > 0 && (
               <div className="avoid-break">
                 <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-2 text-sm">
-                  Images ({device.images.length})
+                  {t.pages.print.imagesHeader} ({device.images.length})
                 </h3>
                 <div className="grid grid-cols-4 gap-2">
                   {device.images.map((image: any) => (

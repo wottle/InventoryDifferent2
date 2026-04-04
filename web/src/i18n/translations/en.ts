@@ -219,6 +219,20 @@ export type Translations = {
       working: string;
       avgEstValue: string;
       topCategory: string;
+      collectionComposition: string;
+      byStatus: string;
+      byCondition: string;
+      byCategoryType: string;
+      byRarity: string;
+      rarityDistribution: string;
+      acquiredPerYear: string;
+      acquisitionYear: string;
+      byReleaseEra: string;
+      releaseDecade: string;
+      topManufacturers: string;
+      manufacturer: string;
+      noData: string;
+      devices: string;
     };
     usage: {
       title: string;
@@ -291,6 +305,10 @@ export type Translations = {
       txMaintenance: string;
       txRepairFee: string;
       txAcquired: string;
+      cumulativeCash: string;
+      cumulativeValue: string;
+      netPositionLine: string;
+      noChartData: string;
     };
     wishlist: {
       title: string;
@@ -365,6 +383,53 @@ export type Translations = {
       rarityNotSet: string;
       computerSpecs: string;
       deleteConfirm: string;
+    };
+    backup: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      filterBtn: string;
+      importSectionTitle: string;
+      importToggleHide: string;
+      importToggleShow: string;
+      importDesc: string;
+      importingStatus: string;
+      importCompletePrefix: string;
+      importDevicesSuccess: string;
+      importDevicesFailed: string;
+      importFailedPrefix: string;
+      tableOriginalId: string;
+      tableNewId: string;
+      tableIdPreserved: string;
+      exportSectionTitle: string;
+      includeImages: string;
+      compressImages: string;
+      largeSplitNote: string;
+      devicesSelectedSuffix: string;
+      allFilteredPrefix: string;
+      allFilteredSuffix: string;
+      selectAll: string;
+      selectNone: string;
+      exportingStatus: string;
+      exportBtnLabel: string;
+      tableId: string;
+      tableCategory: string;
+      tableYear: string;
+      tableStatus: string;
+      tableImages: string;
+      tableNotes: string;
+      splitPartsPrefix: string;
+      splitPartsSuffix: string;
+      splitDownloadNote: string;
+      partBtn: string;
+      dismiss: string;
+      progressStarting: string;
+      progressDownloading: string;
+      progressComplete: string;
+      progressFailed: string;
+      progressUploading: string;
+      progressExtracting: string;
     };
     print: {
       title: string;
@@ -461,6 +526,7 @@ export type Translations = {
     saving: string;
     createDevice: string;
     saveChanges: string;
+    externalUrlLabel: string;
   };
 };
 
@@ -685,6 +751,20 @@ export const en: Translations = {
       working: "Working",
       avgEstValue: "Avg. Est. Value",
       topCategory: "Top Category",
+      collectionComposition: "Collection Composition",
+      byStatus: "By Status",
+      byCondition: "By Condition",
+      byCategoryType: "By Category Type",
+      byRarity: "By Rarity",
+      rarityDistribution: "Rarity Distribution",
+      acquiredPerYear: "Devices Acquired Per Year",
+      acquisitionYear: "Acquisition Year",
+      byReleaseEra: "By Release Era",
+      releaseDecade: "Release Decade",
+      topManufacturers: "Top Manufacturers",
+      manufacturer: "Manufacturer",
+      noData: "No data",
+      devices: "Devices",
     },
     usage: {
       title: "System Usage",
@@ -757,6 +837,10 @@ export const en: Translations = {
       txMaintenance: "Maintenance",
       txRepairFee: "Repair Fee",
       txAcquired: "Acquired",
+      cumulativeCash: "Cumulative Cash",
+      cumulativeValue: "Cumulative Value",
+      netPositionLine: "Net Position",
+      noChartData: "No dated transactions to chart.",
     },
     wishlist: {
       title: "Wishlist",
@@ -831,6 +915,53 @@ export const en: Translations = {
       rarityNotSet: "Not Set",
       computerSpecs: "Computer Specs",
       deleteConfirm: "Delete this template?",
+    },
+    backup: {
+      title: "Export Devices",
+      subtitle: "Select devices to export. Data will be bundled into a ZIP file.",
+      loading: "Loading devices…",
+      loadingSubtitle: "Getting export tools ready",
+      filterBtn: "Filter",
+      importSectionTitle: "Import Devices",
+      importToggleHide: "Hide",
+      importToggleShow: "Show",
+      importDesc: "Import devices from a previously exported ZIP file. The import will attempt to preserve device IDs for asset tag compatibility.",
+      importingStatus: "Importing...",
+      importCompletePrefix: "Import Complete:",
+      importDevicesSuccess: "device(s) imported successfully",
+      importDevicesFailed: "failed",
+      importFailedPrefix: "Import Failed:",
+      tableOriginalId: "Original ID",
+      tableNewId: "New ID",
+      tableIdPreserved: "ID Preserved",
+      exportSectionTitle: "Export Devices",
+      includeImages: "Include images",
+      compressImages: "Compress images (reduces size ~50-70%)",
+      largeSplitNote: "Large exports (>500MB) will be split into multiple parts for easier downloading and importing.",
+      devicesSelectedSuffix: "devices selected for export",
+      allFilteredPrefix: "All",
+      allFilteredSuffix: "filtered devices will be exported",
+      selectAll: "Select All",
+      selectNone: "Select None",
+      exportingStatus: "Exporting...",
+      exportBtnLabel: "Export",
+      tableId: "ID",
+      tableCategory: "Category",
+      tableYear: "Year",
+      tableStatus: "Status",
+      tableImages: "Images",
+      tableNotes: "Notes",
+      splitPartsPrefix: "Export split into",
+      splitPartsSuffix: "parts (~500MB each)",
+      splitDownloadNote: "Download all parts and import them one at a time.",
+      partBtn: "Part",
+      dismiss: "Dismiss",
+      progressStarting: "Starting export...",
+      progressDownloading: "Downloading...",
+      progressComplete: "Export complete!",
+      progressFailed: "Export failed. Please try again.",
+      progressUploading: "Uploading file...",
+      progressExtracting: "Extracting ZIP file...",
     },
     print: {
       title: "Print List",
@@ -927,5 +1058,6 @@ export const en: Translations = {
     saving: "Saving...",
     createDevice: "Create Device",
     saveChanges: "Save Changes",
+    externalUrlLabel: "External URL",
   },
 };

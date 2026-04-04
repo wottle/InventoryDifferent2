@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
+import { useT } from "../i18n/context";
 
 interface ChartDataPoint {
   date: string;
@@ -24,22 +25,21 @@ interface FinancialChartProps {
   data: ChartDataPoint[];
 }
 
-function formatCurrencyShort(value: number) {
-  if (Math.abs(value) >= 1000) {
-    return `$${(value / 1000).toFixed(1)}k`;
-  }
-  return `$${value.toFixed(0)}`;
-}
-
-function formatCurrencyFull(value: number) {
-  return `$${value.toFixed(2)}`;
-}
-
 export default function FinancialChart({ data }: FinancialChartProps) {
+  const t = useT();
+  const sym = t.common.currencySymbol;
+
+  const formatCurrencyShort = (value: number) => {
+    if (Math.abs(value) >= 1000) return `${sym}${(value / 1000).toFixed(1)}k`;
+    return `${sym}${value.toFixed(0)}`;
+  };
+
+  const formatCurrencyFull = (value: number) => `${sym}${value.toFixed(2)}`;
+
   if (data.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
-        No dated transactions to chart.
+        {t.pages.financials.noChartData}
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function FinancialChart({ data }: FinancialChartProps) {
           <Tooltip
             formatter={(value: number, name: string) => [
               formatCurrencyFull(value),
-              name === "cash" ? "Cumulative Cash" : name === "value" ? "Cumulative Value" : "Net Position",
+              name === "cash" ? t.pages.financials.cumulativeCash : name === "value" ? t.pages.financials.cumulativeValue : t.pages.financials.netPositionLine,
             ]}
             contentStyle={{
               backgroundColor: "#1F2937",
@@ -79,7 +79,7 @@ export default function FinancialChart({ data }: FinancialChartProps) {
           />
           <Legend
             formatter={(value: string) =>
-              value === "cash" ? "Cumulative Cash" : value === "value" ? "Cumulative Value" : "Net Position"
+              value === "cash" ? t.pages.financials.cumulativeCash : value === "value" ? t.pages.financials.cumulativeValue : t.pages.financials.netPositionLine
             }
             wrapperStyle={{ fontSize: 12 }}
           />

@@ -13,6 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useT } from "../i18n/context";
 
 const COLORS = ["#3B82F6", "#22C55E", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#14B8A6", "#F97316"];
 
@@ -53,16 +54,14 @@ const RARITY_COLORS: Record<string, string> = {
   'Extremely Rare':   '#F59E0B',
 };
 
-function DonutChart({ data, title, colorMap }: { data: StatsBucket[]; title: string; colorMap?: Record<string, string> }) {
+function DonutChart({ data, title, colorMap, noData }: { data: StatsBucket[]; title: string; colorMap?: Record<string, string>; noData: string }) {
   if (data.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-[var(--muted-foreground)] text-sm">
-        No data
+        {noData}
       </div>
     );
   }
-
-  const total = data.reduce((s, d) => s + d.count, 0);
 
   return (
     <div>
@@ -80,7 +79,7 @@ function DonutChart({ data, title, colorMap }: { data: StatsBucket[]; title: str
               cy="50%"
               innerRadius="45%"
               outerRadius="70%"
-              label={({ label, count, percent }) => {
+              label={({ label, percent }) => {
                 if ((percent ?? 0) < 0.08) return '';
                 return `${label} (${Math.round((percent ?? 0) * 100)}%)`;
               }}
@@ -110,11 +109,11 @@ function DonutChart({ data, title, colorMap }: { data: StatsBucket[]; title: str
   );
 }
 
-function VerticalBarChart({ data, title }: { data: StatsBucket[]; title: string }) {
+function VerticalBarChart({ data, title, noData, devicesLabel }: { data: StatsBucket[]; title: string; noData: string; devicesLabel: string }) {
   if (data.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-[var(--muted-foreground)] text-sm">
-        No data
+        {noData}
       </div>
     );
   }
@@ -151,7 +150,7 @@ function VerticalBarChart({ data, title }: { data: StatsBucket[]; title: string 
               labelStyle={{ color: "#9CA3AF" }}
               itemStyle={{ color: "#F3F4F6" }}
             />
-            <Bar dataKey="count" name="Devices" fill={COLORS[0]} radius={[3, 3, 0, 0]} />
+            <Bar dataKey="count" name={devicesLabel} fill={COLORS[0]} radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -159,11 +158,11 @@ function VerticalBarChart({ data, title }: { data: StatsBucket[]; title: string 
   );
 }
 
-function HorizontalBarChart({ data, title }: { data: StatsBucket[]; title: string }) {
+function HorizontalBarChart({ data, title, noData, devicesLabel }: { data: StatsBucket[]; title: string; noData: string; devicesLabel: string }) {
   if (data.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-[var(--muted-foreground)] text-sm">
-        No data
+        {noData}
       </div>
     );
   }
@@ -209,7 +208,7 @@ function HorizontalBarChart({ data, title }: { data: StatsBucket[]; title: strin
               labelStyle={{ color: "#9CA3AF" }}
               itemStyle={{ color: "#F3F4F6" }}
             />
-            <Bar dataKey="count" name="Devices" fill={COLORS[2]} radius={[0, 3, 3, 0]} />
+            <Bar dataKey="count" name={devicesLabel} fill={COLORS[2]} radius={[0, 3, 3, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -217,11 +216,11 @@ function HorizontalBarChart({ data, title }: { data: StatsBucket[]; title: strin
   );
 }
 
-function RarityBarChart({ data, title }: { data: StatsBucket[]; title: string }) {
+function RarityBarChart({ data, title, noData, devicesLabel }: { data: StatsBucket[]; title: string; noData: string; devicesLabel: string }) {
   if (data.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-[var(--muted-foreground)] text-sm">
-        No data
+        {noData}
       </div>
     );
   }
@@ -258,7 +257,7 @@ function RarityBarChart({ data, title }: { data: StatsBucket[]; title: string })
               labelStyle={{ color: "#9CA3AF" }}
               itemStyle={{ color: "#F3F4F6" }}
             />
-            <Bar dataKey="count" name="Devices" radius={[3, 3, 0, 0]}>
+            <Bar dataKey="count" name={devicesLabel} radius={[3, 3, 0, 0]}>
               {data.map((entry, index) => (
                 <Cell key={index} fill={RARITY_COLORS[entry.label] ?? COLORS[index % COLORS.length]} />
               ))}
@@ -271,40 +270,44 @@ function RarityBarChart({ data, title }: { data: StatsBucket[]; title: string })
 }
 
 export default function StatsCharts({ stats }: { stats: CollectionStats }) {
+  const t = useT();
+  const noData = t.pages.stats.noData;
+  const devicesLabel = t.pages.stats.devices;
+
   return (
     <div className="space-y-8">
       {/* Collection Composition */}
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">Collection Composition</h2>
+        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.stats.collectionComposition}</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <DonutChart data={stats.byStatus} title="By Status" colorMap={STATUS_COLORS} />
-          <DonutChart data={stats.byFunctionalStatus} title="By Condition" />
-          <DonutChart data={stats.byCategoryType} title="By Category Type" />
+          <DonutChart data={stats.byStatus} title={t.pages.stats.byStatus} colorMap={STATUS_COLORS} noData={noData} />
+          <DonutChart data={stats.byFunctionalStatus} title={t.pages.stats.byCondition} noData={noData} />
+          <DonutChart data={stats.byCategoryType} title={t.pages.stats.byCategoryType} noData={noData} />
         </div>
       </section>
 
       {/* Rarity */}
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">By Rarity</h2>
-        <RarityBarChart data={stats.byRarity} title="Rarity Distribution" />
+        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.stats.byRarity}</h2>
+        <RarityBarChart data={stats.byRarity} title={t.pages.stats.rarityDistribution} noData={noData} devicesLabel={devicesLabel} />
       </section>
 
       {/* Acquisition Trends */}
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">Devices Acquired Per Year</h2>
-        <VerticalBarChart data={stats.byAcquisitionYear} title="Acquisition Year" />
+        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.stats.acquiredPerYear}</h2>
+        <VerticalBarChart data={stats.byAcquisitionYear} title={t.pages.stats.acquisitionYear} noData={noData} devicesLabel={devicesLabel} />
       </section>
 
       {/* Release Era */}
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">By Release Era</h2>
-        <VerticalBarChart data={stats.byReleaseDecade} title="Release Decade" />
+        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.stats.byReleaseEra}</h2>
+        <VerticalBarChart data={stats.byReleaseDecade} title={t.pages.stats.releaseDecade} noData={noData} devicesLabel={devicesLabel} />
       </section>
 
       {/* Top Manufacturers */}
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
-        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">Top Manufacturers</h2>
-        <HorizontalBarChart data={stats.topManufacturers} title="Manufacturer" />
+        <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.stats.topManufacturers}</h2>
+        <HorizontalBarChart data={stats.topManufacturers} title={t.pages.stats.manufacturer} noData={noData} devicesLabel={devicesLabel} />
       </section>
     </div>
   );

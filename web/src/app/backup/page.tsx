@@ -8,6 +8,7 @@ import JSZip from "jszip";
 import { API_BASE_URL } from "../../lib/config";
 import { DeviceFilterPanel, FilterState, SortColumn } from "../../components/DeviceFilterPanel";
 import { LoadingPanel } from "../../components/LoadingPanel";
+import { useT } from "../../i18n/context";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {
@@ -96,6 +97,7 @@ const defaultFilters: FilterState = {
 };
 
 export default function ExportPage() {
+  const t = useT();
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortColumn, setSortColumn] = useState<SortColumn>('category');
@@ -178,7 +180,7 @@ export default function ExportPage() {
 
   const handleImport = async (file: File) => {
     setIsImporting(true);
-    setImportProgress("Uploading file...");
+    setImportProgress(t.pages.backup.progressUploading);
     setImportResults(null);
 
     try {
@@ -203,7 +205,7 @@ export default function ExportPage() {
       }
 
       // Poll for progress
-      setImportProgress("Extracting ZIP file...");
+      setImportProgress(t.pages.backup.progressExtracting);
       
       const pollProgress = async (): Promise<any> => {
         const progressResponse = await fetch(`${API_BASE_URL}/import/progress/${jobId}`);
@@ -215,7 +217,7 @@ export default function ExportPage() {
         const progressData = await progressResponse.json();
 
         if (progressData.status === 'extracting') {
-          setImportProgress("Extracting ZIP file...");
+          setImportProgress(t.pages.backup.progressExtracting);
         } else if (progressData.status === 'processing') {
           const percent = progressData.progress || 0;
           const current = progressData.currentDevice || '';
@@ -268,7 +270,7 @@ export default function ExportPage() {
     if (devicesToExport.length === 0) return;
 
     setIsExporting(true);
-    setExportProgress("Starting export...");
+    setExportProgress(t.pages.backup.progressStarting);
     setExportParts(0);
     setExportJobId(null);
 
@@ -320,8 +322,8 @@ export default function ExportPage() {
           
           if (numParts === 1) {
             // Single file - download automatically
-            setExportProgress("Downloading...");
-            
+            setExportProgress(t.pages.backup.progressDownloading);
+
             const downloadUrl = `${API_BASE_URL}/export/download/${jobId}/1`;
             const link = document.createElement("a");
             link.href = downloadUrl;
@@ -330,7 +332,7 @@ export default function ExportPage() {
             link.click();
             document.body.removeChild(link);
 
-            setExportProgress("Export complete!");
+            setExportProgress(t.pages.backup.progressComplete);
             setTimeout(() => {
               setIsExporting(false);
               setExportProgress("");
@@ -338,7 +340,7 @@ export default function ExportPage() {
             }, 2000);
           } else {
             // Multiple parts - show download buttons
-            setExportProgress(`Export complete! ${numParts} parts ready for download.`);
+            setExportProgress(`${t.pages.backup.progressComplete} ${numParts} ${t.pages.backup.splitPartsSuffix}.`);
             setIsExporting(false);
           }
           return;
@@ -354,7 +356,7 @@ export default function ExportPage() {
       await pollProgress();
     } catch (error: any) {
       console.error("Export failed:", error);
-      setExportProgress("Export failed. Please try again.");
+      setExportProgress(t.pages.backup.progressFailed);
       setTimeout(() => {
         setIsExporting(false);
         setExportProgress("");
@@ -379,9 +381,9 @@ export default function ExportPage() {
       <header className="sticky top-0 z-30 bg-[var(--card)] border-b border-[var(--border)] px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">Export Devices</h1>
+            <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.backup.title}</h1>
             <p className="text-sm text-[var(--muted-foreground)]">
-              Select devices to export. Data will be bundled into a ZIP file.
+              {t.pages.backup.subtitle}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -392,10 +394,10 @@ export default function ExportPage() {
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
-              Filter
+              {t.pages.backup.filterBtn}
             </button>
             <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-              Back
+              {t.common.back}
             </Link>
           </div>
         </div>
@@ -404,26 +406,26 @@ export default function ExportPage() {
       <main className="p-4">
         {loading ? (
           <div className="p-8">
-            <LoadingPanel title="Loading devices…" subtitle="Getting export tools ready" />
+            <LoadingPanel title={t.pages.backup.loading} subtitle={t.pages.backup.loadingSubtitle} />
           </div>
         ) : (
           <>
             {/* Import Section */}
             <div className="mb-4 p-4 bg-[var(--card)] rounded border border-[var(--border)] card-retro">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-medium">Import Devices</h2>
+                <h2 className="text-lg font-medium">{t.pages.backup.importSectionTitle}</h2>
                 <button
                   onClick={() => setShowImportSection(!showImportSection)}
                   className="text-sm text-[var(--apple-blue)] hover:underline"
                 >
-                  {showImportSection ? "Hide" : "Show"}
+                  {showImportSection ? t.pages.backup.importToggleHide : t.pages.backup.importToggleShow}
                 </button>
               </div>
               
               {showImportSection && (
                 <div className="space-y-4">
                   <p className="text-sm text-[var(--muted-foreground)]">
-                    Import devices from a previously exported ZIP file. The import will attempt to preserve device IDs for asset tag compatibility.
+                    {t.pages.backup.importDesc}
                   </p>
                   
                   <div className="flex items-center gap-4">
@@ -457,7 +459,7 @@ export default function ExportPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      {importProgress || "Importing..."}
+                      {importProgress || t.pages.backup.importingStatus}
                     </div>
                   )}
 
@@ -466,18 +468,18 @@ export default function ExportPage() {
                       {importResults.success ? (
                         <div>
                           <p className="font-medium text-green-800 dark:text-green-200">
-                            Import Complete: {importResults.imported} device(s) imported successfully
-                            {importResults.failed > 0 && `, ${importResults.failed} failed`}
+                            {t.pages.backup.importCompletePrefix} {importResults.imported} {t.pages.backup.importDevicesSuccess}
+                            {importResults.failed > 0 && `, ${importResults.failed} ${t.pages.backup.importDevicesFailed}`}
                           </p>
                           {importResults.results && (
                             <div className="mt-2 max-h-40 overflow-y-auto">
                               <table className="w-full text-xs">
                                 <thead>
                                   <tr className="text-left text-green-700 dark:text-green-300">
-                                    <th className="pr-2">Original ID</th>
-                                    <th className="pr-2">New ID</th>
-                                    <th className="pr-2">Name</th>
-                                    <th>ID Preserved</th>
+                                    <th className="pr-2">{t.pages.backup.tableOriginalId}</th>
+                                    <th className="pr-2">{t.pages.backup.tableNewId}</th>
+                                    <th className="pr-2">{t.common.name}</th>
+                                    <th>{t.pages.backup.tableIdPreserved}</th>
                                   </tr>
                                 </thead>
                                 <tbody className="text-green-600 dark:text-green-400">
@@ -496,7 +498,7 @@ export default function ExportPage() {
                         </div>
                       ) : (
                         <p className="text-red-800 dark:text-red-200">
-                          Import Failed: {importResults.error}
+                          {t.pages.backup.importFailedPrefix} {importResults.error}
                         </p>
                       )}
                     </div>
@@ -507,7 +509,7 @@ export default function ExportPage() {
 
             {/* Export Options */}
             <div className="mb-4 p-4 bg-[var(--card)] rounded border border-[var(--border)] card-retro">
-              <h2 className="text-lg font-medium mb-3">Export Devices</h2>
+              <h2 className="text-lg font-medium mb-3">{t.pages.backup.exportSectionTitle}</h2>
               
               <div className="flex flex-wrap items-center gap-4 mb-4">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -517,9 +519,9 @@ export default function ExportPage() {
                     onChange={(e) => setIncludeImages(e.target.checked)}
                     className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Include images</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{t.pages.backup.includeImages}</span>
                 </label>
-                
+
                 {includeImages && (
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -529,38 +531,38 @@ export default function ExportPage() {
                       className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Compress images (reduces size ~50-70%)
+                      {t.pages.backup.compressImages}
                     </span>
                   </label>
                 )}
               </div>
               
               <p className="text-xs text-[var(--muted-foreground)] mb-4">
-                Large exports (&gt;500MB) will be split into multiple parts for easier downloading and importing.
+                {t.pages.backup.largeSplitNote}
               </p>
 
               <div className="flex flex-wrap items-center gap-4">
                 <div className="text-sm text-[var(--muted-foreground)]">
                   {selectedDeviceIds.size > 0 ? (
-                    <span><strong>{selectedDeviceIds.size}</strong> devices selected for export</span>
+                    <span><strong>{selectedDeviceIds.size}</strong> {t.pages.backup.devicesSelectedSuffix}</span>
                   ) : (
-                    <span>All <strong>{filteredDevices.length}</strong> filtered devices will be exported</span>
+                    <span>{t.pages.backup.allFilteredPrefix} <strong>{filteredDevices.length}</strong> {t.pages.backup.allFilteredSuffix}</span>
                   )}
                 </div>
-                
+
                 <div className="flex gap-2">
                   <button
                     onClick={selectAll}
                     className="text-sm text-[var(--apple-blue)] hover:underline"
                   >
-                    Select All
+                    {t.pages.backup.selectAll}
                   </button>
                   <span className="text-[var(--muted-foreground)]">|</span>
                   <button
                     onClick={selectNone}
                     className="text-sm text-[var(--apple-blue)] hover:underline"
                   >
-                    Select None
+                    {t.pages.backup.selectNone}
                   </button>
                 </div>
 
@@ -575,14 +577,14 @@ export default function ExportPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      Exporting...
+                      {t.pages.backup.exportingStatus}
                     </>
                   ) : (
                     <>
                       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
-                      Export ({devicesToExport.length})
+                      {t.pages.backup.exportBtnLabel} ({devicesToExport.length})
                     </>
                   )}
                 </button>
@@ -598,10 +600,10 @@ export default function ExportPage() {
               {exportParts > 1 && exportJobId && (
                 <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                   <p className="text-sm font-medium text-green-800 dark:text-green-200 mb-2">
-                    Export split into {exportParts} parts (~500MB each)
+                    {t.pages.backup.splitPartsPrefix} {exportParts} {t.pages.backup.splitPartsSuffix}
                   </p>
                   <p className="text-xs text-green-700 dark:text-green-300 mb-3">
-                    Download all parts and import them one at a time.
+                    {t.pages.backup.splitDownloadNote}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {Array.from({ length: exportParts }, (_, i) => (
@@ -613,7 +615,7 @@ export default function ExportPage() {
                         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
-                        Part {i + 1}
+                        {t.pages.backup.partBtn} {i + 1}
                       </button>
                     ))}
                   </div>
@@ -621,7 +623,7 @@ export default function ExportPage() {
                     onClick={() => { setExportParts(0); setExportJobId(null); setExportProgress(""); }}
                     className="mt-3 text-xs text-green-600 dark:text-green-400 hover:underline"
                   >
-                    Dismiss
+                    {t.pages.backup.dismiss}
                   </button>
                 </div>
               )}
@@ -633,7 +635,7 @@ export default function ExportPage() {
                 <table className="w-full">
                   <thead className="bg-[var(--muted)]">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase w-12">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase w-12" aria-label="select">
                         <input
                           type="checkbox"
                           checked={selectedDeviceIds.size === filteredDevices.length && filteredDevices.length > 0}
@@ -641,13 +643,13 @@ export default function ExportPage() {
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">ID</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Category</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Year</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Images</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">Notes</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableId}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableCategory}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.common.name}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableYear}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableStatus}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableImages}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableNotes}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--border)]">
@@ -677,7 +679,7 @@ export default function ExportPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.releaseYear || ""}</td>
-                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.status.replace("_", " ")}</td>
+                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{(t.status as Record<string, string>)[device.status] ?? device.status.replace("_", " ")}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.images?.length || 0}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.notes?.length || 0}</td>
                       </tr>

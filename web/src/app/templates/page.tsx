@@ -462,7 +462,7 @@ export default function TemplatesPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">External URL</label>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.form.externalUrlLabel}</label>
                   <input
                     value={form.externalUrl}
                     onChange={(e) => setForm((prev) => ({ ...prev, externalUrl: e.target.value }))}

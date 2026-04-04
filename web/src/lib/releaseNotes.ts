@@ -15,7 +15,9 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [
       'iOS: full i18n support — LocalizationManager with runtime language switching, Translations structs (en/de), Settings.bundle language picker (System Default / English / Deutsch), all views updated to use localized strings',
     ],
-    changed: [],
+    changed: [
+      'Web: financials chart legend/labels, stats chart section headings, backup/export page, print page, and template form all use translation keys (en/de)',
+    ],
     fixed: [],
   },
   {

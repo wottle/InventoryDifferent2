@@ -7,6 +7,9 @@ All notable changes to InventoryDifferent will be documented here.
 ### Added
 - iOS: full i18n support — LocalizationManager with runtime language switching, Translations structs (en/de), Settings.bundle language picker (System Default / English / Deutsch), all views updated to use localized strings
 
+### Changed
+- Web: financials chart legend/labels, stats chart section headings, backup/export page, print page, and template form all use translation keys (en/de)
+
 ---
 
 ## [1.1.4] - 2026-04-04
