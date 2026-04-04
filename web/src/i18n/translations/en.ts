@@ -62,6 +62,110 @@ export type Translations = {
     available: string;
     pending: string;
   };
+  common: {
+    cancel: string;
+    delete: string;
+    add: string;
+    yes: string;
+    no: string;
+    adding: string;
+    addingEllipsis: string;
+    updating: string;
+    deleting: string;
+    update: string;
+    notes: string;
+    date: string;
+    cost: string;
+  };
+  nav: {
+    wishlist: string;
+    financials: string;
+    stats: string;
+    timeline: string;
+    usage: string;
+    printList: string;
+    exportImport: string;
+    aiProductImages: string;
+    manageCategories: string;
+    manageTemplates: string;
+    manageCustomFields: string;
+    trash: string;
+    logOut: string;
+    logIn: string;
+  };
+  home: {
+    search: string;
+    filterDevices: string;
+    switchToTable: string;
+    switchToCards: string;
+    addNewDevice: string;
+    scanAssetTag: string;
+    loadingTitle: string;
+    loadingSubtitle: string;
+    warmingUp: string;
+    noDevices: string;
+    showing: string;
+    devices: string;
+    estValue: string;
+    totalSpent: string;
+    totalSold: string;
+  };
+  detail: {
+    loading: string;
+    loadingSubtitle: string;
+    maintenanceTasks: string;
+    notes: string;
+    tags: string;
+    accessories: string;
+    referenceLinks: string;
+    specifications: string;
+    computerSpecs: string;
+    acquisition: string;
+    valueHistory: string;
+    salesInfo: string;
+    donationInfo: string;
+    customFields: string;
+    addTask: string;
+    addMaintenance: string;
+    addNote: string;
+    addPhotos: string;
+    addLink: string;
+    addMaintenanceTitle: string;
+    addNoteTitle: string;
+    taskLabel: string;
+    dateCompleted: string;
+    costOptional: string;
+    noteContent: string;
+    dateLabel: string;
+    costPrefix: string;
+    deleteTaskConfirm: string;
+    deleteNoteConfirm: string;
+    deviceId: string;
+    serialNumber: string;
+    releaseYear: string;
+    locationLabel: string;
+    lastUsed: string;
+    cpu: string;
+    ram: string;
+    graphics: string;
+    storage: string;
+    operatingSystem: string;
+    wifiEnabled: string;
+    pramBatteryRemoved: string;
+    dateAcquired: string;
+    whereAcquired: string;
+    priceAcquired: string;
+    estimatedValue: string;
+    listPrice: string;
+    soldPrice: string;
+    soldDate: string;
+    donatedDate: string;
+    addTagPlaceholder: string;
+    noTags: string;
+    noAccessories: string;
+    noLinks: string;
+    customAccessoryPlaceholder: string;
+  };
 };
 
 export const en: Translations = {
@@ -127,5 +231,109 @@ export const en: Translations = {
     estValue: "Est. Value",
     available: "Available",
     pending: "Pending",
+  },
+  common: {
+    cancel: "Cancel",
+    delete: "Delete",
+    add: "Add",
+    yes: "Yes",
+    no: "No",
+    adding: "Adding...",
+    addingEllipsis: "Adding…",
+    updating: "Updating...",
+    deleting: "Deleting...",
+    update: "Update",
+    notes: "Notes",
+    date: "Date",
+    cost: "Cost",
+  },
+  nav: {
+    wishlist: "Wishlist",
+    financials: "Financials",
+    stats: "Stats",
+    timeline: "Timeline",
+    usage: "Usage",
+    printList: "Print List",
+    exportImport: "Export / Import",
+    aiProductImages: "AI Product Images",
+    manageCategories: "Manage Categories",
+    manageTemplates: "Manage Templates",
+    manageCustomFields: "Manage Custom Fields",
+    trash: "Trash",
+    logOut: "Log Out",
+    logIn: "Log In",
+  },
+  home: {
+    search: "Search...",
+    filterDevices: "Filter Devices",
+    switchToTable: "Switch to Table View",
+    switchToCards: "Switch to Cards View",
+    addNewDevice: "Add New Device",
+    scanAssetTag: "Scan Asset Tag",
+    loadingTitle: "Loading devices…",
+    loadingSubtitle: "Fetching your inventory",
+    warmingUp: "Warming up the tubes",
+    noDevices: "No devices found. Add your first one!",
+    showing: "Showing:",
+    devices: "devices",
+    estValue: "Est. Value:",
+    totalSpent: "Total Spent:",
+    totalSold: "Total Sold:",
+  },
+  detail: {
+    loading: "Loading device…",
+    loadingSubtitle: "Fetching details",
+    maintenanceTasks: "Maintenance Tasks",
+    notes: "Notes",
+    tags: "Tags",
+    accessories: "Accessories",
+    referenceLinks: "Reference Links",
+    specifications: "Specifications",
+    computerSpecs: "Computer Specs",
+    acquisition: "Acquisition",
+    valueHistory: "Value History",
+    salesInfo: "Sales Info",
+    donationInfo: "Donation Info",
+    customFields: "Custom Fields",
+    addTask: "Add Task",
+    addMaintenance: "Add Maintenance",
+    addNote: "Add Note",
+    addPhotos: "Add Photos",
+    addLink: "Add Link",
+    addMaintenanceTitle: "Add Maintenance Task",
+    addNoteTitle: "Add Note",
+    taskLabel: "Task Label",
+    dateCompleted: "Date Completed",
+    costOptional: "Cost (optional)",
+    noteContent: "Note Content",
+    dateLabel: "Date",
+    costPrefix: "Cost:",
+    deleteTaskConfirm: "Delete this maintenance task?",
+    deleteNoteConfirm: "Delete this note?",
+    deviceId: "Device ID",
+    serialNumber: "Serial Number",
+    releaseYear: "Release Year",
+    locationLabel: "Location",
+    lastUsed: "Last Used",
+    cpu: "CPU",
+    ram: "RAM",
+    graphics: "Graphics",
+    storage: "Storage",
+    operatingSystem: "Operating System",
+    wifiEnabled: "WiFi Enabled",
+    pramBatteryRemoved: "PRAM Battery Removed",
+    dateAcquired: "Date Acquired",
+    whereAcquired: "Where Acquired",
+    priceAcquired: "Price Acquired",
+    estimatedValue: "Estimated Value",
+    listPrice: "List Price",
+    soldPrice: "Sold Price",
+    soldDate: "Sold Date",
+    donatedDate: "Donated Date",
+    addTagPlaceholder: "Add a tag",
+    noTags: "No tags",
+    noAccessories: "No accessories",
+    noLinks: "No links",
+    customAccessoryPlaceholder: "Custom accessory…",
   },
 };

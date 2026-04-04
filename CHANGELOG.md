@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Changed
+- i18n: main menu, nav tooltips, inventory footer, device detail section headers, field labels, forms, and all inline buttons now translated (en/de)
+
 ---
 
 ## [1.1.1] - 2026-04-03

@@ -13,7 +13,9 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'i18n: main menu, nav tooltips, inventory footer, device detail section headers, field labels, forms, and all inline buttons now translated (en/de)',
+    ],
     fixed: [],
   },
   {

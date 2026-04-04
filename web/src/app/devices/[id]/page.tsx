@@ -858,7 +858,7 @@ export default function DeviceDetail() {
     if (loading) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
-                <LoadingPanel title="Loading device…" subtitle="Fetching details" />
+                <LoadingPanel title={t.detail.loading} subtitle={t.detail.loadingSubtitle} />
             </div>
         );
     }
@@ -1064,7 +1064,7 @@ export default function DeviceDetail() {
                             <div className="relative group">
                                 <button
                                     onClick={() => setShowUploader(true)}
-                                    aria-label="Add Photos"
+                                    aria-label={t.detail.addPhotos}
                                     className="btn-retro inline-flex items-center justify-center p-2"
                                 >
                                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1072,14 +1072,14 @@ export default function DeviceDetail() {
                                     </svg>
                                 </button>
                                 <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                                    Add Photos
+                                    {t.detail.addPhotos}
                                 </span>
                             </div>
 
                             <div className="relative group">
                                 <button
                                     onClick={() => setShowMaintenanceForm(true)}
-                                    aria-label="Add Maintenance Task"
+                                    aria-label={t.detail.addMaintenanceTitle}
                                     className="btn-retro inline-flex items-center justify-center p-2"
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -1087,14 +1087,14 @@ export default function DeviceDetail() {
                                     </svg>
                                 </button>
                                 <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                                    Add Maintenance
+                                    {t.detail.addMaintenance}
                                 </span>
                             </div>
 
                             <div className="relative group">
                                 <button
                                     onClick={() => setShowNoteForm(true)}
-                                    aria-label="Add Note"
+                                    aria-label={t.detail.addNote}
                                     className="btn-retro inline-flex items-center justify-center p-2"
                                 >
                                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1102,7 +1102,7 @@ export default function DeviceDetail() {
                                     </svg>
                                 </button>
                                 <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                                    Add Note
+                                    {t.detail.addNote}
                                 </span>
                             </div>
                         </div>
@@ -1218,7 +1218,7 @@ export default function DeviceDetail() {
                                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                Add Photos
+                                {t.detail.addPhotos}
                             </button>
                         </div>
                     </div>
@@ -1228,7 +1228,7 @@ export default function DeviceDetail() {
                     {/* Maintenance Tasks */}
                     <div>
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-medium text-[var(--foreground)]">Maintenance Tasks</h3>
+                            <h3 className="text-sm font-medium text-[var(--foreground)]">{t.detail.maintenanceTasks}</h3>
                             <button
                                 onClick={() => setShowMaintenanceForm(true)}
                                 className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
@@ -1236,7 +1236,7 @@ export default function DeviceDetail() {
                                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                Add Task
+                                {t.detail.addTask}
                             </button>
                         </div>
                         {device.maintenanceTasks && device.maintenanceTasks.length > 0 && (
@@ -1253,7 +1253,7 @@ export default function DeviceDetail() {
                                                     <p className="text-sm text-[var(--muted-foreground)] mt-1 whitespace-pre-wrap">{task.notes}</p>
                                                 )}
                                                 {task.cost != null && (
-                                                    <p className="text-xs text-[var(--muted-foreground)] mt-1">Cost: ${Number(task.cost).toFixed(2)}</p>
+                                                    <p className="text-xs text-[var(--muted-foreground)] mt-1">{t.detail.costPrefix} ${Number(task.cost).toFixed(2)}</p>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -1280,21 +1280,19 @@ export default function DeviceDetail() {
                                         {/* Delete confirmation overlay */}
                                         {deleteTaskId === task.id && (
                                             <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center p-4 rounded-lg">
-                                                <p className="text-white text-sm text-center mb-3">Delete this maintenance task?</p>
+                                                <p className="text-white text-sm text-center mb-3">{t.detail.deleteTaskConfirm}</p>
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => handleDeleteMaintenanceTask()}
                                                         disabled={deletingTask}
                                                         className="px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 disabled:opacity-50"
                                                     >
-                                                        {deletingTask ? 'Deleting...' : 'Delete'}
+                                                        {deletingTask ? t.common.deleting : t.common.delete}
                                                     </button>
                                                     <button
                                                         onClick={() => setDeleteTaskId(null)}
                                                         className="px-3 py-1.5 bg-white text-gray-700 text-sm rounded hover:bg-gray-100"
-                                                    >
-                                                        Cancel
-                                                    </button>
+                                                    >{t.common.cancel}</button>
                                                 </div>
                                             </div>
                                         )}
@@ -1309,11 +1307,11 @@ export default function DeviceDetail() {
                     {showMaintenanceForm && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowMaintenanceForm(false)}>
                             <div className="bg-[var(--card)] border border-[var(--border)] rounded-lg p-6 card-retro w-full max-w-md mx-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
-                                <h4 className="text-lg font-medium text-[var(--foreground)] mb-4">Add Maintenance Task</h4>
+                                <h4 className="text-lg font-medium text-[var(--foreground)] mb-4">{t.detail.addMaintenanceTitle}</h4>
                                 <form onSubmit={handleCreateMaintenanceTask} className="space-y-4">
                                     <div className="relative">
                                         <label htmlFor="label" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                            Task Label *
+                                            {t.detail.taskLabel} *
                                         </label>
                                         <input
                                             type="text"
@@ -1365,7 +1363,7 @@ export default function DeviceDetail() {
                                     </div>
                                     <div>
                                         <label htmlFor="dateCompleted" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                            Date Completed *
+                                            {t.detail.dateCompleted} *
                                         </label>
                                         <input
                                             type="date"
@@ -1378,7 +1376,7 @@ export default function DeviceDetail() {
                                     </div>
                                     <div>
                                         <label htmlFor="notes" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                            Notes
+                                            {t.common.notes}
                                         </label>
                                         <textarea
                                             id="notes"
@@ -1390,7 +1388,7 @@ export default function DeviceDetail() {
                                     </div>
                                     <div>
                                         <label htmlFor="cost" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                            Cost (optional)
+                                            {t.detail.costOptional}
                                         </label>
                                         <input
                                             type="number"
@@ -1408,15 +1406,13 @@ export default function DeviceDetail() {
                                             type="button"
                                             onClick={() => setShowMaintenanceForm(false)}
                                             className="btn-retro px-4 py-2 text-sm font-medium"
-                                        >
-                                            Cancel
-                                        </button>
+                                        >{t.common.cancel}</button>
                                         <button
                                             type="submit"
                                             disabled={creatingTask}
                                             className="px-4 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            {creatingTask ? 'Adding...' : 'Add Task'}
+                                            {creatingTask ? t.common.adding : t.detail.addTask}
                                         </button>
                                     </div>
                                 </form>
@@ -1428,7 +1424,7 @@ export default function DeviceDetail() {
                     {/* Notes */}
                     <div>
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-medium text-[var(--foreground)]">Notes</h3>
+                            <h3 className="text-sm font-medium text-[var(--foreground)]">{t.detail.notes}</h3>
                             <button
                                 onClick={() => setShowNoteForm(true)}
                                 className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
@@ -1436,7 +1432,7 @@ export default function DeviceDetail() {
                                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                Add Note
+                                {t.detail.addNote}
                             </button>
                         </div>
                         {device.notes && device.notes.length > 0 && (
@@ -1453,7 +1449,7 @@ export default function DeviceDetail() {
                                                     <form onSubmit={handleUpdateNote} className="space-y-3">
                                                         <div>
                                                             <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                                                Note Content *
+                                                                {t.detail.noteContent} *
                                                             </label>
                                                             <textarea
                                                                 value={editNoteFormData.content}
@@ -1465,7 +1461,7 @@ export default function DeviceDetail() {
                                                         </div>
                                                         <div>
                                                             <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                                                Date *
+                                                                {t.detail.dateLabel} *
                                                             </label>
                                                             <input
                                                                 type="datetime-local"
@@ -1480,15 +1476,13 @@ export default function DeviceDetail() {
                                                                 type="button"
                                                                 onClick={() => setEditingNoteId(null)}
                                                                 className="btn-retro px-3 py-1.5 text-sm font-medium"
-                                                            >
-                                                                Cancel
-                                                            </button>
+                                                            >{t.common.cancel}</button>
                                                             <button
                                                                 type="submit"
                                                                 disabled={updatingNote}
                                                                 className="px-3 py-1.5 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed"
                                                             >
-                                                                {updatingNote ? 'Updating...' : 'Update'}
+                                                                {updatingNote ? t.common.updating : t.common.update}
                                                             </button>
                                                         </div>
                                                     </form>
@@ -1541,21 +1535,19 @@ export default function DeviceDetail() {
                                         {/* Delete confirmation overlay */}
                                         {deleteNoteId === note.id && (
                                             <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center p-4 rounded-lg">
-                                                <p className="text-white text-sm text-center mb-3">Delete this note?</p>
+                                                <p className="text-white text-sm text-center mb-3">{t.detail.deleteNoteConfirm}</p>
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => handleDeleteNote()}
                                                         disabled={deletingNote}
                                                         className="px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 disabled:opacity-50"
                                                     >
-                                                        {deletingNote ? 'Deleting...' : 'Delete'}
+                                                        {deletingNote ? t.common.deleting : t.common.delete}
                                                     </button>
                                                     <button
                                                         onClick={() => setDeleteNoteId(null)}
                                                         className="px-3 py-1.5 bg-white text-gray-700 text-sm rounded hover:bg-gray-100"
-                                                    >
-                                                        Cancel
-                                                    </button>
+                                                    >{t.common.cancel}</button>
                                                 </div>
                                             </div>
                                         )}
@@ -1569,11 +1561,11 @@ export default function DeviceDetail() {
                     {showNoteForm && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowNoteForm(false)}>
                             <div className="bg-[var(--card)] border border-[var(--border)] rounded-lg p-6 card-retro w-full max-w-md mx-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
-                                <h4 className="text-lg font-medium text-[var(--foreground)] mb-4">Add Note</h4>
+                                <h4 className="text-lg font-medium text-[var(--foreground)] mb-4">{t.detail.addNoteTitle}</h4>
                                 <form onSubmit={handleCreateNote} className="space-y-4">
                                     <div>
                                         <label htmlFor="noteContent" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                            Note Content *
+                                            {t.detail.noteContent} *
                                         </label>
                                         <textarea
                                             id="noteContent"
@@ -1587,7 +1579,7 @@ export default function DeviceDetail() {
                                     </div>
                                     <div>
                                         <label htmlFor="noteDate" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1">
-                                            Date *
+                                            {t.detail.dateLabel} *
                                         </label>
                                         <input
                                             type="datetime-local"
@@ -1603,15 +1595,13 @@ export default function DeviceDetail() {
                                             type="button"
                                             onClick={() => setShowNoteForm(false)}
                                             className="btn-retro px-4 py-2 text-sm font-medium"
-                                        >
-                                            Cancel
-                                        </button>
+                                        >{t.common.cancel}</button>
                                         <button
                                             type="submit"
                                             disabled={creatingNote}
                                             className="px-4 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            {creatingNote ? 'Adding...' : 'Add Note'}
+                                            {creatingNote ? t.common.adding : t.detail.addNote}
                                         </button>
                                     </div>
                                 </form>
@@ -1645,23 +1635,23 @@ export default function DeviceDetail() {
 
                     <div>
                         <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                            Tags
+                            {t.detail.tags}
                         </h2>
                         <div className="flex flex-wrap gap-2 mb-3">
-                            {(device.tags ?? []).map((t: any) => (
+                            {(device.tags ?? []).map((tag: any) => (
                                 <span
-                                    key={t.id}
+                                    key={tag.id}
                                     className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-[var(--card)] text-[var(--foreground)] rounded ring-1 ring-inset ring-[var(--border)]"
                                 >
-                                    {t.name}
+                                    {tag.name}
                                     {isAuthenticated && (
                                         <button
                                             type="button"
-                                            onClick={() => handleRemoveTag(t.id)}
+                                            onClick={() => handleRemoveTag(tag.id)}
                                             disabled={removingTag}
                                             className="ml-1 inline-flex items-center justify-center rounded hover:bg-[var(--muted)] px-1 disabled:opacity-50"
-                                            aria-label={`Remove tag ${t.name}`}
-                                            title="Remove tag"
+                                            aria-label={`Remove tag ${tag.name}`}
+                                            title={t.detail.noTags}
                                         >
                                             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1671,7 +1661,7 @@ export default function DeviceDetail() {
                                 </span>
                             ))}
                             {(device.tags ?? []).length === 0 && (
-                                <span className="text-sm text-[var(--muted-foreground)]">No tags</span>
+                                <span className="text-sm text-[var(--muted-foreground)]">{t.detail.noTags}</span>
                             )}
                         </div>
                         {isAuthenticated && (
@@ -1681,18 +1671,18 @@ export default function DeviceDetail() {
                                     value={tagName}
                                     onChange={(e) => setTagName(e.target.value)}
                                     list="tag-suggestions"
-                                    placeholder="Add a tag"
+                                    placeholder={t.detail.addTagPlaceholder}
                                     className="input-retro flex-1 px-3 py-2 text-[var(--foreground)]"
                                 />
                                 <datalist id="tag-suggestions">
                                     {(tagsData?.tags ?? [])
-                                        .filter((t: any) => {
-                                            const n = (t?.name ?? '').toLowerCase();
+                                        .filter((tagOpt: any) => {
+                                            const n = (tagOpt?.name ?? '').toLowerCase();
                                             if (!n) return false;
                                             return !existingTagNames.has(n);
                                         })
-                                        .map((t: any) => (
-                                            <option key={t.id} value={t.name} />
+                                        .map((tagOpt: any) => (
+                                            <option key={tagOpt.id} value={tagOpt.name} />
                                         ))}
                                 </datalist>
                                 <button
@@ -1700,7 +1690,7 @@ export default function DeviceDetail() {
                                     disabled={addingTag}
                                     className="px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {addingTag ? 'Adding...' : 'Add'}
+                                    {addingTag ? t.common.adding : t.common.add}
                                 </button>
                             </form>
                         )}
@@ -1710,7 +1700,7 @@ export default function DeviceDetail() {
                     {(isAuthenticated || (device.accessories ?? []).length > 0) && (
                     <div>
                         <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                            Accessories
+                            {t.detail.accessories}
                         </h2>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {(device.accessories ?? []).map((acc: any) => (
@@ -1734,7 +1724,7 @@ export default function DeviceDetail() {
                                 </span>
                             ))}
                             {(device.accessories ?? []).length === 0 && (
-                                <span className="text-sm text-[var(--muted-foreground)]">No accessories</span>
+                                <span className="text-sm text-[var(--muted-foreground)]">{t.detail.noAccessories}</span>
                             )}
                         </div>
                         {isAuthenticated && (() => {
@@ -1763,7 +1753,7 @@ export default function DeviceDetail() {
                                             type="text"
                                             value={newAccessoryName}
                                             onChange={(e) => setNewAccessoryName(e.target.value)}
-                                            placeholder="Custom accessory…"
+                                            placeholder={t.detail.customAccessoryPlaceholder}
                                             className="input-retro flex-1 px-3 py-2 text-[var(--foreground)]"
                                         />
                                         <button
@@ -1785,7 +1775,7 @@ export default function DeviceDetail() {
                     <div>
                         <div className="flex items-center justify-between mb-3">
                             <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
-                                Reference Links
+                                {t.detail.referenceLinks}
                             </h2>
                             {isAuthenticated && !showLinkForm && (
                                 <button
@@ -1795,7 +1785,7 @@ export default function DeviceDetail() {
                                     <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    Add Link
+                                    {t.detail.addLink}
                                 </button>
                             )}
                         </div>
@@ -1834,7 +1824,7 @@ export default function DeviceDetail() {
                             </div>
                         )}
                         {(device.links ?? []).length === 0 && !showLinkForm && (
-                            <span className="text-sm text-[var(--muted-foreground)]">No links</span>
+                            <span className="text-sm text-[var(--muted-foreground)]">{t.detail.noLinks}</span>
                         )}
                         {isAuthenticated && showLinkForm && (
                             <form onSubmit={handleAddLink} className="space-y-2 mt-2">
@@ -1865,15 +1855,13 @@ export default function DeviceDetail() {
                                         type="button"
                                         onClick={() => { setShowLinkForm(false); setNewLinkLabel(''); setNewLinkUrl(''); }}
                                         className="btn-retro px-3 py-1.5 text-sm font-medium"
-                                    >
-                                        Cancel
-                                    </button>
+                                    >{t.common.cancel}</button>
                                     <button
                                         type="submit"
                                         disabled={addingLink}
                                         className="px-3 py-1.5 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50"
                                     >
-                                        {addingLink ? 'Adding…' : 'Add Link'}
+                                        {addingLink ? t.common.addingEllipsis : t.detail.addLink}
                                     </button>
                                 </div>
                             </form>
@@ -1884,15 +1872,15 @@ export default function DeviceDetail() {
                     {/* Specifications */}
                     <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
                         <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                            Specifications
+                            {t.detail.specifications}
                         </h2>
                         <dl>
-                            <DetailRow label="Device ID" value={device.id} />
-                            <DetailRow label="Serial Number" value={device.serialNumber} />
-                            <DetailRow label="Release Year" value={device.releaseYear} />
-                            <DetailRow label="Condition" value={device.condition ? (t.condition[device.condition as keyof typeof t.condition] ?? device.condition.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())) : null} />
+                            <DetailRow label={t.detail.deviceId} value={device.id} />
+                            <DetailRow label={t.detail.serialNumber} value={device.serialNumber} />
+                            <DetailRow label={t.detail.releaseYear} value={device.releaseYear} />
+                            <DetailRow label={t.filter.condition} value={device.condition ? (t.condition[device.condition as keyof typeof t.condition] ?? device.condition.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())) : null} />
                             <DetailRow
-                                label="Functional Status"
+                                label={t.filter.functionalStatus}
                                 value={device.functionalStatus ? (t.functionalStatus[device.functionalStatus as keyof typeof t.functionalStatus] ?? null) : null}
                                 icon={
                                     device.functionalStatus === 'YES' ? <svg className="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83v7.84C7 18.95 8.05 20 9.34 20h8.11c.7 0 1.36-.37 1.72-.97l2.66-6.15z"/></svg>
@@ -1902,17 +1890,17 @@ export default function DeviceDetail() {
                                 }
                             />
                             <DetailRow
-                                label="Rarity"
+                                label={t.filter.rarity}
                                 value={device.rarity ? (t.rarity[device.rarity as keyof typeof t.rarity] ?? device.rarity.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())) : null}
                                 icon={device.rarity ? (() => {
                                     const colors: Record<string, string> = { COMMON: 'text-gray-400', UNCOMMON: 'text-yellow-400', RARE: 'text-green-500', VERY_RARE: 'text-blue-500', EXTREMELY_RARE: 'text-purple-500' };
                                     return <svg className={`w-3.5 h-3.5 flex-shrink-0 ${colors[device.rarity] ?? 'text-gray-400'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/></svg>;
                                 })() : undefined}
                             />
-                            <DetailRow label="Location" value={device.location} />
+                            <DetailRow label={t.detail.locationLabel} value={device.location} />
                             {device.lastPowerOnDate && (
                                 <DetailRow
-                                    label="Last Used"
+                                    label={t.detail.lastUsed}
                                     value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', {
                                         timeZone: 'UTC',
                                         year: 'numeric',
@@ -1928,21 +1916,21 @@ export default function DeviceDetail() {
                     {device.category.type === "COMPUTER" && (device.cpu || device.ram || device.graphics || device.storage || device.operatingSystem || device.isWifiEnabled !== null || device.isPramBatteryRemoved !== null || device.lastPowerOnDate) && (
                         <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
                             <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                                Computer Specs
+                                {t.detail.computerSpecs}
                             </h2>
                             <dl>
-                                <DetailRow label="CPU" value={device.cpu} />
-                                <DetailRow label="RAM" value={device.ram} />
-                                <DetailRow label="Graphics" value={device.graphics} />
-                                <DetailRow label="Storage" value={device.storage} />
-                                <DetailRow label="Operating System" value={device.operatingSystem} />
+                                <DetailRow label={t.detail.cpu} value={device.cpu} />
+                                <DetailRow label={t.detail.ram} value={device.ram} />
+                                <DetailRow label={t.detail.graphics} value={device.graphics} />
+                                <DetailRow label={t.detail.storage} value={device.storage} />
+                                <DetailRow label={t.detail.operatingSystem} value={device.operatingSystem} />
                                 {device.isWifiEnabled !== null && (
-                                    <DetailRow label="WiFi Enabled" value={device.isWifiEnabled ? "Yes" : "No"} />
+                                    <DetailRow label={t.detail.wifiEnabled} value={device.isWifiEnabled ? t.common.yes : t.common.no} />
                                 )}
                                 {device.isPramBatteryRemoved !== null && (
                                     <DetailRow
-                                        label="PRAM Battery Removed"
-                                        value={device.isPramBatteryRemoved ? "Yes" : "No"}
+                                        label={t.detail.pramBatteryRemoved}
+                                        value={device.isPramBatteryRemoved ? t.common.yes : t.common.no}
                                         icon={<svg className={`w-3.5 h-3.5 flex-shrink-0 ${device.isPramBatteryRemoved ? 'text-green-500' : 'text-red-500'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>}
                                     />
                                 )}
@@ -1954,12 +1942,12 @@ export default function DeviceDetail() {
                     {(device.dateAcquired || device.whereAcquired || device.priceAcquired || device.estimatedValue) && (
                         <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
                             <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                                Acquisition
+                                {t.detail.acquisition}
                             </h2>
                             <dl>
                                 {device.dateAcquired && (
                                     <DetailRow
-                                        label="Date Acquired"
+                                        label={t.detail.dateAcquired}
                                         value={new Date(device.dateAcquired).toLocaleDateString('en-US', {
                                             timeZone: 'UTC',
                                             year: 'numeric',
@@ -1968,12 +1956,12 @@ export default function DeviceDetail() {
                                         })}
                                     />
                                 )}
-                                <DetailRow label="Where Acquired" value={device.whereAcquired} />
+                                <DetailRow label={t.detail.whereAcquired} value={device.whereAcquired} />
                                 {device.priceAcquired !== null && device.priceAcquired !== undefined && (
-                                    <DetailRow label="Price Acquired" value={`$${Number(device.priceAcquired).toFixed(2)}`} />
+                                    <DetailRow label={t.detail.priceAcquired} value={`$${Number(device.priceAcquired).toFixed(2)}`} />
                                 )}
                                 {device.estimatedValue !== null && device.estimatedValue !== undefined && (
-                                    <DetailRow label="Estimated Value" value={
+                                    <DetailRow label={t.detail.estimatedValue} value={
                                         <span className="flex items-center gap-2">
                                             <span>${Number(device.estimatedValue).toFixed(2)}</span>
                                             <a
@@ -1995,7 +1983,7 @@ export default function DeviceDetail() {
                     {isAuthenticated && (
                         <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
                             <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                                Value History
+                                {t.detail.valueHistory}
                             </h2>
                             <DeviceValueChart
                                 data={(valueHistoryData?.valueHistory ?? []).map((s: any) => ({
@@ -2011,18 +1999,18 @@ export default function DeviceDetail() {
                     {(device.status === "FOR_SALE" || device.status === "PENDING_SALE" || device.status === "SOLD" || device.status === "DONATED") && (device.listPrice || device.soldPrice || device.soldDate) && (
                         <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
                             <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                                {device.status === "DONATED" ? "Donation Info" : "Sales Info"}
+                                {device.status === "DONATED" ? t.detail.donationInfo : t.detail.salesInfo}
                             </h2>
                             <dl>
                                 {device.listPrice !== null && device.listPrice !== undefined && (
-                                    <DetailRow label="List Price" value={`$${Number(device.listPrice).toFixed(2)}`} />
+                                    <DetailRow label={t.detail.listPrice} value={`$${Number(device.listPrice).toFixed(2)}`} />
                                 )}
                                 {device.status === "SOLD" && device.soldPrice !== null && device.soldPrice !== undefined && (
-                                    <DetailRow label="Sold Price" value={`$${Number(device.soldPrice).toFixed(2)}`} />
+                                    <DetailRow label={t.detail.soldPrice} value={`$${Number(device.soldPrice).toFixed(2)}`} />
                                 )}
                                 {(device.status === "SOLD" || device.status === "DONATED") && device.soldDate && (
                                     <DetailRow
-                                        label={device.status === "DONATED" ? "Donated Date" : "Sold Date"}
+                                        label={device.status === "DONATED" ? t.detail.donatedDate : t.detail.soldDate}
                                         value={new Date(device.soldDate).toLocaleDateString('en-US', {
                                             timeZone: 'UTC',
                                             year: 'numeric',
@@ -2039,7 +2027,7 @@ export default function DeviceDetail() {
                     {device.customFieldValues && device.customFieldValues.length > 0 && (
                         <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
                             <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-                                Custom Fields
+                                {t.detail.customFields}
                             </h2>
                             <dl>
                                 {[...device.customFieldValues]
@@ -2097,9 +2085,7 @@ export default function DeviceDetail() {
                             <button
                                 onClick={() => setDeleteDeviceConfirm(false)}
                                 className="btn-retro px-4 py-2 text-sm font-medium"
-                            >
-                                Cancel
-                            </button>
+                            >{t.common.cancel}</button>
                             <button
                                 onClick={handleDeleteDevice}
                                 disabled={deletingDevice}
