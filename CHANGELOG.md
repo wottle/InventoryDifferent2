@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- iOS: timeline device entries are now tappable and navigate to device detail
+
 ---
 
 ## [1.2.0] - 2026-04-05

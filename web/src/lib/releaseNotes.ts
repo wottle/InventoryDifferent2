@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'iOS: timeline device entries are now tappable and navigate to device detail',
+    ],
     changed: [],
     fixed: [],
   },

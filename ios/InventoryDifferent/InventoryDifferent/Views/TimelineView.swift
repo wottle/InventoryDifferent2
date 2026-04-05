@@ -173,47 +173,54 @@ struct TimelineView: View {
     // MARK: - Device Row
 
     private func deviceRow(_ device: DeviceListItem) -> some View {
-        HStack(spacing: 10) {
-            // Thumbnail
-            Group {
-                if let thumb = device.thumbnailImage,
-                   let url = APIService.shared.imageURL(for: thumb.thumbnailPath ?? thumb.path) {
-                    AsyncImage(url: url) { image in
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    } placeholder: {
+        NavigationLink(destination: DeviceDetailScreen(deviceId: device.id)) {
+            HStack(spacing: 10) {
+                // Thumbnail
+                Group {
+                    if let thumb = device.thumbnailImage,
+                       let url = APIService.shared.imageURL(for: thumb.thumbnailPath ?? thumb.path) {
+                        AsyncImage(url: url) { image in
+                            image.resizable().aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            Color(.systemGray5)
+                        }
+                    } else {
                         Color(.systemGray5)
                     }
-                } else {
-                    Color(.systemGray5)
                 }
-            }
-            .frame(width: 48, height: 48)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+                .frame(width: 48, height: 48)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(device.name)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                if let additional = device.additionalName {
-                    Text(additional)
-                        .font(.caption)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(device.name)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    if let additional = device.additionalName {
+                        Text(additional)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Text(device.category.name)
+                        .font(.caption2)
                         .foregroundColor(.secondary)
                 }
-                Text(device.category.name)
-                    .font(.caption2)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
                     .foregroundColor(.secondary)
             }
-
-            Spacer()
+            .padding(8)
+            .background(Color(.systemBackground))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.accentColor.opacity(0.4), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.06), radius: 3, x: 0, y: 1)
         }
-        .padding(8)
-        .background(Color(.systemBackground))
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.accentColor.opacity(0.4), lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.06), radius: 3, x: 0, y: 1)
+        .buttonStyle(.plain)
     }
 
     // MARK: - Load
