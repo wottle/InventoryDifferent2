@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'iOS: camera option when adding device photos — snap directly without saving to the photo library first',
+    ],
     changed: [],
     fixed: [],
   },

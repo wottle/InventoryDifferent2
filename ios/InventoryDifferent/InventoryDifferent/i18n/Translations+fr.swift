@@ -441,13 +441,18 @@ extension Translations {
             availableTagsHeader: "Étiquettes disponibles"
         ),
         imageUpload: .init(
-            title: "Télécharger des photos",
+            title: "Ajouter des photos",
             cancel: "Annuler",
             selectPhotos: "Sélectionner des photos",
             chooseHint: "Choisissez jusqu'à 10 photos à télécharger",
             uploadingFmt: "Téléchargement %d%%",
             selectedFmt: "%d photo(s) sélectionnée(s)",
-            uploadButton: "Télécharger des photos"
+            uploadButton: "Télécharger des photos",
+            takePhoto: "Prendre une photo",
+            takePhotoHint: "Prenez une photo sans la sauvegarder dans votre bibliothèque",
+            chooseFromLibrary: "Choisir dans la bibliothèque",
+            chooseFromLibraryHint: "Sélectionner jusqu'à 10 photos",
+            uploadPhotosFmt: "Télécharger %d photo(s)"
         ),
         generateImage: .init(
             referencePhoto: "Photo de référence"

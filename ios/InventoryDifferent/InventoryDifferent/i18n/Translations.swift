@@ -231,6 +231,9 @@ struct Translations {
         let uploadingFmt: String    // "Uploading %d%%"
         let selectedFmt: String     // "%d photo(s) selected"
         let uploadButton: String
+        let takePhoto, takePhotoHint: String
+        let chooseFromLibrary, chooseFromLibraryHint: String
+        let uploadPhotosFmt: String // "Upload %d Photo(s)"
     }
 
     // MARK: - Generate Image

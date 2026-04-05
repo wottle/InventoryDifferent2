@@ -442,13 +442,18 @@ extension Translations {
             availableTagsHeader: "Available Tags"
         ),
         imageUpload: .init(
-            title: "Upload Photos",
+            title: "Add Photos",
             cancel: "Cancel",
             selectPhotos: "Select Photos",
             chooseHint: "Choose up to 10 photos to upload",
             uploadingFmt: "Uploading %d%%",
             selectedFmt: "%d photo(s) selected",
-            uploadButton: "Upload Photos"
+            uploadButton: "Upload Photos",
+            takePhoto: "Take Photo",
+            takePhotoHint: "Snap a photo without saving to your library",
+            chooseFromLibrary: "Choose from Library",
+            chooseFromLibraryHint: "Select up to 10 photos",
+            uploadPhotosFmt: "Upload %d Photo(s)"
         ),
         generateImage: .init(
             referencePhoto: "Reference Photo"

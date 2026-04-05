@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- iOS: camera option when adding device photos — snap directly without saving to the photo library first
+
 ---
 
 ## [1.1.9] - 2026-04-05

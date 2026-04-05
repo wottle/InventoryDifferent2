@@ -442,13 +442,18 @@ extension Translations {
             availableTagsHeader: "Verfügbare Tags"
         ),
         imageUpload: .init(
-            title: "Fotos hochladen",
+            title: "Fotos hinzufügen",
             cancel: "Abbrechen",
             selectPhotos: "Fotos auswählen",
             chooseHint: "Bis zu 10 Fotos zum Hochladen auswählen",
             uploadingFmt: "Wird hochgeladen %d%%",
             selectedFmt: "%d Foto(s) ausgewählt",
-            uploadButton: "Fotos hochladen"
+            uploadButton: "Fotos hochladen",
+            takePhoto: "Foto aufnehmen",
+            takePhotoHint: "Foto aufnehmen, ohne es in der Bibliothek zu speichern",
+            chooseFromLibrary: "Aus Bibliothek wählen",
+            chooseFromLibraryHint: "Bis zu 10 Fotos auswählen",
+            uploadPhotosFmt: "%d Foto(s) hochladen"
         ),
         generateImage: .init(
             referencePhoto: "Referenzfoto"
