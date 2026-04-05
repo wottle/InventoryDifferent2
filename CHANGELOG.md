@@ -4,6 +4,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.1.9] - 2026-04-05
+
+### Changed
+- Device card: status icon row overlay is now transparent (no background)
+
 ### Fixed
 - Timeline: event titles and descriptions now display in the correct language — translations were not applied to existing databases due to seed-only data
 

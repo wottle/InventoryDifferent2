@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.8';
+export const APP_VERSION = '1.1.9';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,15 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.1.9',
+    date: '2026-04-05',
+    added: [],
+    changed: [
+      'Device card: status icon row overlay is now transparent (no background)',
+    ],
     fixed: [
       'Timeline: event titles and descriptions now display in the correct language — translations were not applied to existing databases due to seed-only data',
     ],
