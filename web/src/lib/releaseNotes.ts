@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.2.0';
+export const APP_VERSION = '1.2.1';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,11 +12,21 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [
-      'iOS: timeline device entries are now tappable and navigate to device detail',
-    ],
+    added: [],
     changed: [],
     fixed: [],
+  },
+  {
+    version: '1.2.1',
+    date: '2026-04-05',
+    added: [
+      'iOS: timeline device entries are now tappable and navigate to device detail',
+      'iOS: redesigned device detail screen with Precision Editorial layout — hero image with text overlay, indicator grid, valuation cards, inline media/maintenance/notes sections',
+    ],
+    changed: [],
+    fixed: [
+      'iOS: timeline scroll position is approximately preserved (by year) when navigating to a device detail and returning',
+    ],
   },
   {
     version: '1.2.0',

@@ -4,8 +4,16 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.2.1] - 2026-04-05
+
 ### Added
 - iOS: timeline device entries are now tappable and navigate to device detail
+- iOS: redesigned device detail screen with Precision Editorial layout — hero image with text overlay, indicator grid, valuation cards, inline media/maintenance/notes sections
+
+### Fixed
+- iOS: timeline scroll position is approximately preserved (by year) when navigating to a device detail and returning
 
 ---
 
