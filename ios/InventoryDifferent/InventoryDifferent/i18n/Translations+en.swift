@@ -464,7 +464,10 @@ extension Translations {
         timeline: .init(
             title: "Timeline",
             loading: "Loading timeline...",
-            errorLoading: "Error loading timeline"
+            errorLoading: "Error loading timeline",
+            legendApple: "Apple milestone",
+            legendTech: "Tech milestone",
+            legendCollection: "In your collection"
         ),
         sort: .init(
             title: "Sort Options",

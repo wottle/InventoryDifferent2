@@ -63,7 +63,9 @@ struct TimelineView: View {
                 }
                 .padding()
             } else {
-                ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    legend(t: t)
+                    ScrollView {
                     LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
                         ForEach(timelineYears) { group in
                             Section(header: yearHeader(group.year)) {
@@ -80,13 +82,44 @@ struct TimelineView: View {
                             }
                         }
                     }
-                }
+                } // ScrollView
+                } // VStack
             }
         }
         .navigationTitle(t.timeline.title)
         .navigationBarTitleDisplayMode(.large)
         .task {
             await loadEvents()
+        }
+    }
+
+    // MARK: - Legend
+
+    private func legend(t: Translations) -> some View {
+        HStack(spacing: 16) {
+            legendItem(color: .blue, label: t.timeline.legendApple)
+            legendItem(color: .orange, label: t.timeline.legendTech)
+            HStack(spacing: 6) {
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(Color(.separator), lineWidth: 1)
+                    .frame(width: 12, height: 12)
+                Text(t.timeline.legendCollection)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+
+    private func legendItem(color: Color, label: String) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.secondary)
         }
     }
 
@@ -115,17 +148,18 @@ struct TimelineView: View {
     // MARK: - Event Row
 
     private func eventRow(_ event: TimelineEvent) -> some View {
-        HStack(alignment: .top, spacing: 10) {
+        let lang = lm.currentLanguage
+        return HStack(alignment: .top, spacing: 10) {
             Circle()
                 .fill(event.type.color)
                 .frame(width: 10, height: 10)
                 .padding(.top, 4)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(event.title)
+                Text(event.localizedTitle(for: lang))
                     .font(.subheadline)
                     .fontWeight(.medium)
-                Text(event.description)
+                Text(event.localizedDescription(for: lang))
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

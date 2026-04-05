@@ -233,12 +233,16 @@ export const typeDefs = gql`
   }
 
   type TimelineEvent {
-    id:          Int!
-    year:        Int!
-    title:       String!
-    description: String!
-    type:        String!
-    sortOrder:   Int!
+    id:            Int!
+    year:          Int!
+    title:         String!
+    description:   String!
+    titleDe:       String
+    descriptionDe: String
+    titleFr:       String
+    descriptionFr: String
+    type:          String!
+    sortOrder:     Int!
   }
 
   type WishlistItem {
@@ -606,6 +610,7 @@ export const typeDefs = gql`
     permanentlyDeleteWishlistItem(id: Int!): WishlistItem!
     createCategory(name: String!, type: String!, sortOrder: Int): Category!
     updateCategory(id: Int!, name: String, type: String, sortOrder: Int): Category!
+    deleteCategory(id: Int!): Category!
     createTemplate(input: TemplateCreateInput!): Template!
     updateTemplate(input: TemplateUpdateInput!): Template!
     deleteTemplate(id: Int!): Boolean!

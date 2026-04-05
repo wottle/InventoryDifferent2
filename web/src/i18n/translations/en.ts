@@ -28,6 +28,12 @@ export type Translations = {
     VERY_RARE: string;
     EXTREMELY_RARE: string;
   };
+  categoryType: {
+    COMPUTER: string;
+    PERIPHERAL: string;
+    ACCESSORY: string;
+    OTHER: string;
+  };
   icons: {
     favorite: string;
     notFavorite: string;
@@ -214,6 +220,10 @@ export type Translations = {
       subtitle: string;
       loading: string;
       loadingSubtitle: string;
+      legendApple: string;
+      legendTech: string;
+      legendCollection: string;
+      noData: string;
     };
     stats: {
       title: string;
@@ -282,6 +292,8 @@ export type Translations = {
       addSection: string;
       sort: string;
       actions: string;
+      deleteConfirm: string;
+      deleteInUse: string;
     };
     financials: {
       title: string;
@@ -608,6 +620,12 @@ export const en: Translations = {
     VERY_RARE: "Very Rare",
     EXTREMELY_RARE: "Extremely Rare",
   },
+  categoryType: {
+    COMPUTER: "Computer",
+    PERIPHERAL: "Peripheral",
+    ACCESSORY: "Accessory",
+    OTHER: "Other",
+  },
   icons: {
     favorite: "Favorite",
     notFavorite: "Not a Favorite",
@@ -794,6 +812,10 @@ export const en: Translations = {
       subtitle: "Your collection in historical context.",
       loading: "Loading timeline…",
       loadingSubtitle: "Consulting the archives",
+      legendApple: "Apple milestone",
+      legendTech: "Tech milestone",
+      legendCollection: "In your collection",
+      noData: "No timeline data. Add release years to devices or add events in the database.",
     },
     stats: {
       title: "Collection Stats",
@@ -856,12 +878,14 @@ export const en: Translations = {
     },
     categories: {
       title: "Manage Categories",
-      subtitle: "Add and edit categories (no delete yet).",
+      subtitle: "Add, edit, and delete categories.",
       loading: "Loading categories…",
       loadingSubtitle: "Building the index",
       addSection: "Add Category",
       sort: "Sort",
       actions: "Actions",
+      deleteConfirm: "Delete category",
+      deleteInUse: "Cannot delete: devices are assigned to this category.",
     },
     financials: {
       title: "Financials",

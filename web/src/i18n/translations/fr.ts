@@ -30,6 +30,12 @@ export const fr: Translations = {
     VERY_RARE: "Très rare",
     EXTREMELY_RARE: "Extrêmement rare",
   },
+  categoryType: {
+    COMPUTER: "Ordinateur",
+    PERIPHERAL: "Périphérique",
+    ACCESSORY: "Accessoire",
+    OTHER: "Autre",
+  },
   icons: {
     favorite: "Favori",
     notFavorite: "Pas favori",
@@ -216,6 +222,10 @@ export const fr: Translations = {
       subtitle: "Votre collection dans un contexte historique.",
       loading: "Chargement de la chronologie…",
       loadingSubtitle: "Consultation des archives",
+      legendApple: "Jalon Apple",
+      legendTech: "Jalon technologique",
+      legendCollection: "Dans votre collection",
+      noData: "Aucune donnée de chronologie. Ajoutez des années de sortie aux appareils ou des événements dans la base de données.",
     },
     stats: {
       title: "Statistiques de la collection",
@@ -278,12 +288,14 @@ export const fr: Translations = {
     },
     categories: {
       title: "Gérer les catégories",
-      subtitle: "Ajouter et modifier des catégories (pas encore de suppression).",
+      subtitle: "Ajouter, modifier et supprimer des catégories.",
       loading: "Chargement des catégories…",
       loadingSubtitle: "Création de l'index",
       addSection: "Ajouter une catégorie",
       sort: "Tri",
       actions: "Actions",
+      deleteConfirm: "Supprimer la catégorie",
+      deleteInUse: "Impossible de supprimer : des appareils sont assignés à cette catégorie.",
     },
     financials: {
       title: "Finances",

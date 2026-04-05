@@ -216,7 +216,7 @@ function HorizontalBarChart({ data, title, noData, devicesLabel }: { data: Stats
   );
 }
 
-function RarityBarChart({ data, title, noData, devicesLabel }: { data: StatsBucket[]; title: string; noData: string; devicesLabel: string }) {
+function RarityBarChart({ data, title, noData, devicesLabel, colorMap }: { data: StatsBucket[]; title: string; noData: string; devicesLabel: string; colorMap: Record<string, string> }) {
   if (data.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-[var(--muted-foreground)] text-sm">
@@ -259,7 +259,7 @@ function RarityBarChart({ data, title, noData, devicesLabel }: { data: StatsBuck
             />
             <Bar dataKey="count" name={devicesLabel} radius={[3, 3, 0, 0]}>
               {data.map((entry, index) => (
-                <Cell key={index} fill={RARITY_COLORS[entry.label] ?? COLORS[index % COLORS.length]} />
+                <Cell key={index} fill={colorMap[entry.label] ?? COLORS[index % COLORS.length]} />
               ))}
             </Bar>
           </BarChart>
@@ -274,22 +274,60 @@ export default function StatsCharts({ stats }: { stats: CollectionStats }) {
   const noData = t.pages.stats.noData;
   const devicesLabel = t.pages.stats.devices;
 
+  const statusLabelMap: Record<string, string> = {
+    'In Collection': t.status.COLLECTION,
+    'For Sale': t.status.FOR_SALE,
+    'Pending Sale': t.status.PENDING_SALE,
+    'In Repair': t.status.IN_REPAIR,
+    'Sold': t.status.SOLD,
+    'Donated': t.status.DONATED,
+    'Returned': t.status.RETURNED,
+  };
+  const functionalLabelMap: Record<string, string> = {
+    'Working': t.functionalStatus.YES,
+    'Partial': t.functionalStatus.PARTIAL,
+    'Not Working': t.functionalStatus.NO,
+  };
+  const rarityLabelMap: Record<string, string> = {
+    'Common': t.rarity.COMMON,
+    'Uncommon': t.rarity.UNCOMMON,
+    'Rare': t.rarity.RARE,
+    'Very Rare': t.rarity.VERY_RARE,
+    'Extremely Rare': t.rarity.EXTREMELY_RARE,
+  };
+  const categoryTypeLabelMap: Record<string, string> = {
+    'Computer': t.categoryType.COMPUTER,
+    'Peripheral': t.categoryType.PERIPHERAL,
+    'Accessory': t.categoryType.ACCESSORY,
+    'Other': t.categoryType.OTHER,
+  };
+
+  const tr = (map: Record<string, string>) => (data: StatsBucket[]) =>
+    data.map(b => ({ ...b, label: map[b.label] ?? b.label }));
+
+  const translatedStatusColors: Record<string, string> = Object.fromEntries(
+    Object.entries(STATUS_COLORS).map(([eng, color]) => [statusLabelMap[eng] ?? eng, color])
+  );
+  const translatedRarityColors: Record<string, string> = Object.fromEntries(
+    Object.entries(RARITY_COLORS).map(([eng, color]) => [rarityLabelMap[eng] ?? eng, color])
+  );
+
   return (
     <div className="space-y-8">
       {/* Collection Composition */}
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
         <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.stats.collectionComposition}</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <DonutChart data={stats.byStatus} title={t.pages.stats.byStatus} colorMap={STATUS_COLORS} noData={noData} />
-          <DonutChart data={stats.byFunctionalStatus} title={t.pages.stats.byCondition} noData={noData} />
-          <DonutChart data={stats.byCategoryType} title={t.pages.stats.byCategoryType} noData={noData} />
+          <DonutChart data={tr(statusLabelMap)(stats.byStatus)} title={t.pages.stats.byStatus} colorMap={translatedStatusColors} noData={noData} />
+          <DonutChart data={tr(functionalLabelMap)(stats.byFunctionalStatus)} title={t.pages.stats.byCondition} noData={noData} />
+          <DonutChart data={tr(categoryTypeLabelMap)(stats.byCategoryType)} title={t.pages.stats.byCategoryType} noData={noData} />
         </div>
       </section>
 
       {/* Rarity */}
       <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
         <h2 className="mb-4 text-sm font-semibold text-[var(--foreground)]">{t.pages.stats.byRarity}</h2>
-        <RarityBarChart data={stats.byRarity} title={t.pages.stats.rarityDistribution} noData={noData} devicesLabel={devicesLabel} />
+        <RarityBarChart data={tr(rarityLabelMap)(stats.byRarity)} title={t.pages.stats.rarityDistribution} noData={noData} devicesLabel={devicesLabel} colorMap={translatedRarityColors} />
       </section>
 
       {/* Acquisition Trends */}

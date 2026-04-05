@@ -254,6 +254,7 @@ struct Translations {
 
     struct TimelineT {
         let title, loading, errorLoading: String
+        let legendApple, legendTech, legendCollection: String
     }
 
     // MARK: - Sort Options

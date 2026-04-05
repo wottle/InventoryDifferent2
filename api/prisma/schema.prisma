@@ -228,14 +228,18 @@ model DevicePageView {
 }
 
 model TimelineEvent {
-  id          Int      @id @default(autoincrement())
-  year        Int
-  title       String
-  description String   @db.Text
-  type        String
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  year           Int
+  title          String
+  description    String   @db.Text
+  titleDe        String?
+  descriptionDe  String?  @db.Text
+  titleFr        String?
+  descriptionFr  String?  @db.Text
+  type           String
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model SystemSetting {

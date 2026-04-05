@@ -848,6 +848,20 @@ export const resolvers = {
                 data: cleanData as any,
             });
         },
+        deleteCategory: async (
+            _parent: any,
+            args: { id: number },
+            context: Context
+        ) => {
+            requireAuth(context);
+            const deviceCount = await (context.prisma as any).device.count({
+                where: { categoryId: args.id, deleted: false },
+            });
+            if (deviceCount > 0) {
+                throw new Error(`Cannot delete: ${deviceCount} device(s) are assigned to this category.`);
+            }
+            return (context.prisma as any).category.delete({ where: { id: args.id } });
+        },
         createTemplate: async (
             _parent: any,
             args: { input: any },

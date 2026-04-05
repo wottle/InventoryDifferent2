@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.6';
+export const APP_VERSION = '1.1.7';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,18 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.1.7',
+    date: '2026-04-04',
+    added: [
+      'Manage Categories: delete button with guard — blocked if devices are assigned to the category',
+    ],
+    changed: [
+      'Stats page: chart labels for status, functional status, rarity, and category type now display in the selected language',
+      'Timeline: event titles and descriptions now display in the selected language (German and French translations added for all built-in events); legend labels translated; Cultural category removed from legend',
+    ],
     fixed: [],
   },
   {

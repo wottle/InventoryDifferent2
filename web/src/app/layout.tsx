@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang={lang}>
       <body className={`${inter.className} antialiased`}>
-        <TranslationProvider translations={translations}>
+        <TranslationProvider translations={translations} locale={lang}>
           <AuthProvider>
             <ApolloWrapper>
               <LegacyRedirect />

@@ -43,6 +43,13 @@ export default function StatsPage() {
 
   const stats = data?.collectionStats;
 
+  const categoryTypeDisplay: Record<string, string> = {
+    Computer: t.categoryType.COMPUTER,
+    Peripheral: t.categoryType.PERIPHERAL,
+    Accessory: t.categoryType.ACCESSORY,
+    Other: t.categoryType.OTHER,
+  };
+
   const formatCurrency = (value: number | null | undefined) => {
     if (value === null || value === undefined) return "—";
     return `${t.common.currencySymbol}${Number(value).toFixed(2)}`;
@@ -96,7 +103,7 @@ export default function StatsPage() {
               <div className="rounded border border-[var(--border)] p-4 bg-[var(--background)]">
                 <div className="text-xs text-[var(--muted-foreground)]">{t.pages.stats.topCategory}</div>
                 <div className="mt-1 text-2xl font-light text-[var(--foreground)] truncate">
-                  {stats.topCategoryType || "—"}
+                  {(stats.topCategoryType && (categoryTypeDisplay[stats.topCategoryType] ?? stats.topCategoryType)) || "—"}
                 </div>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { API_BASE_URL } from "../lib/config";
+import { useT, useLocale } from "../i18n/context";
 
 interface TimelineDevice {
   id: number;
@@ -16,6 +17,10 @@ interface TimelineEvent {
   year: number;
   title: string;
   description: string;
+  titleDe?: string | null;
+  descriptionDe?: string | null;
+  titleFr?: string | null;
+  descriptionFr?: string | null;
   type: string;
 }
 
@@ -42,7 +47,7 @@ function eventDotColor(type: string) {
   switch (type) {
     case "apple": return "bg-blue-500";
     case "tech": return "bg-orange-500";
-    default: return "bg-purple-500";
+    default: return "bg-orange-500";
   }
 }
 
@@ -53,12 +58,30 @@ export default function TimelineView({
   devices: TimelineDevice[];
   events: TimelineEvent[];
 }) {
+  const t = useT();
+  const locale = useLocale();
   const rows = buildRows(devices, events);
+
+  function localizedEvent(event: TimelineEvent): { title: string; description: string } {
+    if (locale === "de") {
+      return {
+        title: event.titleDe ?? event.title,
+        description: event.descriptionDe ?? event.description,
+      };
+    }
+    if (locale === "fr") {
+      return {
+        title: event.titleFr ?? event.title,
+        description: event.descriptionFr ?? event.description,
+      };
+    }
+    return { title: event.title, description: event.description };
+  }
 
   if (rows.length === 0) {
     return (
       <div className="p-4 text-sm text-[var(--muted-foreground)]">
-        No timeline data. Add release years to devices or check the database for events.
+        {t.pages.timeline.noData}
       </div>
     );
   }
@@ -68,16 +91,13 @@ export default function TimelineView({
       {/* Legend */}
       <div className="mb-6 flex flex-wrap gap-4 text-xs text-[var(--muted-foreground)]">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block w-2 h-2 rounded-full bg-blue-500" /> Apple milestone
+          <span className="inline-block w-2 h-2 rounded-full bg-blue-500" /> {t.pages.timeline.legendApple}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block w-2 h-2 rounded-full bg-orange-500" /> Tech milestone
+          <span className="inline-block w-2 h-2 rounded-full bg-orange-500" /> {t.pages.timeline.legendTech}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block w-2 h-2 rounded-full bg-purple-500" /> Cultural
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded border border-[var(--border)] bg-[var(--card)]" /> In your collection
+          <span className="inline-block w-3 h-3 rounded border border-[var(--border)] bg-[var(--card)]" /> {t.pages.timeline.legendCollection}
         </span>
       </div>
 
@@ -142,20 +162,23 @@ export default function TimelineView({
 
             {/* RIGHT — historical events */}
             <div className="flex flex-col items-start gap-2 pl-2">
-              {row.events.map((event) => (
-                <div
-                  key={event.id}
-                  className="rounded border border-[var(--border)] bg-[var(--muted)] p-2 w-full max-w-[280px] opacity-80"
-                >
-                  <div className="flex items-start gap-1.5">
-                    <div className={`w-2 h-2 mt-1 rounded-full flex-shrink-0 ${eventDotColor(event.type)}`} />
-                    <div>
-                      <div className="text-xs font-medium text-[var(--foreground)] leading-snug">{event.title}</div>
-                      <div className="text-[11px] text-[var(--muted-foreground)] mt-0.5 leading-snug">{event.description}</div>
+              {row.events.map((event) => {
+                const { title, description } = localizedEvent(event);
+                return (
+                  <div
+                    key={event.id}
+                    className="rounded border border-[var(--border)] bg-[var(--muted)] p-2 w-full max-w-[280px] opacity-80"
+                  >
+                    <div className="flex items-start gap-1.5">
+                      <div className={`w-2 h-2 mt-1 rounded-full flex-shrink-0 ${eventDotColor(event.type)}`} />
+                      <div>
+                        <div className="text-xs font-medium text-[var(--foreground)] leading-snug">{title}</div>
+                        <div className="text-[11px] text-[var(--muted-foreground)] mt-0.5 leading-snug">{description}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}

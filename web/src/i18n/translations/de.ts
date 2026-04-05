@@ -30,6 +30,12 @@ export const de: Translations = {
     VERY_RARE: "Sehr selten",
     EXTREMELY_RARE: "Äußerst selten",
   },
+  categoryType: {
+    COMPUTER: "Computer",
+    PERIPHERAL: "Peripheriegerät",
+    ACCESSORY: "Zubehör",
+    OTHER: "Sonstiges",
+  },
   icons: {
     favorite: "Favorit",
     notFavorite: "Kein Favorit",
@@ -216,6 +222,10 @@ export const de: Translations = {
       subtitle: "Ihre Sammlung im historischen Kontext.",
       loading: "Zeitlinie wird geladen…",
       loadingSubtitle: "Archive werden durchsucht",
+      legendApple: "Apple-Meilenstein",
+      legendTech: "Tech-Meilenstein",
+      legendCollection: "In Ihrer Sammlung",
+      noData: "Keine Zeitliniendaten. Fügen Sie Erscheinungsjahre zu Geräten hinzu oder ergänzen Sie Ereignisse in der Datenbank.",
     },
     stats: {
       title: "Sammlungsstatistiken",
@@ -278,12 +288,14 @@ export const de: Translations = {
     },
     categories: {
       title: "Kategorien verwalten",
-      subtitle: "Kategorien hinzufügen und bearbeiten (noch kein Löschen).",
+      subtitle: "Kategorien hinzufügen, bearbeiten und löschen.",
       loading: "Kategorien werden geladen…",
       loadingSubtitle: "Index wird erstellt",
       addSection: "Kategorie hinzufügen",
       sort: "Sortierung",
       actions: "Aktionen",
+      deleteConfirm: "Kategorie löschen",
+      deleteInUse: "Löschen nicht möglich: Geräte sind dieser Kategorie zugeordnet.",
     },
     financials: {
       title: "Finanzen",

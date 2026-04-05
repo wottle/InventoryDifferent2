@@ -30,6 +30,10 @@ const GET_TIMELINE = gql`
       year
       title
       description
+      titleDe
+      descriptionDe
+      titleFr
+      descriptionFr
       type
       sortOrder
     }

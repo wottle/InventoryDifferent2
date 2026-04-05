@@ -176,12 +176,13 @@ interface WishlistFormProps {
   templates: Template[];
   existingGroups: string[];
   initialValues?: Partial<typeof emptyForm & { id?: number }>;
+  isNew?: boolean;
   onSave: (data: any) => void;
   onCancel: () => void;
   saving: boolean;
 }
 
-function WishlistForm({ categories, templates, existingGroups, initialValues, onSave, onCancel, saving }: WishlistFormProps) {
+function WishlistForm({ categories, templates, existingGroups, initialValues, isNew, onSave, onCancel, saving }: WishlistFormProps) {
   const t = useT();
   const [form, setForm] = useState({ ...emptyForm, ...initialValues });
   const [templateQuery, setTemplateQuery] = useState("");
@@ -260,8 +261,8 @@ function WishlistForm({ categories, templates, existingGroups, initialValues, on
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Template picker */}
-      <div>
+      {/* Template picker — new items only */}
+      {isNew && <div>
         <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-2">{t.pages.wishlist.templateSection}</p>
         <input
           type="text"
@@ -288,7 +289,7 @@ function WishlistForm({ categories, templates, existingGroups, initialValues, on
         {templateQuery && filteredTemplates.length === 0 && (
           <p className="text-xs text-[var(--muted-foreground)] mt-1">{t.pages.wishlist.noTemplatesFound}</p>
         )}
-      </div>
+      </div>}
 
       {/* Basic info */}
       <div>
@@ -649,6 +650,7 @@ export default function WishlistPage() {
             categories={categories}
             templates={templates}
             existingGroups={existingGroups}
+            isNew
             onSave={handleCreate}
             onCancel={() => setShowForm(false)}
             saving={creating}

@@ -463,7 +463,10 @@ extension Translations {
         timeline: .init(
             title: "Chronologie",
             loading: "Chargement de la chronologie...",
-            errorLoading: "Erreur lors du chargement de la chronologie"
+            errorLoading: "Erreur lors du chargement de la chronologie",
+            legendApple: "Jalon Apple",
+            legendTech: "Jalon technologique",
+            legendCollection: "Dans votre collection"
         ),
         sort: .init(
             title: "Options de tri",

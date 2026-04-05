@@ -40,6 +40,14 @@ const UPDATE_CATEGORY = gql`
   }
 `;
 
+const DELETE_CATEGORY = gql`
+  mutation DeleteCategory($id: Int!) {
+    deleteCategory(id: $id) {
+      id
+    }
+  }
+`;
+
 type Category = {
   id: number;
   name: string;
@@ -57,6 +65,7 @@ export default function CategoriesPage() {
 
   const [createCategory, { loading: creating }] = useMutation(CREATE_CATEGORY);
   const [updateCategory, { loading: updating }] = useMutation(UPDATE_CATEGORY);
+  const [deleteCategory] = useMutation(DELETE_CATEGORY);
 
   const categories: Category[] = useMemo(() => data?.categories ?? [], [data?.categories]);
 
@@ -117,6 +126,21 @@ export default function CategoriesPage() {
 
     cancelEdit();
     await refetch();
+  };
+
+  const handleDelete = async (cat: Category) => {
+    if (!confirm(`${t.pages.categories.deleteConfirm} "${cat.name}"?`)) return;
+    try {
+      await deleteCategory({ variables: { id: cat.id } });
+      await refetch();
+    } catch (err: any) {
+      const msg = err?.graphQLErrors?.[0]?.message ?? err?.message ?? "Delete failed.";
+      if (msg.includes("assigned to this category") || msg.includes("device")) {
+        alert(t.pages.categories.deleteInUse);
+      } else {
+        alert(msg);
+      }
+    }
   };
 
   return (
@@ -252,13 +276,22 @@ export default function CategoriesPage() {
                           </button>
                         </div>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => startEdit(cat)}
-                          className="btn-retro px-3 py-1 text-sm"
-                        >
-                          {t.common.edit}
-                        </button>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(cat)}
+                            className="btn-retro px-3 py-1 text-sm"
+                          >
+                            {t.common.edit}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(cat)}
+                            className="btn-retro px-3 py-1 text-sm text-[var(--apple-red)]"
+                          >
+                            {t.common.delete}
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>

@@ -18,6 +18,10 @@ class TimelineService {
             year
             title
             description
+            titleDe
+            descriptionDe
+            titleFr
+            descriptionFr
             type
             sortOrder
           }

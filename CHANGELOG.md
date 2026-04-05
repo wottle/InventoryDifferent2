@@ -4,10 +4,19 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.1.7] - 2026-04-04
+
+### Added
+- Manage Categories: delete button with guard — blocked if any devices are assigned to the category
+
 ### Changed
 - iOS: date fields now use app language locale (not device locale) in device detail, task rows, and note rows
 - iOS: currency symbol now respects app language setting (€ for German, $ for English)
 - iOS: add/edit device and edit device screens fully translated (en/de)
+- Stats page: chart labels for status, functional status, rarity, and category type now display in the selected language
+- Timeline: event titles and descriptions now display in the selected language; German and French translations added for all built-in events; legend labels translated; Cultural category removed from legend
 
 ---
 
