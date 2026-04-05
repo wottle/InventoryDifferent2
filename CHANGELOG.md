@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Fixed
+- iOS: timeline scroll restoration now returns to the exact tapped device's year instead of the previous year
+
 ---
 
 ## [1.2.1] - 2026-04-05

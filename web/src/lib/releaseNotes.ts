@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'iOS: timeline scroll restoration now returns to the exact tapped device\'s year instead of the previous year',
+    ],
   },
   {
     version: '1.2.1',

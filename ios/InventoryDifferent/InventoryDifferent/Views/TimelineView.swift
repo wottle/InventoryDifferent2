@@ -18,6 +18,8 @@ struct TimelineView: View {
     @State private var events: [TimelineEvent] = []
     @State private var isLoading = true
     @State private var error: String?
+    @State private var savedScrollYear: Int?
+    @State private var navigatedDeviceId: Int?
 
     private var timelineYears: [TimelineYear] {
         var map: [Int: TimelineYear] = [:]
@@ -65,25 +67,36 @@ struct TimelineView: View {
             } else {
                 VStack(alignment: .leading, spacing: 0) {
                     legend(t: t)
-                    ScrollView {
-                    LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-                        ForEach(timelineYears) { group in
-                            Section(header: yearHeader(group.year)) {
-                                VStack(spacing: 8) {
-                                    ForEach(group.events) { event in
-                                        eventRow(event)
-                                    }
-                                    ForEach(group.devices, id: \.id) { device in
-                                        deviceRow(device)
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                                ForEach(timelineYears) { group in
+                                    Section(header: yearHeader(group.year)) {
+                                        Color.clear.frame(height: 0).id(group.year)
+                                        VStack(spacing: 8) {
+                                            ForEach(group.events) { event in
+                                                eventRow(event)
+                                            }
+                                            ForEach(group.devices, id: \.id) { device in
+                                                deviceRow(device)
+                                            }
+                                        }
+                                        .padding(.horizontal)
+                                        .padding(.bottom, 12)
                                     }
                                 }
-                                .padding(.horizontal)
-                                .padding(.bottom, 12)
+                            }
+                        }
+                        .onAppear {
+                            if let year = savedScrollYear {
+                                proxy.scrollTo(year, anchor: .top)
                             }
                         }
                     }
-                } // ScrollView
                 } // VStack
+                .navigationDestination(item: $navigatedDeviceId) { deviceId in
+                    DeviceDetailRedesignScreen(deviceId: deviceId)
+                }
             }
         }
         .navigationTitle(t.timeline.title)
@@ -173,7 +186,10 @@ struct TimelineView: View {
     // MARK: - Device Row
 
     private func deviceRow(_ device: DeviceListItem) -> some View {
-        NavigationLink(destination: DeviceDetailScreen(deviceId: device.id)) {
+        Button {
+            savedScrollYear = device.releaseYear
+            navigatedDeviceId = device.id
+        } label: {
             HStack(spacing: 10) {
                 // Thumbnail
                 Group {
