@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Fixed
+- Timeline: event titles and descriptions now display in the correct language — translations were not applied to existing databases due to seed-only data
+
 ---
 
 ## [1.1.8] - 2026-04-04

@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Timeline: event titles and descriptions now display in the correct language — translations were not applied to existing databases due to seed-only data',
+    ],
   },
   {
     version: '1.1.8',
