@@ -6,6 +6,14 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.1.8] - 2026-04-04
+
+### Changed
+- Device card: status icon row moved to an overlay bar along the bottom of the thumbnail image to save card space
+- Wishlist: template picker now only appears when adding a new item, not when editing an existing one
+
+---
+
 ## [1.1.7] - 2026-04-04
 
 ### Added

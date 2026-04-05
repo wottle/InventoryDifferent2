@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.7';
+export const APP_VERSION = '1.1.8';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,16 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.1.8',
+    date: '2026-04-04',
+    added: [],
+    changed: [
+      'Device card: status icon row moved to an overlay bar along the bottom of the thumbnail image to save card space',
+      'Wishlist: template picker now only appears when adding a new item, not when editing an existing one',
+    ],
     fixed: [],
   },
   {

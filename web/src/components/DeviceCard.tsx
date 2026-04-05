@@ -162,7 +162,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
         }
     };
 
-    // Shared status icons component for both desktop and mobile
+    // Shared status icons component — rendered over the image thumbnail
     const StatusIconsRow = () => (
         <div className="flex items-center gap-2">
             {/* Functional Status - thumbs up/caution/thumbs down */}
@@ -191,7 +191,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             {/* Rarity - diamond icon, only shown when rarity is set */}
             {device.rarity && (() => {
                 const rarityColors: Record<string, string> = {
-                    COMMON: 'text-gray-400 dark:text-gray-500',
+                    COMMON: 'text-white/40',
                     UNCOMMON: 'text-yellow-400',
                     RARE: 'text-green-500',
                     VERY_RARE: 'text-blue-500',
@@ -211,7 +211,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             {/* Asset Tagged - tag icon */}
             <span title={device.isAssetTagged ? t.icons.assetTagged : t.icons.notAssetTagged}>
                 <svg 
-                    className={`w-4 h-4 ${device.isAssetTagged ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`} 
+                    className={`w-4 h-4 ${device.isAssetTagged ? 'text-green-500' : 'text-white/40'}`} 
                     fill="currentColor" 
                     viewBox="0 0 24 24"
                 >
@@ -222,7 +222,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             {/* Original Box - box icon */}
             <span title={device.accessories?.some((a: any) => a.name === 'Original Box') ? t.icons.hasOriginalBox : t.icons.noOriginalBox}>
                 <svg
-                    className={`w-4 h-4 ${device.accessories?.some((a: any) => a.name === 'Original Box') ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}
+                    className={`w-4 h-4 ${device.accessories?.some((a: any) => a.name === 'Original Box') ? 'text-green-500' : 'text-white/40'}`}
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -248,7 +248,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             {/* Favorite - star icon */}
             <span title={device.isFavorite ? t.icons.favorite : t.icons.notFavorite}>
                 <svg
-                    className={`w-4 h-4 ${device.isFavorite ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`}
+                    className={`w-4 h-4 ${device.isFavorite ? 'text-yellow-500' : 'text-white/40'}`}
                     fill="currentColor"
                     viewBox="0 0 24 24"
                 >
@@ -288,6 +288,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
                         {t.status[device.status as keyof typeof t.status] ?? device.status}
                     </span>
                 </div>
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-1 px-1 py-1 bg-black/50">
+                    <StatusIconsRow />
+                </div>
             </div>
             <div className="p-2 flex-1 flex flex-col">
                 <div className="mb-1">
@@ -301,16 +304,8 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 <p className="line-clamp-1 text-xs text-[var(--muted-foreground)] mb-1">
                     {device.additionalName || `${device.manufacturer || ''} ${device.modelNumber || ''}`.trim() || ''}
                 </p>
-                {device.condition && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        {t.condition[device.condition as keyof typeof t.condition] ?? device.condition}
-                    </p>
-                )}
-                <div className="text-xs mb-1">
+                <div className="text-xs">
                     <ValueSaleInfo />
-                </div>
-                <div className="mt-auto flex items-center justify-center gap-0.5">
-                    <StatusIconsRow />
                 </div>
             </div>
         </div>
