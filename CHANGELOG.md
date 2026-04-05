@@ -6,6 +6,7 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Added
 - iOS: camera option when adding device photos — snap directly without saving to the photo library first
+- iOS: status indicator icons moved to bottom of thumbnail image in card/grid view, matching web card layout
 
 ---
 

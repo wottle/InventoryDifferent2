@@ -31,6 +31,11 @@ struct DeviceGridItemView: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(6)
             }
+            .overlay(alignment: .bottom) {
+                // Status indicator icons — centered along the bottom of the thumbnail
+                StatusIndicatorsRow(device: device)
+                    .padding(.vertical, 4)
+            }
 
             // Text area
             VStack(alignment: .leading, spacing: 2) {
@@ -43,8 +48,6 @@ struct DeviceGridItemView: View {
                     .font(.caption2)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
-
-                StatusIndicatorsRow(device: device)
 
                 ValueSaleInfo(device: device)
                     .font(.caption2)
