@@ -4,9 +4,17 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.2.0] - 2026-04-05
+
 ### Added
 - iOS: camera option when adding device photos — snap directly without saving to the photo library first
 - iOS: status indicator icons moved to bottom of thumbnail image in card/grid view, matching web card layout
+
+### Changed
+- iOS: status icon pill in grid card now uses a translucent light/dark adaptive background for legibility
+- iOS: "Mark for Sale" quick action now uses the storefront icon instead of the tag icon
 
 ---
 

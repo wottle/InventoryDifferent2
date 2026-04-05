@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.1.9';
+export const APP_VERSION = '1.2.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,11 +12,21 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.2.0',
+    date: '2026-04-05',
     added: [
       'iOS: camera option when adding device photos — snap directly without saving to the photo library first',
       'iOS: status indicator icons moved to bottom of thumbnail image in card/grid view, matching web card layout',
     ],
-    changed: [],
+    changed: [
+      'iOS: status icon pill in grid card now uses a translucent light/dark adaptive background for legibility',
+      'iOS: "Mark for Sale" quick action now uses the storefront icon instead of the tag icon',
+    ],
     fixed: [],
   },
   {
