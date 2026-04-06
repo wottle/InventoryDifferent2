@@ -17,7 +17,10 @@ const GET_DEVICE = gql`
       modelNumber
       serialNumber
       releaseYear
-      location
+      location {
+        id
+        name
+      }
       info
       isFavorite
       externalUrl
