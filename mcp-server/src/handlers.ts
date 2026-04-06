@@ -45,7 +45,7 @@ export async function handleSearchDevices(prisma: PrismaClient, args: any) {
       const searchableText = [
         device.name, device.additionalName, device.manufacturer, device.modelNumber,
         device.serialNumber, device.cpu, device.ram, device.graphics, device.storage,
-        device.operatingSystem, device.info, device.location?.name,
+        device.operatingSystem, device.info, (device as any).location?.name,
         ...device.tags.map((t) => t.name),
         ...device.notes.map((n) => n.content),
       ].filter(Boolean).join(" ").toLowerCase();
@@ -68,7 +68,7 @@ export async function handleSearchDevices(prisma: PrismaClient, args: any) {
     ram: d.ram,
     storage: d.storage,
     operatingSystem: d.operatingSystem,
-    location: d.location?.name ?? null,
+    location: (d as any).location?.name ?? null,
     estimatedValue: decimalToNumber(d.estimatedValue),
     listPrice: decimalToNumber(d.listPrice),
     tags: d.tags.map((t) => t.name),
@@ -102,7 +102,7 @@ export async function handleGetDeviceDetails(prisma: PrismaClient, args: any) {
     modelNumber: device.modelNumber,
     serialNumber: device.serialNumber,
     releaseYear: device.releaseYear,
-    location: device.location?.name ?? null,
+    location: (device as any).location?.name ?? null,
     info: device.info,
     isFavorite: device.isFavorite,
     status: device.status,
@@ -193,6 +193,7 @@ export async function handleListDevices(prisma: PrismaClient, args: any) {
       tags: true,
       notes: shouldIncludeNotes ? { orderBy: { date: "desc" as const } } : false,
       maintenanceTasks: shouldIncludeTasks ? { orderBy: { dateCompleted: "desc" as const } } : false,
+      location: true,
     },
     take: limit,
     orderBy: { id: "asc" },
@@ -209,7 +210,7 @@ export async function handleListDevices(prisma: PrismaClient, args: any) {
     if (shouldInclude("modelNumber")) device.modelNumber = d.modelNumber;
     if (shouldInclude("serialNumber")) device.serialNumber = d.serialNumber;
     if (shouldInclude("releaseYear")) device.releaseYear = d.releaseYear;
-    if (shouldInclude("location")) device.location = d.location;
+    if (shouldInclude("location")) device.location = (d as any).location?.name ?? null;
     if (shouldInclude("info")) device.info = d.info;
     if (shouldInclude("isFavorite")) device.isFavorite = d.isFavorite;
     if (shouldInclude("status")) device.status = d.status;
