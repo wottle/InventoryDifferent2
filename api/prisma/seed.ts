@@ -264,6 +264,12 @@ async function main() {
         if (parsed.length > 0) categories = parsed;
     }
 
+    const existingCategoryCount = await prisma.category.count();
+    if (existingCategoryCount > 0) {
+        console.log('Categories already exist — skipping seed.');
+        return;
+    }
+
     console.log('Seeding categories...');
     for (const cat of categories) {
         await (prisma as any).category.upsert({
