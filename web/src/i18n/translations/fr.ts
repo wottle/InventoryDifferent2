@@ -118,6 +118,7 @@ export const fr: Translations = {
     name: "Nom",
     sort: "Tri",
     type: "Type",
+    remove: "Supprimer",
   },
   scanner: {
     title: "Scanner le code-barres",
@@ -191,6 +192,7 @@ export const fr: Translations = {
     costPrefix: "Coût :",
     deleteTaskConfirm: "Supprimer cette tâche de maintenance ?",
     deleteNoteConfirm: "Supprimer cette note ?",
+    removeLinkConfirm: "Supprimer ce lien ?",
     deviceId: "ID de l'appareil",
     serialNumber: "Numéro de série",
     releaseYear: "Année de sortie",

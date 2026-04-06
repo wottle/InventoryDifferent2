@@ -116,6 +116,7 @@ export type Translations = {
     name: string;
     sort: string;
     type: string;
+    remove: string;
   };
   scanner: {
     title: string;
@@ -189,6 +190,7 @@ export type Translations = {
     costPrefix: string;
     deleteTaskConfirm: string;
     deleteNoteConfirm: string;
+    removeLinkConfirm: string;
     deviceId: string;
     serialNumber: string;
     releaseYear: string;
@@ -729,6 +731,7 @@ export const en: Translations = {
     name: "Name",
     sort: "Sort",
     type: "Type",
+    remove: "Remove",
   },
   scanner: {
     title: "Scan Barcode",
@@ -802,6 +805,7 @@ export const en: Translations = {
     costPrefix: "Cost:",
     deleteTaskConfirm: "Delete this maintenance task?",
     deleteNoteConfirm: "Delete this note?",
+    removeLinkConfirm: "Remove this link?",
     deviceId: "Device ID",
     serialNumber: "Serial Number",
     releaseYear: "Release Year",

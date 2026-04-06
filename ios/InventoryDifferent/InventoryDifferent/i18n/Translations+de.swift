@@ -192,7 +192,11 @@ extension Translations {
             indicatorPramOk: "PRAM OK",
             indicatorPramInstalled: "PRAM Eingebaut",
             indicatorFavorite: "Favorit",
-            moreItemsFmt: "Mehr (%d weitere)"
+            moreItemsFmt: "Mehr (%d weitere)",
+            removeAccessoryTitle: "Zubehör entfernen",
+            removeAccessoryFmt: "\"%@\" aus dem Zubehör entfernen?",
+            removeLinkTitle: "Link entfernen",
+            removeLinkFmt: "Den Link \"%@\" entfernen?"
         ),
         addEditDevice: .init(
             addTitle: "Gerät hinzufügen",

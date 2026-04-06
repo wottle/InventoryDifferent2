@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Fixed
+- iOS and Web: deleting tags, accessories, and links on device detail now requires confirmation
+
 ---
 
 ## [1.4.1] - 2026-04-06

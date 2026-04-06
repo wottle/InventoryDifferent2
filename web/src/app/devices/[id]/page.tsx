@@ -459,6 +459,9 @@ export default function DeviceDetail() {
     const [newLinkUrl, setNewLinkUrl] = useState('');
     const [showLinkForm, setShowLinkForm] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
+    const [tagToRemoveId, setTagToRemoveId] = useState<number | null>(null);
+    const [accessoryToRemoveId, setAccessoryToRemoveId] = useState<number | null>(null);
+    const [linkToRemoveId, setLinkToRemoveId] = useState<number | null>(null);
 
     const { loading, error, data, refetch } = useQuery(GET_DEVICE, {
         variables: { where: { id: parseInt(id as string), deleted: { equals: false } } },
@@ -1650,18 +1653,33 @@ export default function DeviceDetail() {
                                 >
                                     {tag.name}
                                     {isAuthenticated && (
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveTag(tag.id)}
-                                            disabled={removingTag}
-                                            className="ml-1 inline-flex items-center justify-center rounded hover:bg-[var(--muted)] px-1 disabled:opacity-50"
-                                            aria-label={`Remove tag ${tag.name}`}
-                                            title={t.detail.noTags}
-                                        >
-                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
+                                        tagToRemoveId === tag.id ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setTagToRemoveId(null)}
+                                                    className="ml-1 px-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                                                >{t.common.cancel}</button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { handleRemoveTag(tag.id); setTagToRemoveId(null); }}
+                                                    disabled={removingTag}
+                                                    className="px-1 text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
+                                                >{t.common.remove}</button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() => setTagToRemoveId(tag.id)}
+                                                disabled={removingTag}
+                                                className="ml-1 inline-flex items-center justify-center rounded hover:bg-[var(--muted)] px-1 disabled:opacity-50"
+                                                aria-label={`Remove tag ${tag.name}`}
+                                            >
+                                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )
                                     )}
                                 </span>
                             ))}
@@ -1715,16 +1733,30 @@ export default function DeviceDetail() {
                                 >
                                     {acc.name}
                                     {isAuthenticated && (
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveAccessory(acc.id)}
-                                            className="ml-1 inline-flex items-center justify-center rounded hover:bg-[var(--muted)] px-1"
-                                            title="Remove accessory"
-                                        >
-                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
+                                        accessoryToRemoveId === acc.id ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAccessoryToRemoveId(null)}
+                                                    className="ml-1 px-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                                                >{t.common.cancel}</button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { handleRemoveAccessory(acc.id); setAccessoryToRemoveId(null); }}
+                                                    className="px-1 text-red-600 hover:text-red-700 font-medium"
+                                                >{t.common.remove}</button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() => setAccessoryToRemoveId(acc.id)}
+                                                className="ml-1 inline-flex items-center justify-center rounded hover:bg-[var(--muted)] px-1"
+                                            >
+                                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )
                                     )}
                                 </span>
                             ))}
@@ -1797,7 +1829,7 @@ export default function DeviceDetail() {
                         {(device.links ?? []).length > 0 && (
                             <div className="space-y-2 mb-3">
                                 {device.links.map((link: any) => (
-                                    <div key={link.id} className="flex items-center gap-2 group">
+                                    <div key={link.id} className="relative flex items-center gap-2 group">
                                         <svg width="14" height="14" className="shrink-0 text-[var(--muted-foreground)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                         </svg>
@@ -1815,7 +1847,7 @@ export default function DeviceDetail() {
                                         {isAuthenticated && (
                                             <button
                                                 type="button"
-                                                onClick={() => handleRemoveLink(link.id)}
+                                                onClick={() => setLinkToRemoveId(link.id)}
                                                 className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all shrink-0"
                                                 title="Remove link"
                                             >
@@ -1823,6 +1855,19 @@ export default function DeviceDetail() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </button>
+                                        )}
+                                        {linkToRemoveId === link.id && (
+                                            <div className="absolute inset-0 bg-black/70 flex items-center justify-center gap-2 rounded">
+                                                <span className="text-white text-xs">{t.detail.removeLinkConfirm}</span>
+                                                <button
+                                                    onClick={() => { handleRemoveLink(link.id); setLinkToRemoveId(null); }}
+                                                    className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700"
+                                                >{t.common.remove}</button>
+                                                <button
+                                                    onClick={() => setLinkToRemoveId(null)}
+                                                    className="px-2 py-1 bg-white text-gray-700 text-xs rounded hover:bg-gray-100"
+                                                >{t.common.cancel}</button>
+                                            </div>
                                         )}
                                     </div>
                                 ))}

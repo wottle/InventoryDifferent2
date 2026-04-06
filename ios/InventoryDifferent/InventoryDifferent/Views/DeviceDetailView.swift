@@ -124,6 +124,10 @@ struct DeviceDetailView: View {
     @State private var showAddTagSheet = false
     @State private var tagToRemove: Tag?
     @State private var showRemoveTagAlert = false
+    @State private var accessoryToRemove: DeviceAccessory?
+    @State private var showRemoveAccessoryAlert = false
+    @State private var linkToRemove: DeviceLink?
+    @State private var showRemoveLinkAlert = false
 
     @State private var accessories: [DeviceAccessory]
     @State private var links: [DeviceLink]
@@ -412,6 +416,40 @@ struct DeviceDetailView: View {
         } message: {
             if let tag = tagToRemove {
                 Text(String(format: lm.t.deviceDetail.removeTagFmt, tag.name))
+            }
+        }
+        .alert(lm.t.deviceDetail.removeAccessoryTitle, isPresented: $showRemoveAccessoryAlert) {
+            Button("Cancel", role: .cancel) {
+                accessoryToRemove = nil
+            }
+            Button("Remove", role: .destructive) {
+                if let accessory = accessoryToRemove {
+                    Task {
+                        await removeAccessory(accessory)
+                        accessoryToRemove = nil
+                    }
+                }
+            }
+        } message: {
+            if let accessory = accessoryToRemove {
+                Text(String(format: lm.t.deviceDetail.removeAccessoryFmt, accessory.name))
+            }
+        }
+        .alert(lm.t.deviceDetail.removeLinkTitle, isPresented: $showRemoveLinkAlert) {
+            Button("Cancel", role: .cancel) {
+                linkToRemove = nil
+            }
+            Button("Remove", role: .destructive) {
+                if let link = linkToRemove {
+                    Task {
+                        await removeLink(link)
+                        linkToRemove = nil
+                    }
+                }
+            }
+        } message: {
+            if let link = linkToRemove {
+                Text(String(format: lm.t.deviceDetail.removeLinkFmt, link.label))
             }
         }
         .overlay(alignment: .bottom) {
@@ -1061,7 +1099,8 @@ struct DeviceDetailView: View {
                                 ForEach(accessories) { accessory in
                                     if authService.isAuthenticated {
                                         Button {
-                                            Task { await removeAccessory(accessory) }
+                                            accessoryToRemove = accessory
+                                            showRemoveAccessoryAlert = true
                                         } label: {
                                             HStack(spacing: 4) {
                                                 Text(accessory.name)
@@ -1145,7 +1184,8 @@ struct DeviceDetailView: View {
                                 }
                                 if authService.isAuthenticated {
                                     Button {
-                                        Task { await removeLink(link) }
+                                        linkToRemove = link
+                                        showRemoveLinkAlert = true
                                     } label: {
                                         Image(systemName: "trash")
                                             .font(.caption)

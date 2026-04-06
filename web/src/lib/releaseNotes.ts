@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'iOS and Web: deleting tags, accessories, and links on device detail now requires confirmation',
+    ],
   },
   {
     version: '1.4.1',
