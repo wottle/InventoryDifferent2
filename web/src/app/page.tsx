@@ -341,10 +341,14 @@ export default function Home() {
     setBarcodeSupported(typeof BarcodeDetectorCtor === "function" && !!navigator?.mediaDevices?.getUserMedia);
   }, []);
 
-  // Save scroll position continuously so back-navigation can restore it
+  // Save scroll position continuously so back-navigation can restore it.
+  // Only save when scrollY > 0 — Next.js scrolls the window to 0 during
+  // navigation which would overwrite the real position we want to restore.
   useEffect(() => {
     const handleScroll = () => {
-      sessionStorage.setItem('inventory-scroll', String(window.scrollY));
+      if (window.scrollY > 0) {
+        sessionStorage.setItem('inventory-scroll', String(window.scrollY));
+      }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
