@@ -7,6 +7,7 @@ const defaultProps = {
     onClose: vi.fn(),
     filters: {
         categoryIds: [],
+        locationIds: [],
         statuses: [],
         functionalStatuses: [],
         conditions: [],
@@ -80,6 +81,7 @@ describe('DeviceFilterPanel', () => {
         fireEvent.click(screen.getByText('Clear All'));
         expect(onFiltersChange).toHaveBeenCalledWith({
             categoryIds: [],
+            locationIds: [],
             statuses: [],
             functionalStatuses: [],
             conditions: [],

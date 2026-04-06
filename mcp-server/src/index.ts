@@ -311,6 +311,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             maintenanceTasks: true,
             accessories: true,
             links: true,
+            location: true,
           },
           take: limit,
           orderBy: { name: "asc" },
@@ -332,7 +333,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               device.storage,
               device.operatingSystem,
               device.info,
-              device.location,
+              device.location?.name,
               ...device.tags.map((t) => t.name),
               ...device.notes.map((n) => n.content),
             ]
@@ -361,7 +362,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ram: d.ram,
           storage: d.storage,
           operatingSystem: d.operatingSystem,
-          location: d.location,
+          location: d.location?.name ?? null,
           estimatedValue: decimalToNumber(d.estimatedValue),
           listPrice: decimalToNumber(d.listPrice),
           tags: d.tags.map((t) => t.name),
@@ -399,6 +400,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             tags: true,
             accessories: true,
             links: true,
+            location: true,
           },
         });
 
@@ -421,7 +423,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           modelNumber: device.modelNumber,
           serialNumber: device.serialNumber,
           releaseYear: device.releaseYear,
-          location: device.location,
+          location: device.location?.name ?? null,
           info: device.info,
           isFavorite: device.isFavorite,
           status: device.status,
@@ -670,6 +672,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             maintenanceTasks: shouldIncludeTasks ? { orderBy: { dateCompleted: "desc" } } : false,
             accessories: true,
             links: true,
+            location: true,
           },
           take: limit,
           orderBy: { id: "asc" },
@@ -692,7 +695,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           if (shouldInclude("serialNumber"))
             device.serialNumber = d.serialNumber;
           if (shouldInclude("releaseYear")) device.releaseYear = d.releaseYear;
-          if (shouldInclude("location")) device.location = d.location;
+          if (shouldInclude("location")) device.location = d.location?.name ?? null;
           if (shouldInclude("info")) device.info = d.info;
           if (shouldInclude("isFavorite")) device.isFavorite = d.isFavorite;
           if (shouldInclude("status")) device.status = d.status;
@@ -783,11 +786,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (args.soldDate !== undefined) data.soldDate = new Date(args.soldDate as string);
         if (args.listPrice !== undefined) data.listPrice = args.listPrice;
         if (args.functionalStatus !== undefined) data.functionalStatus = args.functionalStatus;
-        if (args.location !== undefined) data.location = args.location;
+        if (args.location !== undefined) data.location = undefined; // location is now a relation; use locationId
 
         const device = await prisma.device.update({
           where: { id: args.deviceId as number },
           data,
+          include: { location: true },
         });
 
         return {
@@ -805,7 +809,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 soldDate: device.soldDate,
                 listPrice: decimalToNumber(device.listPrice),
                 functionalStatus: device.functionalStatus,
-                location: device.location,
+                location: device.location?.name ?? null,
               },
             }, null, 2),
           }],

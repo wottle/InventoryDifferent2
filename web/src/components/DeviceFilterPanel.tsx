@@ -33,7 +33,7 @@ export function DeviceFilterPanel({
   filters,
   onFiltersChange,
   categories,
-  locations,
+  locations = [],
   sortColumn,
   sortDirection,
   onSortChange,

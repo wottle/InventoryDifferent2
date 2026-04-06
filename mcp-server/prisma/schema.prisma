@@ -16,7 +16,8 @@ model Device {
   modelNumber         String?
   serialNumber        String?
   releaseYear         Int?
-  location            String?
+  locationId          Int?
+  location            Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
   info                String?   @db.Text
   isFavorite          Boolean   @default(false)
 
@@ -57,6 +58,14 @@ model Device {
   tags                Tag[]
   accessories         DeviceAccessory[]
   links               DeviceLink[]
+}
+
+model Location {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  devices     Device[]
 }
 
 model DeviceAccessory {

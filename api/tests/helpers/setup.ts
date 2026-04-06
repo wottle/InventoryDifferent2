@@ -33,6 +33,7 @@ export async function cleanDatabase(): Promise<void> {
             "MaintenanceTask",
             "_DeviceToTag",
             "Device",
+            "Location",
             "Template",
             "Tag",
             "Category"

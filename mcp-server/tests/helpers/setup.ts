@@ -20,7 +20,7 @@ export async function cleanDatabase(): Promise<void> {
     await prisma.$executeRawUnsafe(`
         TRUNCATE TABLE
             "Image", "Note", "MaintenanceTask", "_DeviceToTag",
-            "Device", "Template", "Tag", "Category"
+            "Device", "Location", "Template", "Tag", "Category"
         RESTART IDENTITY CASCADE;
     `);
 }

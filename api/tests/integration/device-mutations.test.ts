@@ -43,7 +43,7 @@ describe('createDevice', () => {
             mutation($input: DeviceCreateInput!) {
                 createDevice(input: $input) {
                     id name manufacturer modelNumber serialNumber status functionalStatus
-                    priceAcquired estimatedValue location info isFavorite
+                    priceAcquired estimatedValue location { id name } info isFavorite
                 }
             }
         `, {
@@ -57,7 +57,6 @@ describe('createDevice', () => {
                 functionalStatus: 'YES',
                 priceAcquired: 150.50,
                 estimatedValue: 300,
-                location: 'Shelf A',
                 info: 'Great condition',
                 isFavorite: true,
             },

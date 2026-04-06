@@ -34,7 +34,7 @@ export async function handleSearchDevices(prisma: PrismaClient, args: any) {
 
   let devices = await prisma.device.findMany({
     where: whereClause,
-    include: { category: true, tags: true, notes: true, maintenanceTasks: true },
+    include: { category: true, tags: true, notes: true, maintenanceTasks: true, location: true },
     take: limit,
     orderBy: { name: "asc" },
   });
@@ -45,7 +45,7 @@ export async function handleSearchDevices(prisma: PrismaClient, args: any) {
       const searchableText = [
         device.name, device.additionalName, device.manufacturer, device.modelNumber,
         device.serialNumber, device.cpu, device.ram, device.graphics, device.storage,
-        device.operatingSystem, device.info, device.location,
+        device.operatingSystem, device.info, device.location?.name,
         ...device.tags.map((t) => t.name),
         ...device.notes.map((n) => n.content),
       ].filter(Boolean).join(" ").toLowerCase();
@@ -68,7 +68,7 @@ export async function handleSearchDevices(prisma: PrismaClient, args: any) {
     ram: d.ram,
     storage: d.storage,
     operatingSystem: d.operatingSystem,
-    location: d.location,
+    location: d.location?.name ?? null,
     estimatedValue: decimalToNumber(d.estimatedValue),
     listPrice: decimalToNumber(d.listPrice),
     tags: d.tags.map((t) => t.name),
@@ -88,6 +88,7 @@ export async function handleGetDeviceDetails(prisma: PrismaClient, args: any) {
       notes: { orderBy: { date: "desc" } },
       maintenanceTasks: { orderBy: { dateCompleted: "desc" } },
       tags: true,
+      location: true,
     },
   });
 
@@ -101,7 +102,7 @@ export async function handleGetDeviceDetails(prisma: PrismaClient, args: any) {
     modelNumber: device.modelNumber,
     serialNumber: device.serialNumber,
     releaseYear: device.releaseYear,
-    location: device.location,
+    location: device.location?.name ?? null,
     info: device.info,
     isFavorite: device.isFavorite,
     status: device.status,
