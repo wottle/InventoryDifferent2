@@ -6,6 +6,14 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [1.4.1] - 2026-04-06
+
+### Fixed
+- Web: Restore scroll position when returning to device list via back navigation
+- iOS: Location detail device rows now match list view spacing and full-width separators
+
+---
+
 ## [1.4.0] - 2026-04-06
 
 ### Added

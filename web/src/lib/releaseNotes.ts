@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.4.0';
+export const APP_VERSION = '1.4.1';
 
 export interface ReleaseEntry {
   version: string;
@@ -15,6 +15,16 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [],
     changed: [],
     fixed: [],
+  },
+  {
+    version: '1.4.1',
+    date: '2026-04-06',
+    added: [],
+    changed: [],
+    fixed: [
+      'Web: Restore scroll position when returning to device list via back navigation',
+      'iOS: Location detail device rows now match list view spacing and full-width separators',
+    ],
   },
   {
     version: '1.4.0',
