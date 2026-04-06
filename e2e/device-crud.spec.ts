@@ -29,7 +29,7 @@ test.describe('Device CRUD', () => {
         }
 
         // Submit
-        await page.getByRole('button', { name: /save|create|submit/i }).click();
+        await page.getByRole('button', { name: /^(save|create device|submit)$/i }).click();
 
         // Verify redirected away from /new
         await page.waitForTimeout(3000);
