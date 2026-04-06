@@ -140,7 +140,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                       ram
                       storage
                       operatingSystem
-                      location
+                      location {
+                        id
+                        name
+                      }
                       estimatedValue
                       listPrice
                       info
@@ -182,7 +185,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                   device.storage,
                   device.operatingSystem,
                   device.info,
-                  device.location,
+                  device.location?.name,
                   ...(device.tags?.map((t: any) => t.name) || []),
                 ].filter(Boolean).join(' ').toLowerCase();
                 return searchableText.includes(query);
@@ -259,7 +262,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
               ram: d.ram,
               storage: d.storage,
               operatingSystem: d.operatingSystem,
-              location: d.location,
+              location: d.location?.name ?? null,
               estimatedValue: decimalToNumber(d.estimatedValue),
               listPrice: decimalToNumber(d.listPrice),
               tags: d.tags?.map((t: any) => t.name) || [],
@@ -299,7 +302,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                       modelNumber
                       serialNumber
                       releaseYear
-                      location
+                      location {
+                        id
+                        name
+                      }
                       info
                       isFavorite
                       status
@@ -366,7 +372,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
               modelNumber: device.modelNumber,
               serialNumber: device.serialNumber,
               releaseYear: device.releaseYear,
-              location: device.location,
+              location: device.location?.name ?? null,
               info: device.info,
               isFavorite: device.isFavorite,
               status: device.status,
@@ -680,7 +686,6 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
           soldDate: z.string().optional().describe('ISO date string for when the device was sold'),
           listPrice: z.number().optional().describe('Asking price for devices listed for sale'),
           functionalStatus: z.enum(['YES', 'PARTIAL', 'NO']).optional().describe('Updated functional status'),
-          location: z.string().optional().describe('Where the device is stored or located'),
         }),
         execute: async (params) => {
           try {
@@ -692,7 +697,6 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
             if (params.soldDate !== undefined) input.soldDate = params.soldDate;
             if (params.listPrice !== undefined) input.listPrice = params.listPrice;
             if (params.functionalStatus !== undefined) input.functionalStatus = params.functionalStatus;
-            if (params.location !== undefined) input.location = params.location;
 
             const response = await fetch(API_URL, {
               method: 'POST',
@@ -705,7 +709,8 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                   mutation UpdateDevice($input: DeviceUpdateInput!) {
                     updateDevice(input: $input) {
                       id name additionalName lastPowerOnDate estimatedValue
-                      status soldPrice soldDate listPrice functionalStatus location
+                      status soldPrice soldDate listPrice functionalStatus
+                      location { id name }
                     }
                   }
                 `,
@@ -732,7 +737,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                 soldDate: device.soldDate,
                 listPrice: decimalToNumber(device.listPrice),
                 functionalStatus: device.functionalStatus,
-                location: device.location,
+                location: device.location?.name ?? null,
               },
             };
           } catch (error) {
