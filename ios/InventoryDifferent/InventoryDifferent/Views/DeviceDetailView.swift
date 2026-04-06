@@ -499,7 +499,7 @@ struct DeviceDetailView: View {
                 if device.status == .COLLECTION {
                     QuickActionButton(
                         title: t.deviceDetail.markForSale,
-                        systemImage: "tag",
+                        systemImage: "storefront",
                         isLoading: isUpdatingStatus
                     ) {
                         if device.listPrice != nil {
@@ -531,7 +531,7 @@ struct DeviceDetailView: View {
                 if device.status == .PENDING_SALE {
                     QuickActionButton(
                         title: t.deviceDetail.markForSale,
-                        systemImage: "tag",
+                        systemImage: "storefront",
                         isLoading: isUpdatingStatus
                     ) {
                         Task { await updateDeviceStatus(.FOR_SALE) }
@@ -878,7 +878,24 @@ struct DeviceDetailView: View {
                 DetailRow(label: t.deviceDetail.modelNumber, value: device.modelNumber)
                 DetailRow(label: t.deviceDetail.serialNumber, value: device.serialNumber)
                 DetailRow(label: t.deviceDetail.releaseYear, value: device.releaseYear.map { String($0) })
-                DetailRow(label: t.deviceDetail.location, value: device.location)
+                if let loc = device.location {
+                    NavigationLink(destination: LocationDetailView(locationId: loc.id)
+                        .environmentObject(lm)) {
+                        HStack {
+                            Text(t.deviceDetail.location)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text(loc.name)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .foregroundColor(.primary)
+                } else {
+                    DetailRow(label: t.deviceDetail.location, value: nil)
+                }
                 HStack {
                     Text(t.deviceDetail.functionalStatus)
                         .font(.subheadline)
@@ -2012,6 +2029,40 @@ private struct MarkForSaleSheet: View {
     }
 }
 
+private struct AccessoryFlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        layout(in: proposal.replacingUnspecifiedDimensions().width, subviews: subviews).size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = layout(in: bounds.width, subviews: subviews)
+        for (index, frame) in result.frames.enumerated() {
+            subviews[index].place(
+                at: CGPoint(x: frame.minX + bounds.minX, y: frame.minY + bounds.minY),
+                proposal: .unspecified
+            )
+        }
+    }
+
+    private struct LayoutResult { var frames: [CGRect] = []; var size: CGSize = .zero }
+
+    private func layout(in maxWidth: CGFloat, subviews: Subviews) -> LayoutResult {
+        var result = LayoutResult()
+        var x: CGFloat = 0, y: CGFloat = 0, rowHeight: CGFloat = 0
+        for subview in subviews {
+            let sz = subview.sizeThatFits(.unspecified)
+            if x + sz.width > maxWidth, x > 0 { x = 0; y += rowHeight + spacing; rowHeight = 0 }
+            result.frames.append(CGRect(origin: CGPoint(x: x, y: y), size: sz))
+            x += sz.width + spacing
+            rowHeight = max(rowHeight, sz.height)
+        }
+        result.size = CGSize(width: maxWidth, height: y + rowHeight)
+        return result
+    }
+}
+
 struct AddAccessorySheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var lm: LocalizationManager
@@ -2031,24 +2082,22 @@ struct AddAccessorySheet: View {
         return NavigationStack {
             Form {
                 Section(t.addEditDevice.accessorySuggestions) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(suggestions, id: \.self) { suggestion in
-                                Button {
-                                    Task { await addAccessory(name: suggestion) }
-                                } label: {
-                                    Text(suggestion)
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(Color.green.opacity(0.15))
-                                        .foregroundColor(.green)
-                                        .clipShape(Capsule())
-                                }
+                    AccessoryFlowLayout(spacing: 8) {
+                        ForEach(suggestions, id: \.self) { suggestion in
+                            Button {
+                                Task { await addAccessory(name: suggestion) }
+                            } label: {
+                                Text(suggestion)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.green.opacity(0.15))
+                                    .foregroundColor(.green)
+                                    .clipShape(Capsule())
                             }
                         }
-                        .padding(.vertical, 4)
                     }
+                    .padding(.vertical, 4)
                 }
 
                 Section(t.addEditDevice.accessoryCustom) {
@@ -2226,7 +2275,7 @@ struct ValueHistorySection: View {
                     modelNumber: "M5011",
                     serialNumber: "ABC123",
                     releaseYear: 1987,
-                    location: "Shelf A",
+                    location: LocationRef(id: 1, name: "Shelf A"),
                     info: "Great condition vintage Mac",
                     searchText: nil,
                     isFavorite: true,

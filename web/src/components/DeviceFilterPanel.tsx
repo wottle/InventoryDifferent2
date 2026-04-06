@@ -5,6 +5,7 @@ import { useT } from "../i18n/context";
 
 export interface FilterState {
   categoryIds: number[];
+  locationIds: number[];
   statuses: string[];
   functionalStatuses: string[];
   conditions: string[];
@@ -20,6 +21,7 @@ interface DeviceFilterPanelProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
   categories: Array<{ id: number; name: string; type: string }>;
+  locations: Array<{ id: number; name: string }>;
   sortColumn: SortColumn;
   sortDirection: 'asc' | 'desc';
   onSortChange: (column: SortColumn, direction: 'asc' | 'desc') => void;
@@ -31,6 +33,7 @@ export function DeviceFilterPanel({
   filters,
   onFiltersChange,
   categories,
+  locations,
   sortColumn,
   sortDirection,
   onSortChange,
@@ -99,6 +102,11 @@ export function DeviceFilterPanel({
     setLocalFilters({ ...localFilters, categoryIds: newCategoryIds });
   };
 
+  const handleLocationChange = (locationId: number) => {
+    const newLocationIds = locationId ? [locationId] : [];
+    setLocalFilters({ ...localFilters, locationIds: newLocationIds });
+  };
+
   const handleStatusChange = (status: string, checked: boolean) => {
     const newStatuses = checked
       ? [...localFilters.statuses, status]
@@ -134,6 +142,7 @@ export function DeviceFilterPanel({
   const handleClear = () => {
     const clearedFilters = {
       categoryIds: [],
+      locationIds: [],
       statuses: [],
       functionalStatuses: [],
       conditions: [],
@@ -199,6 +208,25 @@ export function DeviceFilterPanel({
               ))}
             </select>
           </div>
+
+          {/* Location */}
+          {locations.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">{t.filter.location}</h3>
+              <select
+                value={localFilters.locationIds[0] || ''}
+                onChange={(e) => handleLocationChange(parseInt(e.target.value) || 0)}
+                className="select-flat w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--ring)] text-[var(--foreground)]"
+              >
+                <option value="">{t.filter.allLocations}</option>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Functional Status */}
           <div className="mb-6">

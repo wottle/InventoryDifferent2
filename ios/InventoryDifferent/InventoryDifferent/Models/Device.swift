@@ -136,6 +136,11 @@ struct Category: Codable, Identifiable, Hashable {
     let sortOrder: Int
 }
 
+struct LocationRef: Codable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+}
+
 struct DeviceImage: Codable, Identifiable {
     let id: Int
     let path: String
@@ -207,7 +212,7 @@ struct Device: Codable, Identifiable, Hashable {
     let modelNumber: String?
     let serialNumber: String?
     let releaseYear: Int?
-    let location: String?
+    let location: LocationRef?
     let info: String?
     let searchText: String?
     let isFavorite: Bool
@@ -277,7 +282,7 @@ struct DeviceListItem: Codable, Identifiable, Hashable {
     let modelNumber: String?
     let serialNumber: String?
     let releaseYear: Int?
-    let location: String?
+    let location: LocationRef?
     let searchText: String?
     let isFavorite: Bool
 

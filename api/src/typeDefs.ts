@@ -50,6 +50,14 @@ export const typeDefs = gql`
     REPAIR_RETURN
   }
 
+  type Location {
+    id: Int!
+    name: String!
+    description: String
+    createdAt: String!
+    deviceCount: Int!
+  }
+
   type Device {
     id: Int!
     name: String!
@@ -58,7 +66,7 @@ export const typeDefs = gql`
     modelNumber: String
     serialNumber: String
     releaseYear: Int
-    location: String
+    location: Location
     info: String
     searchText: String
     isFavorite: Boolean!
@@ -384,6 +392,8 @@ export const typeDefs = gql`
     devices(where: DeviceWhereInput): [Device!]!
     device(where: DeviceWhereInput): Device
     categories: [Category!]!
+    locations: [Location!]!
+    location(id: Int!): Location
     tags: [Tag!]!
     templates: [Template!]!
     financialOverview: FinancialOverview!
@@ -409,7 +419,7 @@ export const typeDefs = gql`
     modelNumber: String
     serialNumber: String
     releaseYear: Int
-    location: String
+    locationId: Int
     info: String
     isFavorite: Boolean
     externalUrl: String
@@ -455,7 +465,7 @@ export const typeDefs = gql`
     modelNumber: String
     serialNumber: String
     releaseYear: Int
-    location: String
+    locationId: Int
     categoryId: Int
 
     additionalName: String
@@ -557,6 +567,16 @@ export const typeDefs = gql`
     functionalStatus: DeviceWhereFunctionalStatusInput
     condition: DeviceWhereConditionInput
     rarity: DeviceWhereRarityInput
+    location: DeviceWhereLocationInput
+  }
+
+  input DeviceWhereLocationInput {
+    id: DeviceWhereLocationIdInput
+  }
+
+  input DeviceWhereLocationIdInput {
+    equals: Int
+    in: [Int!]
   }
 
   input DeviceWhereSerialNumberInput {
@@ -604,6 +624,9 @@ export const typeDefs = gql`
 
   type Mutation {
     recordDeviceView(deviceId: Int!): Boolean
+    createLocation(name: String!, description: String): Location!
+    updateLocation(id: Int!, name: String, description: String): Location!
+    deleteLocation(id: Int!): Location!
     createWishlistItem(data: WishlistItemCreateInput!): WishlistItem!
     updateWishlistItem(id: Int!, data: WishlistItemUpdateInput!): WishlistItem!
     deleteWishlistItem(id: Int!): WishlistItem!

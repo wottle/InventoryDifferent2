@@ -48,7 +48,9 @@ extension Translations {
             noData: "No data",
             currencySymbol: "$",
             yes: "Yes",
-            no: "No"
+            no: "No",
+            more: "More...",
+            less: "Less"
         ),
         menu: .init(
             wishlist: "Wishlist",
@@ -77,7 +79,8 @@ extension Translations {
             sold: "Sold: ",
             donated: "Donated",
             inRepair: "In Repair",
-            returned: "Returned: ",
+            returned: "Returned",
+            returnedFee: "Returned: ",
             na: "N/A",
             tbd: "TBD"
         ),
@@ -172,7 +175,23 @@ extension Translations {
             referenceLinks: "Reference Links",
             noPhotosMessage: "This device has no photos",
             noTasksMessage: "No maintenance tasks recorded",
-            noNotesMessage: "No notes for this device"
+            noNotesMessage: "No notes for this device",
+            quickOverview: "Quick Overview",
+            mediaAssets: "Media & Assets",
+            techSpecs: "Technical Specifications",
+            archiveNotes: "Archive Notes",
+            recentNotes: "Recent Notes",
+            maintenanceLogs: "Recent Maintenance",
+            newLog: "New Log",
+            appreciation: "Appreciation",
+            depreciation: "Depreciation",
+            indicatorTagged: "Tagged",
+            indicatorBoxed: "Orig Box",
+            indicatorNoPram: "No PRAM",
+            indicatorPramOk: "PRAM OK",
+            indicatorPramInstalled: "PRAM Installed",
+            indicatorFavorite: "Favorite",
+            moreItemsFmt: "More (%d more)"
         ),
         addEditDevice: .init(
             addTitle: "Add Device",
@@ -190,6 +209,7 @@ extension Translations {
             serialNumber: "Serial Number",
             releaseYear: "Release Year",
             location: "Location",
+            locationNone: "None",
             category: "Category",
             selectCategory: "Select a category",
             info: "Info",
@@ -485,6 +505,13 @@ extension Translations {
             english: "English",
             german: "Deutsch",
             french: "Français"
+        ),
+        locationDetail: .init(
+            title: "Location",
+            loading: "Loading location...",
+            errorLoading: "Error loading location",
+            noDevices: "No devices at this location",
+            deviceCountFmt: "%d devices"
         )
     )
 }

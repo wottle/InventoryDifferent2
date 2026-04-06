@@ -10,13 +10,18 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var deviceStore: DeviceStore
     @Binding var deepLinkDeviceId: Int?
+    @Binding var deepLinkLocationId: Int?
     @State private var navigationPath = NavigationPath()
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
             DeviceListView(navigationPath: $navigationPath)
                 .navigationDestination(for: Int.self) { deviceId in
-                    DeviceDetailScreen(deviceId: deviceId)
+                    DeviceDetailRedesignScreen(deviceId: deviceId)
+                }
+                .navigationDestination(for: LocationNavItem.self) { item in
+                    LocationDetailView(locationId: item.id)
+                        .environmentObject(LocalizationManager.shared)
                 }
                 .navigationDestination(for: MenuDestination.self) { destination in
                     switch destination {
@@ -53,11 +58,17 @@ struct ContentView: View {
                 }
             }
         }
+        .onChange(of: deepLinkLocationId) { _, newValue in
+            if let locationId = newValue {
+                navigationPath.append(LocationNavItem(id: locationId))
+                deepLinkLocationId = nil
+            }
+        }
     }
 }
 
 #Preview {
-    ContentView(deepLinkDeviceId: .constant(nil))
+    ContentView(deepLinkDeviceId: .constant(nil), deepLinkLocationId: .constant(nil))
         .environmentObject(DeviceStore())
         .environmentObject(AppSettings.shared)
         .environmentObject(AuthService.shared)

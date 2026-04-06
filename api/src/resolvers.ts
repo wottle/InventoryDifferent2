@@ -66,6 +66,7 @@ export function filterDeviceSensitiveFields(device: any, isAuthenticated: boolea
 
 const DEVICE_INCLUDE = {
     category: true,
+    location: true,
     images: true,
     notes: true,
     maintenanceTasks: true,
@@ -221,6 +222,14 @@ export const resolvers = {
                 whereClause.rarity = { in: args.where.rarity.in };
             }
 
+            // Handle location filter
+            if (args.where?.location?.id?.equals !== undefined) {
+                whereClause.locationId = args.where.location.id.equals;
+            }
+            if (args.where?.location?.id?.in !== undefined) {
+                whereClause.locationId = { in: args.where.location.id.in };
+            }
+
             const devices = await context.prisma.device.findMany({
                 where: whereClause,
                 include: DEVICE_INCLUDE,
@@ -246,6 +255,7 @@ export const resolvers = {
                         device.graphics,
                         device.storage,
                         device.info,
+                        (device as any).location?.name,
                         ...device.tags.map(tag => tag.name),
                         ...(context.isAuthenticated ? device.notes.map(note => note.content) : []),
                         ...device.maintenanceTasks.map(task => task.label + ' ' + task.notes)
@@ -291,6 +301,25 @@ export const resolvers = {
             return (context.prisma as any).category.findMany({
                 orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
             });
+        },
+        locations: async (_parent: any, _args: any, context: Context) => {
+            // Locations are public (needed for device list display and QR scanning)
+            const locations = await (context.prisma as any).location.findMany({
+                orderBy: { name: 'asc' },
+                include: { _count: { select: { devices: true } } },
+            });
+            return locations.map((loc: any) => ({
+                ...loc,
+                deviceCount: loc._count.devices,
+            }));
+        },
+        location: async (_parent: any, args: { id: number }, context: Context) => {
+            const loc = await (context.prisma as any).location.findUnique({
+                where: { id: args.id },
+                include: { _count: { select: { devices: true } } },
+            });
+            if (!loc) return null;
+            return { ...loc, deviceCount: loc._count.devices };
         },
         tags: async (_parent: any, _args: any, context: Context) => {
             return context.prisma.tag.findMany();
@@ -820,6 +849,36 @@ export const resolvers = {
                 targetPrice: item.targetPrice ? decimalToNumber(item.targetPrice) : null,
                 createdAt: item.createdAt.toISOString(),
             };
+        },
+        createLocation: async (_parent: any, args: { name: string, description?: string }, context: Context) => {
+            requireAuth(context);
+            const loc = await (context.prisma as any).location.create({
+                data: { name: args.name, description: args.description },
+                include: { _count: { select: { devices: true } } },
+            });
+            return { ...loc, deviceCount: loc._count.devices };
+        },
+        updateLocation: async (_parent: any, args: { id: number, name?: string, description?: string }, context: Context) => {
+            requireAuth(context);
+            const data: any = {};
+            if (args.name !== undefined) data.name = args.name;
+            if (args.description !== undefined) data.description = args.description;
+            const loc = await (context.prisma as any).location.update({
+                where: { id: args.id },
+                data,
+                include: { _count: { select: { devices: true } } },
+            });
+            return { ...loc, deviceCount: loc._count.devices };
+        },
+        deleteLocation: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
+            const loc = await (context.prisma as any).location.findUnique({
+                where: { id: args.id },
+                include: { _count: { select: { devices: true } } },
+            });
+            if (!loc) throw new Error('Location not found');
+            await (context.prisma as any).location.delete({ where: { id: args.id } });
+            return { ...loc, deviceCount: loc._count.devices };
         },
         createCategory: async (
             _parent: any,

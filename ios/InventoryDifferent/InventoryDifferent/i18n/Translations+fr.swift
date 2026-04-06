@@ -48,7 +48,9 @@ extension Translations {
             noData: "Aucune donnée",
             currencySymbol: "€",
             yes: "Oui",
-            no: "Non"
+            no: "Non",
+            more: "Plus...",
+            less: "Moins"
         ),
         menu: .init(
             wishlist: "Liste de souhaits",
@@ -77,7 +79,8 @@ extension Translations {
             sold: "Vendu : ",
             donated: "Donné",
             inRepair: "En réparation",
-            returned: "Retourné : ",
+            returned: "Retourné",
+            returnedFee: "Retourné : ",
             na: "N/D",
             tbd: "À déterminer"
         ),
@@ -171,7 +174,23 @@ extension Translations {
             referenceLinks: "Liens de référence",
             noPhotosMessage: "Cet appareil n'a pas de photos",
             noTasksMessage: "Aucune tâche de maintenance enregistrée",
-            noNotesMessage: "Aucune note pour cet appareil"
+            noNotesMessage: "Aucune note pour cet appareil",
+            quickOverview: "Aperçu rapide",
+            mediaAssets: "Médias et fichiers",
+            techSpecs: "Spécifications techniques",
+            archiveNotes: "Notes d'archive",
+            recentNotes: "Notes récentes",
+            maintenanceLogs: "Maintenance récente",
+            newLog: "Nouvelle entrée",
+            appreciation: "Plus-value",
+            depreciation: "Dépréciation",
+            indicatorTagged: "Étiqueté",
+            indicatorBoxed: "Boîte d'origine",
+            indicatorNoPram: "Sans PRAM",
+            indicatorPramOk: "PRAM OK",
+            indicatorPramInstalled: "PRAM Installée",
+            indicatorFavorite: "Favori",
+            moreItemsFmt: "Plus (%d de plus)"
         ),
         addEditDevice: .init(
             addTitle: "Ajouter un appareil",
@@ -189,6 +208,7 @@ extension Translations {
             serialNumber: "Numéro de série",
             releaseYear: "Année de sortie",
             location: "Emplacement",
+            locationNone: "Aucun",
             category: "Catégorie",
             selectCategory: "Sélectionner une catégorie",
             info: "Info",
@@ -484,6 +504,13 @@ extension Translations {
             english: "English",
             german: "Deutsch",
             french: "Français"
+        ),
+        locationDetail: .init(
+            title: "Emplacement",
+            loading: "Chargement de l'emplacement...",
+            errorLoading: "Erreur lors du chargement de l'emplacement",
+            noDevices: "Aucun appareil à cet emplacement",
+            deviceCountFmt: "%d appareils"
         )
     )
 }

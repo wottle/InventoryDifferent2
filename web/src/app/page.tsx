@@ -24,7 +24,10 @@ const GET_DEVICES = gql`
       modelNumber
       serialNumber
       releaseYear
-      location
+      location {
+        id
+        name
+      }
       info
       searchText
       isFavorite
@@ -98,6 +101,15 @@ const GET_CATEGORIES = gql`
   }
 `;
 
+const GET_LOCATIONS_HOME = gql`
+  query GetLocationsHome {
+    locations {
+      id
+      name
+    }
+  }
+`;
+
 const GET_DEVICE_BY_SERIAL = gql`
   query GetDeviceBySerial($where: DeviceWhereInput!) {
     device(where: $where) {
@@ -122,6 +134,7 @@ export default function Home() {
   const [getDeviceBySerial] = useLazyQuery(GET_DEVICE_BY_SERIAL);
   const defaultFilters: FilterState = {
     categoryIds: [],
+    locationIds: [],
     statuses: [],
     functionalStatuses: [],
     conditions: [],
@@ -138,6 +151,9 @@ export default function Home() {
       return {
         categoryIds: Array.isArray(parsed?.categoryIds)
           ? parsed.categoryIds.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+          : [],
+        locationIds: Array.isArray(parsed?.locationIds)
+          ? parsed.locationIds.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
           : [],
         statuses: Array.isArray(parsed?.statuses)
           ? parsed.statuses.map((s: any) => String(s))
@@ -197,6 +213,10 @@ export default function Home() {
       where.rarity = { in: filters.rarities };
     }
 
+    if (filters.locationIds.length > 0) {
+      where.location = { id: { in: filters.locationIds } };
+    }
+
     return where;
   };
 
@@ -206,6 +226,7 @@ export default function Home() {
   });
 
   const { data: categoriesData } = useQuery(GET_CATEGORIES);
+  const { data: locationsHomeData } = useQuery(GET_LOCATIONS_HOME);
 
   // Client-side search filtering
   const filteredDevices = useMemo(() => {
@@ -229,8 +250,8 @@ export default function Home() {
       const dateB = b.dateAcquired ? new Date(b.dateAcquired).getTime() : 0;
       const valA = a.estimatedValue ?? 0;
       const valB = b.estimatedValue ?? 0;
-      const locA = (a.location || '').toLowerCase();
-      const locB = (b.location || '').toLowerCase();
+      const locA = (a.location?.name || '').toLowerCase();
+      const locB = (b.location?.name || '').toLowerCase();
       const availA = a.status || '';
       const availB = b.status || '';
       const statusA = a.functionalStatus || '';
@@ -381,20 +402,27 @@ export default function Home() {
 
             const candidates = [url.pathname, hashPath].filter(Boolean);
 
-            let id: number | null = null;
+            let deviceId: number | null = null;
+            let locationId: number | null = null;
             for (const p of candidates) {
-              const m = p.match(/\/devices\/(\d+)(?:\/|$)/);
-              if (m) {
-                const n = parseInt(m[1], 10);
-                if (!Number.isNaN(n) && n > 0) {
-                  id = n;
-                  break;
-                }
+              const dm = p.match(/\/devices\/(\d+)(?:\/|$)/);
+              if (dm) {
+                const n = parseInt(dm[1], 10);
+                if (!Number.isNaN(n) && n > 0) { deviceId = n; break; }
+              }
+              const lm = p.match(/\/locations\/(\d+)(?:\/|$)/);
+              if (lm) {
+                const n = parseInt(lm[1], 10);
+                if (!Number.isNaN(n) && n > 0) { locationId = n; break; }
               }
             }
 
-            if (id) {
-              router.push(`/devices/${id}`);
+            if (deviceId) {
+              router.push(`/devices/${deviceId}`);
+              return true;
+            }
+            if (locationId) {
+              router.push(`/locations/${locationId}`);
               return true;
             }
             
@@ -463,7 +491,7 @@ export default function Home() {
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
-              {(filters.categoryIds.length > 0 || filters.statuses.length > 0 || filters.functionalStatuses.length > 0) && (
+              {(filters.categoryIds.length > 0 || filters.locationIds.length > 0 || filters.statuses.length > 0 || filters.functionalStatuses.length > 0) && (
                 <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-blue-600 rounded-full">
                   {filters.categoryIds.length + filters.statuses.length + filters.functionalStatuses.length}
                 </span>
@@ -602,6 +630,13 @@ export default function Home() {
                       {t.nav.manageCategories}
                     </Link>
                     <Link
+                      href="/locations"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
+                    >
+                      {t.nav.manageLocations}
+                    </Link>
+                    <Link
                       href="/templates"
                       onClick={() => setMenuOpen(false)}
                       className="block w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
@@ -716,6 +751,7 @@ export default function Home() {
         filters={filters}
         onFiltersChange={setFilters}
         categories={categoriesData?.categories || []}
+        locations={locationsHomeData?.locations || []}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
         onSortChange={handleSortChange}

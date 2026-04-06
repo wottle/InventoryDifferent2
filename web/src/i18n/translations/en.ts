@@ -62,11 +62,13 @@ export type Translations = {
     title: string;
     status: string;
     category: string;
+    location: string;
     functionalStatus: string;
     condition: string;
     rarity: string;
     sortBy: string;
     allCategories: string;
+    allLocations: string;
     allFunctionalStatuses: string;
     clearAll: string;
     applyFilters: string;
@@ -133,6 +135,7 @@ export type Translations = {
     exportImport: string;
     aiProductImages: string;
     manageCategories: string;
+    manageLocations: string;
     manageTemplates: string;
     manageCustomFields: string;
     trash: string;
@@ -294,6 +297,22 @@ export type Translations = {
       actions: string;
       deleteConfirm: string;
       deleteInUse: string;
+    };
+    locations: {
+      title: string;
+      subtitle: string;
+      loading: string;
+      loadingSubtitle: string;
+      addSection: string;
+      actions: string;
+      deleteConfirm: string;
+      deleteInUse: string;
+      deviceCount: string;
+      qrCode: string;
+      locationQrTitle: string;
+      locationQrSubtitle: string;
+      noDevices: string;
+      description: string;
     };
     financials: {
       title: string;
@@ -567,7 +586,9 @@ export type Translations = {
     additionalNamePlaceholder: string;
     manufacturerPlaceholder: string;
     modelNumberPlaceholder: string;
-    locationPlaceholder: string;
+    locationSelect: string;
+    locationNone: string;
+    locationCreateNew: string;
     whereAcquiredPlaceholder: string;
     repairFeeLabel: string;
     returnedDateLabel: string;
@@ -659,6 +680,8 @@ export const en: Translations = {
     rarity: "Rarity",
     sortBy: "Sort By",
     allCategories: "All Categories",
+    location: "Location",
+    allLocations: "All Locations",
     allFunctionalStatuses: "All Functional Statuses",
     clearAll: "Clear All",
     applyFilters: "Apply Filters",
@@ -725,6 +748,7 @@ export const en: Translations = {
     exportImport: "Export / Import",
     aiProductImages: "AI Product Images",
     manageCategories: "Manage Categories",
+    manageLocations: "Manage Locations",
     manageTemplates: "Manage Templates",
     manageCustomFields: "Manage Custom Fields",
     trash: "Trash",
@@ -886,6 +910,22 @@ export const en: Translations = {
       actions: "Actions",
       deleteConfirm: "Delete category",
       deleteInUse: "Cannot delete: devices are assigned to this category.",
+    },
+    locations: {
+      title: "Manage Locations",
+      subtitle: "Create named locations for shelves, boxes, and storage spots. Each gets a scannable QR code.",
+      loading: "Loading locations…",
+      loadingSubtitle: "Finding your shelves",
+      addSection: "Add Location",
+      actions: "Actions",
+      deleteConfirm: "Delete location",
+      deleteInUse: "This will unassign all devices from this location.",
+      deviceCount: "Devices",
+      qrCode: "QR Code",
+      locationQrTitle: "Location QR Code",
+      locationQrSubtitle: "Scan to see all devices stored here",
+      noDevices: "No devices at this location.",
+      description: "Description",
     },
     financials: {
       title: "Financials",
@@ -1159,7 +1199,9 @@ export const en: Translations = {
     additionalNamePlaceholder: "e.g., FDHD",
     manufacturerPlaceholder: "e.g., Apple",
     modelNumberPlaceholder: "e.g., M5011",
-    locationPlaceholder: "e.g., Shelf A",
+    locationSelect: "Location",
+    locationNone: "— No Location —",
+    locationCreateNew: "+ Create new location",
     whereAcquiredPlaceholder: "e.g., eBay, Estate Sale",
     repairFeeLabel: "Repair Fee Charged",
     returnedDateLabel: "Returned Date",

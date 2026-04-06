@@ -30,7 +30,10 @@ const GET_DEVICE = gql`
       modelNumber
       serialNumber
       releaseYear
-      location
+      location {
+        id
+        name
+      }
       info
       isFavorite
       externalUrl
@@ -1897,7 +1900,14 @@ export default function DeviceDetail() {
                                     return <svg className={`w-3.5 h-3.5 flex-shrink-0 ${colors[device.rarity] ?? 'text-gray-400'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M5 20v-2h14v2H5zm0-4V9l3 3 4-6 4 6 3-3v7H5z"/></svg>;
                                 })() : undefined}
                             />
-                            <DetailRow label={t.detail.locationLabel} value={device.location} />
+                            <DetailRow
+                                label={t.detail.locationLabel}
+                                value={device.location ? (
+                                    <Link href={`/locations/${device.location.id}`} className="text-[var(--apple-blue)] hover:underline">
+                                        {device.location.name}
+                                    </Link>
+                                ) : undefined}
+                            />
                             {device.lastPowerOnDate && (
                                 <DetailRow
                                     label={t.detail.lastUsed}

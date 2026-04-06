@@ -20,7 +20,9 @@ struct EditDeviceView: View {
     @State private var modelNumber: String
     @State private var serialNumber: String
     @State private var releaseYear: String
-    @State private var location: String
+    @State private var selectedLocationId: Int?
+    @State private var locations: [LocationRef] = []
+    @State private var isLoadingLocations = false
     @State private var info: String
 
     @State private var status: Status
@@ -62,6 +64,7 @@ struct EditDeviceView: View {
 
     @State private var isSubmitting = false
     @State private var error: String?
+    @State private var showSerialScanner = false
     
     init(device: Device, onDeviceUpdated: @escaping (Device) -> Void) {
         self.device = device
@@ -73,7 +76,7 @@ struct EditDeviceView: View {
         _modelNumber = State(initialValue: device.modelNumber ?? "")
         _serialNumber = State(initialValue: device.serialNumber ?? "")
         _releaseYear = State(initialValue: device.releaseYear.map { String($0) } ?? "")
-        _location = State(initialValue: device.location ?? "")
+        _selectedLocationId = State(initialValue: device.location?.id)
         _info = State(initialValue: device.info ?? "")
 
         _status = State(initialValue: device.status)
@@ -164,6 +167,12 @@ struct EditDeviceView: View {
             .task {
                 await loadCategories()
                 await loadCustomFields()
+                await loadLocations()
+            }
+            .sheet(isPresented: $showSerialScanner) {
+                SerialBarcodeCaptureSheet { scanned in
+                    serialNumber = scanned
+                }
             }
             .sheet(isPresented: $showAddAccessorySheet) {
                 AddAccessorySheet(deviceId: device.id) { newAccessory in
@@ -185,9 +194,24 @@ struct EditDeviceView: View {
             LabeledField(label: t.addEditDevice.additionalName, text: $additionalName)
             LabeledField(label: t.addEditDevice.manufacturer, text: $manufacturer)
             LabeledField(label: t.addEditDevice.modelNumber, text: $modelNumber)
-            LabeledField(label: t.addEditDevice.serialNumber, text: $serialNumber)
+            HStack(alignment: .bottom, spacing: 8) {
+                LabeledField(label: t.addEditDevice.serialNumber, text: $serialNumber)
+                Button { showSerialScanner = true } label: {
+                    Image(systemName: "barcode.viewfinder")
+                        .font(.system(size: 22))
+                        .foregroundColor(.accentColor)
+                }
+                .buttonStyle(.plain)
+            }
             LabeledField(label: t.addEditDevice.releaseYear, text: $releaseYear, keyboardType: .numberPad)
-            LabeledField(label: t.addEditDevice.location, text: $location)
+
+            Picker(t.addEditDevice.location, selection: $selectedLocationId) {
+                Text(t.addEditDevice.locationNone).tag(Optional<Int>.none)
+                ForEach(locations) { loc in
+                    Text(loc.name).tag(Optional<Int>.some(loc.id))
+                }
+            }
+            .disabled(isLoadingLocations)
 
             Picker(t.addEditDevice.category, selection: $selectedCategoryId) {
                 ForEach(categories) { category in
@@ -197,6 +221,16 @@ struct EditDeviceView: View {
             .disabled(isLoadingCategories)
 
             LabeledTextEditor(label: t.addEditDevice.info, text: $info)
+
+            DatePicker(t.addEditDevice.lastPowerOn, selection: Binding(
+                get: { lastPowerOnDate ?? Date() },
+                set: { lastPowerOnDate = $0 }
+            ), displayedComponents: .date)
+
+            Button(lastPowerOnDate == nil ? t.addEditDevice.setLastPowerOn : t.addEditDevice.clearLastPowerOn) {
+                lastPowerOnDate = lastPowerOnDate == nil ? Date() : nil
+            }
+            .foregroundColor(.accentColor)
         } header: {
             Text(t.addEditDevice.basicInformation)
         }
@@ -384,16 +418,6 @@ struct EditDeviceView: View {
             LabeledField(label: t.addEditDevice.os, text: $operatingSystem)
             Toggle(t.addEditDevice.wifiEnabled, isOn: $isWifiEnabled)
             Toggle(t.addEditDevice.pramRemoved, isOn: $isPramBatteryRemoved)
-
-            DatePicker(t.addEditDevice.lastPowerOn, selection: Binding(
-                get: { lastPowerOnDate ?? Date() },
-                set: { lastPowerOnDate = $0 }
-            ), displayedComponents: .date)
-
-            Button(lastPowerOnDate == nil ? t.addEditDevice.setLastPowerOn : t.addEditDevice.clearLastPowerOn) {
-                lastPowerOnDate = lastPowerOnDate == nil ? Date() : nil
-            }
-            .foregroundColor(.accentColor)
         } header: {
             Text(t.addEditDevice.computerSpecs)
         }
@@ -465,6 +489,16 @@ struct EditDeviceView: View {
         }
         isLoadingCategories = false
     }
+
+    private func loadLocations() async {
+        isLoadingLocations = true
+        do {
+            locations = try await LocationService.shared.fetchLocations()
+        } catch {
+            print("Failed to load locations: \(error)")
+        }
+        isLoadingLocations = false
+    }
     
     private func loadCustomFields() async {
         do {
@@ -489,7 +523,7 @@ struct EditDeviceView: View {
             if !modelNumber.isEmpty { input["modelNumber"] = modelNumber }
             if !serialNumber.isEmpty { input["serialNumber"] = serialNumber }
             if let year = Int(releaseYear) { input["releaseYear"] = year }
-            if !location.isEmpty { input["location"] = location }
+            input["locationId"] = selectedLocationId ?? NSNull()
             if !info.isEmpty { input["info"] = info }
 
             input["status"] = status.rawValue
@@ -585,6 +619,48 @@ struct EditDeviceView: View {
     }
 }
 
+// MARK: - Serial Number Barcode Capture Sheet
+
+struct SerialBarcodeCaptureSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
+    let onCapture: (String) -> Void
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                BarcodeScannerPreview { code in
+                    onCapture(code)
+                    dismiss()
+                }
+                .ignoresSafeArea()
+
+                VStack {
+                    Spacer()
+                    Text(lm.t.barcodeScanner.pointCamera)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(Color.black.opacity(0.7))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.bottom, 40)
+                }
+            }
+            .navigationTitle(lm.t.barcodeScanner.title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color.black.opacity(0.8), for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(lm.t.barcodeScanner.cancel) { dismiss() }
+                        .foregroundColor(.white)
+                }
+            }
+        }
+    }
+}
+
 #Preview {
     EditDeviceView(device: Device(
         id: 1,
@@ -594,7 +670,7 @@ struct EditDeviceView: View {
         modelNumber: "M5011",
         serialNumber: "ABC123",
         releaseYear: 1987,
-        location: "Shelf A",
+        location: LocationRef(id: 1, name: "Shelf A"),
         info: "Great condition",
         searchText: nil,
         isFavorite: true,

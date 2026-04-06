@@ -48,7 +48,9 @@ extension Translations {
             noData: "Keine Daten",
             currencySymbol: "€",
             yes: "Ja",
-            no: "Nein"
+            no: "Nein",
+            more: "Mehr...",
+            less: "Weniger"
         ),
         menu: .init(
             wishlist: "Wunschliste",
@@ -77,7 +79,8 @@ extension Translations {
             sold: "Verkauft: ",
             donated: "Gespendet",
             inRepair: "In Reparatur",
-            returned: "Zurückgegeben: ",
+            returned: "Zurückgegeben",
+            returnedFee: "Zurückgegeben: ",
             na: "N/V",
             tbd: "TBD"
         ),
@@ -172,7 +175,23 @@ extension Translations {
             referenceLinks: "Referenzlinks",
             noPhotosMessage: "Dieses Gerät hat keine Fotos",
             noTasksMessage: "Keine Wartungsaufgaben vermerkt",
-            noNotesMessage: "Keine Notizen zu diesem Gerät"
+            noNotesMessage: "Keine Notizen zu diesem Gerät",
+            quickOverview: "Kurzübersicht",
+            mediaAssets: "Medien & Dateien",
+            techSpecs: "Technische Daten",
+            archiveNotes: "Archivnotizen",
+            recentNotes: "Neueste Notizen",
+            maintenanceLogs: "Letzte Wartungen",
+            newLog: "Neuer Eintrag",
+            appreciation: "Wertsteigerung",
+            depreciation: "Wertverlust",
+            indicatorTagged: "Markiert",
+            indicatorBoxed: "Mit OVP",
+            indicatorNoPram: "Kein PRAM",
+            indicatorPramOk: "PRAM OK",
+            indicatorPramInstalled: "PRAM Eingebaut",
+            indicatorFavorite: "Favorit",
+            moreItemsFmt: "Mehr (%d weitere)"
         ),
         addEditDevice: .init(
             addTitle: "Gerät hinzufügen",
@@ -190,6 +209,7 @@ extension Translations {
             serialNumber: "Seriennummer",
             releaseYear: "Erscheinungsjahr",
             location: "Standort",
+            locationNone: "Keiner",
             category: "Kategorie",
             selectCategory: "Kategorie auswählen",
             info: "Info",
@@ -485,6 +505,13 @@ extension Translations {
             english: "Englisch",
             german: "Deutsch",
             french: "Français"
+        ),
+        locationDetail: .init(
+            title: "Standort",
+            loading: "Standort wird geladen...",
+            errorLoading: "Fehler beim Laden des Standorts",
+            noDevices: "Keine Geräte an diesem Standort",
+            deviceCountFmt: "%d Geräte"
         )
     )
 }

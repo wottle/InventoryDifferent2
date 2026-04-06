@@ -34,7 +34,7 @@ class DeviceService {
                 modelNumber
                 serialNumber
                 releaseYear
-                location
+                location { id name }
                 searchText
                 isFavorite
                 status
@@ -96,7 +96,7 @@ class DeviceService {
                 modelNumber
                 serialNumber
                 releaseYear
-                location
+                location { id name }
                 info
                 searchText
                 isFavorite
@@ -186,7 +186,7 @@ class DeviceService {
                 modelNumber
                 serialNumber
                 releaseYear
-                location
+                location { id name }
                 info
                 searchText
                 isFavorite
@@ -452,7 +452,7 @@ class DeviceService {
                 modelNumber
                 serialNumber
                 releaseYear
-                location
+                location { id name }
                 info
                 searchText
                 isFavorite
@@ -786,7 +786,7 @@ class DeviceService {
                 modelNumber
                 serialNumber
                 releaseYear
-                location
+                location { id name }
                 info
                 searchText
                 isFavorite
@@ -944,7 +944,7 @@ class DeviceService {
                 modelNumber
                 serialNumber
                 releaseYear
-                location
+                location { id name }
                 info
                 searchText
                 isFavorite

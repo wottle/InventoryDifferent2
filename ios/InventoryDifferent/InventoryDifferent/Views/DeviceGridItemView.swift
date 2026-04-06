@@ -34,7 +34,11 @@ struct DeviceGridItemView: View {
             .overlay(alignment: .bottom) {
                 // Status indicator icons — centered along the bottom of the thumbnail
                 StatusIndicatorsRow(device: device)
+                    .padding(.horizontal, 8)
                     .padding(.vertical, 4)
+                    .background((colorScheme == .dark ? Color.black : Color.white).opacity(0.82))
+                    .clipShape(Capsule())
+                    .padding(.bottom, 6)
             }
 
             // Text area

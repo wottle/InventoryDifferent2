@@ -36,7 +36,9 @@ struct AddDeviceView: View {
     @State private var modelNumber = ""
     @State private var serialNumber = ""
     @State private var releaseYear = ""
-    @State private var location = ""
+    @State private var selectedLocationId: Int? = nil
+    @State private var locations: [LocationRef] = []
+    @State private var isLoadingLocations = false
     @State private var info = ""
 
     @State private var status: Status = .COLLECTION
@@ -140,6 +142,7 @@ struct AddDeviceView: View {
             .task {
                 await loadCategories()
                 await loadTemplates()
+                await loadLocations()
                 // Apply prefill values from wishlist "Mark as Acquired"
                 if let v = prefillName, !v.isEmpty { name = v }
                 if let v = prefillAdditionalName, !v.isEmpty { additionalName = v }
@@ -216,7 +219,14 @@ struct AddDeviceView: View {
             LabeledField(label: t.addEditDevice.modelNumber, text: $modelNumber)
             LabeledField(label: t.addEditDevice.serialNumber, text: $serialNumber)
             LabeledField(label: t.addEditDevice.releaseYear, text: $releaseYear, keyboardType: .numberPad)
-            LabeledField(label: t.addEditDevice.location, text: $location)
+
+            Picker(t.addEditDevice.location, selection: $selectedLocationId) {
+                Text(t.addEditDevice.locationNone).tag(Optional<Int>.none)
+                ForEach(locations) { loc in
+                    Text(loc.name).tag(Optional<Int>.some(loc.id))
+                }
+            }
+            .disabled(isLoadingLocations)
 
             Picker(t.addEditDevice.category, selection: $selectedCategoryId) {
                 Text(t.addEditDevice.selectCategory)
@@ -460,7 +470,17 @@ struct AddDeviceView: View {
         }
         isLoadingCategories = false
     }
-    
+
+    private func loadLocations() async {
+        isLoadingLocations = true
+        do {
+            locations = try await LocationService.shared.fetchLocations()
+        } catch {
+            print("Failed to load locations: \(error)")
+        }
+        isLoadingLocations = false
+    }
+
     private func loadTemplates() async {
         isLoadingTemplates = true
         do {
@@ -554,7 +574,7 @@ struct AddDeviceView: View {
             if !modelNumber.isEmpty { input["modelNumber"] = modelNumber }
             if !serialNumber.isEmpty { input["serialNumber"] = serialNumber }
             if let year = Int(releaseYear) { input["releaseYear"] = year }
-            if !location.isEmpty { input["location"] = location }
+            if let locationId = selectedLocationId { input["locationId"] = locationId }
             if !info.isEmpty { input["info"] = info }
 
             input["status"] = status.rawValue

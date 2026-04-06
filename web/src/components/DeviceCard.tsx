@@ -288,7 +288,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                         {t.status[device.status as keyof typeof t.status] ?? device.status}
                     </span>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-1 px-1 py-1 bg-black/50">
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-1 px-1 py-1">
                     <StatusIconsRow />
                 </div>
             </div>

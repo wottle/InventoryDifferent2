@@ -114,8 +114,8 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
         break;
       case 'location':
         {
-          const aLoc = a.location || '';
-          const bLoc = b.location || '';
+          const aLoc = a.location?.name || '';
+          const bLoc = b.location?.name || '';
           primaryResult = aLoc.localeCompare(bLoc);
         }
         break;
@@ -532,7 +532,11 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                     {formatCurrency(device.estimatedValue)}
                   </td>
                   <td className="px-4 py-3 text-sm text-[var(--foreground)] hidden sm:table-cell">
-                    {device.location || ''}
+                    {device.location ? (
+                      <Link href={`/locations/${device.location.id}`} className="text-[var(--apple-blue)] hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {device.location.name}
+                      </Link>
+                    ) : ''}
                   </td>
                   <td className="px-3 py-2 sm:px-4 sm:py-3">
                     {getStatusDisplay(device)}

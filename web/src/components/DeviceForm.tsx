@@ -77,6 +77,24 @@ const GET_CATEGORIES = gql`
   }
 `;
 
+const GET_LOCATIONS = gql`
+  query GetLocationsForForm {
+    locations {
+      id
+      name
+    }
+  }
+`;
+
+const CREATE_LOCATION_INLINE = gql`
+  mutation CreateLocationInline($name: String!) {
+    createLocation(name: $name) {
+      id
+      name
+    }
+  }
+`;
+
 const GET_TEMPLATES = gql`
   query GetTemplates {
     templates {
@@ -119,7 +137,10 @@ const UPDATE_DEVICE = gql`
       modelNumber
       serialNumber
       releaseYear
-      location
+      location {
+        id
+        name
+      }
       info
       isFavorite
       externalUrl
@@ -198,7 +219,7 @@ interface DeviceData {
     modelNumber: string;
     serialNumber: string;
     releaseYear: number;
-    location: string;
+    location: { id: number; name: string } | null;
     info?: string;
     isFavorite: boolean;
     externalUrl?: string;
@@ -294,8 +315,10 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
     const t = useT();
     const router = useRouter();
     const { data: categoriesData } = useQuery(GET_CATEGORIES);
+    const { data: locationsData, refetch: refetchLocations } = useQuery(GET_LOCATIONS);
     const { data: templatesData } = useQuery(GET_TEMPLATES);
     const { data: customFieldsData } = useQuery(GET_CUSTOM_FIELDS);
+    const [createLocationInline] = useMutation(CREATE_LOCATION_INLINE);
     const [createDevice, { loading: creating }] = useMutation(CREATE_DEVICE);
     const [updateDevice, { loading: updating }] = useMutation(UPDATE_DEVICE);
     const [setCustomFieldValue] = useMutation(SET_CUSTOM_FIELD_VALUE);
@@ -315,7 +338,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         modelNumber: prefill?.modelNumber ?? "",
         serialNumber: "",
         releaseYear: prefill?.releaseYear ?? new Date().getFullYear(),
-        location: "",
+        locationId: 0 as number,
         categoryId: prefill?.categoryId ?? 0,
         info: "",
         isFavorite: false,
@@ -377,7 +400,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 modelNumber: device.modelNumber || "",
                 serialNumber: device.serialNumber || "",
                 releaseYear: device.releaseYear || new Date().getFullYear(),
-                location: device.location || "",
+                locationId: device.location?.id ?? 0,
                 categoryId: device.category?.id || 0,
                 info: device.info || "",
                 isFavorite: device.isFavorite || false,
@@ -538,7 +561,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         if (formData.manufacturer) input.manufacturer = formData.manufacturer;
         if (formData.modelNumber) input.modelNumber = formData.modelNumber;
         if (formData.serialNumber) input.serialNumber = formData.serialNumber;
-        if (formData.location) input.location = formData.location;
+        if (formData.locationId) input.locationId = formData.locationId;
         if (formData.info) input.info = formData.info;
         if (formData.externalUrl) input.externalUrl = formData.externalUrl;
         if (formData.whereAcquired) input.whereAcquired = formData.whereAcquired;
@@ -871,16 +894,31 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     {errors.releaseYear && <p className="text-red-500 text-xs mt-1">{errors.releaseYear}</p>}
                 </FormField>
 
-                <FormField label={t.detail.locationLabel}>
-                    <input
-                        type="text"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className={`${inputClass} ${errors.location ? "border-red-500" : ""}`}
-                        placeholder={t.form.locationPlaceholder}
-                    />
-                    {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
+                <FormField label={t.form.locationSelect}>
+                    <select
+                        value={formData.locationId ?? 0}
+                        onChange={(e) => setFormData(prev => ({ ...prev, locationId: parseInt(e.target.value) || 0 }))}
+                        className={selectClass}
+                    >
+                        <option value={0}>{t.form.locationNone}</option>
+                        {(locationsData?.locations ?? []).map((loc: { id: number; name: string }) => (
+                            <option key={loc.id} value={loc.id}>{loc.name}</option>
+                        ))}
+                    </select>
+                    <button
+                        type="button"
+                        className="mt-1 text-xs text-[var(--apple-blue)] hover:underline"
+                        onClick={async () => {
+                            const name = prompt(t.form.locationSelect + ":");
+                            if (!name?.trim()) return;
+                            const result = await createLocationInline({ variables: { name: name.trim() } });
+                            await refetchLocations();
+                            const newId = result.data?.createLocation?.id;
+                            if (newId) setFormData(prev => ({ ...prev, locationId: newId }));
+                        }}
+                    >
+                        {t.form.locationCreateNew}
+                    </button>
                 </FormField>
 
                 <FormField label={t.form.lastPowerOnLabel}>

@@ -17,6 +17,7 @@ struct BarcodeScannerView: View {
     @State private var isSearching = false
     @State private var errorMessage: String?
     @State private var foundDevice: Device?
+    @State private var foundLocationId: Int?
     @State private var selectedTab = 0
 
     private var scanFrameSize: CGFloat {
@@ -93,6 +94,9 @@ struct BarcodeScannerView: View {
                     }
                 )
             }
+            .navigationDestination(item: $foundLocationId) { locationId in
+                LocationDetailView(locationId: locationId)
+            }
         }
     }
     
@@ -150,6 +154,18 @@ struct BarcodeScannerView: View {
                         } else {
                             print("[Scanner] Device not found for ID: \(id)")
                         }
+                    }
+                }
+                if let match = path.range(of: #"/locations/(\d+)"#, options: .regularExpression) {
+                    let idString = path[match].replacingOccurrences(of: "/locations/", with: "")
+                    print("[Scanner] Found location ID string: \(idString)")
+                    if let id = Int(idString), id > 0 {
+                        print("[Scanner] Navigating to location: \(id)")
+                        await MainActor.run {
+                            isSearching = false
+                            foundLocationId = id
+                        }
+                        return
                     }
                 }
             }
@@ -216,7 +232,7 @@ struct BarcodeScannerView: View {
                 modelNumber
                 serialNumber
                 releaseYear
-                location
+                location { id name }
                 info
                 isFavorite
                 status

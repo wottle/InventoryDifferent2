@@ -19,7 +19,10 @@ const GET_DEVICES = gql`
       modelNumber
       serialNumber
       releaseYear
-      location
+      location {
+        id
+        name
+      }
       info
       isFavorite
       externalUrl
@@ -88,6 +91,7 @@ const GET_CATEGORIES = gql`
 
 const defaultFilters: FilterState = {
   categoryIds: [],
+  locationIds: [],
   statuses: [],
   functionalStatuses: [],
   conditions: [],
@@ -301,7 +305,7 @@ export default function PrintListPage() {
                     <tr><td className="text-gray-500 pr-2">{t.pages.print.manufacturerLabel}</td><td>{device.manufacturer || "—"}</td></tr>
                     <tr><td className="text-gray-500 pr-2">{t.pages.print.modelLabel}</td><td>{device.modelNumber || "—"}</td></tr>
                     <tr><td className="text-gray-500 pr-2">{t.pages.print.serialLabel}</td><td>{device.serialNumber || "—"}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">{t.pages.print.locationLabel}</td><td>{device.location || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.locationLabel}</td><td>{device.location?.name || "—"}</td></tr>
                     <tr><td className="text-gray-500 pr-2">{t.pages.print.assetTaggedLabel}</td><td>{device.isAssetTagged ? t.common.yes : t.common.no}</td></tr>
                   </tbody>
                 </table>
@@ -531,6 +535,7 @@ export default function PrintListPage() {
         filters={filters}
         onFiltersChange={setFilters}
         categories={categories}
+        locations={[]}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
         onSortChange={(col, dir) => { setSortColumn(col); setSortDirection(dir); }}

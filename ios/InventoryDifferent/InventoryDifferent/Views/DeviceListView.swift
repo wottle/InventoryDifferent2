@@ -415,20 +415,20 @@ struct ValueSaleInfo: View {
             switch device.status {
             case .COLLECTION:
                 if let value = device.estimatedValue {
-                    Text("\(t.deviceList.estValue): \(formatPrice(value))")
+                    Text("\(t.deviceList.estValue)\(formatPrice(value))")
                         .font(.caption)
                         .foregroundColor(.green)
                 }
             case .FOR_SALE:
-                Text("\(t.deviceList.forSale): \(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
+                Text("\(t.deviceList.forSale)\(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
                     .font(.caption)
                     .foregroundColor(.orange)
             case .PENDING_SALE:
-                Text("\(t.deviceList.pending): \(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
+                Text("\(t.deviceList.pending)\(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
                     .font(.caption)
                     .foregroundColor(.yellow)
             case .SOLD:
-                Text("\(t.deviceList.sold): \(device.soldPrice.map { formatPrice($0) } ?? t.deviceList.na)")
+                Text("\(t.deviceList.sold)\(device.soldPrice.map { formatPrice($0) } ?? t.deviceList.na)")
                     .font(.caption)
                     .foregroundColor(.red)
             case .DONATED:
@@ -441,7 +441,7 @@ struct ValueSaleInfo: View {
                     .foregroundColor(.teal)
             case .RETURNED:
                 if let fee = device.soldPrice, fee > 0 {
-                    Text("\(t.deviceList.returned): \(formatPrice(fee))")
+                    Text("\(t.deviceList.returnedFee)\(formatPrice(fee))")
                         .font(.caption)
                         .foregroundColor(.red)
                 } else {

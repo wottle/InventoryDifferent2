@@ -28,6 +28,7 @@ struct Translations {
         let loading, error, noData: String
         let currencySymbol: String
         let yes, no: String
+        let more, less: String
     }
 
     // MARK: - Menu
@@ -44,7 +45,7 @@ struct Translations {
         let searchPlaceholder: String
         let noDevices, noDevicesFilter, noDevicesFound: String
         let clearFilters, scanBarcode: String
-        let estValue, forSale, pending, sold, donated, inRepair, returned: String
+        let estValue, forSale, pending, sold, donated, inRepair, returned, returnedFee: String
         let na, tbd: String
     }
 
@@ -79,6 +80,12 @@ struct Translations {
         let computerSpecs, cpu, ram, graphics, storage, operatingSystem, wifiEnabled, pramBatteryRemoved: String
         let customFields, additionalInfo, accessories, addAccessory, referenceLinks: String
         let noPhotosMessage, noTasksMessage, noNotesMessage: String
+        // Redesign-specific keys
+        let quickOverview, mediaAssets, techSpecs, archiveNotes, recentNotes: String
+        let maintenanceLogs, newLog: String
+        let appreciation, depreciation: String
+        let indicatorTagged, indicatorBoxed, indicatorNoPram, indicatorPramOk, indicatorPramInstalled, indicatorFavorite: String
+        let moreItemsFmt: String  // "More (%d more)" — %d is the overflow count
     }
 
     // MARK: - Add / Edit Device
@@ -89,7 +96,7 @@ struct Translations {
         let searchTemplates, templateOptional, templateApplied, noTemplates: String
         let basicInformation: String
         let name, additionalName, manufacturer, modelNumber, serialNumber: String
-        let releaseYear, location, category, selectCategory, info: String
+        let releaseYear, location, locationNone, category, selectCategory, info: String
         let status, functionalStatus, condition, notSet, rarity: String
         let flags, favorite, assetTagged: String
         let accessories, noAccessoriesYet, addAccessory: String
@@ -253,6 +260,16 @@ struct Translations {
         let notFound: String
     }
 
+    // MARK: - Location Detail
+
+    struct LocationT {
+        let title: String
+        let loading: String
+        let errorLoading: String
+        let noDevices: String
+        let deviceCountFmt: String  // "%d devices"
+    }
+
     // MARK: - Timeline
 
     struct TimelineT {
@@ -302,4 +319,5 @@ struct Translations {
     let timeline: TimelineT
     let sort: SortT
     let settings: SettingsT
+    let locationDetail: LocationT
 }

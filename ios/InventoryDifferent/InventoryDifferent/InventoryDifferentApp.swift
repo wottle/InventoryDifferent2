@@ -15,6 +15,7 @@ struct InventoryDifferentApp: App {
     @StateObject private var lm = LocalizationManager.shared
     @State private var showSplash = true
     @State private var deepLinkDeviceId: Int?
+    @State private var deepLinkLocationId: Int?
 
     var body: some Scene {
         WindowGroup {
@@ -36,7 +37,7 @@ struct InventoryDifferentApp: App {
                         .environmentObject(lm)
                 } else {
                     // Ready to show main content
-                    ContentView(deepLinkDeviceId: $deepLinkDeviceId)
+                    ContentView(deepLinkDeviceId: $deepLinkDeviceId, deepLinkLocationId: $deepLinkLocationId)
                         .environmentObject(deviceStore)
                         .environmentObject(appSettings)
                         .environmentObject(authService)
@@ -67,52 +68,63 @@ struct InventoryDifferentApp: App {
     private func handleDeepLink(_ url: URL) {
         // Handle both custom URL scheme (inventorydifferent://devices/123)
         // and Universal Links (https://your-domain.example.com/devices/123)
-        
+
         print("🔗 Deep link received: \(url.absoluteString)")
         print("   Scheme: \(url.scheme ?? "none")")
         print("   Host: \(url.host ?? "none")")
         print("   Path: \(url.path)")
         print("   Path components: \(url.pathComponents)")
-        
+
         var deviceId: Int?
-        
-        // For custom URL scheme: inventorydifferent://devices/123
-        // Host = "devices", Path = "/123"
+        var locationId: Int?
+
+        // For custom URL scheme: inventorydifferent://devices/123 or inventorydifferent://locations/123
+        // Host = "devices"/"locations", Path = "/123"
         if url.scheme == "inventorydifferent" {
-            if url.host == "devices" {
-                let pathComponents = url.pathComponents.filter { $0 != "/" }
+            let pathComponents = url.pathComponents.filter { $0 != "/" }
+            if url.host == "devices" || url.host == "item" {
                 if let idString = pathComponents.first, let id = Int(idString) {
                     deviceId = id
                 }
-            } else if url.host == "item" {
-                let pathComponents = url.pathComponents.filter { $0 != "/" }
+            } else if url.host == "locations" {
                 if let idString = pathComponents.first, let id = Int(idString) {
-                    deviceId = id
+                    locationId = id
                 }
             }
         }
-        // For Universal Links: https://your-domain.example.com/devices/123
+        // For Universal Links: https://your-domain.example.com/devices/123 or /locations/123
         // Host = "your-domain.example.com", Path = "/devices/123"
         else if url.scheme == "https" || url.scheme == "http" {
             let pathComponents = url.pathComponents.filter { $0 != "/" }
-            if pathComponents.count >= 2 && (pathComponents[0] == "devices" || pathComponents[0] == "item") {
-                if let id = Int(pathComponents[1]) {
-                    deviceId = id
+            if pathComponents.count >= 2 {
+                if pathComponents[0] == "devices" || pathComponents[0] == "item" {
+                    if let id = Int(pathComponents[1]) {
+                        deviceId = id
+                    }
+                } else if pathComponents[0] == "locations" {
+                    if let id = Int(pathComponents[1]) {
+                        locationId = id
+                    }
                 }
             }
         }
-        
-        if let deviceId = deviceId {
+
+        let delay: TimeInterval = showSplash ? 2.0 : 0.5
+
+        if let deviceId {
             print("✅ Parsed device ID: \(deviceId)")
-            
-            // Delay to ensure app is fully loaded and splash is dismissed
-            let delay: TimeInterval = showSplash ? 2.0 : 0.5
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 print("🚀 Setting deepLinkDeviceId to \(deviceId)")
                 deepLinkDeviceId = deviceId
             }
+        } else if let locationId {
+            print("✅ Parsed location ID: \(locationId)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                print("🚀 Setting deepLinkLocationId to \(locationId)")
+                deepLinkLocationId = locationId
+            }
         } else {
-            print("❌ Could not parse device ID from URL")
+            print("❌ Could not parse ID from URL")
         }
     }
 }

@@ -354,7 +354,7 @@ struct ShareView: View {
         modelNumber: "M5011",
         serialNumber: "ABC123",
         releaseYear: 1987,
-        location: "Shelf A",
+        location: LocationRef(id: 1, name: "Shelf A"),
         info: nil,
         searchText: nil,
         isFavorite: true,

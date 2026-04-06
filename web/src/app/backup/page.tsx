@@ -20,7 +20,10 @@ const GET_DEVICES = gql`
       modelNumber
       serialNumber
       releaseYear
-      location
+      location {
+        id
+        name
+      }
       info
       isFavorite
       externalUrl
@@ -89,6 +92,7 @@ const GET_CATEGORIES = gql`
 
 const defaultFilters: FilterState = {
   categoryIds: [],
+  locationIds: [],
   statuses: [],
   functionalStatuses: [],
   conditions: [],
@@ -698,6 +702,7 @@ export default function ExportPage() {
         filters={filters}
         onFiltersChange={setFilters}
         categories={categories}
+        locations={[]}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
         onSortChange={(col, dir) => { setSortColumn(col); setSortDirection(dir); }}
