@@ -58,6 +58,7 @@ extension Translations {
             stats: "Stats",
             timeline: "Timeline",
             chat: "Chat",
+            locations: "Locations",
             logOut: "Log Out",
             logIn: "Log In",
             logOutTitle: "Log Out?",
@@ -210,6 +211,7 @@ extension Translations {
             releaseYear: "Release Year",
             location: "Location",
             locationNone: "None",
+            locationCreateNew: "New Location",
             category: "Category",
             selectCategory: "Select a category",
             info: "Info",
@@ -505,6 +507,13 @@ extension Translations {
             english: "English",
             german: "Deutsch",
             french: "Français"
+        ),
+        locationsList: .init(
+            title: "Locations",
+            loading: "Loading locations...",
+            errorLoading: "Error loading locations",
+            noLocations: "No locations yet",
+            deviceCountFmt: "%d devices"
         ),
         locationDetail: .init(
             title: "Location",

@@ -23,6 +23,8 @@ struct EditDeviceView: View {
     @State private var selectedLocationId: Int?
     @State private var locations: [LocationRef] = []
     @State private var isLoadingLocations = false
+    @State private var showingNewLocationAlert = false
+    @State private var newLocationName = ""
     @State private var info: String
 
     @State private var status: Status
@@ -142,6 +144,23 @@ struct EditDeviceView: View {
             }
             .navigationTitle(t.addEditDevice.editTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .alert(t.addEditDevice.locationCreateNew, isPresented: $showingNewLocationAlert) {
+                TextField(t.addEditDevice.location, text: $newLocationName)
+                Button(t.common.cancel, role: .cancel) { }
+                Button(t.common.save) {
+                    let name = newLocationName.trimmingCharacters(in: .whitespaces)
+                    guard !name.isEmpty else { return }
+                    Task {
+                        do {
+                            let created = try await LocationService.shared.createLocation(name: name)
+                            locations = try await LocationService.shared.fetchLocations()
+                            selectedLocationId = created.id
+                        } catch {
+                            print("Failed to create location: \(error)")
+                        }
+                    }
+                }
+            }
             .alert(t.addEditDevice.saveFailed, isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
                 Button(t.common.ok) { error = nil }
             } message: {
@@ -212,6 +231,12 @@ struct EditDeviceView: View {
                 }
             }
             .disabled(isLoadingLocations)
+
+            Button(t.addEditDevice.locationCreateNew) {
+                newLocationName = ""
+                showingNewLocationAlert = true
+            }
+            .font(.footnote)
 
             Picker(t.addEditDevice.category, selection: $selectedCategoryId) {
                 ForEach(categories) { category in

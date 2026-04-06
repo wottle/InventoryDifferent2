@@ -12,7 +12,11 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'iOS: Locations list view accessible from the main menu',
+      'iOS: Create a new location inline from the Add/Edit device form',
+      'Web: Larger 1:1 thumbnails on location detail device list',
+    ],
     changed: [],
     fixed: [],
   },

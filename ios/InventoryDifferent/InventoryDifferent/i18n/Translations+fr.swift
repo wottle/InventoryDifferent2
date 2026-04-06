@@ -58,6 +58,7 @@ extension Translations {
             stats: "Statistiques",
             timeline: "Chronologie",
             chat: "Chat",
+            locations: "Emplacements",
             logOut: "Déconnexion",
             logIn: "Connexion",
             logOutTitle: "Se déconnecter ?",
@@ -209,6 +210,7 @@ extension Translations {
             releaseYear: "Année de sortie",
             location: "Emplacement",
             locationNone: "Aucun",
+            locationCreateNew: "Nouvel emplacement",
             category: "Catégorie",
             selectCategory: "Sélectionner une catégorie",
             info: "Info",
@@ -504,6 +506,13 @@ extension Translations {
             english: "English",
             german: "Deutsch",
             french: "Français"
+        ),
+        locationsList: .init(
+            title: "Emplacements",
+            loading: "Chargement des emplacements...",
+            errorLoading: "Erreur lors du chargement des emplacements",
+            noLocations: "Aucun emplacement pour l'instant",
+            deviceCountFmt: "%d appareils"
         ),
         locationDetail: .init(
             title: "Emplacement",

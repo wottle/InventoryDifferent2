@@ -4,6 +4,11 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- iOS: Locations list view accessible from the main menu
+- iOS: Create a new location inline from the Add/Edit device form
+- Web: Larger 1:1 thumbnails on location detail device list
+
 ---
 
 ## [1.3.0] - 2026-04-05

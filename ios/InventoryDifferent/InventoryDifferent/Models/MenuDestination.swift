@@ -13,4 +13,5 @@ enum MenuDestination: Hashable {
     case stats
     case timeline
     case wishlist
+    case locations
 }

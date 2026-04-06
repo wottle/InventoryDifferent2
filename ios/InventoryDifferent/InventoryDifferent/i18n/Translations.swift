@@ -34,7 +34,7 @@ struct Translations {
     // MARK: - Menu
 
     struct MenuT {
-        let wishlist, financials, stats, timeline, chat: String
+        let wishlist, financials, stats, timeline, chat, locations: String
         let logOut, logIn, logOutTitle, logOutMessage: String
     }
 
@@ -96,7 +96,7 @@ struct Translations {
         let searchTemplates, templateOptional, templateApplied, noTemplates: String
         let basicInformation: String
         let name, additionalName, manufacturer, modelNumber, serialNumber: String
-        let releaseYear, location, locationNone, category, selectCategory, info: String
+        let releaseYear, location, locationNone, locationCreateNew, category, selectCategory, info: String
         let status, functionalStatus, condition, notSet, rarity: String
         let flags, favorite, assetTagged: String
         let accessories, noAccessoriesYet, addAccessory: String
@@ -260,6 +260,16 @@ struct Translations {
         let notFound: String
     }
 
+    // MARK: - Locations List
+
+    struct LocationsListT {
+        let title: String
+        let loading: String
+        let errorLoading: String
+        let noLocations: String
+        let deviceCountFmt: String  // "%d devices"
+    }
+
     // MARK: - Location Detail
 
     struct LocationT {
@@ -319,5 +329,6 @@ struct Translations {
     let timeline: TimelineT
     let sort: SortT
     let settings: SettingsT
+    let locationsList: LocationsListT
     let locationDetail: LocationT
 }

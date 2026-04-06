@@ -79,6 +79,20 @@ struct MenuView: View {
                     .padding(.leading, 44)
 
                 MenuButton(
+                    icon: "mappin.and.ellipse",
+                    title: t.menu.locations,
+                    color: .orange
+                ) {
+                    showingMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        navigationPath.append(MenuDestination.locations)
+                    }
+                }
+
+                Divider()
+                    .padding(.leading, 44)
+
+                MenuButton(
                     icon: "bubble.left.and.bubble.right",
                     title: t.menu.chat,
                     color: .blue

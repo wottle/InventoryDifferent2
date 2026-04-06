@@ -39,6 +39,8 @@ struct AddDeviceView: View {
     @State private var selectedLocationId: Int? = nil
     @State private var locations: [LocationRef] = []
     @State private var isLoadingLocations = false
+    @State private var showingNewLocationAlert = false
+    @State private var newLocationName = ""
     @State private var info = ""
 
     @State private var status: Status = .COLLECTION
@@ -110,6 +112,23 @@ struct AddDeviceView: View {
             }
             .navigationTitle(t.addEditDevice.addTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .alert(t.addEditDevice.locationCreateNew, isPresented: $showingNewLocationAlert) {
+                TextField(t.addEditDevice.location, text: $newLocationName)
+                Button(t.common.cancel, role: .cancel) { }
+                Button(t.common.save) {
+                    let name = newLocationName.trimmingCharacters(in: .whitespaces)
+                    guard !name.isEmpty else { return }
+                    Task {
+                        do {
+                            let created = try await LocationService.shared.createLocation(name: name)
+                            locations = try await LocationService.shared.fetchLocations()
+                            selectedLocationId = created.id
+                        } catch {
+                            print("Failed to create location: \(error)")
+                        }
+                    }
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(t.common.cancel) {
@@ -227,6 +246,12 @@ struct AddDeviceView: View {
                 }
             }
             .disabled(isLoadingLocations)
+
+            Button(t.addEditDevice.locationCreateNew) {
+                newLocationName = ""
+                showingNewLocationAlert = true
+            }
+            .font(.footnote)
 
             Picker(t.addEditDevice.category, selection: $selectedCategoryId) {
                 Text(t.addEditDevice.selectCategory)

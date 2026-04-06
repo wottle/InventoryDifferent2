@@ -35,6 +35,9 @@ struct ContentView: View {
                         TimelineView()
                     case .wishlist:
                         WishlistView()
+                    case .locations:
+                        LocationsListView()
+                            .environmentObject(LocalizationManager.shared)
                     }
                 }
         }
