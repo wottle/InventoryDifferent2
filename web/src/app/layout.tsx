@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import "@fontsource-variable/inter";
 import "./globals.css";
 import { ApolloWrapper } from "../lib/apollo-wrapper";
 import { AuthProvider } from "../lib/auth-context";
@@ -9,8 +9,6 @@ import { AppFooter } from "../components/AppFooter";
 import { UmamiScript } from "../components/UmamiScript";
 import { TranslationProvider } from "../i18n/context";
 import { getTranslations } from "../i18n";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +32,7 @@ export default function RootLayout({
 
   return (
     <html lang={lang}>
-      <body className={`${inter.className} antialiased`}>
+      <body className="antialiased">
         <TranslationProvider translations={translations} locale={lang}>
           <AuthProvider>
             <ApolloWrapper>

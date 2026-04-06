@@ -14,6 +14,7 @@
     "@ai-sdk/anthropic": "^1.0.0",
     "@apollo/client": "^3.14.0",
     "@apollo/experimental-nextjs-app-support": "^0.11.2",
+    "@fontsource-variable/inter": "^5.2.8",
     "@types/qrcode": "^1.5.6",
     "ai": "^4.0.0",
     "barcode-detector": "^3.0.8",
