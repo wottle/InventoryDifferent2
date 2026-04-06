@@ -294,12 +294,12 @@ struct DeviceRowView: View {
                         .lineLimit(1)
                 }
                 
-                // Category, release year, and status badge
+                // Category and release year
                 HStack(spacing: 6) {
                     Text(device.category.name)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     if let year = device.releaseYear {
                         Text("•")
                             .font(.caption)
@@ -308,18 +308,21 @@ struct DeviceRowView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
-                    StatusBadge(status: device.status)
                 }
-                
+
                 // Status indicator icons row
                 StatusIndicatorsRow(device: device)
-                
+
                 // Value/Sale info
                 ValueSaleInfo(device: device)
             }
-            
+
             Spacer()
+
+            // Status pill — vertical, centered, just left of the disclosure chevron
+            StatusBadge(status: device.status)
+                .rotationEffect(.degrees(90))
+                .fixedSize()
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
