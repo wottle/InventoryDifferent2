@@ -424,6 +424,8 @@ export type Translations = {
       rarityNotSet: string;
       computerSpecs: string;
       deleteConfirm: string;
+      linkLabel: string;
+      linkLabelPlaceholder: string;
     };
     backup: {
       title: string;
@@ -1039,6 +1041,8 @@ export const en: Translations = {
       rarityNotSet: "Not Set",
       computerSpecs: "Computer Specs",
       deleteConfirm: "Delete this template?",
+      linkLabel: "Link Label",
+      linkLabelPlaceholder: "e.g. EveryMac",
     },
     backup: {
       title: "Export Devices",

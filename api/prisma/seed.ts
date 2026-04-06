@@ -163,9 +163,178 @@ type ParsedTemplate = {
     storage?: string;
     operatingSystem?: string;
     externalUrl?: string;
+    externalLinkLabel?: string;
     isWifiEnabled?: boolean;
     isPramBatteryRemoved?: boolean;
+    rarity?: string;
 };
+
+// Rarity map keyed by device name. Unlisted templates default to COMMON.
+const TEMPLATE_RARITY: Record<string, string> = {
+    // EXTREMELY_RARE
+    'Macintosh 128k':                        'EXTREMELY_RARE',
+    'Apple Lisa':                            'EXTREMELY_RARE',
+    'Apple Lisa 2':                          'EXTREMELY_RARE',
+    'Apple Lisa 2/10':                       'EXTREMELY_RARE',
+    'Macintosh TV':                          'EXTREMELY_RARE',
+    'Twentieth Anniversary Macintosh':       'EXTREMELY_RARE',
+    'Macintosh Color Classic II':            'EXTREMELY_RARE',
+    'PowerBook 550c':                        'EXTREMELY_RARE',
+    'Apple III':                             'EXTREMELY_RARE',
+    'Apple III Plus':                        'EXTREMELY_RARE',
+    'NeXT Cube':                             'EXTREMELY_RARE',
+    'NeXTcube Turbo':                        'EXTREMELY_RARE',
+
+    // VERY_RARE
+    'Macintosh IIfx':                        'VERY_RARE',
+    'Macintosh Quadra 900':                  'VERY_RARE',
+    'Macintosh Quadra 950':                  'VERY_RARE',
+    'Macintosh Portable':                    'VERY_RARE',
+    'Macintosh Portable Backlit':            'VERY_RARE',
+    'Power Macintosh G4 Cube':               'VERY_RARE',
+    'Power Macintosh 9500/132':              'VERY_RARE',
+    'Power Macintosh 9600':                  'VERY_RARE',
+    'PowerBook Duo 2300c':                   'VERY_RARE',
+    'Apple IIGS':                            'VERY_RARE',
+    'Apple Newton MessagePad':               'VERY_RARE',
+    'Apple Newton MessagePad 100':           'VERY_RARE',
+    'Apple Newton MessagePad 2000':          'VERY_RARE',
+    'Apple Newton MessagePad 2100':          'VERY_RARE',
+    'NeXTstation Turbo':                     'VERY_RARE',
+    'NeXTstation Turbo Color':               'VERY_RARE',
+    'Xserve G4':                             'VERY_RARE',
+    'Xserve G5':                             'VERY_RARE',
+    'Mac Pro (2013)':                        'VERY_RARE',
+    'Power Macintosh G3 All-In-One':         'VERY_RARE',
+    'Apple eMate 300':                       'VERY_RARE',
+    'Twentieth Anniversary Macintosh Keyboard': '',
+    'Macintosh Quadra 840AV':                'VERY_RARE',
+
+    // RARE
+     'Macintosh Color Classic':               'RARE',
+    'Macintosh IIcx':                        'RARE',
+    'Macintosh IIci':                        'RARE',
+    'Macintosh Quadra 700':                  'RARE',
+    'Macintosh Quadra 800':                  'RARE',
+    'PowerBook 100':                         'RARE',
+    'PowerBook Duo 210':                     'RARE',
+    'PowerBook Duo 230':                     'RARE',
+    'PowerBook Duo 250':                     'RARE',
+    'PowerBook Duo 270c':                    'RARE',
+    'PowerBook Duo 280':                     'RARE',
+    'PowerBook Duo 280c':                    'RARE',
+    'PowerBook 5300ce/117':                  'RARE',
+    'Power Macintosh 8100/80':               'RARE',
+    'Power Macintosh 9500':                  'RARE',
+    'iMac G4':                               'RARE',
+    'NeXTstation':                           'RARE',
+    'NeXTstation Color':                     'RARE',
+    'Apple Newton MessagePad 110':           'RARE',
+    'Apple Newton MessagePad 120':           'RARE',
+    'Apple Newton MessagePad 130':           'RARE',
+    'PowerBook G3 (Kanga)':                  'RARE',
+    'Performa 6300':                         'RARE',
+    'Apple IIc Plus':                        'RARE',
+    'Apple Adjustable Keyboard':             'RARE',
+    'Newton Keyboard':                       'RARE',
+    'Mac Pro (Early 2006)':                  'RARE',
+    'Mac Pro (Early 2008)':                  'RARE',
+    'Mac Pro (Early 2009)':                  'RARE',
+    'Mac Pro (Mid 2010)':                    'RARE',
+    'Mac Pro (Mid 2012)':                    'RARE',
+    'Apple II':                              'RARE',
+    'Original Macintosh Keyboard':           'RARE',
+    'Lisa Keyboard':                         'RARE',
+    'Macintosh SE/30':                       'RARE',
+
+    // UNCOMMON
+    'Macintosh 512k':                        'UNCOMMON',
+    'Macintosh 512Ke':                       'UNCOMMON',
+    'Macintosh Classic II':                  'UNCOMMON',
+    'Macintosh IIx':                         'UNCOMMON',
+    'Macintosh IIsi':                        'UNCOMMON',
+    'Macintosh IIvi':                        'UNCOMMON',
+    'Macintosh IIvx':                        'UNCOMMON',
+    'Macintosh II':                          'UNCOMMON',
+    'Macintosh LC 475':                      'UNCOMMON',
+    'Macintosh LC 520':                      'UNCOMMON',
+    'Macintosh LC 550':                      'UNCOMMON',
+    'Macintosh LC 575':                      'UNCOMMON',
+    'Macintosh LC 580':                      'UNCOMMON',
+    'Macintosh LC 630':                      'UNCOMMON',
+    'Macintosh Quadra 610':                  'UNCOMMON',
+    'Macintosh Quadra 630':                  'UNCOMMON',
+    'Macintosh Quadra 650':                  'UNCOMMON',
+    'Macintosh Quadra 660AV':                'UNCOMMON',
+    'PowerBook 140':                         'UNCOMMON',
+    'PowerBook 145':                         'UNCOMMON',
+    'PowerBook 150':                         'UNCOMMON',
+    'PowerBook 160':                         'UNCOMMON',
+    'PowerBook 165':                         'UNCOMMON',
+    'PowerBook 165c':                        'UNCOMMON',
+    'PowerBook 170':                         'UNCOMMON',
+    'PowerBook 180':                         'UNCOMMON',
+    'PowerBook 180c':                        'UNCOMMON',
+    'PowerBook 190':                         'UNCOMMON',
+    'PowerBook 190cs':                       'UNCOMMON',
+    'PowerBook 520':                         'UNCOMMON',
+    'PowerBook 520c':                        'UNCOMMON',
+    'PowerBook 540':                         'UNCOMMON',
+    'PowerBook 540c':                        'UNCOMMON',
+    'PowerBook 5300/100':                    'UNCOMMON',
+    'PowerBook 5300cs/100':                  'UNCOMMON',
+    'PowerBook 5300c/100':                   'UNCOMMON',
+    'PowerBook 1400cs/117':                  'UNCOMMON',
+    'PowerBook 1400c/117':                   'UNCOMMON',
+    'PowerBook 1400cs/133':                  'UNCOMMON',
+    'PowerBook 1400c/133':                   'UNCOMMON',
+    'PowerBook 1400cs/166':                  'UNCOMMON',
+    'PowerBook 1400c/166':                   'UNCOMMON',
+    'PowerBook 2400c/180':                   'UNCOMMON',
+    'PowerBook 2400c/240':                   'UNCOMMON',
+    'PowerBook 3400c/180':                   'UNCOMMON',
+    'PowerBook 3400c/200':                   'UNCOMMON',
+    'PowerBook 3400c/240':                   'UNCOMMON',
+    'Power Macintosh 7200/75':               'UNCOMMON',
+    'Power Macintosh 7300':                  'UNCOMMON',
+    'Power Macintosh 7500/100':              'UNCOMMON',
+    'Power Macintosh 7600':                  'UNCOMMON',
+    'Power Macintosh 8500/120':              'UNCOMMON',
+    'Power Macintosh 8600':                  'UNCOMMON',
+    'Power Macintosh 4400/200':              'UNCOMMON',
+    'Power Macintosh 5400':                  'UNCOMMON',
+    'Power Macintosh 5500':                  'UNCOMMON',
+    'Power Macintosh 6400':                  'UNCOMMON',
+    'Power Macintosh 6500':                  'UNCOMMON',
+    'PowerBook G3 Series (Wallstreet)':      'UNCOMMON',
+    'PowerBook G3 (Bronze Keyboard)':        'UNCOMMON',
+    'PowerBook G3 (FireWire)':               'UNCOMMON',
+    'PowerBook G4 (Titanium)':               'UNCOMMON',
+    'PowerBook G4 (DVI)':                    'UNCOMMON',
+    'PowerBook G4 (12-inch)':                'UNCOMMON',
+    'PowerBook G4 (15-inch)':                'UNCOMMON',
+    'PowerBook G4 (17-inch)':                'UNCOMMON',
+    'iBook G3':                              'UNCOMMON',
+    'Mac mini G4':                           'UNCOMMON',
+    'eMac':                                  'UNCOMMON',
+    'iMac G5':                               'UNCOMMON',
+    'Apple IIc':                             'UNCOMMON',
+    'Apple II Plus':                         'UNCOMMON',
+};
+
+function linkLabelFromUrl(url: string): string | undefined {
+    try {
+        const host = new URL(url).hostname.replace(/^www\./, '');
+        if (host.includes('everymac.com')) return 'EveryMac';
+        if (host.includes('apple.com')) return 'Apple';
+        if (host.includes('next.com') || host.includes('nextcomputers.org')) return 'NeXT';
+        // Capitalise first segment of the domain as a reasonable default
+        const label = host.split('.')[0];
+        return label.charAt(0).toUpperCase() + label.slice(1);
+    } catch {
+        return undefined;
+    }
+}
 
 function templateDisplayName(deviceName: string, additionalName: string | null) {
     const extra = (additionalName ?? '').trim();
@@ -218,13 +387,19 @@ function parseTemplatesFromSql(sql: string, oldCategoryIdToNewId: Map<number, nu
         if (typeof additionalName === 'string' && additionalName.trim()) tpl.additionalName = additionalName.trim();
         if (typeof manufacturer === 'string' && manufacturer.trim()) tpl.manufacturer = manufacturer.trim();
         if (typeof modelNumber === 'string' && modelNumber.trim()) tpl.modelNumber = modelNumber.trim();
-        if (typeof generalInfoUrl === 'string' && generalInfoUrl.trim()) tpl.externalUrl = generalInfoUrl.trim();
+        if (typeof generalInfoUrl === 'string' && generalInfoUrl.trim()) {
+            tpl.externalUrl = generalInfoUrl.trim();
+            tpl.externalLinkLabel = linkLabelFromUrl(generalInfoUrl.trim());
+        }
         // processorType exists in the source SQL but we are intentionally not storing it on Template for now.
         void processorType;
         if (typeof cpu === 'string' && cpu.trim()) tpl.cpu = cpu.trim();
         if (typeof ram === 'string' && ram.trim()) tpl.ram = ram.trim();
         if (typeof graphics === 'string' && graphics.trim()) tpl.graphics = graphics.trim();
         if (typeof storage === 'string' && storage.trim()) tpl.storage = storage.trim();
+
+        const rarity = TEMPLATE_RARITY[tpl.name];
+        if (rarity) tpl.rarity = rarity;
 
         if (releaseYearRaw !== null && releaseYearRaw !== '' && !Number.isNaN(Number(releaseYearRaw))) {
             tpl.releaseYear = Number(releaseYearRaw);
@@ -320,8 +495,10 @@ async function main() {
                         storage: tpl.storage,
                         operatingSystem: tpl.operatingSystem,
                         externalUrl: tpl.externalUrl,
+                        externalLinkLabel: tpl.externalLinkLabel,
                         isWifiEnabled: tpl.isWifiEnabled,
                         isPramBatteryRemoved: tpl.isPramBatteryRemoved,
+                        rarity: tpl.rarity as any,
                         categoryId: tpl.categoryId,
                     },
                     create: {
@@ -338,8 +515,10 @@ async function main() {
                         storage: tpl.storage,
                         operatingSystem: tpl.operatingSystem,
                         externalUrl: tpl.externalUrl,
+                        externalLinkLabel: tpl.externalLinkLabel,
                         isWifiEnabled: tpl.isWifiEnabled,
                         isPramBatteryRemoved: tpl.isPramBatteryRemoved,
+                        rarity: tpl.rarity as any,
                         categoryId: tpl.categoryId,
                     },
                 });

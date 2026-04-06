@@ -525,6 +525,7 @@ struct AddDeviceView: View {
                     storage
                     operatingSystem
                     externalUrl
+                    externalLinkLabel
                     isWifiEnabled
                     isPramBatteryRemoved
                     rarity
@@ -652,6 +653,12 @@ struct AddDeviceView: View {
             // Add accessories
             for accessoryName in localAccessories {
                 try? await DeviceService.shared.addDeviceAccessory(deviceId: newDeviceId, name: accessoryName)
+            }
+
+            // Add template reference link if present
+            if let tpl = selectedTemplate, let url = tpl.externalUrl, !url.isEmpty {
+                let label = tpl.externalLinkLabel ?? url
+                try? await DeviceService.shared.addDeviceLink(deviceId: newDeviceId, label: label, url: url)
             }
 
             // Add links

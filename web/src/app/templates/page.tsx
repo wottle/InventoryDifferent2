@@ -18,6 +18,7 @@ const GET_TEMPLATES = gql`
       releaseYear
       estimatedValue
       externalUrl
+      externalLinkLabel
       cpu
       ram
       storage
@@ -49,6 +50,7 @@ const CREATE_TEMPLATE = gql`
       releaseYear
       estimatedValue
       externalUrl
+      externalLinkLabel
       cpu
       ram
       storage
@@ -75,6 +77,7 @@ const UPDATE_TEMPLATE = gql`
       releaseYear
       estimatedValue
       externalUrl
+      externalLinkLabel
       cpu
       ram
       storage
@@ -113,6 +116,7 @@ type Template = {
   releaseYear?: number | null;
   estimatedValue?: number | null;
   externalUrl?: string | null;
+  externalLinkLabel?: string | null;
   cpu?: string | null;
   ram?: string | null;
   storage?: string | null;
@@ -130,6 +134,7 @@ type TemplateFormState = {
   releaseYear: string;
   estimatedValue: string;
   externalUrl: string;
+  externalLinkLabel: string;
   cpu: string;
   ram: string;
   storage: string;
@@ -146,6 +151,7 @@ const emptyFormState: TemplateFormState = {
   releaseYear: String(new Date().getFullYear()),
   estimatedValue: "",
   externalUrl: "",
+  externalLinkLabel: "",
   cpu: "",
   ram: "",
   storage: "",
@@ -206,6 +212,7 @@ export default function TemplatesPage() {
       releaseYear: tpl.releaseYear != null ? String(tpl.releaseYear) : "",
       estimatedValue: tpl.estimatedValue != null ? String(tpl.estimatedValue) : "",
       externalUrl: tpl.externalUrl ?? "",
+      externalLinkLabel: tpl.externalLinkLabel ?? "",
       cpu: tpl.cpu ?? "",
       ram: tpl.ram ?? "",
       storage: tpl.storage ?? "",
@@ -237,6 +244,7 @@ export default function TemplatesPage() {
       releaseYear: Number.isFinite(releaseYear as any) ? releaseYear : null,
       estimatedValue: Number.isFinite(estimatedValue as any) ? estimatedValue : null,
       externalUrl: form.externalUrl.trim() || null,
+      externalLinkLabel: form.externalLinkLabel.trim() || null,
       rarity: form.rarity || null,
     };
 
@@ -461,7 +469,17 @@ export default function TemplatesPage() {
                   />
                 </div>
 
-                <div className="sm:col-span-2">
+                <div>
+                  <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.pages.templates.linkLabel}</label>
+                  <input
+                    value={form.externalLinkLabel}
+                    onChange={(e) => setForm((prev) => ({ ...prev, externalLinkLabel: e.target.value }))}
+                    placeholder={t.pages.templates.linkLabelPlaceholder}
+                    className="input-retro w-full px-3 py-2 text-sm text-[var(--foreground)]"
+                  />
+                </div>
+
+                <div>
                   <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">{t.form.externalUrlLabel}</label>
                   <input
                     value={form.externalUrl}

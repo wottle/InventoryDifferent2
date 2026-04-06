@@ -4,9 +4,14 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- Templates: reference link label field — name the link (e.g. "EveryMac") alongside the URL
+- Seed: rarity values set for all 230 Mac/Apple templates; link labels derived from URL on first seed
+
 ### Fixed
 - iOS and Web: deleting tags, accessories, and links on device detail now requires confirmation
 - Categories and templates now seed automatically on first startup — no manual seed step needed
+- Applying a template now creates a DeviceLink instead of storing URL in the legacy externalUrl field
 
 ---
 

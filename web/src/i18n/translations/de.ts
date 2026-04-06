@@ -426,6 +426,8 @@ export const de: Translations = {
       rarityNotSet: "Nicht festgelegt",
       computerSpecs: "Computer-Spezifikationen",
       deleteConfirm: "Diese Vorlage löschen?",
+      linkLabel: "Link-Bezeichnung",
+      linkLabelPlaceholder: "z. B. EveryMac",
     },
     backup: {
       title: "Geräte exportieren",

@@ -21,6 +21,7 @@ struct Template: Identifiable, Decodable {
     let storage: String?
     let operatingSystem: String?
     let externalUrl: String?
+    let externalLinkLabel: String?
     let isWifiEnabled: Bool?
     let isPramBatteryRemoved: Bool?
     let rarity: Rarity?

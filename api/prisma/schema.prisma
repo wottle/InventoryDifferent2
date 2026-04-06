@@ -189,6 +189,7 @@ model Template {
   storage         String?
   operatingSystem String?
   externalUrl     String?
+  externalLinkLabel String?
   isWifiEnabled       Boolean?
   isPramBatteryRemoved Boolean?
   rarity          Rarity?

@@ -111,6 +111,7 @@ const GET_TEMPLATES = gql`
       storage
       operatingSystem
       externalUrl
+      externalLinkLabel
       isWifiEnabled
       isPramBatteryRemoved
       rarity
@@ -205,6 +206,7 @@ interface Template {
     storage?: string;
     operatingSystem?: string;
     externalUrl?: string;
+    externalLinkLabel?: string;
     isWifiEnabled?: boolean;
     isPramBatteryRemoved?: boolean;
     rarity?: string;
@@ -511,7 +513,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
             if (typeof tpl.additionalName === 'string') next.additionalName = tpl.additionalName;
             if (typeof tpl.manufacturer === 'string') next.manufacturer = tpl.manufacturer;
             if (typeof tpl.modelNumber === 'string') next.modelNumber = tpl.modelNumber;
-            if (typeof tpl.externalUrl === 'string') next.externalUrl = tpl.externalUrl;
+            // externalUrl is handled as a DeviceLink after create (not stored in formData)
             if (typeof tpl.cpu === 'string') next.cpu = tpl.cpu;
             if (typeof tpl.ram === 'string') next.ram = tpl.ram;
             if (typeof tpl.graphics === 'string') next.graphics = tpl.graphics;
@@ -638,6 +640,11 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 }
                 for (const link of links) {
                     await addDeviceLink({ variables: { deviceId, label: link.label, url: link.url } });
+                }
+                // If a template with a reference link was applied, create it as a DeviceLink
+                if (selectedTemplate?.externalUrl) {
+                    const label = selectedTemplate.externalLinkLabel || selectedTemplate.externalUrl;
+                    await addDeviceLink({ variables: { deviceId, label, url: selectedTemplate.externalUrl } });
                 }
             }
 

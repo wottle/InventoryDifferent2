@@ -194,6 +194,7 @@ export const typeDefs = gql`
     storage: String
     operatingSystem: String
     externalUrl: String
+    externalLinkLabel: String
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
     rarity: Rarity
@@ -363,6 +364,7 @@ export const typeDefs = gql`
     storage: String
     operatingSystem: String
     externalUrl: String
+    externalLinkLabel: String
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
     rarity: Rarity
@@ -383,6 +385,7 @@ export const typeDefs = gql`
     storage: String
     operatingSystem: String
     externalUrl: String
+    externalLinkLabel: String
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
     rarity: Rarity
