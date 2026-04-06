@@ -12,12 +12,11 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
-    changed: [],
     added: [
       'Templates: reference link label field — name the link (e.g. "EveryMac") alongside the URL',
       'Seed: rarity values set for all 230 Mac/Apple templates; link labels derived from URL on first seed',
     ],
+    changed: [],
     fixed: [
       'iOS and Web: deleting tags, accessories, and links on device detail now requires confirmation',
       'Categories and templates now seed automatically on first startup — no manual seed step needed',
