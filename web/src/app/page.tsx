@@ -341,6 +341,29 @@ export default function Home() {
     setBarcodeSupported(typeof BarcodeDetectorCtor === "function" && !!navigator?.mediaDevices?.getUserMedia);
   }, []);
 
+  // Save scroll position continuously so back-navigation can restore it
+  useEffect(() => {
+    const handleScroll = () => {
+      sessionStorage.setItem('inventory-scroll', String(window.scrollY));
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Restore scroll position after the device list has rendered
+  useEffect(() => {
+    if (loading) return;
+    const saved = sessionStorage.getItem('inventory-scroll');
+    if (!saved) return;
+    const y = parseInt(saved, 10);
+    if (!y) return;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: y, behavior: 'instant' });
+      });
+    });
+  }, [loading]);
+
   // Wrapper function to update view mode and persist to localStorage
   const setViewMode = (mode: 'card' | 'table') => {
     setViewModeState(mode);
