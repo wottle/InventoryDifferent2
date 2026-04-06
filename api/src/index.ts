@@ -708,6 +708,7 @@ RESTART IDENTITY CASCADE;
                         notes: true,
                         maintenanceTasks: true,
                         tags: true,
+                        location: true,
                     }
                 });
 
@@ -780,7 +781,7 @@ RESTART IDENTITY CASCADE;
                         modelNumber: device.modelNumber,
                         serialNumber: device.serialNumber,
                         releaseYear: device.releaseYear,
-                        location: device.location,
+                        location: (device as any).location?.name ?? null,
                         info: device.info,
                         isFavorite: device.isFavorite,
                         externalUrl: device.externalUrl,
