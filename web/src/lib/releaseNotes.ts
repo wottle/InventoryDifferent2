@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.2.1';
+export const APP_VERSION = '1.3.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -13,6 +13,21 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.3.0',
+    date: '2026-04-05',
+    added: [
+      'Structured location system: create named locations (e.g. "Shelf A", "Box B") and assign devices to them',
+      'Each location has a persistent URL and QR code for printing asset tags — scanning navigates directly to that location',
+      'Location detail page shows all devices stored there with thumbnails',
+      'iOS: tapping a device\'s location navigates to the location detail view',
+      'iOS: location picker in add/edit device replaces free-text field',
+      'iOS: scanning a location QR code opens the location detail view',
+      'iOS: location deep links (inventorydifferent://locations/{id} and universal links) navigate to the location view',
+    ],
     changed: [],
     fixed: [
       'iOS: timeline scroll restoration now returns to the exact tapped device\'s year instead of the previous year',
