@@ -64,7 +64,10 @@ struct LocationDetailView: View {
             List(devices) { device in
                 NavigationLink(value: device.id) {
                     DeviceRowView(device: device)
+                        .environmentObject(lm)
                 }
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
             }
             .listStyle(.plain)
         }
