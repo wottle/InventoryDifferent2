@@ -657,7 +657,7 @@ struct AddDeviceView: View {
 
             // Add template reference link if present
             if let tpl = selectedTemplate, let url = tpl.externalUrl, !url.isEmpty {
-                let label = tpl.externalLinkLabel ?? url
+                let label = tpl.externalLinkLabel ?? "Reference"
                 try? await DeviceService.shared.addDeviceLink(deviceId: newDeviceId, label: label, url: url)
             }
 

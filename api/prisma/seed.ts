@@ -328,9 +328,7 @@ function linkLabelFromUrl(url: string): string | undefined {
         if (host.includes('everymac.com')) return 'EveryMac';
         if (host.includes('apple.com')) return 'Apple';
         if (host.includes('next.com') || host.includes('nextcomputers.org')) return 'NeXT';
-        // Capitalise first segment of the domain as a reasonable default
-        const label = host.split('.')[0];
-        return label.charAt(0).toUpperCase() + label.slice(1);
+        return 'Reference';
     } catch {
         return undefined;
     }

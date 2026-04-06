@@ -643,7 +643,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 }
                 // If a template with a reference link was applied, create it as a DeviceLink
                 if (selectedTemplate?.externalUrl) {
-                    const label = selectedTemplate.externalLinkLabel || selectedTemplate.externalUrl;
+                    const label = selectedTemplate.externalLinkLabel || 'Reference';
                     await addDeviceLink({ variables: { deviceId, label, url: selectedTemplate.externalUrl } });
                 }
             }
