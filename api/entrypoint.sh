@@ -9,6 +9,10 @@ npx prisma migrate deploy
 echo "Generating Prisma Client..."
 npx prisma generate
 
+# Seed categories and templates (idempotent - uses upsert, safe to run on every start)
+echo "Seeding categories and templates..."
+npx prisma db seed
+
 # Start the application
 echo "Starting Application..."
 npx ts-node -T src/index.ts

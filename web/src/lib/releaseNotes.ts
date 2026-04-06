@@ -16,6 +16,7 @@ export const releaseNotes: ReleaseEntry[] = [
     changed: [],
     fixed: [
       'iOS and Web: deleting tags, accessories, and links on device detail now requires confirmation',
+      'Categories and templates now seed automatically on first startup — no manual seed step needed',
     ],
   },
   {

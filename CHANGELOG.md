@@ -6,6 +6,7 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 - iOS and Web: deleting tags, accessories, and links on device detail now requires confirmation
+- Categories and templates now seed automatically on first startup — no manual seed step needed
 
 ---
 
