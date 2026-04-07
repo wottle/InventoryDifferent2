@@ -382,7 +382,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
     const [newAccessoryName, setNewAccessoryName] = useState("");
 
     // Links state
-    const [links, setLinks] = useState<Array<{id?: number, label: string, url: string}>>(
+    const [links, setLinks] = useState<Array<{id?: number, label: string, url: string, _fromTemplate?: boolean}>>(
         device?.links?.map(l => ({ id: l.id, label: l.label, url: l.url })) ?? []
     );
     const [newLinkLabel, setNewLinkLabel] = useState("");
@@ -513,7 +513,6 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
             if (typeof tpl.additionalName === 'string') next.additionalName = tpl.additionalName;
             if (typeof tpl.manufacturer === 'string') next.manufacturer = tpl.manufacturer;
             if (typeof tpl.modelNumber === 'string') next.modelNumber = tpl.modelNumber;
-            // externalUrl is handled as a DeviceLink after create (not stored in formData)
             if (typeof tpl.cpu === 'string') next.cpu = tpl.cpu;
             if (typeof tpl.ram === 'string') next.ram = tpl.ram;
             if (typeof tpl.graphics === 'string') next.graphics = tpl.graphics;
@@ -531,6 +530,19 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
             return next;
         });
+
+        // Add the template's reference link to the pending links list so it shows in the form
+        if (tpl.externalUrl) {
+            const label = tpl.externalLinkLabel || 'Reference';
+            setLinks(prev => {
+                // Replace any existing template link (re-applying a different template)
+                const withoutTemplate = prev.filter(l => l._fromTemplate !== true);
+                return [...withoutTemplate, { label, url: tpl.externalUrl!, _fromTemplate: true }];
+            });
+        } else {
+            // Template has no link — remove any previously added template link
+            setLinks(prev => prev.filter(l => l._fromTemplate !== true));
+        }
     };
 
     const validate = () => {
@@ -640,11 +652,6 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 }
                 for (const link of links) {
                     await addDeviceLink({ variables: { deviceId, label: link.label, url: link.url } });
-                }
-                // If a template with a reference link was applied, create it as a DeviceLink
-                if (selectedTemplate?.externalUrl) {
-                    const label = selectedTemplate.externalLinkLabel || 'Reference';
-                    await addDeviceLink({ variables: { deviceId, label, url: selectedTemplate.externalUrl } });
                 }
             }
 
