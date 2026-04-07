@@ -79,6 +79,8 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      LANGUAGE: ${LANGUAGE:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       - api
     networks:

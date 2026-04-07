@@ -40,6 +40,7 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
       PORT: 4000
+      AUTH_USERNAME: ${AUTH_USERNAME:-}
       AUTH_PASSWORD: ${AUTH_PASSWORD:-}
       JWT_SECRET: ${JWT_SECRET:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
@@ -60,6 +61,8 @@ services:
     environment:
       NODE_ENV: production
       API_URL: http://api:4000
+      LANGUAGE: ${LANGUAGE:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       - api
     networks:

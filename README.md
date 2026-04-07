@@ -31,11 +31,13 @@ Pre-built multi-architecture images (amd64 + arm64) are published to Docker Hub:
 ```
 wottle/inventory-api:latest
 wottle/inventory-web:latest
-wottle/inventory-storefront:latest
+wottle/inventory-storefront:latest (optional — only is wanting a shop website)
 wottle/inventory-mcp:latest        (optional — AI assistant integration only)
 ```
 
 Database migrations run automatically on every container start — no manual migration step needed when updating.
+
+Additionally, an example implementation of a umami server in docker-compose to capture usage analytics.
 
 ---
 
@@ -46,19 +48,24 @@ Database migrations run automatically on every container start — no manual mig
 Best for: local network, homelab without Traefik, quick evaluation.
 
 ```bash
-# 1. Create an uploads directory for device images
+# 1. Grab files
+curl -O https://raw.githubusercontent.com/wottle/InventoryDifferent2/refs/heads/main/docker-compose.simple.yml
+curl -O https://raw.githubusercontent.com/wottle/InventoryDifferent2/refs/heads/main/.env.example
+
+# 2. Create an uploads directory for device images
 mkdir -p ./uploads
 
-# 2. Configure environment
+# 3. Configure environment
 cp .env.example .env
 # Edit .env — at minimum set POSTGRES_PASSWORD and AUTH_PASSWORD
+nano .env
 
-# 3. Start
+# 4. Start
 docker compose -f docker-compose.simple.yml up -d
 ```
 
 Services will be available at:
-- Admin: `http://your-host:3000`
+- Web: `http://your-host:3000`
 - Storefront: `http://your-host:3001`
 - API: `http://your-host:4000/graphql`
 

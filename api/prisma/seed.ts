@@ -326,6 +326,7 @@ function linkLabelFromUrl(url: string): string | undefined {
     try {
         const host = new URL(url).hostname.replace(/^www\./, '');
         if (host.includes('everymac.com')) return 'EveryMac';
+        if (host.includes('wikipedia.org')) return 'Wikipedia';
         if (host.includes('apple.com')) return 'Apple';
         if (host.includes('next.com') || host.includes('nextcomputers.org')) return 'NeXT';
         return 'Reference';
