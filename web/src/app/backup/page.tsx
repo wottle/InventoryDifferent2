@@ -9,6 +9,7 @@ import { API_BASE_URL } from "../../lib/config";
 import { DeviceFilterPanel, FilterState, SortColumn } from "../../components/DeviceFilterPanel";
 import { LoadingPanel } from "../../components/LoadingPanel";
 import { useT } from "../../i18n/context";
+import { useAuth } from "../../lib/auth-context";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {
@@ -100,8 +101,9 @@ const defaultFilters: FilterState = {
   searchTerm: "",
 };
 
-export default function ExportPage() {
+export default function BackupPage() {
   const t = useT();
+  const { getAccessToken } = useAuth();
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortColumn, setSortColumn] = useState<SortColumn>('category');
@@ -191,9 +193,16 @@ export default function ExportPage() {
       const formData = new FormData();
       formData.append("file", file);
 
+      const headers: HeadersInit = {};
+      const token = getAccessToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       // Start the import - returns immediately with jobId
       const response = await fetch(`${API_BASE_URL}/import`, {
         method: "POST",
+        headers,
         body: formData,
       });
 
@@ -282,9 +291,15 @@ export default function ExportPage() {
       // Start server-side export
       const deviceIds = devicesToExport.map((d: any) => d.id);
       
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      const token = getAccessToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const startResponse = await fetch(`${API_BASE_URL}/export/start`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ deviceIds, includeImages, compressImages }),
       });
 
