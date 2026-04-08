@@ -32,6 +32,7 @@ services:
 
   api:
     image: wottle/inventory-api:latest
+    pull_policy: always
     container_name: inventory-api
     restart: unless-stopped
     ports:
@@ -54,6 +55,7 @@ services:
 
   web:
     image: wottle/inventory-web:latest
+    pull_policy: always
     container_name: inventory-web
     restart: unless-stopped
     ports:
@@ -70,6 +72,7 @@ services:
 
   storefront:
     image: wottle/inventory-storefront:latest
+    pull_policy: always
     container_name: inventory-storefront
     restart: unless-stopped
     ports:
