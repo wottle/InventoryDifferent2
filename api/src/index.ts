@@ -715,22 +715,12 @@ RESTART IDENTITY CASCADE;
 
         const jobId = uuidv4();
         
-        // Count total images for progress tracking
-        const devices = await prisma.device.findMany({
-            where: { id: { in: deviceIds } },
-            include: { images: true }
-        });
-        
-        const totalImages = includeImages 
-            ? devices.reduce((acc, d) => acc + d.images.length, 0) 
-            : 0;
-
         const job: ExportProgress = {
             id: jobId,
             status: 'preparing',
             totalDevices: deviceIds.length,
             processedDevices: 0,
-            totalImages,
+            totalImages: 0,
             processedImages: 0,
             currentDevice: '',
             startTime: Date.now(),
@@ -743,7 +733,8 @@ RESTART IDENTITY CASCADE;
         };
         exportJobs.set(jobId, job);
 
-        res.json({ jobId, message: 'Export started', totalImages });
+        // Respond immediately so the client can start polling
+        res.json({ jobId, message: 'Export started' });
 
         // Process in background
         (async () => {
@@ -756,6 +747,15 @@ RESTART IDENTITY CASCADE;
                 }
 
                 job.status = 'processing';
+
+                // Count total images for progress tracking (non-blocking)
+                if (includeImages) {
+                    const imageCounts = await prisma.device.findMany({
+                        where: { id: { in: deviceIds } },
+                        select: { images: { select: { id: true } } },
+                    });
+                    job.totalImages = imageCounts.reduce((acc, d) => acc + d.images.length, 0);
+                }
 
                 // Fetch all device data with relations
                 const allDevices = await prisma.device.findMany({
@@ -804,7 +804,7 @@ RESTART IDENTITY CASCADE;
                                 const srcDir = path.join(exportDir, 'images', String(deviceExport.id));
                                 const destDir = path.join(imagesDir, String(deviceExport.id));
                                 if (fs.existsSync(srcDir)) {
-                                    fs.cpSync(srcDir, destDir, { recursive: true });
+                                    await fs.promises.cp(srcDir, destDir, { recursive: true });
                                 }
                             }
                         }
@@ -818,7 +818,7 @@ RESTART IDENTITY CASCADE;
                         deviceCount: currentPartDevices.length,
                         devices: currentPartDevices,
                     };
-                    fs.writeFileSync(
+                    await fs.promises.writeFile(
                         path.join(partDir, 'devices.json'),
                         JSON.stringify(partData, null, 2)
                     );
@@ -917,7 +917,7 @@ RESTART IDENTITY CASCADE;
                             let exportFilename = filename;
 
                             if (fs.existsSync(sourcePath)) {
-                                const stats = fs.statSync(sourcePath);
+                                const stats = await fs.promises.stat(sourcePath);
                                 
                                 // Optionally compress images
                                 if (compressImages && /\.(jpg|jpeg|png)$/i.test(filename)) {
@@ -931,15 +931,15 @@ RESTART IDENTITY CASCADE;
                                             .toFile(compressedPath);
                                         destPath = compressedPath;
                                         exportFilename = compressedFilename;
-                                        const compressedStats = fs.statSync(compressedPath);
+                                        const compressedStats = await fs.promises.stat(compressedPath);
                                         deviceImageSize += compressedStats.size;
                                     } catch (compressErr) {
                                         // Fall back to copy
-                                        fs.copyFileSync(sourcePath, destPath);
+                                        await fs.promises.copyFile(sourcePath, destPath);
                                         deviceImageSize += stats.size;
                                     }
                                 } else {
-                                    fs.copyFileSync(sourcePath, destPath);
+                                    await fs.promises.copyFile(sourcePath, destPath);
                                     deviceImageSize += stats.size;
                                 }
                             }
@@ -1000,9 +1000,9 @@ RESTART IDENTITY CASCADE;
                     
                     // Update totalParts in the JSON
                     const jsonPath = path.join(partDir, 'devices.json');
-                    const partData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+                    const partData = JSON.parse(await fs.promises.readFile(jsonPath, 'utf-8'));
                     partData.totalParts = partExportDirs.length;
-                    fs.writeFileSync(jsonPath, JSON.stringify(partData, null, 2));
+                    await fs.promises.writeFile(jsonPath, JSON.stringify(partData, null, 2));
                     
                     const zipPath = path.join('/tmp/exports', `${jobId}-part${i + 1}.zip`);
                     const output = fs.createWriteStream(zipPath);
@@ -1020,14 +1020,14 @@ RESTART IDENTITY CASCADE;
                     job.zipPaths.push(zipPath);
                     
                     // Clean up part directory
-                    fs.rmSync(partDir, { recursive: true, force: true });
+                    await fs.promises.rm(partDir, { recursive: true, force: true });
                 }
 
                 job.status = 'complete';
                 job.currentDevice = '';
 
                 // Clean up main export directory
-                fs.rmSync(exportDir, { recursive: true, force: true });
+                await fs.promises.rm(exportDir, { recursive: true, force: true });
 
             } catch (error: any) {
                 console.error('Export error:', error);
