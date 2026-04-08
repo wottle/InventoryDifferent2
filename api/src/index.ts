@@ -360,6 +360,8 @@ RESTART IDENTITY CASCADE;
             externalUrl: deviceData.externalUrl,
             status: deviceData.status || 'COLLECTION',
             functionalStatus: deviceData.functionalStatus || 'YES',
+            condition: deviceData.condition ?? null,
+            rarity: deviceData.rarity ?? null,
             hasOriginalBox: deviceData.hasOriginalBox || false,
             isAssetTagged: deviceData.isAssetTagged || false,
             dateAcquired: deviceData.dateAcquired ? new Date(deviceData.dateAcquired) : null,
@@ -386,6 +388,9 @@ RESTART IDENTITY CASCADE;
             await prisma.image.deleteMany({ where: { deviceId: desiredDeviceId } });
             await prisma.note.deleteMany({ where: { deviceId: desiredDeviceId } });
             await prisma.maintenanceTask.deleteMany({ where: { deviceId: desiredDeviceId } });
+            await (prisma as any).deviceAccessory.deleteMany({ where: { deviceId: desiredDeviceId } });
+            await (prisma as any).deviceLink.deleteMany({ where: { deviceId: desiredDeviceId } });
+            await (prisma as any).customFieldValue.deleteMany({ where: { deviceId: desiredDeviceId } });
             await prisma.device.update({
                 where: { id: desiredDeviceId },
                 data: {
@@ -473,6 +478,8 @@ RESTART IDENTITY CASCADE;
                                 dateTaken: imageData.dateTaken ? new Date(imageData.dateTaken) : new Date(),
                                 isThumbnail: shouldBeThumbnail,
                                 isShopImage: imageData.isShopImage || false,
+                                thumbnailMode: imageData.thumbnailMode || 'BOTH',
+                                isListingImage: imageData.isListingImage || false,
                             }
                         });
                     }
@@ -502,7 +509,44 @@ RESTART IDENTITY CASCADE;
                         label: taskData.label,
                         dateCompleted: taskData.dateCompleted ? new Date(taskData.dateCompleted) : new Date(),
                         notes: taskData.notes,
+                        cost: taskData.cost ?? null,
                     }
+                });
+            }
+        }
+
+        // Import accessories
+        if (deviceData.accessories && deviceData.accessories.length > 0) {
+            for (const accessoryData of deviceData.accessories) {
+                await (prisma as any).deviceAccessory.upsert({
+                    where: { deviceId_name: { deviceId: actualDeviceId, name: accessoryData.name } },
+                    update: {},
+                    create: { deviceId: actualDeviceId, name: accessoryData.name },
+                });
+            }
+        }
+
+        // Import links
+        if (deviceData.links && deviceData.links.length > 0) {
+            for (const linkData of deviceData.links) {
+                await (prisma as any).deviceLink.create({
+                    data: { deviceId: actualDeviceId, label: linkData.label, url: linkData.url },
+                });
+            }
+        }
+
+        // Import custom fields
+        if (deviceData.customFields && deviceData.customFields.length > 0) {
+            for (const cfData of deviceData.customFields) {
+                const customField = await (prisma as any).customField.upsert({
+                    where: { name: cfData.fieldName },
+                    update: {},
+                    create: { name: cfData.fieldName },
+                });
+                await (prisma as any).customFieldValue.upsert({
+                    where: { customFieldId_deviceId: { customFieldId: customField.id, deviceId: actualDeviceId } },
+                    update: { value: cfData.value },
+                    create: { customFieldId: customField.id, deviceId: actualDeviceId, value: cfData.value },
                 });
             }
         }
@@ -709,6 +753,9 @@ RESTART IDENTITY CASCADE;
                         maintenanceTasks: true,
                         tags: true,
                         location: true,
+                        accessories: true,
+                        links: true,
+                        customFieldValues: { include: { customField: true } },
                     }
                 });
 
@@ -787,6 +834,8 @@ RESTART IDENTITY CASCADE;
                         externalUrl: device.externalUrl,
                         status: device.status,
                         functionalStatus: device.functionalStatus,
+                        condition: device.condition,
+                        rarity: device.rarity,
                         hasOriginalBox: device.hasOriginalBox,
                         isAssetTagged: device.isAssetTagged,
                         dateAcquired: device.dateAcquired,
@@ -821,10 +870,22 @@ RESTART IDENTITY CASCADE;
                             label: t.label,
                             dateCompleted: t.dateCompleted,
                             notes: t.notes,
+                            cost: t.cost,
                         })),
                         tags: device.tags.map(t => ({
                             id: t.id,
                             name: t.name,
+                        })),
+                        accessories: (device as any).accessories.map((a: any) => ({
+                            name: a.name,
+                        })),
+                        links: (device as any).links.map((l: any) => ({
+                            label: l.label,
+                            url: l.url,
+                        })),
+                        customFields: (device as any).customFieldValues.map((cfv: any) => ({
+                            fieldName: cfv.customField.name,
+                            value: cfv.value,
                         })),
                     };
 
@@ -877,6 +938,8 @@ RESTART IDENTITY CASCADE;
                                 dateTaken: image.dateTaken,
                                 isThumbnail: image.isThumbnail,
                                 isShopImage: image.isShopImage,
+                                thumbnailMode: (image as any).thumbnailMode,
+                                isListingImage: (image as any).isListingImage,
                                 exportedFilename: `images/${device.id}/${exportFilename}`,
                             });
 
@@ -891,6 +954,8 @@ RESTART IDENTITY CASCADE;
                             dateTaken: img.dateTaken,
                             isThumbnail: img.isThumbnail,
                             isShopImage: img.isShopImage,
+                            thumbnailMode: (img as any).thumbnailMode,
+                            isListingImage: (img as any).isListingImage,
                             exportedFilename: null,
                         }));
                     }
