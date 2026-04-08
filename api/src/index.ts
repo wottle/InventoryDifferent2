@@ -341,6 +341,20 @@ RESTART IDENTITY CASCADE;
             });
         }
 
+        // Find or create location by name
+        let locationId: number | null = null;
+        if (deviceData.location) {
+            let location = await prisma.location.findFirst({
+                where: { name: deviceData.location }
+            });
+            if (!location) {
+                location = await prisma.location.create({
+                    data: { name: deviceData.location }
+                });
+            }
+            locationId = location.id;
+        }
+
         // Check if device with this ID already exists
         const existingDevice = await prisma.device.findUnique({
             where: { id: desiredDeviceId }
@@ -354,7 +368,7 @@ RESTART IDENTITY CASCADE;
             modelNumber: deviceData.modelNumber,
             serialNumber: deviceData.serialNumber,
             releaseYear: deviceData.releaseYear,
-            location: deviceData.location,
+            locationId,
             info: deviceData.info,
             isFavorite: deviceData.isFavorite || false,
             externalUrl: deviceData.externalUrl,

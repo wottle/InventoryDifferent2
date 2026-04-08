@@ -501,13 +501,21 @@ export default function BackupPage() {
                                     <th>{t.pages.backup.tableIdPreserved}</th>
                                   </tr>
                                 </thead>
-                                <tbody className="text-green-600 dark:text-green-400">
+                                <tbody>
                                   {importResults.results.filter((r: any) => r.status === 'success').map((r: any, i: number) => (
-                                    <tr key={i}>
+                                    <tr key={i} className="text-green-600 dark:text-green-400">
                                       <td className="pr-2 font-mono">{r.originalId}</td>
                                       <td className="pr-2 font-mono">{r.newId}</td>
                                       <td className="pr-2">{r.name}</td>
                                       <td>{r.idPreserved ? '✓' : '✗'}</td>
+                                    </tr>
+                                  ))}
+                                  {importResults.results.filter((r: any) => r.status === 'error').map((r: any, i: number) => (
+                                    <tr key={`err-${i}`} className="text-red-600 dark:text-red-400">
+                                      <td className="pr-2 font-mono">{r.originalId}</td>
+                                      <td className="pr-2 font-mono">—</td>
+                                      <td className="pr-2">{r.name}</td>
+                                      <td className="text-red-500 dark:text-red-400">{r.error}</td>
                                     </tr>
                                   ))}
                                 </tbody>
