@@ -4,10 +4,10 @@ import { HttpLink, ApolloLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import {
     ApolloNextAppProvider,
-    ApolloClient,
-    InMemoryCache,
+    NextSSRApolloClient,
+    NextSSRInMemoryCache,
     SSRMultipartLink,
-} from "@apollo/client-integration-nextjs";
+} from "@apollo/experimental-nextjs-app-support/ssr";
 import { GRAPHQL_URL } from "./config";
 
 // Token storage key (matches auth-context.tsx)
@@ -33,8 +33,8 @@ function makeClient() {
         };
     });
 
-    return new ApolloClient({
-        cache: new InMemoryCache(),
+    return new NextSSRApolloClient({
+        cache: new NextSSRInMemoryCache(),
         link:
             typeof window === "undefined"
                 ? ApolloLink.from([
