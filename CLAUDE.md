@@ -21,7 +21,7 @@ When changes are ready to ship:
 
 The `./build-and-push.sh` script still exists for manual local builds if needed, but the normal path is CI/CD via GitHub Actions.
 
-The `docker-compose.simple.yml` file is for users without a reverse proxy (direct port exposure). The `docker-compose.prod.yml` file is for Traefik deployments with HTTPS. The `docker-compose.nas.yml` file is the author's personal NAS deployment and is not intended as a template for other users.
+The `docker-compose.simple.yml` file is for users without a reverse proxy (direct port exposure). The `docker-compose.prod.yml` file is for Traefik deployments with HTTPS using pre-built Hub images. The `docker-compose.build.yml` file is for building from source with Traefik. The `docker-compose.nas.yml` file is the author's personal NAS deployment and is not intended as a template for other users.
 
 ## Development Commands
 
@@ -148,7 +148,8 @@ Key variables (see `.env.example`):
 ## Deployment
 
 - Development: `docker-compose.yml`
-- Production: `docker-compose.prod.yml` with Traefik reverse proxy
+- Production (pre-built): `docker-compose.prod.yml` with Traefik reverse proxy
+- Production (build from source): `docker-compose.build.yml` with Traefik reverse proxy
 - NAS deployment: `docker-compose.nas.yml`
 
 ### Database Migrations

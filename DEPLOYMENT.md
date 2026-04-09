@@ -78,10 +78,10 @@ chmod 755 /path/to/inventory/uploads
 ### 4. Deploy with Docker Compose
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.build.yml up -d --build
 ```
 
-Or deploy via Portainer by creating a new stack and pasting the contents of `docker-compose.prod.yml`.
+Or deploy via Portainer by creating a new stack and pasting the contents of `docker-compose.build.yml`.
 
 ## Traefik Configuration
 
@@ -125,7 +125,7 @@ To update the application:
 ```bash
 cd /path/to/inventory
 git pull
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.build.yml up -d --build
 ```
 
 ## Backup
@@ -156,7 +156,7 @@ docker exec traefik traefik healthcheck
 ### Database connection issues
 Ensure the database is healthy before the API starts:
 ```bash
-docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.build.yml ps
 ```
 
 ### CORS issues
@@ -283,11 +283,9 @@ The iOS app requires:
 
 1. Go to Portainer → Stacks → Add Stack
 2. Name: `inventory`
-3. Build method: Upload or paste `docker-compose.prod.yml`
+3. Build method: Upload or paste `docker-compose.prod.yml` (pre-built images + Traefik) or `docker-compose.build.yml` (build from source)
 4. Add environment variables from `.env`
 5. Deploy the stack
-
-Note: When using Portainer, you may need to specify the build context paths as absolute paths or use pre-built images.
 
 ## DNS Configuration
 

@@ -1,15 +1,14 @@
-# Production deployment using pre-built images from Docker Hub
-# Requires a running Traefik instance with an external "web" network
+# Build-from-source deployment with Traefik
+# Use this if you want to build images locally rather than pull from Docker Hub.
+# For the standard pre-built image deployment see docker-compose.prod.yml.
 #
 # Usage:
-#   1. Copy .env.example to .env and configure (DOMAIN, SHOP_DOMAIN, passwords, etc.)
-#   2. docker compose -f docker-compose.prod.yml up -d
-#
-# To update: docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d
+#   1. Copy .env.example to .env and configure
+#   2. docker compose -f docker-compose.build.yml up -d --build
 #
 # Prerequisites:
 #   - Traefik running with external network "web"
-#   - DNS configured for DOMAIN and SHOP_DOMAIN
+#   - DNS configured for your domains
 
 services:
   postgres:
@@ -31,8 +30,10 @@ services:
       retries: 5
 
   api:
-    image: ${DOCKERHUB_USER:-wottle}/inventory-api:latest
-    pull_policy: always
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: inventory-api:latest
     container_name: inventory-api
     restart: unless-stopped
     environment:
@@ -45,6 +46,8 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
       - ${UPLOADS_PATH:-./uploads}:/app/uploads
+      - ${SQL_PATH:-./}category.sql:/app/category.sql:ro
+      - ${SQL_PATH:-./}device_templates.sql:/app/device_templates.sql:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,26 +56,30 @@ services:
       - web
     labels:
       - "traefik.enable=true"
+      # API routes - adjust DOMAIN in .env
       - "traefik.http.routers.inventory-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/graphql`, `/upload`, `/uploads`, `/import`, `/export`, `/auth`, `/generate-image`)"
       - "traefik.http.routers.inventory-api.entrypoints=websecure"
       - "traefik.http.routers.inventory-api.tls=true"
       - "traefik.http.routers.inventory-api.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.routers.inventory-api.priority=2"
       - "traefik.http.services.inventory-api.loadbalancer.server.port=4000"
+      # CORS middleware for API
       - "traefik.http.middlewares.inventory-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
       - "traefik.http.middlewares.inventory-cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
       - "traefik.http.middlewares.inventory-cors.headers.accesscontrolalloworiginlist=https://${DOMAIN}"
       - "traefik.http.routers.inventory-api.middlewares=inventory-cors"
 
   web:
-    image: ${DOCKERHUB_USER:-wottle}/inventory-web:latest
-    pull_policy: always
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://${DOMAIN}
+    image: inventory-web:latest
     container_name: inventory-web
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      LANGUAGE: ${LANGUAGE:-en}
-      API_URL: http://api:4000
+      LANGUAGE: ${LANGUAGE:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       - api
@@ -81,16 +88,21 @@ services:
       - web
     labels:
       - "traefik.enable=true"
+      # Web frontend - catches all other routes
       - "traefik.http.routers.inventory-web.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.inventory-web.entrypoints=websecure"
       - "traefik.http.routers.inventory-web.tls=true"
       - "traefik.http.routers.inventory-web.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.routers.inventory-web.priority=1"
       - "traefik.http.services.inventory-web.loadbalancer.server.port=3000"
+      # Lower priority than API routes
+      - "traefik.http.routers.inventory-web.priority=1"
+      - "traefik.http.routers.inventory-api.priority=2"
 
   storefront:
-    image: ${DOCKERHUB_USER:-wottle}/inventory-storefront:latest
-    pull_policy: always
+    build:
+      context: ./storefront
+      dockerfile: Dockerfile
+    image: inventory-storefront:latest
     container_name: inventory-storefront
     restart: unless-stopped
     environment:
@@ -103,36 +115,28 @@ services:
       - web
     labels:
       - "traefik.enable=true"
+      # Storefront - uses SHOP_DOMAIN for separate subdomain
       - "traefik.http.routers.inventory-storefront.rule=Host(`${SHOP_DOMAIN}`)"
       - "traefik.http.routers.inventory-storefront.entrypoints=websecure"
       - "traefik.http.routers.inventory-storefront.tls=true"
       - "traefik.http.routers.inventory-storefront.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
       - "traefik.http.services.inventory-storefront.loadbalancer.server.port=3001"
 
-  # MCP server (optional — only needed for AI assistant integration)
-  # mcp-server:
-  #   image: ${DOCKERHUB_USER:-wottle}/inventory-mcp:latest
-  #   pull_policy: always
-  #   container_name: inventory-mcp
-  #   restart: unless-stopped
-  #   environment:
-  #     NODE_ENV: production
-  #     DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
-  #     PORT: 3002
-  #     MCP_TOKEN: ${MCP_TOKEN:-}
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   networks:
-  #     - internal
-  #     - web
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.inventory-mcp.rule=Host(`mcp.${DOMAIN}`)"
-  #     - "traefik.http.routers.inventory-mcp.entrypoints=websecure"
-  #     - "traefik.http.routers.inventory-mcp.tls=true"
-  #     - "traefik.http.routers.inventory-mcp.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
-  #     - "traefik.http.services.inventory-mcp.loadbalancer.server.port=3002"
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    image: inventory-mcp:latest
+    container_name: inventory-mcp
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
 
 networks:
   internal:
