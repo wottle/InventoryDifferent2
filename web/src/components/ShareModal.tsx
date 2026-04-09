@@ -142,106 +142,6 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
         link.click();
     };
 
-    const printAssetTag = () => {
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) return;
-
-        const displayName = additionalName ? `${deviceName} ${additionalName}` : deviceName;
-
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Asset Tag - ${displayName}</title>
-                <style>
-                    @page {
-                        size: 3in 2in;
-                        margin: 0;
-                    }
-                    body {
-                        margin: 0;
-                        padding: 0.25in;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        height: 100vh;
-                        box-sizing: border-box;
-                    }
-                    .asset-tag {
-                        display: flex;
-                        align-items: center;
-                        gap: 0.25in;
-                        width: 100%;
-                        max-width: 2.5in;
-                    }
-                    .qr-code {
-                        flex-shrink: 0;
-                    }
-                    .qr-code svg {
-                        width: 1in;
-                        height: 1in;
-                    }
-                    .device-info {
-                        flex: 1;
-                        min-width: 0;
-                    }
-                    .device-name {
-                        font-size: 40pt;
-                        font-weight: 700;
-                        margin: 0 0 2px 0;
-                        line-height: 1.15;
-                        word-wrap: break-word;
-                    }
-                    .device-additional {
-                        font-size: 18pt;
-                        font-weight: 500;
-                        color: #333;
-                        margin: 0 0 4px 0;
-                        line-height: 1.15;
-                        word-wrap: break-word;
-                    }
-                    .device-id {
-                        font-size: 12pt;
-                        color: #666;
-                        margin: 0;
-                    }
-                    @media print {
-                        body {
-                            -webkit-print-color-adjust: exact;
-                            print-color-adjust: exact;
-                        }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="asset-tag">
-                    <div class="qr-code" id="qr-container"></div>
-                    <div class="device-info">
-                        <p class="device-name">${deviceName}</p>
-                        ${additionalName ? `<p class="device-additional">${additionalName}</p>` : ''}
-                        <p class="device-id">ID: ${deviceId}</p>
-                    </div>
-                </div>
-                <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
-                <script>
-                    QRCode.toString('${deviceUrl}', {
-                        type: 'svg',
-                        width: 96,
-                        margin: 0
-                    }, function(err, svg) {
-                        if (!err) {
-                            document.getElementById('qr-container').innerHTML = svg;
-                            setTimeout(function() { window.print(); }, 100);
-                        }
-                    });
-                <\/script>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-    };
-
     const displayName = additionalName ? `${deviceName} ${additionalName}` : deviceName;
 
     return (
@@ -432,16 +332,6 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                                 </div>
                             </div>
 
-                            {/* Print Button */}
-                            <button
-                                onClick={printAssetTag}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium bg-[var(--muted)] text-[var(--foreground)] rounded border border-[var(--border)] hover:bg-[var(--card)] transition-colors"
-                            >
-                                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                </svg>
-                                Print (Standard Printer)
-                            </button>
                         </div>
                     )}
                 </div>
