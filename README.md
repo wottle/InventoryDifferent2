@@ -71,6 +71,8 @@ Services will be available at:
 
 > **iOS / remote access:** The web app resolves the API URL from the browser's origin automatically. For the iOS app — or any client on a different device — set `AUTH_URL` in your `.env` or configure the server URL directly in the iOS app settings.
 
+> **MCP server:** If you plan to connect your collection up to an AI agent, you should uncomment the mcp service in the docker-compose file. The MCP server is available at `http://your-host:3002/mcp` and can be used with AI assistants that support MCP servers. You'll also need to set the `MCP_TOKEN` environment variable in your `.env` file.
+
 > **Asset tagging note:** If you use the QR code asset tagging feature, the generated codes embed your server's URL. A local IP address (`192.168.x.x`) or a hostname that may change will cause those QR codes to stop working when scanned from a device that isn't on your home network, or after your IP changes. If you plan to use asset tagging, Option 2 (a persistent public domain) is strongly recommended so your QR codes remain valid long-term.
 
 ---
@@ -104,23 +106,31 @@ The compose file routes traffic so:
 - `DOMAIN` → admin web app, and API paths (`/graphql`, `/upload`, `/uploads`, `/import`, `/export`, `/auth`, `/generate-image`)
 - `SHOP_DOMAIN` → public storefront
 
+**Traefik version:** `docker-compose.prod.yml` uses Traefik v1.7 label syntax (`traefik.frontend.rule`, `traefik.port`). If you're running Traefik v2+, use `docker-compose.build.yml` as a reference for v2 label syntax.
+
 **Traefik network name:** The compose file uses an external network named `web`. If your Traefik uses a different name, update the `networks` section in `docker-compose.prod.yml`.
 
-Example Traefik static config (if you need to set one up):
+Example Traefik v1.7 static config (if you need to set one up):
 ```yaml
-entryPoints:
-  web:
-    address: ":80"
-  websecure:
-    address: ":443"
+defaultEntryPoints:
+  - http
+  - https
 
-certificatesResolvers:
-  letsencrypt:
-    acme:
-      email: your-email@example.com
-      storage: /letsencrypt/acme.json
-      httpChallenge:
-        entryPoint: web
+entryPoints:
+  http:
+    address: ":80"
+    redirect:
+      entryPoint: https
+  https:
+    address: ":443"
+    tls: {}
+
+acme:
+  email: your-email@example.com
+  storage: /letsencrypt/acme.json
+  entryPoint: https
+  httpChallenge:
+    entryPoint: http
 ```
 
 ---
