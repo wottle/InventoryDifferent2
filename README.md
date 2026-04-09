@@ -106,7 +106,7 @@ The compose file routes traffic so:
 - `DOMAIN` → admin web app, and API paths (`/graphql`, `/upload`, `/uploads`, `/import`, `/export`, `/auth`, `/generate-image`)
 - `SHOP_DOMAIN` → public storefront
 
-**Traefik version:** `docker-compose.prod.yml` uses Traefik v1.7 label syntax (`traefik.frontend.rule`, `traefik.port`). If you're running Traefik v2+, use `docker-compose.build.yml` as a reference for v2 label syntax.
+**Traefik version:** `docker-compose.prod.yml` uses Traefik v1.7 label syntax (`traefik.frontend.rule`, `traefik.port`). If you're running Traefik v2+, you'll need to update the labels to use the v2 router/service/middleware syntax.
 
 **Traefik network name:** The compose file uses an external network named `web`. If your Traefik uses a different name, update the `networks` section in `docker-compose.prod.yml`.
 

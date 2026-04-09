@@ -1,4 +1,4 @@
-# Build-from-source deployment with Traefik
+# Build-from-source deployment with Traefik v1.7
 # Use this if you want to build images locally rather than pull from Docker Hub.
 # For the standard pre-built image deployment see docker-compose.prod.yml.
 #
@@ -7,7 +7,7 @@
 #   2. docker compose -f docker-compose.build.yml up -d --build
 #
 # Prerequisites:
-#   - Traefik running with external network "web"
+#   - Traefik v1.7 running with external network "web" and ACME configured in static config
 #   - DNS configured for your domains
 
 services:
@@ -56,17 +56,13 @@ services:
       - web
     labels:
       - "traefik.enable=true"
-      # API routes - adjust DOMAIN in .env
-      - "traefik.http.routers.inventory-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/graphql`, `/upload`, `/uploads`, `/import`, `/export`, `/auth`, `/generate-image`)"
-      - "traefik.http.routers.inventory-api.entrypoints=websecure"
-      - "traefik.http.routers.inventory-api.tls=true"
-      - "traefik.http.routers.inventory-api.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.services.inventory-api.loadbalancer.server.port=4000"
-      # CORS middleware for API
-      - "traefik.http.middlewares.inventory-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
-      - "traefik.http.middlewares.inventory-cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
-      - "traefik.http.middlewares.inventory-cors.headers.accesscontrolalloworiginlist=https://${DOMAIN}"
-      - "traefik.http.routers.inventory-api.middlewares=inventory-cors"
+      - "traefik.frontend.rule=Host:${DOMAIN};PathPrefix:/graphql,/upload,/uploads,/import,/export,/auth,/generate-image"
+      - "traefik.port=4000"
+      - "traefik.frontend.priority=2"
+      - "traefik.docker.network=web"
+      - "traefik.frontend.headers.accessControlAllowMethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.frontend.headers.accessControlAllowHeaders=Content-Type,Authorization"
+      - "traefik.frontend.headers.accessControlAllowOrigin=https://${DOMAIN}"
 
   web:
     build:
@@ -88,15 +84,10 @@ services:
       - web
     labels:
       - "traefik.enable=true"
-      # Web frontend - catches all other routes
-      - "traefik.http.routers.inventory-web.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.inventory-web.entrypoints=websecure"
-      - "traefik.http.routers.inventory-web.tls=true"
-      - "traefik.http.routers.inventory-web.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.services.inventory-web.loadbalancer.server.port=3000"
-      # Lower priority than API routes
-      - "traefik.http.routers.inventory-web.priority=1"
-      - "traefik.http.routers.inventory-api.priority=2"
+      - "traefik.frontend.rule=Host:${DOMAIN}"
+      - "traefik.port=3000"
+      - "traefik.frontend.priority=1"
+      - "traefik.docker.network=web"
 
   storefront:
     build:
@@ -115,12 +106,9 @@ services:
       - web
     labels:
       - "traefik.enable=true"
-      # Storefront - uses SHOP_DOMAIN for separate subdomain
-      - "traefik.http.routers.inventory-storefront.rule=Host(`${SHOP_DOMAIN}`)"
-      - "traefik.http.routers.inventory-storefront.entrypoints=websecure"
-      - "traefik.http.routers.inventory-storefront.tls=true"
-      - "traefik.http.routers.inventory-storefront.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.services.inventory-storefront.loadbalancer.server.port=3001"
+      - "traefik.frontend.rule=Host:${SHOP_DOMAIN}"
+      - "traefik.port=3001"
+      - "traefik.docker.network=web"
 
   mcp-server:
     build:
