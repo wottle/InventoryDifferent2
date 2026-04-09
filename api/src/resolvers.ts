@@ -367,10 +367,20 @@ export const resolvers = {
                 _sum: { soldPrice: true },
             });
 
+            // Repair fees: RETURNED devices where a fee was charged (stored in soldPrice)
+            const repairFeeAgg = await context.prisma.device.aggregate({
+                where: {
+                    ...baseWhere,
+                    status: 'RETURNED' as any,
+                    soldPrice: { not: null },
+                },
+                _sum: { soldPrice: true },
+            });
+
             const ownedValueAgg = await context.prisma.device.aggregate({
                 where: {
                     ...baseWhere,
-                    status: { notIn: ['SOLD', 'DONATED', 'IN_REPAIR', 'RETURNED'] as any },
+                    status: { notIn: ['SOLD', 'DONATED', 'IN_REPAIR', 'REPAIRED', 'RETURNED'] as any },
                 },
                 _sum: { estimatedValue: true },
             });
@@ -400,7 +410,8 @@ export const resolvers = {
             });
 
             const totalSpent = -decimalToNumber(spentAgg?._sum?.priceAcquired);
-            const totalReceived = decimalToNumber(receivedAgg?._sum?.soldPrice);
+            const totalRepairFees = decimalToNumber(repairFeeAgg?._sum?.soldPrice);
+            const totalReceived = decimalToNumber(receivedAgg?._sum?.soldPrice) + totalRepairFees;
             const netCash = totalReceived + totalSpent;
             const estimatedValueOwned = decimalToNumber(ownedValueAgg?._sum?.estimatedValue);
             const totalMaintenanceCost = decimalToNumber(maintenanceCostAgg?._sum?.cost);

@@ -175,6 +175,9 @@ export type Translations = {
     valueHistory: string;
     salesInfo: string;
     donationInfo: string;
+    repairInfo: string;
+    returnedDate: string;
+    repairFeeCharged: string;
     customFields: string;
     addTask: string;
     addMaintenance: string;
@@ -793,6 +796,9 @@ export const en: Translations = {
     valueHistory: "Value History",
     salesInfo: "Sales Info",
     donationInfo: "Donation Info",
+    repairInfo: "Repair Info",
+    returnedDate: "Returned Date",
+    repairFeeCharged: "Repair Fee Charged",
     customFields: "Custom Fields",
     addTask: "Add Task",
     addMaintenance: "Add Maintenance",

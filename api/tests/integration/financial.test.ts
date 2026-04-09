@@ -81,6 +81,45 @@ describe('financialOverview', () => {
         // totalProfit = (200 - 50) = 150
         expect(overview.totalProfit).toBeCloseTo(150);
     });
+
+    it('includes repair fees in totalReceived', async () => {
+        const prisma = getTestPrismaClient();
+        // Sold device
+        await prisma.device.create({
+            data: {
+                name: 'Mac Plus',
+                categoryId: categories.computer.id,
+                priceAcquired: 50,
+                soldPrice: 200,
+                status: 'SOLD',
+            },
+        });
+        // Returned repair device with fee
+        await prisma.device.create({
+            data: {
+                name: 'Customer Mac SE',
+                categoryId: categories.computer.id,
+                soldPrice: 75,
+                status: 'RETURNED',
+            },
+        });
+        // Returned repair device with no fee — should not add to totalReceived
+        await prisma.device.create({
+            data: {
+                name: 'Customer Mac Classic',
+                categoryId: categories.computer.id,
+                status: 'RETURNED',
+            },
+        });
+
+        const res = await graphqlQuery(app, `{
+            financialOverview { totalReceived }
+        }`, undefined, token);
+
+        const overview = res.data.financialOverview;
+        // totalReceived = soldPrice of SOLD (200) + repair fee of RETURNED (75) = 275
+        expect(overview.totalReceived).toBeCloseTo(275);
+    });
 });
 
 describe('financialTransactions', () => {

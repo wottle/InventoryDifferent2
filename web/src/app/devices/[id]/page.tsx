@@ -2055,6 +2055,31 @@ export default function DeviceDetail() {
                         </div>
                     )}
 
+                    {/* Repair Info - show for RETURNED status */}
+                    {device.status === "RETURNED" && (device.soldPrice || device.soldDate) && (
+                        <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
+                            <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
+                                {t.detail.repairInfo}
+                            </h2>
+                            <dl>
+                                {device.soldDate && (
+                                    <DetailRow
+                                        label={t.detail.returnedDate}
+                                        value={new Date(device.soldDate).toLocaleDateString('en-US', {
+                                            timeZone: 'UTC',
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
+                                    />
+                                )}
+                                {device.soldPrice !== null && device.soldPrice !== undefined && (
+                                    <DetailRow label={t.detail.repairFeeCharged} value={`${t.common.currencySymbol}${Number(device.soldPrice).toFixed(2)}`} />
+                                )}
+                            </dl>
+                        </div>
+                    )}
+
                     {/* Sales Info - show for FOR_SALE, PENDING_SALE, SOLD, or DONATED status */}
                     {(device.status === "FOR_SALE" || device.status === "PENDING_SALE" || device.status === "SOLD" || device.status === "DONATED") && (device.listPrice || device.soldPrice || device.soldDate) && (
                         <div className="bg-[var(--muted)] rounded-xl p-5 card-retro">
