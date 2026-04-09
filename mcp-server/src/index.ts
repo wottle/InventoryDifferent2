@@ -188,7 +188,7 @@ const TOOLS = [
   {
     name: "update_device",
     description:
-      "Update a device in the collection. Use for logging power-ons, updating estimated value, marking as sold, changing status, updating functional status, or changing location.",
+      "Update a device in the collection. Use for logging power-ons, updating estimated value, marking as sold, changing status, updating functional status, or changing location. DISAMBIGUATION: If the user has not provided a numeric device ID, call search_devices first to find candidates. If multiple devices could match the user's description, present each match (id, name, manufacturer, year, location) and ask the user to confirm which one before calling this tool. If only one match is found, still confirm the device name with the user before making changes.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -208,7 +208,7 @@ const TOOLS = [
   {
     name: "add_note",
     description:
-      "Add a note to a device. Use for recording observations, work done, provenance info, or any free-form notes about a device.",
+      "Add a note to a device. Use for recording observations, work done, provenance info, or any free-form notes about a device. DISAMBIGUATION: If the user has not provided a numeric device ID, call search_devices first to find candidates. If multiple devices could match the user's description, present each match (id, name, manufacturer, year, location) and ask the user to confirm which one before calling this tool. If only one match is found, still confirm the device name with the user before adding the note.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -221,7 +221,7 @@ const TOOLS = [
   {
     name: "add_maintenance_task",
     description:
-      "Log a completed maintenance task for a device. Use for recording repairs, recaps, cleaning, part replacements, etc.",
+      "Log a completed maintenance task for a device. Use for recording repairs, recaps, cleaning, part replacements, etc. DISAMBIGUATION: If the user has not provided a numeric device ID, call search_devices first to find candidates. If multiple devices could match the user's description, present each match (id, name, manufacturer, year, location) and ask the user to confirm which one before calling this tool. If only one match is found, still confirm the device name with the user before logging the task.",
     inputSchema: {
       type: "object" as const,
       properties: {
