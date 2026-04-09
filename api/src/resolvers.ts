@@ -651,6 +651,7 @@ export const resolvers = {
                 SOLD: 'Sold',
                 DONATED: 'Donated',
                 IN_REPAIR: 'In Repair',
+                REPAIRED: 'Repaired',
                 RETURNED: 'Returned',
             };
             const functionalLabels: Record<string, string> = {

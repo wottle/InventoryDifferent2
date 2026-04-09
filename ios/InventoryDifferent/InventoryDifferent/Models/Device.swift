@@ -40,6 +40,7 @@ enum Status: String, Codable, CaseIterable {
     case FOR_SALE
     case PENDING_SALE
     case IN_REPAIR
+    case REPAIRED
     case SOLD
     case DONATED
     case RETURNED
@@ -53,6 +54,7 @@ enum Status: String, Codable, CaseIterable {
         case .SOLD: return t.status.SOLD
         case .DONATED: return t.status.DONATED
         case .IN_REPAIR: return t.status.IN_REPAIR
+        case .REPAIRED: return t.status.REPAIRED
         case .RETURNED: return t.status.RETURNED
         }
     }
@@ -65,6 +67,7 @@ enum Status: String, Codable, CaseIterable {
         case .SOLD: return "gray"
         case .DONATED: return "purple"
         case .IN_REPAIR: return "teal"
+        case .REPAIRED: return "mint"
         case .RETURNED: return "gray"
         }
     }

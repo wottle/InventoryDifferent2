@@ -4,6 +4,7 @@ export type Translations = {
     FOR_SALE: string;
     PENDING_SALE: string;
     IN_REPAIR: string;
+    REPAIRED: string;
     SOLD: string;
     DONATED: string;
     RETURNED: string;
@@ -621,6 +622,7 @@ export const en: Translations = {
     FOR_SALE: "For Sale",
     PENDING_SALE: "Pending Sale",
     IN_REPAIR: "In Repair",
+    REPAIRED: "Repaired",
     SOLD: "Sold",
     DONATED: "Donated",
     RETURNED: "Returned",

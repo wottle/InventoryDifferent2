@@ -157,6 +157,7 @@ struct DeviceDetailRedesignView: View {
     @State private var isUpdatingStatus = false
     @State private var showMarkSoldSheetR = false
     @State private var showMarkForSaleSheetR = false
+    @State private var showMarkReturnedSheet = false
     @State private var valueSnapshots: [ValueSnapshot] = []
     @State private var isNoteExpanded = false
     @State private var infoFullHeight: CGFloat = 0
@@ -200,6 +201,7 @@ struct DeviceDetailRedesignView: View {
                             quickOverviewCard
                             indicatorGrid
                             if authService.isAuthenticated {
+                                lifecycleActionsCard
                                 valuationCards
                             }
                             mediaAssetsSection
@@ -331,6 +333,11 @@ struct DeviceDetailRedesignView: View {
         .sheet(isPresented: $showMarkForSaleSheetR) {
             MarkForSaleSheetR { listPrice in
                 Task { await markDeviceForSale(listPrice: listPrice) }
+            }
+        }
+        .sheet(isPresented: $showMarkReturnedSheet) {
+            MarkReturnedSheetR { date, fee in
+                Task { await markDeviceReturned(date: date, fee: fee) }
             }
         }
         .sheet(isPresented: $showImagePicker) {
@@ -1660,6 +1667,131 @@ struct DeviceDetailRedesignView: View {
         isTogglingFavorite = false
     }
 
+    // MARK: - Lifecycle Actions Card
+
+    @ViewBuilder
+    private var lifecycleActionsCard: some View {
+        let t = lm.t
+        let hasActions: Bool = {
+            switch device.status {
+            case .COLLECTION, .FOR_SALE, .PENDING_SALE, .IN_REPAIR, .REPAIRED: return true
+            default: return false
+            }
+        }()
+
+        if hasActions {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(t.deviceDetail.lifecycleActions)
+                    .font(.system(size: 11, weight: .bold))
+                    .textCase(.uppercase)
+                    .tracking(1.5)
+                    .foregroundColor(.secondary)
+
+                HStack(spacing: 10) {
+                    switch device.status {
+                    case .COLLECTION:
+                        lifecycleButton(
+                            title: t.deviceDetail.markForSale,
+                            icon: "storefront",
+                            color: .orange
+                        ) {
+                            showMarkForSaleSheetR = true
+                        }
+
+                    case .FOR_SALE:
+                        lifecycleButton(
+                            title: t.deviceDetail.markPending,
+                            icon: "clock.badge.checkmark",
+                            color: .yellow
+                        ) {
+                            Task { await updateDeviceStatus(.PENDING_SALE) }
+                        }
+                        lifecycleButton(
+                            title: t.deviceDetail.markSold,
+                            icon: "dollarsign.circle",
+                            color: .green
+                        ) {
+                            showMarkSoldSheetR = true
+                        }
+
+                    case .PENDING_SALE:
+                        lifecycleButton(
+                            title: t.deviceDetail.markForSale,
+                            icon: "storefront",
+                            color: .orange
+                        ) {
+                            Task { await updateDeviceStatus(.FOR_SALE) }
+                        }
+                        lifecycleButton(
+                            title: t.deviceDetail.markSold,
+                            icon: "dollarsign.circle",
+                            color: .green
+                        ) {
+                            showMarkSoldSheetR = true
+                        }
+
+                    case .IN_REPAIR:
+                        lifecycleButton(
+                            title: t.deviceDetail.markRepaired,
+                            icon: "checkmark.seal",
+                            color: .mint
+                        ) {
+                            Task { await updateDeviceStatus(.REPAIRED) }
+                        }
+
+                    case .REPAIRED:
+                        lifecycleButton(
+                            title: t.deviceDetail.backToRepair,
+                            icon: "wrench.and.screwdriver",
+                            color: .teal
+                        ) {
+                            Task { await updateDeviceStatus(.IN_REPAIR) }
+                        }
+                        lifecycleButton(
+                            title: t.deviceDetail.markReturned,
+                            icon: "arrow.uturn.backward.circle",
+                            color: .green
+                        ) {
+                            showMarkReturnedSheet = true
+                        }
+
+                    default:
+                        EmptyView()
+                    }
+
+                    Spacer()
+                }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.edSurfaceLowest)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+    }
+
+    private func lifecycleButton(title: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(color)
+                Text(title)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .background(color.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+        .disabled(isUpdatingStatus)
+    }
+
     private func markDeviceForSale(listPrice: Double) async {
         isUpdatingStatus = true
         do {
@@ -1668,6 +1800,30 @@ struct DeviceDetailRedesignView: View {
             )
             applyUpdate(updated)
         } catch { print("markForSale: \(error)") }
+        isUpdatingStatus = false
+    }
+
+    private func updateDeviceStatus(_ newStatus: Status) async {
+        isUpdatingStatus = true
+        do {
+            let updated = try await DeviceService.shared.updateDevice(
+                id: deviceId, input: ["status": newStatus.rawValue]
+            )
+            applyUpdate(updated)
+        } catch { print("updateDeviceStatus: \(error)") }
+        isUpdatingStatus = false
+    }
+
+    private func markDeviceReturned(date: Date, fee: Double?) async {
+        isUpdatingStatus = true
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var input: [String: Any] = ["status": "RETURNED", "soldDate": formatter.string(from: date)]
+        if let f = fee { input["soldPrice"] = f }
+        do {
+            let updated = try await DeviceService.shared.updateDevice(id: deviceId, input: input)
+            applyUpdate(updated)
+        } catch { print("markReturned: \(error)") }
         isUpdatingStatus = false
     }
 
@@ -1862,6 +2018,35 @@ private struct MarkForSaleSheetR: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(t.deviceDetail.markForSale) {
                         if let price = Double(listPriceText) { onSubmit(price) }
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct MarkReturnedSheetR: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
+    @State private var returnDate = Date()
+    @State private var feeText = ""
+    let onSubmit: (Date, Double?) -> Void
+
+    var body: some View {
+        let t = lm.t
+        return NavigationStack {
+            Form {
+                DatePicker(t.deviceDetail.returnedDate, selection: $returnDate, displayedComponents: .date)
+                TextField(t.deviceDetail.repairFeeCharged, text: $feeText).keyboardType(.decimalPad)
+            }
+            .navigationTitle(t.deviceDetail.markReturned)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button(t.common.cancel) { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(t.deviceDetail.markReturned) {
+                        onSubmit(returnDate, Double(feeText))
                         dismiss()
                     }
                 }

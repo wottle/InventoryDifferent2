@@ -24,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
   'Sold':           '#6B7280',  // grey
   'Donated':        '#EC4899',  // pink
   'In Repair':      '#F97316',  // orange
+  'Repaired':       '#06B6D4',  // cyan
   'Returned':       '#14B8A6',  // teal
 };
 

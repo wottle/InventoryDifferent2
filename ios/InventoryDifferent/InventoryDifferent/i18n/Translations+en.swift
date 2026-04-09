@@ -7,6 +7,7 @@ extension Translations {
             FOR_SALE: "For Sale",
             PENDING_SALE: "Pending",
             IN_REPAIR: "In Repair",
+            REPAIRED: "Repaired",
             SOLD: "Sold",
             DONATED: "Donated",
             RETURNED: "Returned"
@@ -196,7 +197,11 @@ extension Translations {
             removeAccessoryTitle: "Remove Accessory",
             removeAccessoryFmt: "Remove \"%@\" from accessories?",
             removeLinkTitle: "Remove Link",
-            removeLinkFmt: "Remove the link \"%@\"?"
+            removeLinkFmt: "Remove the link \"%@\"?",
+            lifecycleActions: "Lifecycle Actions",
+            markRepaired: "Mark Repaired",
+            markReturned: "Mark Returned",
+            backToRepair: "Back to Repair"
         ),
         addEditDevice: .init(
             addTitle: "Add Device",

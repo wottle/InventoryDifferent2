@@ -182,7 +182,6 @@ acme:
 |----------|---------|-------------|
 | `DOMAIN` | — | Domain for the admin web app (e.g., `inventory.example.com`) |
 | `SHOP_DOMAIN` | — | Domain for the public storefront (e.g., `shop.example.com`) |
-| `CERT_RESOLVER` | `letsencrypt` | Traefik certificate resolver name |
 
 ### Analytics (optional)
 
@@ -221,6 +220,44 @@ Change the language in iOS Settings:
 4. Select **System Default**, **English**, **Deutsch**, or **Français**
 
 The app will switch languages immediately without needing to restart.
+
+---
+
+## Device Status Lifecycle
+
+Each device moves through a defined set of statuses. The web and iOS apps provide lifecycle shortcut buttons to transition between statuses without manually editing the device.
+
+### Statuses
+
+| Status | Meaning |
+|--------|---------|
+| **In Collection** | Default state — device is part of your collection |
+| **For Sale** | Listed for sale (list price recorded) |
+| **Pending Sale** | Sale agreed but not yet completed |
+| **Sold** | Sale complete (sale date and price recorded) |
+| **Donated** | Given away (donation date recorded) |
+| **In Repair** | Sent out or in active repair |
+| **Repaired** | Repair complete — awaiting pickup/return to owner |
+| **Returned** | Repair returned to owner (return date and optional fee recorded) |
+
+### Lifecycle Flows
+
+```
+In Collection → For Sale → Pending Sale → Sold
+                        ↘
+                          Sold
+                        
+In Collection → For Sale ← Pending Sale
+
+In Repair → Repaired → Returned
+         ← Repaired ← (back if repair incomplete)
+```
+
+**Sale flow:** `In Collection` → `For Sale` → `Pending Sale` → `Sold`  
+*(Pending Sale can also step back to For Sale, or jump directly to Sold)*
+
+**Repair flow:** `In Repair` → `Repaired` → `Returned`  
+*(Repaired can step back to In Repair if the device needs more work)*
 
 ---
 

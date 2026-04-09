@@ -154,6 +154,7 @@ struct DeviceDetailView: View {
     @State private var isUpdatingStatus = false
     @State private var showMarkSoldSheet = false
     @State private var showMarkForSaleSheet = false
+    @State private var showMarkReturnedSheet = false
     @State private var quickActionSourceTab: Int? = nil
 
     @State private var valueSnapshots: [ValueSnapshot] = []
@@ -307,6 +308,11 @@ struct DeviceDetailView: View {
         .sheet(isPresented: $showMarkForSaleSheet) {
             MarkForSaleSheet { listPrice in
                 Task { await markDeviceForSale(listPrice: listPrice) }
+            }
+        }
+        .sheet(isPresented: $showMarkReturnedSheet) {
+            MarkReturnedSheet { date, fee in
+                Task { await markDeviceReturned(date: date, fee: fee) }
             }
         }
         .sheet(isPresented: $showImagePicker, onDismiss: {
@@ -584,6 +590,33 @@ struct DeviceDetailView: View {
                     }
                 }
 
+                if device.status == .IN_REPAIR {
+                    QuickActionButton(
+                        title: t.deviceDetail.markRepaired,
+                        systemImage: "checkmark.seal",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        Task { await updateDeviceStatus(.REPAIRED) }
+                    }
+                }
+
+                if device.status == .REPAIRED {
+                    QuickActionButton(
+                        title: t.deviceDetail.backToRepair,
+                        systemImage: "wrench.and.screwdriver",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        Task { await updateDeviceStatus(.IN_REPAIR) }
+                    }
+                    QuickActionButton(
+                        title: t.deviceDetail.markReturned,
+                        systemImage: "arrow.uturn.backward.circle",
+                        isLoading: isUpdatingStatus
+                    ) {
+                        showMarkReturnedSheet = true
+                    }
+                }
+
                 Spacer()
             }
         }
@@ -711,6 +744,31 @@ struct DeviceDetailView: View {
             onDeviceChanged?(updatedDevice)
         } catch {
             print("Failed to mark device as sold: \(error)")
+        }
+        isUpdatingStatus = false
+    }
+
+    private func markDeviceReturned(date: Date, fee: Double?) async {
+        isUpdatingStatus = true
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var input: [String: Any] = ["status": "RETURNED", "soldDate": formatter.string(from: date)]
+        if let f = fee { input["soldPrice"] = f }
+        do {
+            let updatedDevice = try await DeviceService.shared.updateDevice(
+                id: deviceId,
+                input: input
+            )
+            device = updatedDevice
+            images = updatedDevice.images
+            maintenanceTasks = updatedDevice.maintenanceTasks
+            notes = updatedDevice.notes
+            tags = updatedDevice.tags
+            accessories = updatedDevice.accessories
+            links = updatedDevice.links
+            onDeviceChanged?(updatedDevice)
+        } catch {
+            print("Failed to mark device as returned: \(error)")
         }
         isUpdatingStatus = false
     }
@@ -2036,6 +2094,8 @@ private struct MarkSoldSheet: View {
     }
 }
 
+
+
 private struct MarkForSaleSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var lm: LocalizationManager
@@ -2298,6 +2358,38 @@ struct ValueHistorySection: View {
         .padding()
         .background(Color(.secondarySystemBackground))
         .cornerRadius(12)
+    }
+}
+
+// MARK: - Status Sheet Views
+
+
+struct MarkReturnedSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var lm: LocalizationManager
+    @State private var returnDate = Date()
+    @State private var feeText = ""
+    let onSubmit: (Date, Double?) -> Void
+
+    var body: some View {
+        let t = lm.t
+        NavigationStack {
+            Form {
+                DatePicker(t.deviceDetail.returnedDate, selection: $returnDate, displayedComponents: .date)
+                TextField(t.deviceDetail.repairFeeCharged, text: $feeText).keyboardType(.decimalPad)
+            }
+            .navigationTitle(t.deviceDetail.markReturned)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button(t.common.cancel) { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(t.deviceDetail.markReturned) {
+                        onSubmit(returnDate, Double(feeText))
+                        dismiss()
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -6,6 +6,7 @@ export const de: Translations = {
     FOR_SALE: "Zum Verkauf",
     PENDING_SALE: "Verkauf ausstehend",
     IN_REPAIR: "In Reparatur",
+    REPAIRED: "Repariert",
     SOLD: "Verkauft",
     DONATED: "Gespendet",
     RETURNED: "Zurückgekehrt",

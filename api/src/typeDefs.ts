@@ -10,6 +10,7 @@ export const typeDefs = gql`
     SOLD
     DONATED
     IN_REPAIR
+    REPAIRED
     RETURNED
   }
 

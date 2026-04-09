@@ -289,6 +289,9 @@ function StatusBadge({ status }: { status: string }) {
         PENDING_SALE: "bg-orange-50 text-orange-700 ring-orange-600/20",
         SOLD: "bg-slate-50 text-slate-600 ring-slate-500/20",
         DONATED: "bg-sky-50 text-sky-700 ring-sky-600/20",
+        IN_REPAIR: "bg-teal-50 text-teal-700 ring-teal-600/20",
+        REPAIRED: "bg-cyan-50 text-cyan-700 ring-cyan-600/20",
+        RETURNED: "bg-slate-50 text-slate-600 ring-slate-500/20",
     };
     return (
         <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${styles[status] || styles.COLLECTION}`}>

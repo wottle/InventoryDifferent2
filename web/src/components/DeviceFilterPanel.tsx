@@ -69,6 +69,7 @@ export function DeviceFilterPanel({
     { value: "FOR_SALE", label: t.status.FOR_SALE },
     { value: "PENDING_SALE", label: t.status.PENDING_SALE },
     { value: "IN_REPAIR", label: t.status.IN_REPAIR },
+    { value: "REPAIRED", label: t.status.REPAIRED },
     { value: "SOLD", label: t.status.SOLD },
     { value: "DONATED", label: t.status.DONATED },
     { value: "RETURNED", label: t.status.RETURNED },

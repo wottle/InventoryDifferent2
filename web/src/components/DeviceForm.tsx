@@ -960,6 +960,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         <option value="FOR_SALE">{t.status.FOR_SALE}</option>
                         <option value="PENDING_SALE">{t.status.PENDING_SALE}</option>
                         <option value="IN_REPAIR">{t.status.IN_REPAIR}</option>
+                        <option value="REPAIRED">{t.status.REPAIRED}</option>
                         <option value="SOLD">{t.status.SOLD}</option>
                         <option value="DONATED">{t.status.DONATED}</option>
                         <option value="RETURNED">{t.status.RETURNED}</option>

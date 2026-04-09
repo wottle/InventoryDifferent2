@@ -264,6 +264,7 @@ enum Status {
   SOLD
   DONATED
   IN_REPAIR
+  REPAIRED
   RETURNED
 }
 
