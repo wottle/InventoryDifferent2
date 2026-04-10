@@ -168,7 +168,7 @@ acme:
 
 | Variable | Description |
 |----------|-------------|
-| `LANGUAGE` | Language for the web app and storefront (default: `en`, supported: `de`, `fr`) |
+| `LANGUAGE` | Language for the web app and storefront (default: `en`, supported: `de`, `fr`, `es`) |
 | `OPENAI_API_KEY` | Enables AI product image generation|
 | `ANTHROPIC_API_KEY` | Enables the AI chat assistant |
 | `MCP_TOKEN` | Optional token for the MCP server (token required for auth MCP server from AI agent) |
@@ -195,13 +195,13 @@ Set these directly on the web or storefront containers in Portainer (not in `.en
 
 ## Language Support
 
-The application supports **English**, **German (Deutsch)**, and **French (Français)** across all platforms.
+The application supports **English**, **German (Deutsch)**, **French (Français)**, and **Spanish (Español)** across all platforms.
 
 ### Web App
 
 The web app automatically detects your browser's language preference. To change the language:
 
-1. Set your browser's preferred language to English (`en`), German (`de`), or French (`fr`)
+1. Set your browser's preferred language to English (`en`), German (`de`), French (`fr`), or Spanish (`es`)
 2. Refresh the page
 
 **How to change browser language:**
@@ -216,7 +216,7 @@ Change the language in iOS Settings:
 1. Open **Settings** app on your device
 2. Scroll down to **InventoryDifferent**
 3. Tap **Language**
-4. Select **System Default**, **English**, **Deutsch**, or **Français**
+4. Select **System Default**, **English**, **Deutsch**, **Français**, or **Español**
 
 The app will switch languages immediately without needing to restart.
 

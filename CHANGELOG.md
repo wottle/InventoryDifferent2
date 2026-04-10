@@ -4,9 +4,14 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.5.0] - 2026-04-10
+
 ### Added
 - Templates: reference link label field — name the link (e.g. "EveryMac") alongside the URL
 - Seed: rarity values set for all 230 Mac/Apple templates; link labels derived from URL on first seed
+- i18n: Spanish (Español) language support across web and iOS
 
 ### Fixed
 - iOS and Web: deleting tags, accessories, and links on device detail now requires confirmation

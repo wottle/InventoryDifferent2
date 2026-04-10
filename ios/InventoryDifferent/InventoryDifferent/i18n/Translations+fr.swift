@@ -514,7 +514,8 @@ extension Translations {
             system_: "Par défaut du système",
             english: "English",
             german: "Deutsch",
-            french: "Français"
+            french: "Français",
+            spanish: "Español"
         ),
         locationsList: .init(
             title: "Emplacements",

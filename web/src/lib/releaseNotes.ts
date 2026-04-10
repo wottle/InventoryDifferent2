@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.4.1';
+export const APP_VERSION = '1.5.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,9 +12,17 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.5.0',
+    date: '2026-04-10',
     added: [
       'Templates: reference link label field — name the link (e.g. "EveryMac") alongside the URL',
       'Seed: rarity values set for all 230 Mac/Apple templates; link labels derived from URL on first seed',
+      'i18n: Spanish (Español) language support across web and iOS',
     ],
     changed: [],
     fixed: [

@@ -515,7 +515,8 @@ extension Translations {
             system_: "System Default",
             english: "English",
             german: "Deutsch",
-            french: "Français"
+            french: "Français",
+            spanish: "Español"
         ),
         locationsList: .init(
             title: "Locations",
