@@ -1112,15 +1112,17 @@ RESTART IDENTITY CASCADE;
     });
 
     app.post('/generate-image', requireAuth, async (req, res) => {
+        console.log('[generate-image] Request received', { body: JSON.stringify(req.body) });
         if (!process.env.OPENAI_API_KEY) {
             return res.status(503).json({ error: 'OPENAI_API_KEY is not configured on the server.' });
         }
 
-        const { deviceId, sourceImageId, prompt, assignAsThumbnail, assignAsShopImage, assignAsListingImage } = req.body as {
+        const { deviceId, sourceImageId, prompt, assignAsThumbnail, thumbnailMode, assignAsShopImage, assignAsListingImage } = req.body as {
             deviceId: number;
             sourceImageId?: number;
             prompt?: string;
             assignAsThumbnail?: boolean;
+            thumbnailMode?: string;
             assignAsShopImage?: boolean;
             assignAsListingImage?: boolean;
         };
@@ -1136,6 +1138,7 @@ RESTART IDENTITY CASCADE;
             let imageBase64: string;
 
             if (sourceImageId) {
+                console.log('[generate-image] Starting image-edit mode, sourceImageId:', sourceImageId);
                 // Image edit mode: use existing device photo as reference via gpt-image-1
                 const sourceImage = await prisma.image.findUnique({ where: { id: sourceImageId } });
                 if (!sourceImage) {
@@ -1147,18 +1150,22 @@ RESTART IDENTITY CASCADE;
                     return res.status(404).json({ error: 'Source image file not found on disk' });
                 }
 
-                // Convert to PNG preserving original dimensions — no resize so the model sees the full image
+                console.log('[generate-image] Converting source image to PNG');
                 const pngBuffer = await sharp(sourceFilePath).rotate().png().toBuffer();
+                console.log('[generate-image] PNG buffer size:', pngBuffer.length, 'bytes');
                 const imageFile = await OpenAI.toFile(pngBuffer, 'image.png', { type: 'image/png' });
 
+                console.log('[generate-image] Calling OpenAI images.edit...');
                 const response = await openai.images.edit({
                     model: 'gpt-image-1.5',
                     image: imageFile,
                     prompt: finalPrompt,
                     size: '1024x1024',
                 } as any);
+                console.log('[generate-image] OpenAI images.edit complete');
                 imageBase64 = (response.data![0] as any).b64_json as string;
             } else {
+                console.log('[generate-image] Starting text-to-image mode');
                 // Text-to-image fallback via DALL-E 3
                 const device = await prisma.device.findUnique({ where: { id: Number(deviceId) } });
                 if (!device) {
@@ -1172,9 +1179,11 @@ RESTART IDENTITY CASCADE;
                     size: '1024x1024',
                     response_format: 'b64_json',
                 });
+                console.log('[generate-image] OpenAI images.generate complete');
                 imageBase64 = response.data![0].b64_json as string;
             }
 
+            console.log('[generate-image] Writing PNG to disk...');
             // Write generated PNG to disk
             const outputDir = path.join('/app/uploads/devices', String(deviceId));
             fs.mkdirSync(outputDir, { recursive: true });
@@ -1184,8 +1193,11 @@ RESTART IDENTITY CASCADE;
 
             const imagePath = `/uploads/devices/${deviceId}/${filename}`;
 
+            console.log('[generate-image] PNG written to', imagePath);
+
             // Generate thumbnail
             const thumbnailPath = await generateThumbnailForUpload(imagePath);
+            console.log('[generate-image] Thumbnail path:', thumbnailPath);
 
             // Handle image role assignments — unset existing flags as needed
             if (assignAsThumbnail) {
@@ -1205,14 +1217,16 @@ RESTART IDENTITY CASCADE;
                     thumbnailPath: thumbnailPath || undefined,
                     caption: 'AI-generated product image',
                     isThumbnail: !!assignAsThumbnail,
+                    thumbnailMode: (thumbnailMode as any) || 'BOTH',
                     isShopImage: !!assignAsShopImage,
                     isListingImage: !!assignAsListingImage,
                 },
             });
 
+            console.log('[generate-image] DB record created, id:', newImage.id, '— sending response');
             return res.json(newImage);
         } catch (err: any) {
-            console.error('Image generation error:', err);
+            console.error('[generate-image] ERROR:', err?.message, err?.stack);
             return res.status(500).json({ error: err?.message || 'Image generation failed' });
         }
     });
