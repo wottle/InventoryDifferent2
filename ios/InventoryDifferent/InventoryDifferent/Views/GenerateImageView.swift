@@ -37,7 +37,26 @@ struct GenerateImageView: View {
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             Form {
+                // Status messages — shown at top so they're always visible
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .font(.footnote)
+                    }
+                    .id("status")
+                }
+
+                if done {
+                    Section {
+                        Label("Image generated and added to gallery.", systemImage: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                    }
+                    .id("status")
+                }
+
                 // Reference image picker
                 if !images.isEmpty {
                     Section("Reference Photo") {
@@ -127,22 +146,6 @@ struct GenerateImageView: View {
                     Toggle("Set as listing image", isOn: $assignAsListingImage)
                 }
 
-                // Error
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.footnote)
-                    }
-                }
-
-                // Success
-                if done {
-                    Section {
-                        Label("Image generated and added to gallery.", systemImage: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                    }
-                }
             }
             .navigationTitle("AI Product Image")
             .navigationBarTitleDisplayMode(.inline)
@@ -150,6 +153,16 @@ struct GenerateImageView: View {
                 if let config = try? await DeviceService.shared.fetchGenerateImageConfig(),
                    let saved = config.defaultPrompt {
                     prompt = saved
+                }
+            }
+            .onChange(of: done) {
+                if done {
+                    withAnimation { proxy.scrollTo("status", anchor: .top) }
+                }
+            }
+            .onChange(of: errorMessage) {
+                if errorMessage != nil {
+                    withAnimation { proxy.scrollTo("status", anchor: .top) }
                 }
             }
             .toolbar {
@@ -174,6 +187,7 @@ struct GenerateImageView: View {
                     }
                 }
             }
+            } // ScrollViewReader
         }
     }
 
