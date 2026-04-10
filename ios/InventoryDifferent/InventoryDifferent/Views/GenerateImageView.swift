@@ -18,6 +18,7 @@ struct GenerateImageView: View {
     @State private var useTextOnly: Bool
     @State private var prompt = defaultPrompt
     @State private var assignAsThumbnail = true
+    @State private var thumbnailMode = "BOTH"
     @State private var assignAsShopImage = false
     @State private var assignAsListingImage = false
     @State private var isGenerating = false
@@ -113,6 +114,14 @@ struct GenerateImageView: View {
                 // Role assignment
                 Section("Assign Roles") {
                     Toggle("Set as thumbnail", isOn: $assignAsThumbnail)
+                    if assignAsThumbnail {
+                        Picker("Thumbnail mode", selection: $thumbnailMode) {
+                            Text("Both").tag("BOTH")
+                            Text("Light").tag("LIGHT")
+                            Text("Dark").tag("DARK")
+                        }
+                        .pickerStyle(.segmented)
+                    }
                     Toggle("Set as shop image", isOn: $assignAsShopImage)
                     Toggle("Set as listing image", isOn: $assignAsListingImage)
                 }
@@ -176,6 +185,7 @@ struct GenerateImageView: View {
                 sourceImageId: useTextOnly ? nil : selectedImageId,
                 prompt: prompt,
                 assignAsThumbnail: assignAsThumbnail,
+                thumbnailMode: assignAsThumbnail ? thumbnailMode : nil,
                 assignAsShopImage: assignAsShopImage,
                 assignAsListingImage: assignAsListingImage
             )

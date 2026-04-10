@@ -714,6 +714,7 @@ class DeviceService {
         sourceImageId: Int?,
         prompt: String,
         assignAsThumbnail: Bool,
+        thumbnailMode: String?,
         assignAsShopImage: Bool,
         assignAsListingImage: Bool
     ) async throws -> DeviceImage {
@@ -738,6 +739,9 @@ class DeviceService {
         ]
         if let sourceImageId = sourceImageId {
             body["sourceImageId"] = sourceImageId
+        }
+        if let thumbnailMode = thumbnailMode {
+            body["thumbnailMode"] = thumbnailMode
         }
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
