@@ -37,6 +37,7 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
       .catch(() => {});
   }, []);
   const [assignAsThumbnail, setAssignAsThumbnail] = useState(true);
+  const [thumbnailMode, setThumbnailMode] = useState<"BOTH" | "LIGHT" | "DARK">("BOTH");
   const [assignAsShopImage, setAssignAsShopImage] = useState(false);
   const [assignAsListingImage, setAssignAsListingImage] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -52,6 +53,7 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
       deviceId,
       prompt,
       assignAsThumbnail,
+      ...(assignAsThumbnail ? { thumbnailMode } : {}),
       assignAsShopImage,
       assignAsListingImage,
     };
@@ -150,8 +152,34 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
           <div>
             <p className="text-sm font-medium text-[var(--foreground)] mb-2">Assign roles</p>
             <div className="space-y-1.5">
+              <label className="flex items-center gap-2 text-sm text-[var(--foreground)] cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={assignAsThumbnail}
+                  onChange={(e) => setAssignAsThumbnail(e.target.checked)}
+                  className="rounded"
+                />
+                Set as thumbnail
+              </label>
+              {assignAsThumbnail && (
+                <div className="ml-6 flex rounded border border-[var(--border)] overflow-hidden text-xs font-medium w-fit">
+                  {(["BOTH", "LIGHT", "DARK"] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setThumbnailMode(mode)}
+                      className={`px-3 py-1.5 transition-colors ${
+                        thumbnailMode === mode
+                          ? "bg-[var(--apple-blue)] text-white"
+                          : "bg-[var(--background)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                      }${mode !== "DARK" ? " border-r border-[var(--border)]" : ""}`}
+                    >
+                      {mode === "BOTH" ? "Both" : mode === "LIGHT" ? "Light" : "Dark"}
+                    </button>
+                  ))}
+                </div>
+              )}
               {[
-                { label: "Set as thumbnail", value: assignAsThumbnail, set: setAssignAsThumbnail },
                 { label: "Set as shop image", value: assignAsShopImage, set: setAssignAsShopImage },
                 { label: "Set as listing image", value: assignAsListingImage, set: setAssignAsListingImage },
               ].map(({ label, value, set }) => (
