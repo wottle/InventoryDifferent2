@@ -59,32 +59,46 @@ struct GenerateImageView: View {
 
                 // Reference image picker
                 if !images.isEmpty {
-                    Section("Reference Photo") {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 10) {
-                                ForEach(images) { image in
-                                    let isSelected = !useTextOnly && selectedImageId == image.id
-                                    AsyncImage(url: APIService.shared.imageURL(for: image.thumbnailPath ?? image.path)) { phase in
-                                        switch phase {
-                                        case .success(let img):
-                                            img.resizable().scaledToFill()
-                                        default:
-                                            Color(.systemGray5)
+                    Section {
+                        ScrollViewReader { hProxy in
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 10) {
+                                    ForEach(images) { image in
+                                        let isSelected = !useTextOnly && selectedImageId == image.id
+                                        AsyncImage(url: APIService.shared.imageURL(for: image.thumbnailPath ?? image.path)) { phase in
+                                            switch phase {
+                                            case .success(let img):
+                                                img.resizable().scaledToFill()
+                                            default:
+                                                Color(.systemGray5)
+                                            }
+                                        }
+                                        .frame(width: 72, height: 72)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 3)
+                                        )
+                                        .id(image.id)
+                                        .onTapGesture {
+                                            selectedImageId = image.id
+                                            useTextOnly = false
+                                            withAnimation { hProxy.scrollTo(image.id, anchor: .center) }
                                         }
                                     }
-                                    .frame(width: 72, height: 72)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 3)
-                                    )
-                                    .onTapGesture {
-                                        selectedImageId = image.id
-                                        useTextOnly = false
-                                    }
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            .onAppear {
+                                if let id = selectedImageId {
+                                    hProxy.scrollTo(id, anchor: .center)
                                 }
                             }
-                            .padding(.vertical, 4)
+                            .onChange(of: selectedImageId) {
+                                if let id = selectedImageId {
+                                    withAnimation { hProxy.scrollTo(id, anchor: .center) }
+                                }
+                            }
                         }
 
                         Button {
@@ -102,6 +116,10 @@ struct GenerateImageView: View {
                             }
                         }
                         .buttonStyle(.plain)
+                    } header: {
+                        Text("Reference Photo")
+                    } footer: {
+                        Text("For best results, choose a photo that clearly shows the front, top, and side of the device.")
                     }
                 }
 
