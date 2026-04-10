@@ -70,6 +70,7 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
     }
 
     try {
+      // Start the background job
       const res = await fetch(`${API_BASE_URL}/generate-image`, {
         method: "POST",
         headers: {
@@ -81,15 +82,30 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        if (res.status === 500 || res.status === 524 || res.status === 502 || res.status === 503) {
-          const base = data.error || "The server did not respond in time.";
-          throw new Error(`${base} The image may still be generating — wait a moment and refresh the gallery to check.`);
-        }
         throw new Error(data.error || `Server error ${res.status}`);
       }
 
-      setDone(true);
-      onGenerated();
+      const { jobId } = await res.json();
+
+      // Poll for completion every 2 seconds (max 5 minutes)
+      const maxAttempts = 150;
+      for (let i = 0; i < maxAttempts; i++) {
+        await new Promise((r) => setTimeout(r, 2000));
+        const statusRes = await fetch(`${API_BASE_URL}/generate-image/status/${jobId}`, {
+          headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        });
+        if (!statusRes.ok) throw new Error("Failed to check generation status");
+        const status = await statusRes.json();
+        if (status.status === "done") {
+          setDone(true);
+          onGenerated();
+          return;
+        }
+        if (status.status === "error") {
+          throw new Error(status.error || "Image generation failed");
+        }
+      }
+      throw new Error("Generation is taking longer than expected. Check the gallery in a moment.");
     } catch (err: any) {
       setError(err?.message || "Generation failed");
     } finally {
@@ -243,7 +259,7 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
                     </svg>
-                    Generating… ~20s
+                    Generating…
                   </>
                 ) : done ? (
                   "✓ Done"

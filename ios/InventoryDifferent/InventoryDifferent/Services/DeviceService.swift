@@ -749,7 +749,7 @@ class DeviceService {
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
+              httpResponse.statusCode == 202 else {
             struct ErrorResponse: Decodable { let error: String }
             if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
                 throw NSError(domain: "DeviceService", code: -1,
@@ -758,7 +758,40 @@ class DeviceService {
             throw APIError.invalidResponse
         }
 
-        return try JSONDecoder().decode(DeviceImage.self, from: data)
+        struct JobStartResponse: Decodable { let jobId: String }
+        let jobId = try JSONDecoder().decode(JobStartResponse.self, from: data).jobId
+
+        guard let statusURL = URL(string: "\(api.getBaseURL())/generate-image/status/\(jobId)") else {
+            throw APIError.invalidURL
+        }
+
+        struct GenerationJobStatus: Decodable {
+            let status: String
+            let result: DeviceImage?
+            let error: String?
+        }
+
+        for _ in 0..<150 { // max 5 minutes at 2s intervals
+            try await Task.sleep(nanoseconds: 2_000_000_000)
+
+            var statusRequest = URLRequest(url: statusURL)
+            if let token = await AuthService.shared.getAccessToken() {
+                statusRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            }
+            let (statusData, _) = try await URLSession.shared.data(for: statusRequest)
+            let jobStatus = try JSONDecoder().decode(GenerationJobStatus.self, from: statusData)
+
+            if jobStatus.status == "done", let result = jobStatus.result {
+                return result
+            }
+            if jobStatus.status == "error" {
+                throw NSError(domain: "DeviceService", code: -1,
+                              userInfo: [NSLocalizedDescriptionKey: jobStatus.error ?? "Image generation failed"])
+            }
+        }
+
+        throw NSError(domain: "DeviceService", code: -1,
+                      userInfo: [NSLocalizedDescriptionKey: "Generation timed out. Check the gallery in a moment."])
     }
 
     func fetchAllTags() async throws -> [Tag] {

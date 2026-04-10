@@ -63,6 +63,16 @@ interface ExportProgress {
 
 const exportJobs = new Map<string, ExportProgress>();
 
+// AI generation job tracking
+interface GenerationJob {
+    status: 'pending' | 'done' | 'error';
+    result?: any;
+    error?: string;
+    startTime: number;
+}
+
+const generationJobs = new Map<string, GenerationJob>();
+
 // Clean up old jobs after 1 hour (skip in test environment)
 const cleanupInterval = process.env.VITEST !== 'true' ? setInterval(() => {
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
@@ -82,6 +92,11 @@ const cleanupInterval = process.env.VITEST !== 'true' ? setInterval(() => {
                 }
             }
             exportJobs.delete(id);
+        }
+    }
+    for (const [id, job] of generationJobs.entries()) {
+        if (job.startTime < oneHourAgo) {
+            generationJobs.delete(id);
         }
     }
 }, 5 * 60 * 1000) : null;
@@ -1113,7 +1128,7 @@ RESTART IDENTITY CASCADE;
         return res.json({ enabled: !!process.env.OPENAI_API_KEY, defaultPrompt: setting?.value ?? null });
     });
 
-    app.post('/generate-image', requireAuth, async (req, res) => {
+    app.post('/generate-image', requireAuth, (req, res) => {
         console.log(`[${ts()}] [generate-image] Request received`, { body: JSON.stringify(req.body) });
         if (!process.env.OPENAI_API_KEY) {
             return res.status(503).json({ error: 'OPENAI_API_KEY is not configured on the server.' });
@@ -1133,104 +1148,116 @@ RESTART IDENTITY CASCADE;
             return res.status(400).json({ error: 'deviceId is required' });
         }
 
+        const jobId = uuidv4();
+        generationJobs.set(jobId, { status: 'pending', startTime: Date.now() });
+        console.log(`[${ts()}] [generate-image] Job created:`, jobId);
+
+        // Run generation in the background — respond immediately so proxies don't timeout
         const finalPrompt = prompt || DEFAULT_IMAGE_PROMPT;
         const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-        try {
-            let imageBase64: string;
+        (async () => {
+            try {
+                let imageBase64: string;
 
-            if (sourceImageId) {
-                console.log(`[${ts()}] [generate-image] Starting image-edit mode, sourceImageId:`, sourceImageId);
-                // Image edit mode: use existing device photo as reference via gpt-image-1
-                const sourceImage = await prisma.image.findUnique({ where: { id: sourceImageId } });
-                if (!sourceImage) {
-                    return res.status(404).json({ error: 'Source image not found' });
-                }
-                const relative = sourceImage.path.replace('/uploads/', '');
-                const sourceFilePath = path.join('/app/uploads', relative);
-                if (!fs.existsSync(sourceFilePath)) {
-                    return res.status(404).json({ error: 'Source image file not found on disk' });
+                if (sourceImageId) {
+                    console.log(`[${ts()}] [generate-image] Starting image-edit mode, sourceImageId:`, sourceImageId);
+                    const sourceImage = await prisma.image.findUnique({ where: { id: sourceImageId } });
+                    if (!sourceImage) {
+                        generationJobs.set(jobId, { status: 'error', error: 'Source image not found', startTime: Date.now() });
+                        return;
+                    }
+                    const relative = sourceImage.path.replace('/uploads/', '');
+                    const sourceFilePath = path.join('/app/uploads', relative);
+                    if (!fs.existsSync(sourceFilePath)) {
+                        generationJobs.set(jobId, { status: 'error', error: 'Source image file not found on disk', startTime: Date.now() });
+                        return;
+                    }
+
+                    console.log(`[${ts()}] [generate-image] Converting source image to PNG`);
+                    const pngBuffer = await sharp(sourceFilePath).rotate().png().toBuffer();
+                    console.log(`[${ts()}] [generate-image] PNG buffer size:`, pngBuffer.length, 'bytes');
+                    const imageFile = await OpenAI.toFile(pngBuffer, 'image.png', { type: 'image/png' });
+
+                    console.log(`[${ts()}] [generate-image] Calling OpenAI images.edit...`);
+                    const response = await openai.images.edit({
+                        model: 'gpt-image-1.5',
+                        image: imageFile,
+                        prompt: finalPrompt,
+                        size: '1024x1024',
+                    } as any);
+                    console.log(`[${ts()}] [generate-image] OpenAI images.edit complete`);
+                    imageBase64 = (response.data![0] as any).b64_json as string;
+                } else {
+                    console.log(`[${ts()}] [generate-image] Starting text-to-image mode`);
+                    const device = await prisma.device.findUnique({ where: { id: Number(deviceId) } });
+                    if (!device) {
+                        generationJobs.set(jobId, { status: 'error', error: 'Device not found', startTime: Date.now() });
+                        return;
+                    }
+                    const deviceDesc = [device.manufacturer, device.name, device.releaseYear].filter(Boolean).join(' ');
+                    const textPrompt = `${deviceDesc} — ${finalPrompt}`;
+                    const response = await openai.images.generate({
+                        model: 'dall-e-3',
+                        prompt: textPrompt,
+                        size: '1024x1024',
+                        response_format: 'b64_json',
+                    });
+                    console.log(`[${ts()}] [generate-image] OpenAI images.generate complete`);
+                    imageBase64 = response.data![0].b64_json as string;
                 }
 
-                console.log(`[${ts()}] [generate-image] Converting source image to PNG`);
-                const pngBuffer = await sharp(sourceFilePath).rotate().png().toBuffer();
-                console.log(`[${ts()}] [generate-image] PNG buffer size:`, pngBuffer.length, 'bytes');
-                const imageFile = await OpenAI.toFile(pngBuffer, 'image.png', { type: 'image/png' });
+                console.log(`[${ts()}] [generate-image] Writing PNG to disk...`);
+                const outputDir = path.join('/app/uploads/devices', String(deviceId));
+                fs.mkdirSync(outputDir, { recursive: true });
+                const filename = `${uuidv4()}.png`;
+                const outputPath = path.join(outputDir, filename);
+                fs.writeFileSync(outputPath, Buffer.from(imageBase64, 'base64'));
 
-                console.log(`[${ts()}] [generate-image] Calling OpenAI images.edit...`);
-                const response = await openai.images.edit({
-                    model: 'gpt-image-1.5',
-                    image: imageFile,
-                    prompt: finalPrompt,
-                    size: '1024x1024',
-                } as any);
-                console.log(`[${ts()}] [generate-image] OpenAI images.edit complete`);
-                imageBase64 = (response.data![0] as any).b64_json as string;
-            } else {
-                console.log(`[${ts()}] [generate-image] Starting text-to-image mode`);
-                // Text-to-image fallback via DALL-E 3
-                const device = await prisma.device.findUnique({ where: { id: Number(deviceId) } });
-                if (!device) {
-                    return res.status(404).json({ error: 'Device not found' });
+                const imagePath = `/uploads/devices/${deviceId}/${filename}`;
+                console.log(`[${ts()}] [generate-image] PNG written to`, imagePath);
+
+                const thumbnailPath = await generateThumbnailForUpload(imagePath);
+                console.log(`[${ts()}] [generate-image] Thumbnail path:`, thumbnailPath);
+
+                if (assignAsThumbnail) {
+                    await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isThumbnail: true }, data: { isThumbnail: false } });
                 }
-                const deviceDesc = [device.manufacturer, device.name, device.releaseYear].filter(Boolean).join(' ');
-                const textPrompt = `${deviceDesc} — ${finalPrompt}`;
-                const response = await openai.images.generate({
-                    model: 'dall-e-3',
-                    prompt: textPrompt,
-                    size: '1024x1024',
-                    response_format: 'b64_json',
+                if (assignAsShopImage) {
+                    await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isShopImage: true }, data: { isShopImage: false } });
+                }
+                if (assignAsListingImage) {
+                    await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isListingImage: true }, data: { isListingImage: false } });
+                }
+
+                const newImage = await prisma.image.create({
+                    data: {
+                        deviceId: Number(deviceId),
+                        path: imagePath,
+                        thumbnailPath: thumbnailPath || undefined,
+                        caption: 'AI-generated product image',
+                        isThumbnail: !!assignAsThumbnail,
+                        thumbnailMode: (thumbnailMode as any) || 'BOTH',
+                        isShopImage: !!assignAsShopImage,
+                        isListingImage: !!assignAsListingImage,
+                    },
                 });
-                console.log(`[${ts()}] [generate-image] OpenAI images.generate complete`);
-                imageBase64 = response.data![0].b64_json as string;
+
+                console.log(`[${ts()}] [generate-image] Job complete, DB id:`, newImage.id);
+                generationJobs.set(jobId, { status: 'done', result: newImage, startTime: Date.now() });
+            } catch (err: any) {
+                console.error(`[${ts()}] [generate-image] ERROR:`, err?.message, err?.stack);
+                generationJobs.set(jobId, { status: 'error', error: err?.message || 'Image generation failed', startTime: Date.now() });
             }
+        })();
 
-            console.log(`[${ts()}] [generate-image] Writing PNG to disk...`);
-            // Write generated PNG to disk
-            const outputDir = path.join('/app/uploads/devices', String(deviceId));
-            fs.mkdirSync(outputDir, { recursive: true });
-            const filename = `${uuidv4()}.png`;
-            const outputPath = path.join(outputDir, filename);
-            fs.writeFileSync(outputPath, Buffer.from(imageBase64, 'base64'));
+        return res.status(202).json({ jobId });
+    });
 
-            const imagePath = `/uploads/devices/${deviceId}/${filename}`;
-
-            console.log(`[${ts()}] [generate-image] PNG written to`, imagePath);
-
-            // Generate thumbnail
-            const thumbnailPath = await generateThumbnailForUpload(imagePath);
-            console.log(`[${ts()}] [generate-image] Thumbnail path:`, thumbnailPath);
-
-            // Handle image role assignments — unset existing flags as needed
-            if (assignAsThumbnail) {
-                await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isThumbnail: true }, data: { isThumbnail: false } });
-            }
-            if (assignAsShopImage) {
-                await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isShopImage: true }, data: { isShopImage: false } });
-            }
-            if (assignAsListingImage) {
-                await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isListingImage: true }, data: { isListingImage: false } });
-            }
-
-            const newImage = await prisma.image.create({
-                data: {
-                    deviceId: Number(deviceId),
-                    path: imagePath,
-                    thumbnailPath: thumbnailPath || undefined,
-                    caption: 'AI-generated product image',
-                    isThumbnail: !!assignAsThumbnail,
-                    thumbnailMode: (thumbnailMode as any) || 'BOTH',
-                    isShopImage: !!assignAsShopImage,
-                    isListingImage: !!assignAsListingImage,
-                },
-            });
-
-            console.log(`[${ts()}] [generate-image] DB record created, id:`, newImage.id, '— sending response');
-            return res.json(newImage);
-        } catch (err: any) {
-            console.error(`[${ts()}] [generate-image] ERROR:`, err?.message, err?.stack);
-            return res.status(500).json({ error: err?.message || 'Image generation failed' });
-        }
+    app.get('/generate-image/status/:jobId', requireAuth, (req, res) => {
+        const job = generationJobs.get(req.params.jobId);
+        if (!job) return res.status(404).json({ error: 'Job not found or expired' });
+        return res.json({ status: job.status, result: job.result ?? null, error: job.error ?? null });
     });
 
     // Error handling for multer
