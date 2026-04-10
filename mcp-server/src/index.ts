@@ -108,7 +108,7 @@ const TOOLS = [
   {
     name: "get_device_details",
     description:
-      "Get full details for a specific device by ID, including all specs, images, notes, maintenance tasks, and tags.",
+      "Get full details for a specific device by ID, including all specs, images, notes, maintenance logs, and tags.",
     inputSchema: {
       type: "object" as const,
       properties: {

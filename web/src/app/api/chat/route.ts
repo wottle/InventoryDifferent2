@@ -90,13 +90,13 @@ IMPORTANT: When users ask for superlatives (most/least valuable, oldest/newest, 
 - If asked about a specific device property that doesn't support sorting, use the the list_devices tool with the appropriate filter.
 
 MAKING CHANGES:
-- You can update devices, add notes, and log maintenance tasks using the write tools
+- You can update devices, add notes, and log maintenance logs using the write tools
 - Always search for the device first to confirm the correct ID before making changes
 - For high-impact changes (marking as SOLD, changing estimated value), briefly state what you're about to do, then call the tool
 - After making a change, confirm what was updated (e.g., "Done! Logged today as the last power-on date for your Mac 512k")
 - For "I just sold X for $Y": set status=SOLD, soldPrice=Y, soldDate=today's ISO date
 - For "I powered on X today": set lastPowerOnDate=today's ISO date
-- For maintenance tasks: use a descriptive label (e.g., "Recap analog board", "Replaced PRAM battery")
+- For maintenance logs: use a descriptive label (e.g., "Recap analog board", "Replaced PRAM battery")
 - Today's date in ISO format: ${new Date().toISOString()}
 
 Be enthusiastic about vintage computing while staying concise and helpful!`,
@@ -279,7 +279,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
       }),
 
       get_device_details: tool({
-        description: 'Get full details for a specific device by ID, including all specs, notes, maintenance tasks, and tags.',
+        description: 'Get full details for a specific device by ID, including all specs, notes, maintenance logs, and tags.',
         parameters: z.object({
           deviceId: z.number().describe('The device ID to retrieve'),
         }),
