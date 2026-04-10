@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { API_BASE_URL } from "../lib/config";
 import { useAuth } from "../lib/auth-context";
 
@@ -43,10 +43,18 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const actionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (done || error) {
+      actionsRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [done, error]);
 
   async function handleGenerate() {
     setIsGenerating(true);
     setError(null);
+    setDone(false);
 
     const token = getAccessToken();
     const body: Record<string, unknown> = {
@@ -73,6 +81,10 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        if (res.status === 500 || res.status === 524 || res.status === 502 || res.status === 503) {
+          const base = data.error || "The server did not respond in time.";
+          throw new Error(`${base} The image may still be generating — wait a moment and refresh the gallery to check.`);
+        }
         throw new Error(data.error || `Server error ${res.status}`);
       }
 
@@ -196,53 +208,53 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
             </div>
           </div>
 
-          {/* Error */}
-          {error && (
-            <p className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded px-3 py-2">{error}</p>
-          )}
-
-          {/* Actions */}
-          <div className="flex justify-end gap-3">
-            {done ? (
+          {/* Actions + result status — kept together so scrollIntoView always shows both */}
+          <div ref={actionsRef} className="space-y-3">
+            {error && (
+              <p className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded px-3 py-2">{error}</p>
+            )}
+            {done && (
+              <p className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded px-3 py-2">
+                Image generated and added to the gallery.
+              </p>
+            )}
+            <div className="flex justify-end gap-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--muted)]"
+                disabled={isGenerating}
+                className="px-4 py-2 text-sm font-medium rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-50"
               >
-                Done
+                {done ? "Close" : "Cancel"}
               </button>
-            ) : (
-              <>
-                <button
-                  onClick={onClose}
-                  disabled={isGenerating}
-                  className="px-4 py-2 text-sm font-medium rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleGenerate}
-                  disabled={isGenerating || !prompt.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isGenerating ? (
-                    <>
-                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
-                      </svg>
-                      Generating… ~20s
-                    </>
-                  ) : (
-                    "Generate"
-                  )}
-                </button>
-              </>
-            )}
+              <button
+                onClick={done ? onClose : handleGenerate}
+                disabled={isGenerating || (!done && !prompt.trim())}
+                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded border disabled:opacity-50 disabled:cursor-not-allowed ${
+                  done
+                    ? "bg-green-600 hover:bg-green-700 border-green-700"
+                    : error
+                    ? "bg-orange-500 hover:bg-orange-600 border-orange-600"
+                    : "bg-[var(--apple-blue)] hover:brightness-110 border-[#007acc]"
+                }`}
+              >
+                {isGenerating ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
+                    </svg>
+                    Generating… ~20s
+                  </>
+                ) : done ? (
+                  "✓ Done"
+                ) : error ? (
+                  "Try Again"
+                ) : (
+                  "Generate"
+                )}
+              </button>
+            </div>
           </div>
-
-          {done && (
-            <p className="text-sm text-green-600 text-center">Image generated and added to the gallery.</p>
-          )}
         </div>
       </div>
     </div>
