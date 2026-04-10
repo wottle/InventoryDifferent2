@@ -114,6 +114,7 @@ struct GenerateImageView: View {
                 // Role assignment
                 Section("Assign Roles") {
                     Toggle("Set as thumbnail", isOn: $assignAsThumbnail)
+                        .listRowSeparator(assignAsThumbnail ? .hidden : .automatic)
                     if assignAsThumbnail {
                         Picker("Thumbnail mode", selection: $thumbnailMode) {
                             Text("Both").tag("BOTH")
