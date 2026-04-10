@@ -439,6 +439,10 @@ struct ValueSaleInfo: View {
                 Text(t.deviceList.inRepair)
                     .font(.caption)
                     .foregroundColor(.teal)
+            case .REPAIRED:
+                Text(t.deviceList.inRepair)
+                    .font(.caption)
+                    .foregroundColor(.mint)
             case .RETURNED:
                 if let fee = device.soldPrice, fee > 0 {
                     Text("\(t.deviceList.returnedFee)\(formatPrice(fee))")
@@ -491,6 +495,8 @@ struct StatusBadge: View {
             return .purple
         case .IN_REPAIR:
             return .teal
+        case .REPAIRED:
+            return .mint
         case .RETURNED:
             return .red
         }

@@ -511,6 +511,7 @@ struct DeviceDetailRedesignView: View {
             case .SOLD:         return (t.status.SOLD, .red)
             case .DONATED:      return (t.status.DONATED, .purple)
             case .IN_REPAIR:    return (t.status.IN_REPAIR, .teal)
+            case .REPAIRED:     return (t.status.REPAIRED, .mint)
             case .RETURNED:     return (t.status.RETURNED, .gray)
             }
         }()

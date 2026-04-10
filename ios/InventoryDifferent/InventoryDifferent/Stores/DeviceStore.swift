@@ -168,9 +168,10 @@ class DeviceStore: ObservableObject {
                     case .FOR_SALE: return 1
                     case .PENDING_SALE: return 2
                     case .IN_REPAIR: return 3
-                    case .RETURNED: return 4
-                    case .SOLD: return 5
-                    case .DONATED: return 6
+                    case .REPAIRED: return 4
+                    case .RETURNED: return 5
+                    case .SOLD: return 6
+                    case .DONATED: return 7
                     }
                 }
                 let aRank = statusRank(a.status)
