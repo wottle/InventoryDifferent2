@@ -21,7 +21,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password required}
       POSTGRES_DB: ${POSTGRES_DB:-inventory}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - invdif_prod_postgres_data:/var/lib/postgresql/data
     networks:
       - internal
     healthcheck:
@@ -71,6 +71,8 @@ services:
       LANGUAGE: ${LANGUAGE:-en}
       API_URL: http://api:4000
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      UMAMI_URL: ${UMAMI_URL:-}
+      UMAMI_WEBSITE_ID: ${UMAMI_WEB_WEBSITE_ID:-}
     depends_on:
       - api
     networks:
@@ -91,6 +93,8 @@ services:
     environment:
       NODE_ENV: production
       CONTACT_EMAIL: ${CONTACT_EMAIL:-store@example.com}
+      UMAMI_URL: ${UMAMI_URL:-}
+      UMAMI_STOREFRONT_WEBSITE_ID: ${UMAMI_STOREFRONT_WEBSITE_ID:-}
     depends_on:
       - api
     networks:
@@ -132,4 +136,4 @@ networks:
     external: true
 
 volumes:
-  postgres_data:
+  invdif_prod_postgres_data:

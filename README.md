@@ -152,7 +152,9 @@ acme:
 | Variable | Description |
 |----------|-------------|
 | `POSTGRES_PASSWORD` | PostgreSQL password |
-| `AUTH_PASSWORD` | Admin login password for the web app and iOS app |
+| `AUTH_USERNAME` | If set, login requires both username and password (default: password only) |
+| `AUTH_PASSWORD` | Admin login password for the web app and iOS app (to make changes) |
+| `UPLOADS_PATH` | `./uploads` | Host path where device images are stored. Use an absolute path in production. |
 
 ### Recommended
 
@@ -166,15 +168,11 @@ acme:
 
 | Variable | Description |
 |----------|-------------|
-| `OPENAI_API_KEY` | Enables AI product image generation and the AI chat assistant |
-| `AUTH_USERNAME` | If set, login requires both username and password (default: password only) |
+| `LANGUAGE` | Language for the web app and storefront (default: `en`, supported: `de`, `fr`) |
+| `OPENAI_API_KEY` | Enables AI product image generation|
+| `ANTHROPIC_API_KEY` | Enables the AI chat assistant |
+| `MCP_TOKEN` | Optional token for the MCP server (token required for auth MCP server from AI agent) |
 | `CONTACT_EMAIL` | Email shown on the storefront contact button (default: `store@example.com`) |
-
-### Storage
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `UPLOADS_PATH` | `./uploads` | Host path where device images are stored. Use an absolute path in production. |
 
 ### Traefik / Domain (prod deployment only)
 
@@ -190,7 +188,8 @@ Set these directly on the web or storefront containers in Portainer (not in `.en
 | Variable | Description |
 |----------|-------------|
 | `UMAMI_URL` | URL of your Umami analytics instance |
-| `UMAMI_WEBSITE_ID` | Website ID from your Umami dashboard |
+| `UMAMI_WEBSITE_ID` | Website ID from your Umami dashboard (for web app) |
+| `UMAMI_STOREFRONT_WEBSITE_ID` | Website ID from your Umami dashboard (for storefront) |
 
 ---
 

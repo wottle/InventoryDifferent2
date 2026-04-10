@@ -21,7 +21,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password required}
       POSTGRES_DB: ${POSTGRES_DB:-inventory}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - invdif_simple_postgres_data:/var/lib/postgresql/data
     networks:
       - internal
     healthcheck:
@@ -107,4 +107,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  invdif_simple_postgres_data:
