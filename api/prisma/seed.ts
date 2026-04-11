@@ -632,6 +632,25 @@ async function main() {
     }
     console.log('Timeline event translations updated.');
 
+    // Seed default showcase quotes
+    const defaultQuotes = [
+        { id: 'quote-jobs-1', author: 'Steve Jobs', text: 'Design is not just what it looks like and feels like. Design is how it works.', source: 'The New York Times, 2003', isDefault: true, sortOrder: 0 },
+        { id: 'quote-jobs-2', author: 'Steve Jobs', text: 'The people who are crazy enough to think they can change the world are the ones who do.', source: 'Think Different campaign, 1997', isDefault: true, sortOrder: 1 },
+        { id: 'quote-rams-1', author: 'Dieter Rams', text: 'Good design is as little design as possible.', source: 'Ten Principles for Good Design', isDefault: true, sortOrder: 2 },
+        { id: 'quote-ive-1', author: 'Jony Ive', text: 'We try to develop products that seem somehow inevitable.', source: 'Objectified documentary, 2009', isDefault: true, sortOrder: 3 },
+        { id: 'quote-woz-1', author: 'Steve Wozniak', text: "Never trust a computer you can't throw out a window.", source: 'iWoz, 2006', isDefault: true, sortOrder: 4 },
+        { id: 'quote-kare-1', author: 'Susan Kare', text: 'Icons are the vocabulary of the visual language of the interface.', source: null, isDefault: true, sortOrder: 5 },
+    ];
+
+    for (const quote of defaultQuotes) {
+        await (prisma as any).showcaseQuote.upsert({
+            where: { id: quote.id },
+            update: {},
+            create: quote,
+        });
+    }
+    console.log('Seeded default showcase quotes.');
+
     console.log('Seeding completed.');
 }
 

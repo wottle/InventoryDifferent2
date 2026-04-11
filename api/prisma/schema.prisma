@@ -74,6 +74,7 @@ model Device {
   pageViews           DevicePageView[]
   accessories         DeviceAccessory[]
   links               DeviceLink[]
+  showcaseDevices     ShowcaseDevice[]
 }
 
 model DeviceAccessory {
@@ -302,4 +303,58 @@ enum ThumbnailMode {
   BOTH
   LIGHT
   DARK
+}
+
+model ShowcaseJourney {
+  id             String            @id @default(uuid())
+  title          String
+  slug           String            @unique
+  description    String
+  coverImagePath String?
+  sortOrder      Int               @default(0)
+  published      Boolean           @default(false)
+  chapters       ShowcaseChapter[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model ShowcaseChapter {
+  id          String           @id @default(uuid())
+  journey     ShowcaseJourney  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  journeyId   String
+  title       String
+  description String
+  sortOrder   Int              @default(0)
+  devices     ShowcaseDevice[]
+}
+
+model ShowcaseDevice {
+  id          String          @id @default(uuid())
+  chapter     ShowcaseChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId   String
+  device      Device          @relation(fields: [deviceId], references: [id])
+  deviceId    Int
+  curatorNote String?
+  sortOrder   Int             @default(0)
+  isFeatured  Boolean         @default(false)
+}
+
+model ShowcaseQuote {
+  id        String  @id @default(uuid())
+  author    String
+  text      String
+  source    String?
+  isDefault Boolean @default(false)
+  isEnabled Boolean @default(true)
+  sortOrder Int     @default(0)
+}
+
+model ShowcaseConfig {
+  id                  String  @id @default("singleton")
+  siteTitle           String  @default("The Collection")
+  tagline             String  @default("")
+  bioText             String  @default("")
+  heroImagePath       String?
+  accentColor         String  @default("#0058bc")
+  timelineCuratorNote String  @default("")
 }

@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- Showcase: new public showcase site with journeys, chapters, featured devices, quotes, and configurable appearance
+
 ---
 
 ## [1.7.0] - 2026-04-11

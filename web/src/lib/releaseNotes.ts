@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'Showcase: new public showcase site with journeys, chapters, featured devices, quotes, and configurable appearance',
+    ],
     changed: [],
     fixed: [],
   },

@@ -793,6 +793,69 @@ export const resolvers = {
             const setting = await (context.prisma as any).systemSetting.findUnique({ where: { key: args.key } });
             return setting?.value ?? null;
         },
+
+        // Showcase queries
+        showcaseConfig: async (_parent: any, _args: any, context: Context) => {
+            return (context.prisma as any).showcaseConfig.upsert({
+                where: { id: 'singleton' },
+                update: {},
+                create: { id: 'singleton' },
+            });
+        },
+
+        showcaseJourneys: async (_parent: any, _args: any, context: Context) => {
+            const journeys = await (context.prisma as any).showcaseJourney.findMany({
+                where: { published: true },
+                orderBy: { sortOrder: 'asc' },
+                include: { chapters: { orderBy: { sortOrder: 'asc' }, include: { devices: { orderBy: { sortOrder: 'asc' }, include: { device: { include: DEVICE_INCLUDE } } } } } },
+            });
+            return journeys.map((j: any) => ({
+                ...j,
+                createdAt: j.createdAt.toISOString(),
+                updatedAt: j.updatedAt.toISOString(),
+            }));
+        },
+
+        showcaseJourney: async (_parent: any, args: { slug: string }, context: Context) => {
+            const journey = await (context.prisma as any).showcaseJourney.findFirst({
+                where: { slug: args.slug, published: true },
+                include: { chapters: { orderBy: { sortOrder: 'asc' }, include: { devices: { orderBy: { sortOrder: 'asc' }, include: { device: { include: DEVICE_INCLUDE } } } } } },
+            });
+            if (!journey) return null;
+            return {
+                ...journey,
+                createdAt: journey.createdAt.toISOString(),
+                updatedAt: journey.updatedAt.toISOString(),
+            };
+        },
+
+        showcaseFeaturedDevices: async (_parent: any, _args: any, context: Context) => {
+            return (context.prisma as any).showcaseDevice.findMany({
+                where: { isFeatured: true },
+                orderBy: { sortOrder: 'asc' },
+                include: { device: { include: DEVICE_INCLUDE } },
+            });
+        },
+
+        showcaseQuotes: async (_parent: any, _args: any, context: Context) => {
+            return (context.prisma as any).showcaseQuote.findMany({
+                where: { isEnabled: true },
+                orderBy: { sortOrder: 'asc' },
+            });
+        },
+
+        showcaseAllJourneys: async (_parent: any, _args: any, context: Context) => {
+            requireAuth(context);
+            const journeys = await (context.prisma as any).showcaseJourney.findMany({
+                orderBy: { sortOrder: 'asc' },
+                include: { chapters: { orderBy: { sortOrder: 'asc' }, include: { devices: { orderBy: { sortOrder: 'asc' }, include: { device: { include: DEVICE_INCLUDE } } } } } },
+            });
+            return journeys.map((j: any) => ({
+                ...j,
+                createdAt: j.createdAt.toISOString(),
+                updatedAt: j.updatedAt.toISOString(),
+            }));
+        },
     },
     Mutation: {
         recordDeviceView: async (_parent: any, args: { deviceId: number }, context: Context) => {
@@ -1426,6 +1489,181 @@ export const resolvers = {
                 update: { value: args.value },
             });
             return true;
+        },
+
+        // Showcase mutations
+        upsertShowcaseConfig: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const data: any = {};
+            if (args.input.siteTitle !== undefined) data.siteTitle = args.input.siteTitle;
+            if (args.input.tagline !== undefined) data.tagline = args.input.tagline;
+            if (args.input.bioText !== undefined) data.bioText = args.input.bioText;
+            if (args.input.heroImagePath !== undefined) data.heroImagePath = args.input.heroImagePath;
+            if (args.input.accentColor !== undefined) data.accentColor = args.input.accentColor;
+            if (args.input.timelineCuratorNote !== undefined) data.timelineCuratorNote = args.input.timelineCuratorNote;
+            return (context.prisma as any).showcaseConfig.upsert({
+                where: { id: 'singleton' },
+                update: data,
+                create: { id: 'singleton', ...data },
+            });
+        },
+
+        createJourney: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const journey = await (context.prisma as any).showcaseJourney.create({
+                data: {
+                    title: args.input.title,
+                    slug: args.input.slug,
+                    description: args.input.description,
+                    coverImagePath: args.input.coverImagePath ?? null,
+                    sortOrder: args.input.sortOrder ?? 0,
+                    published: args.input.published ?? false,
+                },
+                include: { chapters: { include: { devices: { include: { device: { include: DEVICE_INCLUDE } } } } } },
+            });
+            return {
+                ...journey,
+                createdAt: journey.createdAt.toISOString(),
+                updatedAt: journey.updatedAt.toISOString(),
+            };
+        },
+
+        updateJourney: async (_parent: any, args: { id: string; input: any }, context: Context) => {
+            requireAuth(context);
+            const data: any = {};
+            if (args.input.title !== undefined) data.title = args.input.title;
+            if (args.input.slug !== undefined) data.slug = args.input.slug;
+            if (args.input.description !== undefined) data.description = args.input.description;
+            if (args.input.coverImagePath !== undefined) data.coverImagePath = args.input.coverImagePath;
+            if (args.input.sortOrder !== undefined) data.sortOrder = args.input.sortOrder;
+            if (args.input.published !== undefined) data.published = args.input.published;
+            const journey = await (context.prisma as any).showcaseJourney.update({
+                where: { id: args.id },
+                data,
+                include: { chapters: { include: { devices: { include: { device: { include: DEVICE_INCLUDE } } } } } },
+            });
+            return {
+                ...journey,
+                createdAt: journey.createdAt.toISOString(),
+                updatedAt: journey.updatedAt.toISOString(),
+            };
+        },
+
+        deleteJourney: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            await (context.prisma as any).showcaseJourney.delete({ where: { id: args.id } });
+            return true;
+        },
+
+        upsertChapter: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const { id, journeyId, title, description, sortOrder } = args.input;
+            if (id) {
+                return (context.prisma as any).showcaseChapter.update({
+                    where: { id },
+                    data: { title, description, sortOrder: sortOrder ?? 0 },
+                    include: { devices: { include: { device: { include: DEVICE_INCLUDE } } } },
+                });
+            }
+            return (context.prisma as any).showcaseChapter.create({
+                data: { journeyId, title, description, sortOrder: sortOrder ?? 0 },
+                include: { devices: { include: { device: { include: DEVICE_INCLUDE } } } },
+            });
+        },
+
+        deleteChapter: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            await (context.prisma as any).showcaseChapter.delete({ where: { id: args.id } });
+            return true;
+        },
+
+        upsertShowcaseDevice: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const { id, chapterId, deviceId, curatorNote, sortOrder, isFeatured } = args.input;
+            const data: any = {
+                chapterId,
+                deviceId,
+                curatorNote: curatorNote ?? null,
+                sortOrder: sortOrder ?? 0,
+                isFeatured: isFeatured ?? false,
+            };
+            if (id) {
+                return (context.prisma as any).showcaseDevice.update({
+                    where: { id },
+                    data,
+                    include: { device: { include: DEVICE_INCLUDE } },
+                });
+            }
+            return (context.prisma as any).showcaseDevice.create({
+                data,
+                include: { device: { include: DEVICE_INCLUDE } },
+            });
+        },
+
+        removeShowcaseDevice: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            await (context.prisma as any).showcaseDevice.delete({ where: { id: args.id } });
+            return true;
+        },
+
+        upsertShowcaseQuote: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const { id, author, text, source, isEnabled, sortOrder } = args.input;
+            const data: any = { author, text, source: source ?? null, isEnabled: isEnabled ?? true, sortOrder: sortOrder ?? 0 };
+            if (id) {
+                return (context.prisma as any).showcaseQuote.update({
+                    where: { id },
+                    data,
+                });
+            }
+            return (context.prisma as any).showcaseQuote.create({ data });
+        },
+
+        deleteShowcaseQuote: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            const quote = await (context.prisma as any).showcaseQuote.findUnique({ where: { id: args.id } });
+            if (!quote) throw new Error('Quote not found');
+            if (quote.isDefault) throw new Error('Cannot delete a default quote');
+            await (context.prisma as any).showcaseQuote.delete({ where: { id: args.id } });
+            return true;
+        },
+    },
+
+    // Field resolvers for showcase types
+    ShowcaseJourney: {
+        chapters: async (parent: any, _args: any, context: Context) => {
+            return (context.prisma as any).showcaseChapter.findMany({
+                where: { journeyId: parent.id },
+                orderBy: { sortOrder: 'asc' },
+                include: { devices: { include: { device: { include: DEVICE_INCLUDE } }, orderBy: { sortOrder: 'asc' } } },
+            });
+        },
+        createdAt: (parent: any) => {
+            return parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt;
+        },
+        updatedAt: (parent: any) => {
+            return parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt;
+        },
+    },
+
+    ShowcaseChapter: {
+        devices: async (parent: any, _args: any, context: Context) => {
+            return (context.prisma as any).showcaseDevice.findMany({
+                where: { chapterId: parent.id },
+                orderBy: { sortOrder: 'asc' },
+                include: { device: { include: DEVICE_INCLUDE } },
+            });
+        },
+    },
+
+    ShowcaseDevice: {
+        device: async (parent: any, _args: any, context: Context) => {
+            if (parent.device) return mapCustomFieldValues(parent.device);
+            const device = await context.prisma.device.findUnique({
+                where: { id: parent.deviceId },
+                include: DEVICE_INCLUDE,
+            });
+            return device ? mapCustomFieldValues(device) : null;
         },
     },
 };

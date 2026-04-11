@@ -392,6 +392,102 @@ export const typeDefs = gql`
     rarity: Rarity
   }
 
+  type ShowcaseJourney {
+    id: ID!
+    title: String!
+    slug: String!
+    description: String!
+    coverImagePath: String
+    sortOrder: Int!
+    published: Boolean!
+    chapters: [ShowcaseChapter!]!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type ShowcaseChapter {
+    id: ID!
+    journeyId: String!
+    title: String!
+    description: String!
+    sortOrder: Int!
+    devices: [ShowcaseDevice!]!
+  }
+
+  type ShowcaseDevice {
+    id: ID!
+    chapterId: String!
+    deviceId: Int!
+    device: Device!
+    curatorNote: String
+    sortOrder: Int!
+    isFeatured: Boolean!
+  }
+
+  type ShowcaseQuote {
+    id: ID!
+    author: String!
+    text: String!
+    source: String
+    isDefault: Boolean!
+    isEnabled: Boolean!
+    sortOrder: Int!
+  }
+
+  type ShowcaseConfig {
+    id: ID!
+    siteTitle: String!
+    tagline: String!
+    bioText: String!
+    heroImagePath: String
+    accentColor: String!
+    timelineCuratorNote: String!
+  }
+
+  input ShowcaseConfigInput {
+    siteTitle: String
+    tagline: String
+    bioText: String
+    heroImagePath: String
+    accentColor: String
+    timelineCuratorNote: String
+  }
+
+  input JourneyInput {
+    title: String!
+    slug: String!
+    description: String!
+    coverImagePath: String
+    sortOrder: Int
+    published: Boolean
+  }
+
+  input ChapterInput {
+    id: String
+    journeyId: String!
+    title: String!
+    description: String!
+    sortOrder: Int
+  }
+
+  input ShowcaseDeviceInput {
+    id: String
+    chapterId: String!
+    deviceId: Int!
+    curatorNote: String
+    sortOrder: Int
+    isFeatured: Boolean
+  }
+
+  input ShowcaseQuoteInput {
+    id: String
+    author: String!
+    text: String!
+    source: String
+    isEnabled: Boolean
+    sortOrder: Int
+  }
+
   type Query {
     devices(where: DeviceWhereInput): [Device!]!
     device(where: DeviceWhereInput): Device
@@ -410,6 +506,12 @@ export const typeDefs = gql`
     valueHistory(deviceId: Int!): [ValueSnapshot!]!
     wishlistItems(where: WishlistItemWhereInput): [WishlistItem!]!
     systemSetting(key: String!): String
+    showcaseConfig: ShowcaseConfig
+    showcaseJourneys: [ShowcaseJourney!]!
+    showcaseJourney(slug: String!): ShowcaseJourney
+    showcaseFeaturedDevices: [ShowcaseDevice!]!
+    showcaseQuotes: [ShowcaseQuote!]!
+    showcaseAllJourneys: [ShowcaseJourney!]!
   }
 
   input DeviceCreateInput {
@@ -666,5 +768,15 @@ export const typeDefs = gql`
     addDeviceLink(deviceId: Int!, label: String!, url: String!): DeviceLink!
     removeDeviceLink(id: Int!): Boolean!
     setSystemSetting(key: String!, value: String!): Boolean!
+    upsertShowcaseConfig(input: ShowcaseConfigInput!): ShowcaseConfig!
+    createJourney(input: JourneyInput!): ShowcaseJourney!
+    updateJourney(id: ID!, input: JourneyInput!): ShowcaseJourney!
+    deleteJourney(id: ID!): Boolean!
+    upsertChapter(input: ChapterInput!): ShowcaseChapter!
+    deleteChapter(id: ID!): Boolean!
+    upsertShowcaseDevice(input: ShowcaseDeviceInput!): ShowcaseDevice!
+    removeShowcaseDevice(id: ID!): Boolean!
+    upsertShowcaseQuote(input: ShowcaseQuoteInput!): ShowcaseQuote!
+    deleteShowcaseQuote(id: ID!): Boolean!
   }
 `;
