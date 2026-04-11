@@ -91,6 +91,8 @@ const GET_CATEGORIES = gql`
   }
 `;
 
+type BackupSortCol = 'id' | 'category' | 'name' | 'year' | 'status' | 'images' | 'notes';
+
 const defaultFilters: FilterState = {
   categoryIds: [],
   locationIds: [],
@@ -108,6 +110,11 @@ export default function BackupPage() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortColumn, setSortColumn] = useState<SortColumn>('category');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [backupSort, setBackupSort] = useState<{ col: BackupSortCol; dir: 'asc' | 'desc' }>({ col: 'name', dir: 'asc' });
+
+  const handleBackupSort = (col: BackupSortCol) => {
+    setBackupSort(prev => prev.col === col ? { col, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { col, dir: 'asc' });
+  };
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<Set<number>>(new Set());
   const [includeImages, setIncludeImages] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
@@ -150,10 +157,22 @@ export default function BackupPage() {
       );
     }
 
-    result.sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''));
+    result.sort((a: any, b: any) => {
+      let cmp = 0;
+      switch (backupSort.col) {
+        case 'id':       cmp = a.id - b.id; break;
+        case 'category': cmp = (a.category?.name || '').localeCompare(b.category?.name || ''); break;
+        case 'name':     cmp = (a.name || '').localeCompare(b.name || ''); break;
+        case 'year':     cmp = (a.releaseYear || 0) - (b.releaseYear || 0); break;
+        case 'status':   cmp = (a.status || '').localeCompare(b.status || ''); break;
+        case 'images':   cmp = (a.images?.length || 0) - (b.images?.length || 0); break;
+        case 'notes':    cmp = (a.notes?.length || 0) - (b.notes?.length || 0); break;
+      }
+      return backupSort.dir === 'asc' ? cmp : -cmp;
+    });
 
     return result;
-  }, [devices, filters]);
+  }, [devices, filters, backupSort]);
 
   // Get devices to export (selected ones, or all filtered if none selected)
   const devicesToExport = useMemo(() => {
@@ -706,13 +725,24 @@ export default function BackupPage() {
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableId}</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableCategory}</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.common.name}</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableYear}</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableStatus}</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableImages}</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">{t.pages.backup.tableNotes}</th>
+                      {([
+                        ['id',       t.pages.backup.tableId],
+                        ['category', t.pages.backup.tableCategory],
+                        ['name',     t.common.name],
+                        ['year',     t.pages.backup.tableYear],
+                        ['status',   t.pages.backup.tableStatus],
+                        ['images',   t.pages.backup.tableImages],
+                        ['notes',    t.pages.backup.tableNotes],
+                      ] as [BackupSortCol, string][]).map(([col, label]) => (
+                        <th key={col} className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">
+                          <button onClick={() => handleBackupSort(col)} className="inline-flex items-center gap-1 hover:text-[var(--foreground)]">
+                            {label}
+                            <span className="text-[0.6rem] leading-none">
+                              {backupSort.col === col ? (backupSort.dir === 'asc' ? '▲' : '▼') : '⇅'}
+                            </span>
+                          </button>
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--border)]">

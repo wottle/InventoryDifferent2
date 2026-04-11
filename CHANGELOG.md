@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Changed
+- Backup: table headers are now clickable to sort by any column (ID, category, name, year, status, images, notes)
+
 ---
 
 ## [1.6.0] - 2026-04-11

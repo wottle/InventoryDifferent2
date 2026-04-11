@@ -13,7 +13,9 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'Backup: table headers are now clickable to sort by any column (ID, category, name, year, status, images, notes)',
+    ],
     fixed: [],
   },
   {
