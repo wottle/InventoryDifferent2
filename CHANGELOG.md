@@ -4,6 +4,10 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.5.2] - 2026-04-11
+
 ### Fixed
 - Import: large ZIP files now upload in 10 MB chunks, fixing failures behind Cloudflare and other proxies with request body size limits
 
