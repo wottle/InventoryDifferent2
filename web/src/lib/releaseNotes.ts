@@ -13,7 +13,9 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'Backup: device list now sorted by name instead of ID',
+    ],
     fixed: [],
   },
   {

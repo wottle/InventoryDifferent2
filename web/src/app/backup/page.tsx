@@ -150,8 +150,7 @@ export default function BackupPage() {
       );
     }
 
-    // Sort by device ID
-    result.sort((a: any, b: any) => a.id - b.id);
+    result.sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''));
 
     return result;
   }, [devices, filters]);
