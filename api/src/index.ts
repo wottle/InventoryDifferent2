@@ -774,6 +774,27 @@ RESTART IDENTITY CASCADE;
         res.json({ uploadId });
     });
 
+    // Finalize the chunked upload and kick off the import job.
+    // IMPORTANT: this must be registered before /:uploadId/:index so Express
+    // doesn't match "finalize" as a chunk index.
+    app.post('/import/chunk/:uploadId/finalize', requireAuth, (req, res) => {
+        const upload = chunkedUploads.get(req.params.uploadId);
+        if (!upload) {
+            return res.status(404).json({ error: 'Upload session not found' });
+        }
+        if (upload.nextIndex !== upload.expectedChunks) {
+            return res.status(400).json({
+                error: `Missing chunks (received ${upload.nextIndex} of ${upload.expectedChunks})`,
+            });
+        }
+
+        chunkedUploads.delete(upload.id);
+
+        const job = createImportJob();
+        res.json({ jobId: job.id, message: 'Import started' });
+        runImportJob(upload.filePath, job);
+    });
+
     // Receive a single chunk. Chunks must arrive in order (0..totalChunks-1).
     app.post('/import/chunk/:uploadId/:index', requireAuth, chunkUpload.single('chunk'), (req, res) => {
         const upload = chunkedUploads.get(req.params.uploadId);
@@ -801,25 +822,6 @@ RESTART IDENTITY CASCADE;
             try { fs.unlinkSync(upload.filePath); } catch (e) {}
             res.status(500).json({ error: `Failed to write chunk: ${err?.message || err}` });
         }
-    });
-
-    // Finalize the chunked upload and kick off the import job.
-    app.post('/import/chunk/:uploadId/finalize', requireAuth, (req, res) => {
-        const upload = chunkedUploads.get(req.params.uploadId);
-        if (!upload) {
-            return res.status(404).json({ error: 'Upload session not found' });
-        }
-        if (upload.nextIndex !== upload.expectedChunks) {
-            return res.status(400).json({
-                error: `Missing chunks (received ${upload.nextIndex} of ${upload.expectedChunks})`,
-            });
-        }
-
-        chunkedUploads.delete(upload.id);
-
-        const job = createImportJob();
-        res.json({ jobId: job.id, message: 'Import started' });
-        runImportJob(upload.filePath, job);
     });
 
     // ============== EXPORT ENDPOINTS ==============

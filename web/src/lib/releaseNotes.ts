@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Import: chunked upload finalize route now registered before the generic chunk route, fixing "Invalid chunk index" error at end of upload',
+    ],
   },
   {
     version: '1.5.2',
