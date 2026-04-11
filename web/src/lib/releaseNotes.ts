@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.6.0';
+export const APP_VERSION = '1.6.1';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.6.1',
+    date: '2026-04-11',
     added: [],
     changed: [
       'Backup: table headers are now clickable to sort by any column (ID, category, name, year, status, images, notes)',
