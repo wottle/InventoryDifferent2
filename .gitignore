@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Superpowers brainstorm sessions
+.superpowers/
+
 # Environment files (contain secrets)
 .env
 .env.local
