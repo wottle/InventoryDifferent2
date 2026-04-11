@@ -190,27 +190,64 @@ export default function BackupPage() {
     setImportResults(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const headers: HeadersInit = {};
       const token = getAccessToken();
+      const authHeaders: HeadersInit = {};
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        authHeaders['Authorization'] = `Bearer ${token}`;
       }
 
-      // Start the import - returns immediately with jobId
-      const response = await fetch(`${API_BASE_URL}/import`, {
+      // Chunked upload — splits the ZIP into small pieces so we stay under
+      // reverse-proxy / CDN request body limits (e.g. Cloudflare caps POSTs
+      // at 100 MB on Free/Pro). 10 MB chunks leave plenty of headroom.
+      const CHUNK_SIZE = 10 * 1024 * 1024;
+      const totalChunks = Math.max(1, Math.ceil(file.size / CHUNK_SIZE));
+
+      // 1. Start upload session
+      const startRes = await fetch(`${API_BASE_URL}/import/chunk/start`, {
         method: "POST",
-        headers,
-        body: formData,
+        headers: { ...authHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ totalChunks }),
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Import failed");
+      if (!startRes.ok) {
+        const err = await startRes.json().catch(() => ({}));
+        throw new Error(err.error || `Failed to start upload (HTTP ${startRes.status})`);
       }
+      const { uploadId } = await startRes.json();
+      if (!uploadId) {
+        throw new Error("No uploadId returned from server");
+      }
+
+      // 2. Upload each chunk in order
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const blob = file.slice(start, end);
+        const chunkForm = new FormData();
+        chunkForm.append("chunk", blob, `chunk-${i}`);
+
+        const chunkRes = await fetch(`${API_BASE_URL}/import/chunk/${uploadId}/${i}`, {
+          method: "POST",
+          headers: authHeaders,
+          body: chunkForm,
+        });
+        if (!chunkRes.ok) {
+          const err = await chunkRes.json().catch(() => ({}));
+          throw new Error(err.error || `Chunk ${i + 1}/${totalChunks} failed (HTTP ${chunkRes.status})`);
+        }
+        const pct = Math.round(((i + 1) / totalChunks) * 100);
+        setImportProgress(`${t.pages.backup.progressUploading} ${pct}% (${i + 1}/${totalChunks})`);
+      }
+
+      // 3. Finalize — returns jobId for progress polling
+      const finalizeRes = await fetch(`${API_BASE_URL}/import/chunk/${uploadId}/finalize`, {
+        method: "POST",
+        headers: authHeaders,
+      });
+      if (!finalizeRes.ok) {
+        const err = await finalizeRes.json().catch(() => ({}));
+        throw new Error(err.error || `Failed to finalize upload (HTTP ${finalizeRes.status})`);
+      }
+      const result = await finalizeRes.json();
 
       const { jobId } = result;
       if (!jobId) {

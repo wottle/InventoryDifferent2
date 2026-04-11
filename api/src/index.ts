@@ -42,6 +42,20 @@ interface ImportProgress {
 
 const importJobs = new Map<string, ImportProgress>();
 
+// Chunked import upload tracking — used to reassemble large ZIPs that would
+// otherwise hit reverse-proxy / CDN request body size limits (e.g. Cloudflare
+// Free plan caps requests at 100 MB). Clients POST the ZIP in small chunks
+// via /import/chunk/... and the server reassembles before kicking off the job.
+interface ChunkedUpload {
+    id: string;
+    filePath: string;
+    expectedChunks: number;
+    nextIndex: number; // chunks must arrive in order
+    startTime: number;
+}
+
+const chunkedUploads = new Map<string, ChunkedUpload>();
+
 // Export progress tracking
 interface ExportProgress {
     id: string;
@@ -97,6 +111,12 @@ const cleanupInterval = process.env.VITEST !== 'true' ? setInterval(() => {
     for (const [id, job] of generationJobs.entries()) {
         if (job.startTime < oneHourAgo) {
             generationJobs.delete(id);
+        }
+    }
+    for (const [id, upload] of chunkedUploads.entries()) {
+        if (upload.startTime < oneHourAgo) {
+            try { if (fs.existsSync(upload.filePath)) fs.unlinkSync(upload.filePath); } catch (e) {}
+            chunkedUploads.delete(id);
         }
     }
 }, 5 * 60 * 1000) : null;
@@ -257,6 +277,13 @@ export async function createApp(prismaOverride?: PrismaClient) {
     const importUpload = multer({
         storage: importStorage,
         limits: { fileSize: 2 * 1024 * 1024 * 1024 }, // 2GB limit for imports
+    });
+
+    // Chunked upload uses memory storage — each chunk is small enough to hold
+    // briefly before appending to the assembled file on disk.
+    const chunkUpload = multer({
+        storage: multer.memoryStorage(),
+        limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB per chunk — safely under CDN/proxy limits
     });
 
     // Progress endpoint for polling import status
@@ -621,36 +648,16 @@ RESTART IDENTITY CASCADE;
         }
     }
 
-    app.post('/import', requireAuth, importUpload.single('file'), async (req, res) => {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
+    // Runs an import job against a ZIP already on disk. Used by both the
+    // single-shot /import endpoint and the chunked /import/chunk flow.
+    function runImportJob(zipPath: string, job: ImportProgress) {
+        const extractDir = path.join('/tmp/imports', `extract-${job.id}`);
 
-        const jobId = uuidv4();
-        const zipPath = req.file.path;
-        const extractDir = path.join('/tmp/imports', `extract-${jobId}`);
-
-        // Initialize progress tracking
-        const job: ImportProgress = {
-            id: jobId,
-            status: 'extracting',
-            totalDevices: 0,
-            processedDevices: 0,
-            currentDevice: '',
-            results: [],
-            startTime: Date.now(),
-        };
-        importJobs.set(jobId, job);
-
-        // Return job ID immediately so client can poll for progress
-        res.json({ jobId, message: 'Import started' });
-
-        // Process in background
         (async () => {
             try {
                 // Extract ZIP using streaming
                 fs.mkdirSync(extractDir, { recursive: true });
-                
+
                 await new Promise<void>((resolve, reject) => {
                     fs.createReadStream(zipPath)
                         .pipe(unzipper.Extract({ path: extractDir }))
@@ -680,11 +687,11 @@ RESTART IDENTITY CASCADE;
                 // Process devices in chunks
                 for (let i = 0; i < exportData.devices.length; i += CHUNK_SIZE) {
                     const chunk = exportData.devices.slice(i, i + CHUNK_SIZE);
-                    
+
                     // Process chunk sequentially (to avoid DB conflicts)
                     for (const deviceData of chunk) {
                         job.currentDevice = deviceData.name || `Device ${deviceData.id}`;
-                        
+
                         try {
                             const result = await processDevice(deviceData, extractDir, idMapping);
                             job.results.push(result);
@@ -696,7 +703,7 @@ RESTART IDENTITY CASCADE;
                                 error: deviceError.message,
                             });
                         }
-                        
+
                         job.processedDevices++;
                     }
 
@@ -707,18 +714,112 @@ RESTART IDENTITY CASCADE;
                 job.status = 'complete';
                 job.currentDevice = '';
 
-                // Clean up temp files
                 cleanupTempFiles(zipPath, extractDir);
-
             } catch (error: any) {
                 console.error('Import error:', error);
                 job.status = 'error';
                 job.error = error.message || 'Import failed';
-                
-                // Clean up temp files on error
                 cleanupTempFiles(zipPath, extractDir);
             }
         })();
+    }
+
+    function createImportJob(): ImportProgress {
+        const job: ImportProgress = {
+            id: uuidv4(),
+            status: 'extracting',
+            totalDevices: 0,
+            processedDevices: 0,
+            currentDevice: '',
+            results: [],
+            startTime: Date.now(),
+        };
+        importJobs.set(job.id, job);
+        return job;
+    }
+
+    app.post('/import', requireAuth, importUpload.single('file'), async (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const job = createImportJob();
+        res.json({ jobId: job.id, message: 'Import started' });
+        runImportJob(req.file.path, job);
+    });
+
+    // Start a chunked upload session. Client will then POST each chunk to
+    // /import/chunk/:uploadId/:index and finalize with /import/chunk/:uploadId/finalize.
+    app.post('/import/chunk/start', requireAuth, (req, res) => {
+        const totalChunks = Number(req.body?.totalChunks);
+        if (!Number.isInteger(totalChunks) || totalChunks < 1 || totalChunks > 10000) {
+            return res.status(400).json({ error: 'Invalid totalChunks' });
+        }
+
+        const uploadId = uuidv4();
+        const tempDir = '/tmp/imports';
+        fs.mkdirSync(tempDir, { recursive: true });
+        const filePath = path.join(tempDir, `chunked-${uploadId}.zip`);
+        // Create empty file so we can append to it
+        fs.writeFileSync(filePath, Buffer.alloc(0));
+
+        chunkedUploads.set(uploadId, {
+            id: uploadId,
+            filePath,
+            expectedChunks: totalChunks,
+            nextIndex: 0,
+            startTime: Date.now(),
+        });
+
+        res.json({ uploadId });
+    });
+
+    // Receive a single chunk. Chunks must arrive in order (0..totalChunks-1).
+    app.post('/import/chunk/:uploadId/:index', requireAuth, chunkUpload.single('chunk'), (req, res) => {
+        const upload = chunkedUploads.get(req.params.uploadId);
+        if (!upload) {
+            return res.status(404).json({ error: 'Upload session not found' });
+        }
+
+        const index = Number(req.params.index);
+        if (!Number.isInteger(index) || index < 0 || index >= upload.expectedChunks) {
+            return res.status(400).json({ error: 'Invalid chunk index' });
+        }
+        if (index !== upload.nextIndex) {
+            return res.status(409).json({ error: `Out-of-order chunk (expected ${upload.nextIndex}, got ${index})` });
+        }
+        if (!req.file) {
+            return res.status(400).json({ error: 'No chunk data provided' });
+        }
+
+        try {
+            fs.appendFileSync(upload.filePath, req.file.buffer);
+            upload.nextIndex++;
+            res.json({ received: upload.nextIndex, total: upload.expectedChunks });
+        } catch (err: any) {
+            chunkedUploads.delete(upload.id);
+            try { fs.unlinkSync(upload.filePath); } catch (e) {}
+            res.status(500).json({ error: `Failed to write chunk: ${err?.message || err}` });
+        }
+    });
+
+    // Finalize the chunked upload and kick off the import job.
+    app.post('/import/chunk/:uploadId/finalize', requireAuth, (req, res) => {
+        const upload = chunkedUploads.get(req.params.uploadId);
+        if (!upload) {
+            return res.status(404).json({ error: 'Upload session not found' });
+        }
+        if (upload.nextIndex !== upload.expectedChunks) {
+            return res.status(400).json({
+                error: `Missing chunks (received ${upload.nextIndex} of ${upload.expectedChunks})`,
+            });
+        }
+
+        chunkedUploads.delete(upload.id);
+
+        const job = createImportJob();
+        res.json({ jobId: job.id, message: 'Import started' });
+        runImportJob(upload.filePath, job);
     });
 
     // ============== EXPORT ENDPOINTS ==============
