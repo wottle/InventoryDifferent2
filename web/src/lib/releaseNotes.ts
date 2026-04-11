@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.5.2';
+export const APP_VERSION = '1.5.3';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.5.3',
+    date: '2026-04-11',
     added: [],
     changed: [],
     fixed: [

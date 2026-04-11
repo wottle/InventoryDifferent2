@@ -4,6 +4,10 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.5.3] - 2026-04-11
+
 ### Fixed
 - Import: chunked upload finalize route now registered before the generic chunk route, fixing "Invalid chunk index" error at end of upload
 
