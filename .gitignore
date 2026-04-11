@@ -4,6 +4,9 @@ node_modules/
 # Superpowers brainstorm sessions
 .superpowers/
 
+# Git worktrees
+.worktrees/
+
 # Environment files (contain secrets)
 .env
 .env.local
