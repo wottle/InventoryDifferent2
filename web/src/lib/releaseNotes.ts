@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Docker: web and storefront now wait for the API to be fully ready before starting, preventing ECONNREFUSED on first boot',
+    ],
   },
   {
     version: '1.5.0',

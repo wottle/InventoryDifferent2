@@ -149,6 +149,9 @@ export async function createApp(prismaOverride?: PrismaClient) {
 
     app.use(express.json({ limit: '50mb' }));
 
+    // Health check endpoint — used by Docker healthcheck to know when the API is ready
+    app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
     // Apply auth middleware to all routes (sets req.isAuthenticated)
     app.use(authMiddleware);
 

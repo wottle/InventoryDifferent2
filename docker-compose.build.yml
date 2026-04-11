@@ -54,6 +54,12 @@ services:
     networks:
       - internal
       - web
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 120s
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:${DOMAIN};PathPrefix:/graphql,/upload,/uploads,/import,/export,/auth,/generate-image"
@@ -78,7 +84,8 @@ services:
       LANGUAGE: ${LANGUAGE:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - internal
       - web
@@ -100,7 +107,8 @@ services:
       NODE_ENV: production
       CONTACT_EMAIL: ${CONTACT_EMAIL:-store@example.com}
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - internal
       - web

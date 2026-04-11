@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Fixed
+- Docker: web and storefront now wait for the API to be fully ready before starting, preventing ECONNREFUSED on first boot
+
 ---
 
 ## [1.5.0] - 2026-04-10

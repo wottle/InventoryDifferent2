@@ -51,6 +51,12 @@ services:
     networks:
       - internal
       - web
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 120s
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:${DOMAIN};PathPrefix:/graphql,/upload,/uploads,/import,/export,/auth,/generate-image"
@@ -74,7 +80,8 @@ services:
       UMAMI_URL: ${UMAMI_URL:-}
       UMAMI_WEBSITE_ID: ${UMAMI_WEB_WEBSITE_ID:-}
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - internal
       - web
@@ -96,7 +103,8 @@ services:
       UMAMI_URL: ${UMAMI_URL:-}
       UMAMI_STOREFRONT_WEBSITE_ID: ${UMAMI_STOREFRONT_WEBSITE_ID:-}
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - internal
       - web
