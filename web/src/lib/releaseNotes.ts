@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.6.1';
+export const APP_VERSION = '1.7.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '1.7.0',
+    date: '2026-04-11',
     added: [
       'Backup: CSV import — upload a CSV file and map its columns to device fields for bulk import without needing a ZIP export',
     ],

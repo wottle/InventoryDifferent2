@@ -4,6 +4,10 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.7.0] - 2026-04-11
+
 ### Added
 - Backup: CSV import — upload a CSV file and map its columns to device fields for bulk import without needing a ZIP export
 
