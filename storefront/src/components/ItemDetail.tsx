@@ -255,7 +255,9 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
         );
     }
 
-    if (!data?.device) {
+    const SHOP_STATUSES = ['FOR_SALE', 'PENDING_SALE', 'SOLD'];
+
+    if (!data?.device || !SHOP_STATUSES.includes(data.device.status)) {
         return (
             <div className="min-h-screen">
                 <Header />
@@ -266,6 +268,7 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                         </svg>
                     </div>
                     <p className="text-[var(--foreground)] font-medium">Item not found</p>
+                    <p className="text-sm text-[var(--muted-foreground)] mt-1">This item isn&apos;t available in the shop.</p>
                     <Link href="/" className="text-sm text-[var(--apple-blue)] hover:underline mt-2 inline-block">
                         Return to shop
                     </Link>

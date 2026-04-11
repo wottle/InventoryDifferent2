@@ -1222,15 +1222,17 @@ export default function DeviceDetail() {
                                     AI Image
                                 </button>
                             )}
-                            <button
-                                onClick={() => setShowUploader(true)}
-                                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
-                            >
-                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                {t.detail.addPhotos}
-                            </button>
+                            {isAuthenticated && (
+                                <button
+                                    onClick={() => setShowUploader(true)}
+                                    className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
+                                >
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    {t.detail.addPhotos}
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -1240,15 +1242,17 @@ export default function DeviceDetail() {
                     <div>
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="text-sm font-medium text-[var(--foreground)]">{t.detail.maintenanceTasks}</h3>
-                            <button
-                                onClick={() => setShowMaintenanceForm(true)}
-                                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
-                            >
-                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                {t.detail.addTask}
-                            </button>
+                            {isAuthenticated && (
+                                <button
+                                    onClick={() => setShowMaintenanceForm(true)}
+                                    className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
+                                >
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    {t.detail.addTask}
+                                </button>
+                            )}
                         </div>
                         {device.maintenanceTasks && device.maintenanceTasks.length > 0 && (
                             <div className="space-y-3">
@@ -1436,15 +1440,17 @@ export default function DeviceDetail() {
                     <div>
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="text-sm font-medium text-[var(--foreground)]">{t.detail.notes}</h3>
-                            <button
-                                onClick={() => setShowNoteForm(true)}
-                                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
-                            >
-                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                {t.detail.addNote}
-                            </button>
+                            {isAuthenticated && (
+                                <button
+                                    onClick={() => setShowNoteForm(true)}
+                                    className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] transition-colors"
+                                >
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    {t.detail.addNote}
+                                </button>
+                            )}
                         </div>
                         {device.notes && device.notes.length > 0 && (
                             <div className="space-y-3">

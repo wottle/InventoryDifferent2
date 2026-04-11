@@ -14,7 +14,10 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Web: add photo, maintenance log, and note buttons no longer appear when not logged in',
+      'Storefront: browsing to a non-shop item by ID now shows a helpful "not available" page instead of exposing the item',
+    ],
   },
   {
     version: '1.6.1',
