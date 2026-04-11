@@ -477,6 +477,59 @@ export type Translations = {
       progressFailed: string;
       progressUploading: string;
       progressExtracting: string;
+      csvImportTitle: string;
+      csvImportToggleShow: string;
+      csvImportToggleHide: string;
+      csvImportDesc: string;
+      csvHasHeader: string;
+      csvStep2Title: string;
+      csvPreviewTitle: string;
+      csvIgnoreColumn: string;
+      csvDefaultCategory: string;
+      csvDefaultCategoryNote: string;
+      csvSelectCategory: string;
+      csvNameRequired: string;
+      csvCategoryRequired: string;
+      csvImportBtn: string;
+      csvBackBtn: string;
+      csvImportingProgress: string;
+      csvImportSuccessCount: string;
+      csvImportErrorCount: string;
+      csvImportAgainBtn: string;
+      csvResultRow: string;
+      csvResultStatus: string;
+      csvResultError: string;
+      csvFields: {
+        name: string;
+        additionalName: string;
+        manufacturer: string;
+        modelNumber: string;
+        serialNumber: string;
+        releaseYear: string;
+        info: string;
+        category: string;
+        status: string;
+        functionalStatus: string;
+        condition: string;
+        rarity: string;
+        isFavorite: string;
+        isAssetTagged: string;
+        dateAcquired: string;
+        whereAcquired: string;
+        priceAcquired: string;
+        estimatedValue: string;
+        listPrice: string;
+        soldPrice: string;
+        soldDate: string;
+        cpu: string;
+        ram: string;
+        graphics: string;
+        storage: string;
+        operatingSystem: string;
+        isWifiEnabled: string;
+        isPramBatteryRemoved: string;
+        lastPowerOnDate: string;
+      };
     };
     print: {
       title: string;
@@ -1098,6 +1151,59 @@ export const en: Translations = {
       progressFailed: "Export failed. Please try again.",
       progressUploading: "Uploading file...",
       progressExtracting: "Extracting ZIP file...",
+      csvImportTitle: "Import from CSV",
+      csvImportToggleShow: "Show",
+      csvImportToggleHide: "Hide",
+      csvImportDesc: "Import devices from a CSV file. You'll map the CSV columns to device fields in the next step.",
+      csvHasHeader: "First row is a header",
+      csvStep2Title: "Map Columns",
+      csvPreviewTitle: "Preview (first 5 rows)",
+      csvIgnoreColumn: "— Ignore —",
+      csvDefaultCategory: "Default category",
+      csvDefaultCategoryNote: "Used when no category column is mapped or a row's value doesn't match.",
+      csvSelectCategory: "Select a category…",
+      csvNameRequired: "Map a column to \"Name\" before importing.",
+      csvCategoryRequired: "Select a default category.",
+      csvImportBtn: "Import",
+      csvBackBtn: "Back",
+      csvImportingProgress: "Importing…",
+      csvImportSuccessCount: "imported",
+      csvImportErrorCount: "failed",
+      csvImportAgainBtn: "Import another file",
+      csvResultRow: "Row",
+      csvResultStatus: "Status",
+      csvResultError: "Error",
+      csvFields: {
+        name: "Name",
+        additionalName: "Additional Name",
+        manufacturer: "Manufacturer",
+        modelNumber: "Model Number",
+        serialNumber: "Serial Number",
+        releaseYear: "Release Year",
+        info: "Info / Description",
+        category: "Category",
+        status: "Status",
+        functionalStatus: "Functional Status",
+        condition: "Condition",
+        rarity: "Rarity",
+        isFavorite: "Is Favorite",
+        isAssetTagged: "Is Asset Tagged",
+        dateAcquired: "Date Acquired",
+        whereAcquired: "Where Acquired",
+        priceAcquired: "Price Acquired",
+        estimatedValue: "Estimated Value",
+        listPrice: "List Price",
+        soldPrice: "Sold Price",
+        soldDate: "Sold Date",
+        cpu: "CPU",
+        ram: "RAM",
+        graphics: "Graphics",
+        storage: "Storage",
+        operatingSystem: "Operating System",
+        isWifiEnabled: "WiFi Enabled",
+        isPramBatteryRemoved: "PRAM Battery Removed",
+        lastPowerOnDate: "Last Power On Date",
+      },
     },
     print: {
       title: "Print List",

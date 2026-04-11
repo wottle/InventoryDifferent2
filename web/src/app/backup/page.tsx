@@ -10,6 +10,7 @@ import { DeviceFilterPanel, FilterState, SortColumn } from "../../components/Dev
 import { LoadingPanel } from "../../components/LoadingPanel";
 import { useT } from "../../i18n/context";
 import { useAuth } from "../../lib/auth-context";
+import CsvImport from "../../components/CsvImport";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {
@@ -588,6 +589,9 @@ export default function BackupPage() {
                 </div>
               )}
             </div>
+
+            {/* CSV Import */}
+            <CsvImport categories={categories} onImportComplete={refetch} />
 
             {/* Export Options */}
             <div className="mb-4 p-4 bg-[var(--card)] rounded border border-[var(--border)] card-retro">

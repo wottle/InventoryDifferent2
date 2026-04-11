@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- Backup: CSV import — upload a CSV file and map its columns to device fields for bulk import without needing a ZIP export
+
 ### Fixed
 - Web: add photo, maintenance log, and note buttons no longer appear when not logged in
 - Storefront: browsing to a non-shop item by ID now shows a helpful "not available" page instead of exposing the item

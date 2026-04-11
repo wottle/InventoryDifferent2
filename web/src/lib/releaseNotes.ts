@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'Backup: CSV import — upload a CSV file and map its columns to device fields for bulk import without needing a ZIP export',
+    ],
     changed: [],
     fixed: [
       'Web: add photo, maintenance log, and note buttons no longer appear when not logged in',
