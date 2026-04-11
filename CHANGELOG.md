@@ -4,6 +4,10 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [1.6.0] - 2026-04-11
+
 ### Changed
 - Backup: device list now sorted by name instead of ID
 
