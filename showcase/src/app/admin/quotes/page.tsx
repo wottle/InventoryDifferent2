@@ -36,24 +36,32 @@ export default function AdminQuotesPage() {
   const userQuotes = quotes.filter((q) => !q.isDefault);
 
   const handleToggle = async (quote: ShowcaseQuote) => {
-    await upsertQuote({
-      variables: {
-        input: {
-          id: quote.id,
-          author: quote.author,
-          text: quote.text,
-          source: quote.source,
-          isEnabled: !quote.isEnabled,
+    try {
+      await upsertQuote({
+        variables: {
+          input: {
+            id: quote.id,
+            author: quote.author,
+            text: quote.text,
+            source: quote.source,
+            isEnabled: !quote.isEnabled,
+          },
         },
-      },
-    });
-    refetch();
+      });
+      refetch();
+    } catch {
+      setSaveError('Failed to update quote. Please try again.');
+    }
   };
 
   const handleDelete = async (quote: ShowcaseQuote) => {
     if (!window.confirm(`Delete this quote by "${quote.author}"? This cannot be undone.`)) return;
-    await deleteQuote({ variables: { id: quote.id } });
-    refetch();
+    try {
+      await deleteQuote({ variables: { id: quote.id } });
+      refetch();
+    } catch {
+      setSaveError('Failed to delete quote. Please try again.');
+    }
   };
 
   const handleAddQuote = async (e: React.FormEvent) => {

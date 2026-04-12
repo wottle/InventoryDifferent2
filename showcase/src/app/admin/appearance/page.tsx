@@ -64,6 +64,12 @@ export default function AdminAppearancePage() {
     e.preventDefault();
     setSaving(true);
     setSaveError('');
+    setSavedMessage(false);
+    if (accentColor && !/^#[0-9A-Fa-f]{6}$/.test(accentColor)) {
+      setSaveError('Accent color must be a valid 6-digit hex color (e.g. #6750A4).');
+      setSaving(false);
+      return;
+    }
     try {
       await upsertConfig({
         variables: {
