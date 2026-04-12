@@ -7,7 +7,8 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     authRequired: boolean;
-    login: (password: string) => Promise<{ success: boolean; error?: string }>;
+    usernameRequired: boolean;
+    login: (password: string, username?: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
     getAccessToken: () => string | null;
 }
@@ -35,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [authRequired, setAuthRequired] = useState(true);
+    const [usernameRequired, setUsernameRequired] = useState(false);
 
     // Get tokens from storage
     const getStoredTokens = useCallback(() => {
@@ -139,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const statusData = await statusResponse.json();
 
                 setAuthRequired(statusData.authRequired);
+                setUsernameRequired(statusData.usernameRequired ?? false);
 
                 // If auth is not required, everyone is authenticated
                 if (!statusData.authRequired) {
@@ -175,13 +178,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => clearInterval(interval);
     }, [isAuthenticated, ensureValidToken]);
 
-    // Login function (password only — showcase admin doesn't need username)
-    const login = useCallback(async (password: string): Promise<{ success: boolean; error?: string }> => {
+    // Login function
+    const login = useCallback(async (password: string, username?: string): Promise<{ success: boolean; error?: string }> => {
         try {
+            const body: Record<string, string> = { password };
+            if (username) body.username = username;
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password }),
+                body: JSON.stringify(body),
             });
 
             const data = await response.json();
@@ -215,6 +220,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             isAuthenticated,
             isLoading,
             authRequired,
+            usernameRequired,
             login,
             logout,
             getAccessToken,

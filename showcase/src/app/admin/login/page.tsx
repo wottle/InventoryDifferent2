@@ -5,8 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 
 function LoginForm() {
-  const { login, isLoading, authRequired } = useAuth();
+  const { login, isLoading, authRequired, usernameRequired } = useAuth();
   const searchParams = useSearchParams();
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +22,7 @@ function LoginForm() {
     e.preventDefault();
     setError('');
     setSubmitting(true);
-    const result = await login(password);
+    const result = await login(password, usernameRequired ? username : undefined);
     if (result.success) {
       const redirect = searchParams.get('redirect') || '/admin/journeys';
       window.location.href = redirect;
@@ -51,6 +52,23 @@ function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {usernameRequired && (
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-on-surface mb-1.5">
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full rounded-lg border border-outline-variant bg-surface-container px-4 py-2.5 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
+                placeholder="Enter username"
+                required
+                autoFocus
+              />
+            </div>
+          )}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-on-surface mb-1.5">
               Password
@@ -63,7 +81,7 @@ function LoginForm() {
               className="w-full rounded-lg border border-outline-variant bg-surface-container px-4 py-2.5 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
               placeholder="Enter password"
               required
-              autoFocus
+              autoFocus={!usernameRequired}
             />
           </div>
 
