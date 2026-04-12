@@ -102,6 +102,24 @@ services:
     networks:
       - inv_network
 
+  showcase:
+    build:
+      context: ./showcase
+      dockerfile: Dockerfile
+    container_name: invdifferent2-showcase
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      NODE_ENV: production
+      API_URL: http://api:4000
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-}
+    depends_on:
+      - api
+    networks:
+      - inv_network
+
 networks:
   inv_network:
     driver: bridge

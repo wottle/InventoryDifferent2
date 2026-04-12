@@ -114,6 +114,29 @@ services:
       - "traefik.port=3001"
       - "traefik.docker.network=web"
 
+  # Showcase site (optional — public editorial showcase for the collection)
+  # showcase:
+  #   image: ${DOCKERHUB_USER:-wottle}/inventory-showcase:latest
+  #   pull_policy: always
+  #   container_name: inventory-showcase
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: production
+  #     API_URL: http://api:4000
+  #     AUTH_PASSWORD: ${AUTH_PASSWORD:-}
+  #     JWT_SECRET: ${JWT_SECRET:-}
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+  #     - web
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.frontend.rule=Host:${SHOWCASE_DOMAIN}"
+  #     - "traefik.port=3000"
+  #     - "traefik.docker.network=web"
+
   # MCP server (optional — only needed for AI assistant integration)
   # mcp-server:
   #   image: ${DOCKERHUB_USER:-wottle}/inventory-mcp:latest

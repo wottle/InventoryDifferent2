@@ -93,6 +93,24 @@ services:
     networks:
       - internal
 
+  showcase:
+    image: wottle/inventory-showcase:latest
+    pull_policy: always
+    container_name: inventory-showcase
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      NODE_ENV: production
+      API_URL: http://api:4000
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-}
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - internal
+
   # MCP server (optional — only needed for AI assistant integration)
   # mcp-server:
   #   image: wottle/inventory-mcp:latest
