@@ -254,6 +254,39 @@ export const SEARCH_DEVICES_FOR_SHOWCASE = gql`
   }
 `;
 
+export const UPSERT_SHOWCASE_QUOTE = gql`
+  mutation UpsertShowcaseQuote($input: ShowcaseQuoteInput!) {
+    upsertShowcaseQuote(input: $input) {
+      id
+      author
+      text
+      source
+      isDefault
+      isEnabled
+    }
+  }
+`;
+
+export const DELETE_SHOWCASE_QUOTE = gql`
+  mutation DeleteShowcaseQuote($id: ID!) {
+    deleteShowcaseQuote(id: $id)
+  }
+`;
+
+export const UPSERT_SHOWCASE_CONFIG = gql`
+  mutation UpsertShowcaseConfig($input: ShowcaseConfigInput!) {
+    upsertShowcaseConfig(input: $input) {
+      id
+      siteTitle
+      tagline
+      bioText
+      heroImagePath
+      accentColor
+      timelineCuratorNote
+    }
+  }
+`;
+
 export const GET_SHOWCASE_DEVICE = gql`
   query GetShowcaseDevice($id: Int!) {
     device(where: { id: $id }) {
