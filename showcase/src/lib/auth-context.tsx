@@ -22,6 +22,13 @@ const TOKEN_EXPIRY_KEY = 'showcase_token_expiry';
 // Buffer time before token expiry to trigger refresh (5 minutes)
 const REFRESH_BUFFER_MS = 5 * 60 * 1000;
 
+// Helper to write the auth cookie (server-readable only via HttpOnly)
+const writeAuthCookie = (token: string, expiresInSec: number) => {
+    if (typeof window === 'undefined') return;
+    const isSecure = window.location.protocol === 'https:';
+    document.cookie = `${ACCESS_TOKEN_KEY}=${token}; path=/; max-age=${expiresInSec}; SameSite=Lax; HttpOnly${isSecure ? '; Secure' : ''}`;
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -45,10 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(TOKEN_EXPIRY_KEY, expiry.toString());
 
         // Also store access token in cookie for middleware access
-        if (typeof window !== 'undefined') {
-            const isSecure = window.location.protocol === 'https:';
-            document.cookie = `${ACCESS_TOKEN_KEY}=${accessToken}; path=/; max-age=${expiresIn}; SameSite=Strict${isSecure ? '; Secure' : ''}`;
-        }
+        writeAuthCookie(accessToken, expiresIn);
     }, []);
 
     // Clear tokens
@@ -58,9 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(TOKEN_EXPIRY_KEY);
 
         // Also clear the cookie
-        if (typeof window !== 'undefined') {
-            document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; max-age=0; SameSite=Strict`;
-        }
+        writeAuthCookie('', 0);
     }, []);
 
     // Refresh access token
@@ -89,10 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             // Also update the cookie with new access token
-            if (typeof window !== 'undefined') {
-                const isSecure = window.location.protocol === 'https:';
-                document.cookie = `${ACCESS_TOKEN_KEY}=${data.accessToken}; path=/; max-age=${data.expiresIn}; SameSite=Strict${isSecure ? '; Secure' : ''}`;
-            }
+            writeAuthCookie(data.accessToken, data.expiresIn);
 
             return true;
         } catch {
@@ -103,11 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Ensure the cookie is set with the current access token
     const ensureCookieSet = useCallback((accessToken: string, expiresInMs: number) => {
-        if (typeof window !== 'undefined') {
-            const expiresInSec = Math.floor(expiresInMs / 1000);
-            const isSecure = window.location.protocol === 'https:';
-            document.cookie = `${ACCESS_TOKEN_KEY}=${accessToken}; path=/; max-age=${expiresInSec}; SameSite=Strict${isSecure ? '; Secure' : ''}`;
-        }
+        writeAuthCookie(accessToken, Math.floor(expiresInMs / 1000));
     }, []);
 
     // Check and refresh token if needed

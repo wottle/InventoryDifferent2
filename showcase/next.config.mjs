@@ -6,6 +6,7 @@ const nextConfig = {
       { source: '/graphql', destination: `${apiUrl}/graphql` },
       { source: '/uploads/:path*', destination: `${apiUrl}/uploads/:path*` },
       { source: '/upload', destination: `${apiUrl}/upload` },
+      { source: '/auth/:path*', destination: `${apiUrl}/auth/:path*` },
     ];
   },
 };
