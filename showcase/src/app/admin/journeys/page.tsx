@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from '@apollo/client';
 import {
   GET_ALL_SHOWCASE_JOURNEYS_ADMIN,
-  UPDATE_JOURNEY_PUBLISHED,
+  UPDATE_JOURNEY,
   DELETE_JOURNEY,
 } from '@/lib/queries';
 
@@ -29,16 +29,28 @@ export default function AdminJourneysPage() {
     GET_ALL_SHOWCASE_JOURNEYS_ADMIN
   );
 
-  const [updatePublished] = useMutation(UPDATE_JOURNEY_PUBLISHED);
+  const [updateJourney] = useMutation(UPDATE_JOURNEY);
   const [deleteJourney] = useMutation(DELETE_JOURNEY);
 
   const journeys = data?.showcaseAllJourneys ?? [];
 
   const handleTogglePublished = async (journey: AdminJourney) => {
-    await updatePublished({
-      variables: { id: journey.id, published: !journey.published },
+    await updateJourney({
+      variables: {
+        id: journey.id,
+        input: {
+          title: journey.title,
+          slug: journey.slug,
+          description: journey.description ?? '',
+          published: !journey.published,
+        },
+      },
       optimisticResponse: {
-        updateJourney: { __typename: 'Journey', id: journey.id, published: !journey.published },
+        updateJourney: {
+          __typename: 'ShowcaseJourney',
+          id: journey.id,
+          published: !journey.published,
+        },
       },
     });
     refetch();

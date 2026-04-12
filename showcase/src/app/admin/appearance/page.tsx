@@ -49,10 +49,11 @@ export default function AdminAppearancePage() {
     try {
       const formData = new FormData();
       formData.append('image', file);
-      const res = await fetch('/upload', { method: 'POST', body: formData });
+      const res = await fetch('/upload?deviceId=showcase-config', { method: 'POST', body: formData });
       if (!res.ok) throw new Error('Upload failed');
       const json = await res.json() as { path: string; thumbnailPath: string };
-      setHeroImagePath(json.path);
+      const relativePath = json.path.replace(/^\/uploads\//, '');
+      setHeroImagePath(relativePath);
     } catch {
       setSaveError('Image upload failed. Please try again.');
     } finally {

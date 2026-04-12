@@ -4,8 +4,7 @@ import { ApolloWrapper } from '@/lib/apollo-wrapper';
 import { AuthProvider } from '@/lib/auth-context';
 import { getClient } from '@/lib/apollo-rsc';
 import { GET_SHOWCASE_CONFIG } from '@/lib/queries';
-import Nav from '@/components/Nav';
-import Footer from '@/components/Footer';
+import NavFooterWrapper from '@/components/NavFooterWrapper';
 
 export const metadata: Metadata = {
   title: 'The Collection',
@@ -45,11 +44,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="bg-surface text-on-surface selection:bg-primary/20 selection:text-primary">
         <ApolloWrapper>
           <AuthProvider>
-            <Nav siteTitle={siteTitle} />
+            <NavFooterWrapper siteTitle={siteTitle} />
             <div className="pt-[68px]">
               {children}
             </div>
-            <Footer siteTitle={siteTitle} />
           </AuthProvider>
         </ApolloWrapper>
       </body>

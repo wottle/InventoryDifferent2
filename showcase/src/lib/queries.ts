@@ -171,14 +171,6 @@ export const GET_ALL_SHOWCASE_JOURNEYS_ADMIN = gql`
   }
 `;
 
-export const UPDATE_JOURNEY_PUBLISHED = gql`
-  mutation UpdateJourneyPublished($id: ID!, $published: Boolean!) {
-    updateJourney(id: $id, data: { published: $published }) {
-      id published
-    }
-  }
-`;
-
 export const DELETE_JOURNEY = gql`
   mutation DeleteJourney($id: ID!) {
     deleteJourney(id: $id)
