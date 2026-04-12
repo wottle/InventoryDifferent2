@@ -182,7 +182,7 @@ export const GET_SHOWCASE_DEVICE = gql`
       operatingSystem
       externalUrl
       rarity
-      location
+      location { id name }
       dateAcquired
       category { name type }
       images { id path thumbnailPath caption isThumbnail }

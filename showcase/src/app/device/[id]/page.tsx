@@ -46,7 +46,7 @@ interface DeviceDetail {
   operatingSystem: string | null;
   externalUrl: string | null;
   rarity: string | null;
-  location: string | null;
+  location: { id: number; name: string } | null;
   dateAcquired: string | null;
   category: { name: string; type: string } | null;
   images: DeviceImage[];
