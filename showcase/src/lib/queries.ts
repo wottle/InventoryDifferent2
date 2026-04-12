@@ -159,6 +159,32 @@ export const GET_SHOWCASE_QUOTES = gql`
   }
 `;
 
+export const GET_ALL_SHOWCASE_JOURNEYS_ADMIN = gql`
+  query GetAllShowcaseJourneysAdmin {
+    showcaseAllJourneys {
+      id title slug description coverImagePath sortOrder published
+      chapters {
+        id title
+        devices { id }
+      }
+    }
+  }
+`;
+
+export const UPDATE_JOURNEY_PUBLISHED = gql`
+  mutation UpdateJourneyPublished($id: ID!, $published: Boolean!) {
+    updateJourney(id: $id, data: { published: $published }) {
+      id published
+    }
+  }
+`;
+
+export const DELETE_JOURNEY = gql`
+  mutation DeleteJourney($id: ID!) {
+    deleteJourney(id: $id)
+  }
+`;
+
 export const GET_SHOWCASE_DEVICE = gql`
   query GetShowcaseDevice($id: Int!) {
     device(where: { id: $id }) {
