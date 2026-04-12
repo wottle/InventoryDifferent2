@@ -28,7 +28,7 @@ export default function Nav({ siteTitle }: NavProps) {
 
         <div className="hidden md:flex items-center gap-10">
           {links.map((link) => {
-            const isActive = link.href.startsWith('#')
+            const isActive = link.href.startsWith('#') || !pathname
               ? false
               : pathname === link.href || pathname.startsWith(link.href + '/');
             return (
