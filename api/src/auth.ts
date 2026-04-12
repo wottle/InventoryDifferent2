@@ -24,9 +24,13 @@ function getSecret(): string {
     return jwtSecret;
 }
 
-// Get the admin username from environment
+// Get the admin username from environment.
+// Returns null if not set or set to the default "admin" — a username of "admin"
+// adds no security value and would require every client UI to show a username field.
 export function getAdminUsername(): string | null {
-    return process.env.AUTH_USERNAME || null;
+    const username = process.env.AUTH_USERNAME;
+    if (!username || username === 'admin') return null;
+    return username;
 }
 
 // Get the admin password from environment

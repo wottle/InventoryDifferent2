@@ -60,6 +60,7 @@ function LoginForm() {
               <input
                 id="username"
                 type="text"
+                autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full rounded-lg border border-outline-variant bg-surface-container px-4 py-2.5 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
@@ -76,6 +77,7 @@ function LoginForm() {
             <input
               id="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-lg border border-outline-variant bg-surface-container px-4 py-2.5 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
@@ -93,7 +95,7 @@ function LoginForm() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !password || (usernameRequired && !username)}
             className="w-full bg-primary text-on-primary font-semibold rounded-full py-2.5 px-6 hover:opacity-90 disabled:opacity-50 transition"
           >
             {submitting ? 'Signing in…' : 'Sign In'}
