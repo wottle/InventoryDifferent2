@@ -143,7 +143,7 @@ export default async function HomePage() {
       </section>
 
       {/* Narrative Section */}
-      <section className="py-32 px-8 bg-surface">
+      <section id="about" className="py-32 px-8 bg-surface">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
           <div className="md:col-span-7">
             <h2 className="text-xs uppercase tracking-widest text-primary font-bold mb-4">
