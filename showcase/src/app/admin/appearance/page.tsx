@@ -49,9 +49,14 @@ export default function AdminAppearancePage() {
     try {
       const formData = new FormData();
       formData.append('image', file);
-      const res = await fetch('/upload?deviceId=showcase-config', { method: 'POST', body: formData });
-      if (!res.ok) throw new Error('Upload failed');
-      const json = await res.json() as { path: string; thumbnailPath: string };
+      const token = typeof window !== 'undefined' ? localStorage.getItem('showcase_access_token') : null;
+      const res = await fetch('/upload?deviceId=showcase-config', {
+        method: 'POST',
+        body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+      const json = await res.json() as { path: string };
       const relativePath = json.path.replace(/^\/uploads\//, '');
       setHeroImagePath(relativePath);
     } catch {
