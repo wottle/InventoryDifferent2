@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.7.0';
+export const APP_VERSION = '2.0.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '2.0.0',
+    date: '2026-04-12',
     added: [
       'Showcase: new public showcase site with journeys, chapters, featured devices, quotes, and configurable appearance',
     ],
