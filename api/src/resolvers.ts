@@ -1495,12 +1495,12 @@ export const resolvers = {
         upsertShowcaseConfig: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
             const data: any = {};
-            if (args.input.siteTitle !== undefined) data.siteTitle = args.input.siteTitle;
-            if (args.input.tagline !== undefined) data.tagline = args.input.tagline;
-            if (args.input.bioText !== undefined) data.bioText = args.input.bioText;
+            if (args.input.siteTitle != null) data.siteTitle = args.input.siteTitle;
+            if (args.input.tagline != null) data.tagline = args.input.tagline;
+            if (args.input.bioText != null) data.bioText = args.input.bioText;
             if (args.input.heroImagePath !== undefined) data.heroImagePath = args.input.heroImagePath;
-            if (args.input.accentColor !== undefined) data.accentColor = args.input.accentColor;
-            if (args.input.timelineCuratorNote !== undefined) data.timelineCuratorNote = args.input.timelineCuratorNote;
+            if (args.input.accentColor != null) data.accentColor = args.input.accentColor;
+            if (args.input.timelineCuratorNote != null) data.timelineCuratorNote = args.input.timelineCuratorNote;
             return (context.prisma as any).showcaseConfig.upsert({
                 where: { id: 'singleton' },
                 update: data,

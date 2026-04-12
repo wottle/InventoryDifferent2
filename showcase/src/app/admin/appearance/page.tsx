@@ -80,12 +80,12 @@ export default function AdminAppearancePage() {
       await upsertConfig({
         variables: {
           input: {
-            siteTitle: siteTitle.trim() || null,
-            tagline: tagline.trim() || null,
-            bioText: bioText.trim() || null,
+            siteTitle: siteTitle.trim(),
+            tagline: tagline.trim(),
+            bioText: bioText.trim(),
             heroImagePath: heroImagePath || null,
-            accentColor: accentColor || null,
-            timelineCuratorNote: timelineCuratorNote.trim() || null,
+            accentColor: accentColor.trim() || '#0058bc',
+            timelineCuratorNote: timelineCuratorNote.trim(),
           },
         },
       });
