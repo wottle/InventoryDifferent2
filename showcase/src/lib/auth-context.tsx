@@ -22,11 +22,13 @@ const TOKEN_EXPIRY_KEY = 'showcase_token_expiry';
 // Buffer time before token expiry to trigger refresh (5 minutes)
 const REFRESH_BUFFER_MS = 5 * 60 * 1000;
 
-// Helper to write the auth cookie (server-readable only via HttpOnly)
+// Helper to write the auth cookie used by Next.js middleware for route protection.
+// Note: HttpOnly cannot be set via document.cookie (browser enforced). The token
+// also lives in localStorage which is the source of truth for Apollo/getAccessToken().
 const writeAuthCookie = (token: string, expiresInSec: number) => {
     if (typeof window === 'undefined') return;
     const isSecure = window.location.protocol === 'https:';
-    document.cookie = `${ACCESS_TOKEN_KEY}=${token}; path=/; max-age=${expiresInSec}; SameSite=Lax; HttpOnly${isSecure ? '; Secure' : ''}`;
+    document.cookie = `${ACCESS_TOKEN_KEY}=${token}; path=/; max-age=${expiresInSec}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
