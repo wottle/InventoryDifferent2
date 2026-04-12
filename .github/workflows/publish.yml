@@ -33,6 +33,9 @@ jobs:
           - name: MCP Server
             context: ./mcp-server
             image: wottle/inventory-mcp
+          - name: Showcase
+            context: ./showcase
+            image: wottle/inventory-showcase
 
     steps:
       - uses: actions/checkout@v4
