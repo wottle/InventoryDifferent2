@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery } from '@apollo/client';
 import {
@@ -284,37 +284,45 @@ function ChapterCard({
 
   const handleDeviceNoteBlur = async (sd: ShowcaseDevice, newNote: string) => {
     if (!sd.id || !chapter.id) return;
-    onDeviceUpdate(chapter.tempId, sd.id, { curatorNote: newNote });
-    await upsertShowcaseDevice({
-      variables: {
-        input: {
-          id: sd.id,
-          chapterId: chapter.id,
-          deviceId: sd.device.id,
-          curatorNote: newNote,
-          sortOrder: sd.sortOrder,
-          isFeatured: sd.isFeatured,
+    try {
+      await upsertShowcaseDevice({
+        variables: {
+          input: {
+            id: sd.id,
+            chapterId: chapter.id,
+            deviceId: sd.device.id,
+            curatorNote: newNote,
+            sortOrder: sd.sortOrder,
+            isFeatured: sd.isFeatured,
+          },
         },
-      },
-    });
+      });
+      onDeviceUpdate(chapter.tempId, sd.id, { curatorNote: newNote });
+    } catch (err) {
+      console.error('Failed to save curator note:', err);
+    }
   };
 
   const handleToggleFeatured = async (sd: ShowcaseDevice) => {
     if (!sd.id || !chapter.id) return;
     const newFeatured = !sd.isFeatured;
-    onDeviceUpdate(chapter.tempId, sd.id, { isFeatured: newFeatured });
-    await upsertShowcaseDevice({
-      variables: {
-        input: {
-          id: sd.id,
-          chapterId: chapter.id,
-          deviceId: sd.device.id,
-          curatorNote: sd.curatorNote ?? '',
-          sortOrder: sd.sortOrder,
-          isFeatured: newFeatured,
+    try {
+      await upsertShowcaseDevice({
+        variables: {
+          input: {
+            id: sd.id,
+            chapterId: chapter.id,
+            deviceId: sd.device.id,
+            curatorNote: sd.curatorNote ?? '',
+            sortOrder: sd.sortOrder,
+            isFeatured: newFeatured,
+          },
         },
-      },
-    });
+      });
+      onDeviceUpdate(chapter.tempId, sd.id, { isFeatured: newFeatured });
+    } catch (err) {
+      console.error('Failed to toggle featured state:', err);
+    }
   };
 
   const handleRemoveDevice = async (sd: ShowcaseDevice) => {
@@ -587,9 +595,9 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
   };
 
   const handleTogglePublish = async () => {
+    if (!journey || isSaving) return;
     const newPublished = !published;
-    setPublished(newPublished);
-    if (!isNew && journey) {
+    try {
       await updateJourney({
         variables: {
           id: journey.id,
@@ -602,6 +610,9 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           },
         },
       });
+      setPublished(newPublished);
+    } catch (err) {
+      console.error('Failed to update published state:', err);
     }
   };
 
