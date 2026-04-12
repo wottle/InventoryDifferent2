@@ -158,3 +158,36 @@ export const GET_SHOWCASE_QUOTES = gql`
     }
   }
 `;
+
+export const GET_SHOWCASE_DEVICE = gql`
+  query GetShowcaseDevice($id: Int!) {
+    device(where: { id: $id }) {
+      id
+      name
+      additionalName
+      manufacturer
+      releaseYear
+      modelNumber
+      serialNumber
+      condition
+      functionalStatus
+      hasOriginalBox
+      isWifiEnabled
+      isPramBatteryRemoved
+      info
+      cpu
+      ram
+      storage
+      graphics
+      operatingSystem
+      externalUrl
+      rarity
+      location
+      dateAcquired
+      category { name type }
+      images { id path thumbnailPath caption isThumbnail }
+      maintenanceTasks { id label dateCompleted notes }
+      notes { id content date }
+    }
+  }
+`;
