@@ -59,7 +59,7 @@ services:
       start_period: 120s
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:${DOMAIN};PathPrefix:/graphql,/upload,/uploads,/import,/export,/auth,/generate-image"
+      - "traefik.frontend.rule=Host:${DOMAIN};PathPrefix:/graphql,/upload,/uploads,/import,/export,/auth,/ai-image,/settings"
       - "traefik.port=4000"
       - "traefik.frontend.priority=2"
       - "traefik.docker.network=web"
