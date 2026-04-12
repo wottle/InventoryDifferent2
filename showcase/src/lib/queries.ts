@@ -111,6 +111,41 @@ export const GET_SHOWCASE_JOURNEY_BY_SLUG = gql`
   }
 `;
 
+export const GET_TIMELINE_DATA = gql`
+  query GetTimelineData {
+    showcaseConfig {
+      timelineCuratorNote
+    }
+    showcaseJourneys {
+      id
+      title
+      slug
+      published
+      chapters {
+        devices {
+          id
+          isFeatured
+          device {
+            id
+            name
+            manufacturer
+            releaseYear
+            info
+            rarity
+            category {
+              name
+              type
+            }
+            images {
+              thumbnailPath
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_SHOWCASE_QUOTES = gql`
   query GetShowcaseQuotes {
     showcaseQuotes {
