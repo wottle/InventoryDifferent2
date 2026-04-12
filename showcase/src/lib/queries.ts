@@ -185,6 +185,75 @@ export const DELETE_JOURNEY = gql`
   }
 `;
 
+export const GET_ALL_JOURNEYS_FOR_EDIT = gql`
+  query GetAllJourneysForEdit {
+    showcaseAllJourneys {
+      id title slug description coverImagePath sortOrder published
+      chapters {
+        id title description sortOrder
+        devices {
+          id curatorNote sortOrder isFeatured
+          device { id name manufacturer releaseYear images { thumbnailPath } }
+        }
+      }
+    }
+  }
+`;
+
+export const CREATE_JOURNEY = gql`
+  mutation CreateJourney($input: JourneyInput!) {
+    createJourney(input: $input) {
+      id title slug
+    }
+  }
+`;
+
+export const UPDATE_JOURNEY = gql`
+  mutation UpdateJourney($id: ID!, $input: JourneyInput!) {
+    updateJourney(id: $id, input: $input) {
+      id title slug description sortOrder published
+    }
+  }
+`;
+
+export const UPSERT_CHAPTER = gql`
+  mutation UpsertChapter($input: ChapterInput!) {
+    upsertChapter(input: $input) {
+      id title description sortOrder
+    }
+  }
+`;
+
+export const DELETE_CHAPTER = gql`
+  mutation DeleteChapter($id: ID!) {
+    deleteChapter(id: $id)
+  }
+`;
+
+export const UPSERT_SHOWCASE_DEVICE = gql`
+  mutation UpsertShowcaseDevice($input: ShowcaseDeviceInput!) {
+    upsertShowcaseDevice(input: $input) {
+      id curatorNote isFeatured sortOrder
+      device { id name manufacturer releaseYear images { thumbnailPath } }
+    }
+  }
+`;
+
+export const REMOVE_SHOWCASE_DEVICE = gql`
+  mutation RemoveShowcaseDevice($id: ID!) {
+    removeShowcaseDevice(id: $id)
+  }
+`;
+
+export const SEARCH_DEVICES_FOR_SHOWCASE = gql`
+  query SearchDevicesForShowcase {
+    devices {
+      id name manufacturer releaseYear
+      images { thumbnailPath }
+    }
+  }
+`;
+
 export const GET_SHOWCASE_DEVICE = gql`
   query GetShowcaseDevice($id: Int!) {
     device(where: { id: $id }) {
