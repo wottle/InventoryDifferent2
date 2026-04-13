@@ -25,6 +25,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Showcase device detail and journey pages double-prefixing image URLs causing 404s',
       'Journey editor device thumbnails broken due to double /uploads/ prefix',
       'Showcase device page restoration section mislabeled as Provenance',
+      'Default showcase quotes not appearing — auto-seed on startup if table is empty; admin was showing only enabled quotes making disabled ones unrecoverable',
     ],
   },
   {

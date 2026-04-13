@@ -159,6 +159,19 @@ export const GET_SHOWCASE_QUOTES = gql`
   }
 `;
 
+export const GET_ALL_SHOWCASE_QUOTES = gql`
+  query GetAllShowcaseQuotes {
+    showcaseAllQuotes {
+      id
+      author
+      text
+      source
+      isDefault
+      isEnabled
+    }
+  }
+`;
+
 export const GET_ALL_SHOWCASE_JOURNEYS_ADMIN = gql`
   query GetAllShowcaseJourneysAdmin {
     showcaseAllJourneys {

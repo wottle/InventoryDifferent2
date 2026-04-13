@@ -844,6 +844,13 @@ export const resolvers = {
             });
         },
 
+        showcaseAllQuotes: async (_parent: any, _args: any, context: Context) => {
+            requireAuth(context);
+            return (context.prisma as any).showcaseQuote.findMany({
+                orderBy: { sortOrder: 'asc' },
+            });
+        },
+
         showcaseAllJourneys: async (_parent: any, _args: any, context: Context) => {
             requireAuth(context);
             const journeys = await (context.prisma as any).showcaseJourney.findMany({

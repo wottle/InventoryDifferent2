@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import {
-  GET_SHOWCASE_QUOTES,
+  GET_ALL_SHOWCASE_QUOTES,
   UPSERT_SHOWCASE_QUOTE,
   DELETE_SHOWCASE_QUOTE,
 } from '@/lib/queries';
@@ -18,8 +18,8 @@ interface ShowcaseQuote {
 }
 
 export default function AdminQuotesPage() {
-  const { data, loading, refetch } = useQuery<{ showcaseQuotes: ShowcaseQuote[] }>(
-    GET_SHOWCASE_QUOTES
+  const { data, loading, refetch } = useQuery<{ showcaseAllQuotes: ShowcaseQuote[] }>(
+    GET_ALL_SHOWCASE_QUOTES
   );
 
   const [upsertQuote] = useMutation(UPSERT_SHOWCASE_QUOTE);
@@ -31,7 +31,7 @@ export default function AdminQuotesPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
 
-  const quotes = data?.showcaseQuotes ?? [];
+  const quotes = data?.showcaseAllQuotes ?? [];
   const defaultQuotes = quotes.filter((q) => q.isDefault);
   const userQuotes = quotes.filter((q) => !q.isDefault);
 

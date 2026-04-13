@@ -511,6 +511,7 @@ export const typeDefs = gql`
     showcaseJourney(slug: String!): ShowcaseJourney
     showcaseFeaturedDevices: [ShowcaseDevice!]!
     showcaseQuotes: [ShowcaseQuote!]!
+    showcaseAllQuotes: [ShowcaseQuote!]!
     showcaseAllJourneys: [ShowcaseJourney!]!
   }
 
