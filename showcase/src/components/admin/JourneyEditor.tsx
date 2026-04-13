@@ -263,8 +263,16 @@ function ChapterCard({
   const [removeShowcaseDevice] = useMutation(REMOVE_SHOWCASE_DEVICE);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Local state for the editable fields so onBlur always reads the current
+  // typed value rather than potentially stale props.
+  const [localTitle, setLocalTitle] = useState(chapter.title);
+  const [localDesc, setLocalDesc] = useState(chapter.description ?? '');
+
+  useEffect(() => { setLocalTitle(chapter.title); }, [chapter.title]);
+  useEffect(() => { setLocalDesc(chapter.description ?? ''); }, [chapter.description]);
+
   const saveChapter = useCallback(async () => {
-    if (!chapter.title.trim()) return;
+    if (!localTitle.trim()) return;
     onUpdate(chapter.tempId, { isSaving: true });
     try {
       const { data } = await upsertChapter({
@@ -272,19 +280,25 @@ function ChapterCard({
           input: {
             ...(chapter.id ? { id: chapter.id } : {}),
             journeyId,
-            title: chapter.title,
-            description: chapter.description,
+            title: localTitle,
+            description: localDesc,
             sortOrder: chapter.sortOrder,
           },
         },
       });
       if (data?.upsertChapter) {
-        onUpdate(chapter.tempId, { id: data.upsertChapter.id, isSaving: false });
+        onUpdate(chapter.tempId, {
+          id: data.upsertChapter.id,
+          title: localTitle,
+          description: localDesc,
+          isSaving: false,
+        });
       }
-    } catch {
+    } catch (err) {
+      console.error('Failed to save chapter:', err);
       onUpdate(chapter.tempId, { isSaving: false });
     }
-  }, [chapter, journeyId, upsertChapter, onUpdate]);
+  }, [localTitle, localDesc, chapter.id, chapter.tempId, chapter.sortOrder, journeyId, upsertChapter, onUpdate]);
 
   const handleDelete = async () => {
     if (!window.confirm(`Delete chapter "${chapter.title}"? This will also remove all devices in it.`)) return;
@@ -364,9 +378,13 @@ function ChapterCard({
         {/* Title input */}
         <input
           type="text"
-          value={chapter.title}
-          onChange={(e) => onUpdate(chapter.tempId, { title: e.target.value })}
+          value={localTitle}
+          onChange={(e) => {
+            setLocalTitle(e.target.value);
+            onUpdate(chapter.tempId, { title: e.target.value });
+          }}
           onBlur={saveChapter}
+          onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
           placeholder="Chapter title"
           className="flex-1 font-semibold text-sm text-on-surface bg-transparent border-none outline-none placeholder:text-outline focus:bg-surface-container-low focus:ring-1 focus:ring-primary/30 rounded px-1 -mx-1 min-w-0"
         />
@@ -415,12 +433,15 @@ function ChapterCard({
       {/* Description */}
       <div className="px-5 pt-3 pb-2">
         <textarea
-          value={chapter.description}
-          onChange={(e) => onUpdate(chapter.tempId, { description: e.target.value })}
+          value={localDesc}
+          onChange={(e) => {
+            setLocalDesc(e.target.value);
+            onUpdate(chapter.tempId, { description: e.target.value });
+          }}
           onBlur={saveChapter}
           placeholder="Chapter description (optional)"
           rows={2}
-          className="w-full text-sm text-on-surface-variant bg-transparent border-none outline-none resize-none placeholder:text-outline focus:ring-0"
+          className="w-full text-sm text-on-surface-variant bg-transparent border-none outline-none resize-none placeholder:text-outline focus:bg-surface-container-low focus:ring-1 focus:ring-primary/30 rounded px-1 -mx-1"
         />
       </div>
 
