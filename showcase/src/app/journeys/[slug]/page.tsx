@@ -65,7 +65,7 @@ function DeviceCard({ item }: { item: ShowcaseDeviceItem }) {
       <div className="h-48 bg-surface-container-high overflow-hidden">
         {thumbnailPath ? (
           <img
-            src={`/uploads/${thumbnailPath}`}
+            src={thumbnailPath}
             alt={device.name}
             className="w-full h-full object-cover"
           />

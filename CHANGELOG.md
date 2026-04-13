@@ -10,6 +10,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Fixed
 - Showcase footer rendered before page content instead of after it
 - Showcase hero image not displaying on homepage
+- Showcase device detail and journey pages double-prefixing image URLs causing 404s
 
 ---
 

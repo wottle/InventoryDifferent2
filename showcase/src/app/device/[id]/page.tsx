@@ -176,7 +176,7 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
         <div className="w-full md:w-1/2 h-[50vh] md:h-screen relative overflow-hidden">
           {heroImage ? (
             <img
-              src={`/uploads/${heroImage.path}`}
+              src={heroImage.path}
               alt={device.name}
               className="w-full h-full object-cover"
             />
@@ -320,7 +320,7 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
               <div key={image.id} className="flex-none w-80 md:w-[30rem]">
                 <div className="aspect-[4/5] bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500">
                   <img
-                    src={`/uploads/${image.path}`}
+                    src={image.path}
                     alt={image.caption ?? device.name}
                     className="w-full h-full object-cover"
                   />
