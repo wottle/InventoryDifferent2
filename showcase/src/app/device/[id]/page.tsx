@@ -336,20 +336,20 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
         </section>
       )}
 
-      {/* Section 5: Provenance */}
+      {/* Section 5: Restoration Log */}
       {device.maintenanceTasks.length > 0 && (
         <section className="py-32 px-12 md:px-24 bg-surface-container-lowest">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-24">
             <div className="md:w-1/3">
               <p className="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">
-                Provenance
+                Restoration Log
               </p>
               <h2 className="text-5xl font-black tracking-tighter mb-8 leading-tight">
-                History of Possession
+                Work Done
               </h2>
               <p className="text-on-surface-variant leading-relaxed">
-                Our archive tracks the journey of each piece with clinical precision. Every
-                transition is documented, every restoration logged.
+                Every repair, recap, and restoration performed on this machine — documented
+                as the work was completed.
               </p>
             </div>
             <div className="md:w-2/3 space-y-4">

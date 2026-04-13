@@ -13,6 +13,7 @@ All notable changes to InventoryDifferent will be documented here.
 - Showcase hero image not displaying on homepage
 - Showcase device detail and journey pages double-prefixing image URLs causing 404s
 - Journey editor device thumbnails broken due to double /uploads/ prefix
+- Showcase device page restoration section mislabeled as Provenance
 
 ---
 
