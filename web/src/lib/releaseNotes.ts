@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.1.0';
+export const APP_VERSION = '2.2.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '2.2.0',
+    date: '2026-04-13',
     added: [
       'historicalNotes field on Device and Template — stores model-level historical context, seeded from templates when creating a device',
       'Showcase timeline and device detail pages show historicalNotes instead of the condition info field',

@@ -4,6 +4,10 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+---
+
+## [2.2.0] - 2026-04-13
+
 ### Added
 - historicalNotes field on Device and Template — stores model-level historical context, seeded from templates when creating a device
 - Showcase timeline and device detail pages show historicalNotes instead of the condition info field
@@ -18,6 +22,7 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 - Showcase homepage quote card now pulls a random enabled quote from the database instead of a hardcoded Dieter Rams quote
+- Historical Notes field not pre-populated when editing an existing device — field was missing from the edit page device query
 
 ---
 
