@@ -6,11 +6,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Added
 - Seed 22 default showcase quotes from Apple history figures (Jobs, Ive, Wozniak, Raskin, Kare, Rams, Tognazzini, Think Different)
+- Journey editor device search now shows additional name and supports searching by it
 
 ### Fixed
 - Showcase footer rendered before page content instead of after it
 - Showcase hero image not displaying on homepage
 - Showcase device detail and journey pages double-prefixing image URLs causing 404s
+- Journey editor device thumbnails broken due to double /uploads/ prefix
 
 ---
 

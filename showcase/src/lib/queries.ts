@@ -226,7 +226,7 @@ export const UPSERT_SHOWCASE_DEVICE = gql`
   mutation UpsertShowcaseDevice($input: ShowcaseDeviceInput!) {
     upsertShowcaseDevice(input: $input) {
       id curatorNote isFeatured sortOrder
-      device { id name manufacturer releaseYear images { thumbnailPath } }
+      device { id name additionalName manufacturer releaseYear images { thumbnailPath } }
     }
   }
 `;
@@ -240,7 +240,7 @@ export const REMOVE_SHOWCASE_DEVICE = gql`
 export const SEARCH_DEVICES_FOR_SHOWCASE = gql`
   query SearchDevicesForShowcase {
     devices {
-      id name manufacturer releaseYear
+      id name additionalName manufacturer releaseYear
       images { thumbnailPath }
     }
   }

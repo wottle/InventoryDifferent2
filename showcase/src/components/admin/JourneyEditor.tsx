@@ -23,6 +23,7 @@ interface DeviceImage {
 interface DeviceRef {
   id: number;
   name: string;
+  additionalName: string | null;
   manufacturer: string | null;
   releaseYear: number | null;
   images: DeviceImage[];
@@ -87,7 +88,8 @@ function getApiBase(): string {
 function thumbnailUrl(path: string | null | undefined): string | null {
   if (!path) return null;
   if (path.startsWith('http')) return path;
-  return `${getApiBase().replace('/api/graphql', '')}/uploads/${path}`;
+  // thumbnailPath from the API already includes the /uploads/ prefix
+  return path;
 }
 
 // ─── Device Search Modal ──────────────────────────────────────────────────────
@@ -113,6 +115,7 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
     const q = search.toLowerCase();
     return (
       d.name.toLowerCase().includes(q) ||
+      (d.additionalName ?? '').toLowerCase().includes(q) ||
       (d.manufacturer ?? '').toLowerCase().includes(q) ||
       String(d.releaseYear ?? '').includes(q)
     );
@@ -196,7 +199,9 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-on-surface truncate">{device.name}</p>
+                <p className="text-sm font-medium text-on-surface truncate">
+                  {device.name}{device.additionalName ? ` — ${device.additionalName}` : ''}
+                </p>
                 <p className="text-xs text-outline truncate">
                   {[device.manufacturer, device.releaseYear].filter(Boolean).join(' · ')}
                 </p>
@@ -460,7 +465,9 @@ function DeviceRow({ sd, onNoteBlur, onToggleFeatured, onRemove }: DeviceRowProp
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-sm font-semibold text-on-surface truncate">{sd.device.name}</p>
+          <p className="text-sm font-semibold text-on-surface truncate">
+            {sd.device.name}{sd.device.additionalName ? ` — ${sd.device.additionalName}` : ''}
+          </p>
           {sd.isFeatured && <span className="text-amber-500 text-xs leading-none">★</span>}
         </div>
         <p className="text-xs text-outline truncate">
