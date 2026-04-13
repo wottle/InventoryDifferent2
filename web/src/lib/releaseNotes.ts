@@ -23,6 +23,7 @@ export const releaseNotes: ReleaseEntry[] = [
     ],
     fixed: [
       'Showcase homepage quote card now pulls a random enabled quote from the database instead of a hardcoded Dieter Rams quote',
+      'Historical Notes field not pre-populated when editing an existing device — field was missing from the edit page device query',
     ],
   },
   {

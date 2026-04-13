@@ -22,6 +22,7 @@ const GET_DEVICE = gql`
         name
       }
       info
+      historicalNotes
       isFavorite
       externalUrl
       status
