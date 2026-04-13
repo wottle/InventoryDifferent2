@@ -17,6 +17,7 @@ All notable changes to InventoryDifferent will be documented here.
 - Journey editor device thumbnails broken due to double /uploads/ prefix
 - Showcase device page restoration section mislabeled as Provenance
 - Default showcase quotes not appearing — auto-seed on startup if table empty; admin showed only enabled quotes making disabled ones unrecoverable
+- Featured artifacts showing counter instead of device ID; using first image instead of designated thumbnail
 
 ---
 

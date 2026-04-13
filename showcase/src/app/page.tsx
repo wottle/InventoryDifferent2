@@ -14,6 +14,7 @@ interface ShowcaseConfig {
 
 interface DeviceImage {
   path: string;
+  isThumbnail: boolean;
 }
 
 interface Device {
@@ -220,7 +221,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredDevices.map((showcaseDevice, idx) => {
                 const { device, curatorNote } = showcaseDevice;
-                const thumbnailUrl = device.images?.[0]?.path;
+                const thumbnailUrl = (device.images.find((i) => i.isThumbnail) ?? device.images[0])?.path;
                 const isRare = RARE_RARITIES.includes(device.rarity || '');
                 const badgeText = rarityLabel(device.rarity);
                 const description = curatorNote ||
@@ -256,7 +257,7 @@ export default async function HomePage() {
                         </p>
                       </div>
                       <span className="text-primary font-black italic text-lg">
-                        #{String(idx + 1).padStart(3, '0')}
+                        #{String(device.id).padStart(3, '0')}
                       </span>
                     </div>
                     {description && (

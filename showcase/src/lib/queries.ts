@@ -48,6 +48,7 @@ export const GET_FEATURED_DEVICES = gql`
         rarity
         images {
           path
+          isThumbnail
         }
       }
     }

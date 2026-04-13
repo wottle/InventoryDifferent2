@@ -26,6 +26,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Journey editor device thumbnails broken due to double /uploads/ prefix',
       'Showcase device page restoration section mislabeled as Provenance',
       'Default showcase quotes not appearing — auto-seed on startup if table is empty; admin was showing only enabled quotes making disabled ones unrecoverable',
+      'Featured artifacts showing counter instead of device ID; using first image instead of designated thumbnail',
     ],
   },
   {
