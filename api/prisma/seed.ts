@@ -634,12 +634,36 @@ async function main() {
 
     // Seed default showcase quotes
     const defaultQuotes = [
+        // Steve Jobs
         { id: 'quote-jobs-1', author: 'Steve Jobs', text: 'Design is not just what it looks like and feels like. Design is how it works.', source: 'The New York Times, 2003', isDefault: true, sortOrder: 0 },
         { id: 'quote-jobs-2', author: 'Steve Jobs', text: 'The people who are crazy enough to think they can change the world are the ones who do.', source: 'Think Different campaign, 1997', isDefault: true, sortOrder: 1 },
-        { id: 'quote-rams-1', author: 'Dieter Rams', text: 'Good design is as little design as possible.', source: 'Ten Principles for Good Design', isDefault: true, sortOrder: 2 },
-        { id: 'quote-ive-1', author: 'Jony Ive', text: 'We try to develop products that seem somehow inevitable.', source: 'Objectified documentary, 2009', isDefault: true, sortOrder: 3 },
-        { id: 'quote-woz-1', author: 'Steve Wozniak', text: "Never trust a computer you can't throw out a window.", source: 'iWoz, 2006', isDefault: true, sortOrder: 4 },
-        { id: 'quote-kare-1', author: 'Susan Kare', text: 'Icons are the vocabulary of the visual language of the interface.', source: null, isDefault: true, sortOrder: 5 },
+        { id: 'quote-jobs-3', author: 'Steve Jobs', text: 'Creativity is just connecting things.', source: 'Wired, 1996', isDefault: true, sortOrder: 2 },
+        { id: 'quote-jobs-4', author: 'Steve Jobs', text: 'Stay hungry. Stay foolish.', source: 'Stanford commencement address, 2005', isDefault: true, sortOrder: 3 },
+        { id: 'quote-jobs-5', author: 'Steve Jobs', text: 'Simple can be harder than complex. You have to work hard to get your thinking clean to make it simple.', source: 'BusinessWeek, 1998', isDefault: true, sortOrder: 4 },
+        { id: 'quote-jobs-6', author: 'Steve Jobs', text: 'Innovation distinguishes between a leader and a follower.', source: null, isDefault: true, sortOrder: 5 },
+        // Jony Ive
+        { id: 'quote-ive-1', author: 'Jony Ive', text: 'We try to develop products that seem somehow inevitable.', source: 'Objectified documentary, 2009', isDefault: true, sortOrder: 6 },
+        { id: 'quote-ive-2', author: 'Jony Ive', text: 'True simplicity is derived from so much more than just the absence of clutter and ornamentation.', source: null, isDefault: true, sortOrder: 7 },
+        { id: 'quote-ive-3', author: 'Jony Ive', text: 'The best ideas start as conversations.', source: null, isDefault: true, sortOrder: 8 },
+        // Dieter Rams
+        { id: 'quote-rams-1', author: 'Dieter Rams', text: 'Good design is as little design as possible.', source: 'Ten Principles for Good Design', isDefault: true, sortOrder: 9 },
+        { id: 'quote-rams-2', author: 'Dieter Rams', text: 'Good design is innovative.', source: 'Ten Principles for Good Design', isDefault: true, sortOrder: 10 },
+        { id: 'quote-rams-3', author: 'Dieter Rams', text: 'Good design makes a product useful.', source: 'Ten Principles for Good Design', isDefault: true, sortOrder: 11 },
+        { id: 'quote-rams-4', author: 'Dieter Rams', text: 'Indifference towards people and the reality in which they live is actually the one and only cardinal sin in design.', source: null, isDefault: true, sortOrder: 12 },
+        // Steve Wozniak
+        { id: 'quote-woz-1', author: 'Steve Wozniak', text: "Never trust a computer you can't throw out a window.", source: 'iWoz, 2006', isDefault: true, sortOrder: 13 },
+        { id: 'quote-woz-2', author: 'Steve Wozniak', text: "My goal wasn't to make a ton of money. It was to build good computers.", source: null, isDefault: true, sortOrder: 14 },
+        { id: 'quote-woz-3', author: 'Steve Wozniak', text: 'All the best things that I did at Apple came from not having money and not having done it before, ever.', source: null, isDefault: true, sortOrder: 15 },
+        // Susan Kare
+        { id: 'quote-kare-1', author: 'Susan Kare', text: 'Icons are the vocabulary of the visual language of the interface.', source: null, isDefault: true, sortOrder: 16 },
+        { id: 'quote-kare-2', author: 'Susan Kare', text: 'You want people to feel like they know how to use it just by looking at it.', source: null, isDefault: true, sortOrder: 17 },
+        // Jef Raskin
+        { id: 'quote-raskin-1', author: 'Jef Raskin', text: 'An interface is humane if it is responsive to human needs and considerate of human frailty.', source: 'The Humane Interface, 2000', isDefault: true, sortOrder: 18 },
+        { id: 'quote-raskin-2', author: 'Jef Raskin', text: 'The system should treat all user input as sacred.', source: 'The Humane Interface, 2000', isDefault: true, sortOrder: 19 },
+        // Bruce Tognazzini
+        { id: 'quote-tog-1', author: 'Bruce Tognazzini', text: 'Consistency enables users to build accurate mental models of the way things work.', source: 'AskTog', isDefault: true, sortOrder: 20 },
+        // Think Different
+        { id: 'quote-thinkdiff-1', author: 'Think Different campaign', text: "Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes.", source: 'Apple Inc., 1997', isDefault: true, sortOrder: 21 },
     ];
 
     for (const quote of defaultQuotes) {
