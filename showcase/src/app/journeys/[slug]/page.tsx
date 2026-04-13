@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getClient } from '@/lib/apollo-rsc';
 import { GET_SHOWCASE_JOURNEY_BY_SLUG } from '@/lib/queries';
+import { pickThumbnail } from '@/lib/image-utils';
 
 interface ShowcaseDeviceItem {
   id: string;
@@ -14,7 +15,7 @@ interface ShowcaseDeviceItem {
     releaseYear: number | null;
     info: string | null;
     rarity: string | null;
-    images: Array<{ path: string | null }>;
+    images: Array<{ path: string | null; isThumbnail: boolean; thumbnailMode: string | null }>;
   };
 }
 
@@ -57,7 +58,7 @@ function getVolumeLabel(sortOrder: number): string {
 
 function DeviceCard({ item }: { item: ShowcaseDeviceItem }) {
   const { device, curatorNote } = item;
-  const imagePath = device.images?.[0]?.path;
+  const imagePath = pickThumbnail(device.images.map(i => ({ path: i.path ?? '', isThumbnail: i.isThumbnail, thumbnailMode: i.thumbnailMode })));
   const badge = rarityLabel(device.rarity);
 
   return (

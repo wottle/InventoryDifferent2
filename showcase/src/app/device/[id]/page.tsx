@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getClient } from '@/lib/apollo-rsc';
 import { GET_SHOWCASE_DEVICE } from '@/lib/queries';
+import { pickThumbnail } from '@/lib/image-utils';
 
 // --- Types ---
 
@@ -10,6 +11,7 @@ interface DeviceImage {
   thumbnailPath: string | null;
   caption: string | null;
   isThumbnail: boolean;
+  thumbnailMode: string | null;
 }
 
 interface MaintenanceTask {
@@ -126,8 +128,7 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
 
   if (!device) notFound();
 
-  const heroImage =
-    device.images.find((i) => i.isThumbnail) ?? device.images[0] ?? null;
+  const heroImagePath = pickThumbnail(device.images);
 
   const rarity = rarityBadge(device.rarity);
   const funcBadge = functionalStatusBadge(device.functionalStatus);
@@ -174,9 +175,9 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
       <section className="min-h-screen flex flex-col md:flex-row items-stretch">
         {/* Left: Image */}
         <div className="w-full md:w-1/2 h-[50vh] md:h-screen relative overflow-hidden">
-          {heroImage ? (
+          {heroImagePath ? (
             <img
-              src={heroImage.path}
+              src={heroImagePath}
               alt={device.name}
               className="w-full h-full object-cover"
             />

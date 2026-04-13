@@ -1,6 +1,7 @@
 import { getClient } from '@/lib/apollo-rsc';
 import { GET_TIMELINE_DATA } from '@/lib/queries';
 import TimelineClient from '@/components/TimelineClient';
+import { pickThumbnail } from '@/lib/image-utils';
 
 interface ShowcaseConfig {
   timelineCuratorNote: string;
@@ -8,6 +9,8 @@ interface ShowcaseConfig {
 
 interface DeviceImage {
   path: string;
+  isThumbnail: boolean;
+  thumbnailMode: string | null;
 }
 
 interface DeviceCategory {
@@ -92,7 +95,7 @@ export default async function TimelinePage() {
               rarity: sd.device.rarity,
               categoryName: sd.device.category?.name ?? null,
               categoryType: sd.device.category?.type ?? null,
-              imagePath: sd.device.images?.[0]?.path ?? null,
+              imagePath: pickThumbnail(sd.device.images) ?? null,
               journeyTitle: journey.title,
             });
           }

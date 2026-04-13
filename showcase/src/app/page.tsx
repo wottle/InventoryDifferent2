@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getClient } from '@/lib/apollo-rsc';
 import { GET_SHOWCASE_CONFIG, GET_FEATURED_DEVICES, GET_SHOWCASE_JOURNEYS } from '@/lib/queries';
+import { pickThumbnail } from '@/lib/image-utils';
 
 interface ShowcaseConfig {
   id: string;
@@ -15,6 +16,7 @@ interface ShowcaseConfig {
 interface DeviceImage {
   path: string;
   isThumbnail: boolean;
+  thumbnailMode: string | null;
 }
 
 interface Device {
@@ -221,7 +223,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredDevices.map((showcaseDevice, idx) => {
                 const { device, curatorNote } = showcaseDevice;
-                const thumbnailUrl = (device.images.find((i) => i.isThumbnail) ?? device.images[0])?.path;
+                const thumbnailUrl = pickThumbnail(device.images);
                 const isRare = RARE_RARITIES.includes(device.rarity || '');
                 const badgeText = rarityLabel(device.rarity);
                 const description = curatorNote ||
