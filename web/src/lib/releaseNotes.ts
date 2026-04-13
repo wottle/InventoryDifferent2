@@ -16,7 +16,10 @@ export const releaseNotes: ReleaseEntry[] = [
       'Seed 22 default showcase quotes from Apple history figures (Jobs, Ive, Wozniak, Raskin, Kare, Rams, Tognazzini, Think Different)',
     ],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Showcase footer rendered before page content instead of after it',
+      'Showcase hero image not displaying on homepage',
+    ],
   },
   {
     version: '2.0.0',

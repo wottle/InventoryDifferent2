@@ -7,6 +7,10 @@ All notable changes to InventoryDifferent will be documented here.
 ### Added
 - Seed 22 default showcase quotes from Apple history figures (Jobs, Ive, Wozniak, Raskin, Kare, Rams, Tognazzini, Think Different)
 
+### Fixed
+- Showcase footer rendered before page content instead of after it
+- Showcase hero image not displaying on homepage
+
 ---
 
 ## [2.0.0] - 2026-04-12

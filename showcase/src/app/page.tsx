@@ -101,7 +101,7 @@ export default async function HomePage() {
         {heroImagePath ? (
           <div className="absolute inset-0 z-0">
             <img
-              src={heroImagePath}
+              src={`/uploads/${heroImagePath}`}
               alt="Collection hero"
               className="w-full h-full object-cover opacity-60 mix-blend-multiply"
             />
