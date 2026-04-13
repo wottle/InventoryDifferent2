@@ -446,6 +446,8 @@ export const typeDefs = gql`
     heroImagePath: String
     accentColor: String!
     timelineCuratorNote: String!
+    narrativeStatement: String!
+    collectionOverview: String!
   }
 
   input ShowcaseConfigInput {
@@ -455,6 +457,8 @@ export const typeDefs = gql`
     heroImagePath: String
     accentColor: String
     timelineCuratorNote: String
+    narrativeStatement: String
+    collectionOverview: String
   }
 
   input JourneyInput {

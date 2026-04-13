@@ -361,4 +361,6 @@ model ShowcaseConfig {
   heroImagePath       String?
   accentColor         String  @default("#0058bc")
   timelineCuratorNote String  @default("")
+  narrativeStatement  String  @default("")
+  collectionOverview  String  @default("")
 }

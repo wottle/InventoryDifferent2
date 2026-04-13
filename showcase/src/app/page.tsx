@@ -11,6 +11,8 @@ interface ShowcaseConfig {
   heroImagePath: string | null;
   accentColor: string;
   timelineCuratorNote: string;
+  narrativeStatement: string;
+  collectionOverview: string;
 }
 
 interface DeviceImage {
@@ -113,6 +115,10 @@ export default async function HomePage() {
   const tagline = config?.tagline || 'A Legacy of Silicon & Steel';
   const bioText = config?.bioText || 'Three decades of computing history, curated and cared for. Each machine a chapter in a longer story.';
   const heroImagePath = config?.heroImagePath || null;
+  const narrativeStatement = config?.narrativeStatement || "Precision isn\u2019t just a measurement; it\u2019s a philosophy. We celebrate the era when hardware was sculpted, and every screw served a purpose.";
+  const collectionOverview = config?.collectionOverview || '';
+
+  const featuredJourney = journeys[0] ?? null;
 
   return (
     <main>
@@ -170,15 +176,17 @@ export default async function HomePage() {
               The Narrative
             </h2>
             <p className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-on-surface">
-              Precision isn&apos;t just a measurement; it&apos;s a philosophy. We celebrate the era when hardware was sculpted, and every screw served a purpose.
+              {narrativeStatement}
             </p>
           </div>
-          <div className="md:col-span-5">
-            <p className="text-lg text-on-surface-variant leading-relaxed mb-6">
-              This collection is born from a lifelong obsession with Apple computers. Each device has been sourced, cleaned, and restored as close to its original condition as possible. From the pebble-like curves of the Flower Power iMac to the rigid, geometric lines of the Macintosh Portable, Apple&apos;s design has lead many lives.
-            </p>
-            <div className="h-px w-20 bg-primary" />
-          </div>
+          {collectionOverview && (
+            <div className="md:col-span-5">
+              <p className="text-lg text-on-surface-variant leading-relaxed mb-6">
+                {collectionOverview}
+              </p>
+              <div className="h-px w-20 bg-primary" />
+            </div>
+          )}
         </div>
       </section>
 
@@ -186,15 +194,48 @@ export default async function HomePage() {
       <section className="py-20 bg-surface-container-low overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-8">
           <div className="grid grid-cols-12 gap-6 h-[800px]">
-            {/* Large left image */}
-            <div className="col-span-8 h-full rounded-xl overflow-hidden relative group bg-surface-container-high">
-              <div className="w-full h-full bg-gradient-to-br from-surface-container-high to-surface-container-highest" />
-              <div className="absolute bottom-8 left-8 text-white z-10">
-                <span className="text-xs uppercase tracking-widest opacity-80">The Archive</span>
-                <h3 className="text-2xl font-bold">Thirty Years of Design</h3>
+            {/* Featured Journey tile */}
+            {featuredJourney ? (
+              <Link
+                href={`/journeys/${featuredJourney.slug}`}
+                className="col-span-8 h-full rounded-xl overflow-hidden relative group bg-surface-container-high block"
+              >
+                {featuredJourney.coverImagePath ? (
+                  <img
+                    src={`/uploads/${featuredJourney.coverImagePath}`}
+                    alt={featuredJourney.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-8 left-8 right-8 z-10">
+                  <span className="text-xs uppercase tracking-widest text-white/60 font-bold">
+                    Featured Journey · {featuredJourney.chapters.length} chapter{featuredJourney.chapters.length !== 1 ? 's' : ''}
+                  </span>
+                  <h3 className="text-3xl font-bold text-white mt-1 mb-2">{featuredJourney.title}</h3>
+                  <p className="text-white/70 text-sm leading-relaxed line-clamp-2 max-w-lg">{featuredJourney.description}</p>
+                </div>
+                <div className="absolute top-6 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-full flex items-center gap-1.5">
+                    Read the story
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            ) : (
+              <div className="col-span-8 h-full rounded-xl overflow-hidden relative bg-surface-container-high">
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-8 left-8 text-white z-10">
+                  <span className="text-xs uppercase tracking-widest opacity-60">The Archive</span>
+                  <h3 className="text-2xl font-bold">Curated Journeys Coming Soon</h3>
+                </div>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            </div>
+            )}
 
             {/* Right column */}
             <div className="col-span-4 flex flex-col gap-6 h-full">

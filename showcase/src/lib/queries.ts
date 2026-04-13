@@ -10,6 +10,8 @@ export const GET_SHOWCASE_CONFIG = gql`
       heroImagePath
       accentColor
       timelineCuratorNote
+      narrativeStatement
+      collectionOverview
     }
   }
 `;
@@ -296,6 +298,8 @@ export const UPSERT_SHOWCASE_CONFIG = gql`
       heroImagePath
       accentColor
       timelineCuratorNote
+      narrativeStatement
+      collectionOverview
     }
   }
 `;

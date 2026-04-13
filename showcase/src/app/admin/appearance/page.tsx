@@ -12,6 +12,8 @@ interface ShowcaseConfig {
   heroImagePath: string | null;
   accentColor: string | null;
   timelineCuratorNote: string | null;
+  narrativeStatement: string | null;
+  collectionOverview: string | null;
 }
 
 export default function AdminAppearancePage() {
@@ -21,6 +23,8 @@ export default function AdminAppearancePage() {
   const [siteTitle, setSiteTitle] = useState('');
   const [tagline, setTagline] = useState('');
   const [bioText, setBioText] = useState('');
+  const [narrativeStatement, setNarrativeStatement] = useState('');
+  const [collectionOverview, setCollectionOverview] = useState('');
   const [timelineCuratorNote, setTimelineCuratorNote] = useState('');
   const [accentColor, setAccentColor] = useState('#6750A4');
   const [heroImagePath, setHeroImagePath] = useState<string | null>(null);
@@ -36,6 +40,8 @@ export default function AdminAppearancePage() {
       setSiteTitle(c.siteTitle ?? '');
       setTagline(c.tagline ?? '');
       setBioText(c.bioText ?? '');
+      setNarrativeStatement(c.narrativeStatement ?? '');
+      setCollectionOverview(c.collectionOverview ?? '');
       setTimelineCuratorNote(c.timelineCuratorNote ?? '');
       setAccentColor(c.accentColor ?? '#6750A4');
       setHeroImagePath(c.heroImagePath ?? null);
@@ -83,6 +89,8 @@ export default function AdminAppearancePage() {
             siteTitle: siteTitle.trim(),
             tagline: tagline.trim(),
             bioText: bioText.trim(),
+            narrativeStatement: narrativeStatement.trim(),
+            collectionOverview: collectionOverview.trim(),
             heroImagePath: heroImagePath || null,
             accentColor: accentColor.trim() || '#0058bc',
             timelineCuratorNote: timelineCuratorNote.trim(),
@@ -164,6 +172,41 @@ export default function AdminAppearancePage() {
               value={bioText}
               onChange={(e) => setBioText(e.target.value)}
               placeholder="A brief description of you and your collection…"
+              rows={4}
+              className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition resize-none"
+            />
+          </div>
+        </section>
+
+        {/* Homepage Copy */}
+        <section className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-5">
+          <h2 className="text-xs font-label uppercase tracking-widest text-outline">
+            Homepage
+          </h2>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
+              Narrative Statement
+            </label>
+            <p className="text-xs text-outline -mt-0.5">The large bold heading in the &ldquo;The Narrative&rdquo; section.</p>
+            <textarea
+              value={narrativeStatement}
+              onChange={(e) => setNarrativeStatement(e.target.value)}
+              placeholder="e.g. Precision isn't just a measurement; it's a philosophy…"
+              rows={3}
+              className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition resize-none"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
+              Collection Overview
+            </label>
+            <p className="text-xs text-outline -mt-0.5">The body text in the right column of the narrative section.</p>
+            <textarea
+              value={collectionOverview}
+              onChange={(e) => setCollectionOverview(e.target.value)}
+              placeholder="A description of your collection and its philosophy…"
               rows={4}
               className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition resize-none"
             />

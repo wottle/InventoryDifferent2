@@ -1508,6 +1508,8 @@ export const resolvers = {
             if (args.input.heroImagePath !== undefined) data.heroImagePath = args.input.heroImagePath;
             if (args.input.accentColor != null) data.accentColor = args.input.accentColor;
             if (args.input.timelineCuratorNote != null) data.timelineCuratorNote = args.input.timelineCuratorNote;
+            if (args.input.narrativeStatement != null) data.narrativeStatement = args.input.narrativeStatement;
+            if (args.input.collectionOverview != null) data.collectionOverview = args.input.collectionOverview;
             return (context.prisma as any).showcaseConfig.upsert({
                 where: { id: 'singleton' },
                 update: data,
