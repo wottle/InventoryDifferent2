@@ -49,6 +49,7 @@ export const GET_FEATURED_DEVICES = gql`
         images {
           path
           isThumbnail
+          thumbnailMode
         }
       }
     }
@@ -104,6 +105,8 @@ export const GET_SHOWCASE_JOURNEY_BY_SLUG = gql`
             info
             images {
               path
+              isThumbnail
+              thumbnailMode
             }
           }
         }
@@ -139,6 +142,8 @@ export const GET_TIMELINE_DATA = gql`
             }
             images {
               path
+              isThumbnail
+              thumbnailMode
             }
           }
         }
@@ -199,7 +204,7 @@ export const GET_ALL_JOURNEYS_FOR_EDIT = gql`
         id title description sortOrder
         devices {
           id curatorNote sortOrder isFeatured
-          device { id name manufacturer releaseYear images { thumbnailPath } }
+          device { id name additionalName manufacturer releaseYear images { thumbnailPath } }
         }
       }
     }
@@ -319,7 +324,7 @@ export const GET_SHOWCASE_DEVICE = gql`
       location { id name }
       dateAcquired
       category { name type }
-      images { id path thumbnailPath caption isThumbnail }
+      images { id path thumbnailPath caption isThumbnail thumbnailMode }
       maintenanceTasks { id label dateCompleted notes }
       notes { id content date }
     }

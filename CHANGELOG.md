@@ -19,6 +19,7 @@ All notable changes to InventoryDifferent will be documented here.
 - Default showcase quotes not appearing — auto-seed on startup if table empty; admin showed only enabled quotes making disabled ones unrecoverable
 - Featured artifacts showing counter instead of device ID; using first image instead of designated thumbnail
 - Showcase image selection now prefers light-mode thumbnail, then dark-mode, then both-mode, then first image
+- Journey editor now shows device additional name for existing chapter devices
 
 ---
 
