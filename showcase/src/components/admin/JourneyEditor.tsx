@@ -234,6 +234,7 @@ interface ChapterCardProps {
   onDeviceAdd: (tempId: string, sd: ShowcaseDevice) => void;
   onDeviceUpdate: (chapterTempId: string, sdId: string, updates: Partial<ShowcaseDevice>) => void;
   onDeviceRemove: (chapterTempId: string, sdId: string) => void;
+  onDeviceReorder: (chapterTempId: string, sdId: string, direction: 'up' | 'down') => void;
 }
 
 function ChapterCard({
@@ -245,6 +246,7 @@ function ChapterCard({
   onDeviceAdd,
   onDeviceUpdate,
   onDeviceRemove,
+  onDeviceReorder,
 }: ChapterCardProps) {
   const [showDeviceModal, setShowDeviceModal] = useState(false);
   const [upsertChapter] = useMutation(UPSERT_CHAPTER);
@@ -339,6 +341,7 @@ function ChapterCard({
     onDeviceRemove(chapter.tempId, sd.id);
   };
 
+  const sortedDevices = [...chapter.devices].sort((a, b) => a.sortOrder - b.sortOrder);
   const existingDeviceIds = chapter.devices.map((sd) => sd.device.id);
 
   return (
@@ -395,13 +398,17 @@ function ChapterCard({
 
       {/* Devices */}
       <div className="px-5 pb-5 flex flex-col gap-2">
-        {chapter.devices.map((sd) => (
+        {sortedDevices.map((sd, idx) => (
           <DeviceRow
             key={sd.id}
             sd={sd}
+            isFirst={idx === 0}
+            isLast={idx === sortedDevices.length - 1}
             onNoteBlur={(note) => handleDeviceNoteBlur(sd, note)}
             onToggleFeatured={() => handleToggleFeatured(sd)}
             onRemove={() => handleRemoveDevice(sd)}
+            onMoveUp={() => onDeviceReorder(chapter.tempId, sd.id, 'up')}
+            onMoveDown={() => onDeviceReorder(chapter.tempId, sd.id, 'down')}
           />
         ))}
 
@@ -439,12 +446,16 @@ function ChapterCard({
 
 interface DeviceRowProps {
   sd: ShowcaseDevice;
+  isFirst: boolean;
+  isLast: boolean;
   onNoteBlur: (note: string) => void;
   onToggleFeatured: () => void;
   onRemove: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }
 
-function DeviceRow({ sd, onNoteBlur, onToggleFeatured, onRemove }: DeviceRowProps) {
+function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove, onMoveUp, onMoveDown }: DeviceRowProps) {
   const [note, setNote] = useState(sd.curatorNote ?? '');
 
   useEffect(() => {
@@ -487,6 +498,25 @@ function DeviceRow({ sd, onNoteBlur, onToggleFeatured, onRemove }: DeviceRowProp
 
       {/* Actions */}
       <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
+        {/* Reorder */}
+        <div className="flex flex-col gap-0.5">
+          <button
+            onClick={onMoveUp}
+            disabled={isFirst}
+            title="Move up"
+            className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
+          >
+            ▲
+          </button>
+          <button
+            onClick={onMoveDown}
+            disabled={isLast}
+            title="Move down"
+            className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
+          >
+            ▼
+          </button>
+        </div>
         <button
           onClick={onToggleFeatured}
           title={sd.isFeatured ? 'Unfeature' : 'Feature'}
@@ -717,6 +747,70 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
     );
   };
 
+  const [upsertShowcaseDevice] = useMutation(UPSERT_SHOWCASE_DEVICE);
+
+  const handleDeviceReorder = useCallback(async (
+    chapterTempId: string,
+    sdId: string,
+    direction: 'up' | 'down'
+  ) => {
+    const ch = chapters.find((c) => c.tempId === chapterTempId);
+    if (!ch) return;
+
+    // Normalise sort orders to 0-based indices so ties don't cause no-ops
+    const sorted = [...ch.devices].sort((a, b) => a.sortOrder - b.sortOrder);
+    const withIndex = sorted.map((d, i) => ({ ...d, sortOrder: i }));
+
+    const idx = withIndex.findIndex((d) => d.id === sdId);
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= withIndex.length) return;
+
+    // Swap
+    [withIndex[idx].sortOrder, withIndex[swapIdx].sortOrder] = [swapIdx, idx];
+
+    const a = withIndex[idx];
+    const b = withIndex[swapIdx];
+
+    // Optimistic update for both swapped items
+    handleDeviceUpdate(chapterTempId, a.id, { sortOrder: a.sortOrder });
+    handleDeviceUpdate(chapterTempId, b.id, { sortOrder: b.sortOrder });
+
+    // Persist both
+    try {
+      await Promise.all([
+        upsertShowcaseDevice({
+          variables: {
+            input: {
+              id: a.id,
+              chapterId: ch.id,
+              deviceId: a.device.id,
+              curatorNote: a.curatorNote ?? '',
+              sortOrder: a.sortOrder,
+              isFeatured: a.isFeatured,
+            },
+          },
+        }),
+        upsertShowcaseDevice({
+          variables: {
+            input: {
+              id: b.id,
+              chapterId: ch.id,
+              deviceId: b.device.id,
+              curatorNote: b.curatorNote ?? '',
+              sortOrder: b.sortOrder,
+              isFeatured: b.isFeatured,
+            },
+          },
+        }),
+      ]);
+    } catch (err) {
+      console.error('Failed to reorder devices:', err);
+      // Revert optimistic update
+      handleDeviceUpdate(chapterTempId, a.id, { sortOrder: b.sortOrder });
+      handleDeviceUpdate(chapterTempId, b.id, { sortOrder: a.sortOrder });
+    }
+  }, [chapters, upsertShowcaseDevice, handleDeviceUpdate]);
+
   return (
     <div className="flex flex-col gap-0 -m-8">
       {/* Top bar */}
@@ -918,6 +1012,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               onDeviceAdd={handleDeviceAdd}
               onDeviceUpdate={handleDeviceUpdate}
               onDeviceRemove={handleDeviceRemove}
+              onDeviceReorder={handleDeviceReorder}
             />
           ))}
 
