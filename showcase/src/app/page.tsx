@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getClient } from '@/lib/apollo-rsc';
-import { GET_SHOWCASE_CONFIG, GET_FEATURED_DEVICES, GET_SHOWCASE_JOURNEYS } from '@/lib/queries';
+import { GET_SHOWCASE_CONFIG, GET_FEATURED_DEVICES, GET_SHOWCASE_JOURNEYS, GET_SHOWCASE_QUOTES } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
 
 interface ShowcaseConfig {
@@ -53,6 +53,15 @@ interface ShowcaseJourney {
   chapters: ShowcaseChapter[];
 }
 
+interface ShowcaseQuote {
+  id: string;
+  author: string;
+  text: string;
+  source: string | null;
+  isDefault: boolean;
+  isEnabled: boolean;
+}
+
 const RARE_RARITIES = ['RARE', 'VERY_RARE', 'UNIQUE'];
 
 function rarityLabel(rarity: string | null): string {
@@ -71,12 +80,14 @@ export default async function HomePage() {
   let config: ShowcaseConfig | null = null;
   let featuredDevices: ShowcaseDevice[] = [];
   let journeys: ShowcaseJourney[] = [];
+  let quote: ShowcaseQuote | null = null;
 
   try {
-    const [configResult, devicesResult, journeysResult] = await Promise.allSettled([
+    const [configResult, devicesResult, journeysResult, quotesResult] = await Promise.allSettled([
       getClient().query<{ showcaseConfig: ShowcaseConfig | null }>({ query: GET_SHOWCASE_CONFIG }),
       getClient().query<{ showcaseFeaturedDevices: ShowcaseDevice[] }>({ query: GET_FEATURED_DEVICES }),
       getClient().query<{ showcaseJourneys: ShowcaseJourney[] }>({ query: GET_SHOWCASE_JOURNEYS }),
+      getClient().query<{ showcaseQuotes: ShowcaseQuote[] }>({ query: GET_SHOWCASE_QUOTES }),
     ]);
 
     if (configResult.status === 'fulfilled') {
@@ -87,6 +98,12 @@ export default async function HomePage() {
     }
     if (journeysResult.status === 'fulfilled') {
       journeys = journeysResult.value.data?.showcaseJourneys ?? [];
+    }
+    if (quotesResult.status === 'fulfilled') {
+      const quotes = quotesResult.value.data?.showcaseQuotes ?? [];
+      if (quotes.length > 0) {
+        quote = quotes[Math.floor(Math.random() * quotes.length)];
+      }
     }
   } catch {
     // Render with defaults
@@ -158,7 +175,7 @@ export default async function HomePage() {
           </div>
           <div className="md:col-span-5">
             <p className="text-lg text-on-surface-variant leading-relaxed mb-6">
-              This collection is born from a lifelong obsession with Apple computers. Each device has been sourced, cleaned, and restored as close to its original condition as possible. From the pebble-like curves of the Flower Power iMac to the rigid, geometric lines of the Macintosh Portable, Apple's design has lead many lives.
+              This collection is born from a lifelong obsession with Apple computers. Each device has been sourced, cleaned, and restored as close to its original condition as possible. From the pebble-like curves of the Flower Power iMac to the rigid, geometric lines of the Macintosh Portable, Apple&apos;s design has lead many lives.
             </p>
             <div className="h-px w-20 bg-primary" />
           </div>
@@ -190,19 +207,21 @@ export default async function HomePage() {
               </div>
 
               {/* Quote card */}
-              <div className="h-1/2 rounded-xl overflow-hidden bg-primary p-10 flex flex-col justify-center text-on-primary">
-                <svg
-                  className="w-12 h-12 mb-6 opacity-80"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                </svg>
-                <p className="text-2xl font-medium leading-snug">
-                  &ldquo;Good design is as little design as possible.&rdquo;
-                </p>
-                <span className="mt-4 opacity-60">— Dieter Rams</span>
-              </div>
+              {quote && (
+                <div className="h-1/2 rounded-xl overflow-hidden bg-primary p-10 flex flex-col justify-center text-on-primary">
+                  <svg
+                    className="w-12 h-12 mb-6 opacity-80"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                  </svg>
+                  <p className="text-2xl font-medium leading-snug">
+                    &ldquo;{quote.text}&rdquo;
+                  </p>
+                  <span className="mt-4 opacity-60">— {quote.author}{quote.source ? `, ${quote.source}` : ''}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

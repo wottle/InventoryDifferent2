@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Fixed
+- Showcase homepage quote card now pulls a random enabled quote from the database instead of a hardcoded Dieter Rams quote
+
 ---
 
 ## [2.1.0] - 2026-04-13

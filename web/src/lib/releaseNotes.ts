@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Showcase homepage quote card now pulls a random enabled quote from the database instead of a hardcoded Dieter Rams quote',
+    ],
   },
   {
     version: '2.1.0',
