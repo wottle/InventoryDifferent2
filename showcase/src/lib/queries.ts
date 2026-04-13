@@ -208,7 +208,7 @@ export const GET_ALL_JOURNEYS_FOR_EDIT = gql`
         id title description sortOrder
         devices {
           id curatorNote sortOrder isFeatured
-          device { id name additionalName manufacturer releaseYear images { thumbnailPath } }
+          device { id name additionalName manufacturer releaseYear images { thumbnailPath isThumbnail thumbnailMode } }
         }
       }
     }
@@ -264,7 +264,7 @@ export const SEARCH_DEVICES_FOR_SHOWCASE = gql`
   query SearchDevicesForShowcase {
     devices {
       id name additionalName manufacturer releaseYear
-      images { thumbnailPath }
+      images { thumbnailPath isThumbnail thumbnailMode }
     }
   }
 `;

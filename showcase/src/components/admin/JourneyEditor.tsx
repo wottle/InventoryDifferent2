@@ -18,6 +18,8 @@ import {
 
 interface DeviceImage {
   thumbnailPath: string | null;
+  isThumbnail: boolean;
+  thumbnailMode: string | null;
 }
 
 interface DeviceRef {
@@ -78,11 +80,18 @@ function generateSlug(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-function thumbnailUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  // thumbnailPath from the API already includes the /uploads/ prefix
-  return path;
+// Pick the best thumbnail using LIGHT → DARK → BOTH → first priority,
+// mirroring the pickThumbnail logic used on public showcase pages.
+function pickAdminThumbnail(images: DeviceImage[]): string | null {
+  if (!images || images.length === 0) return null;
+  const thumbs = images.filter((i) => i.isThumbnail);
+  const candidates = thumbs.length > 0 ? thumbs : images;
+  const pick =
+    candidates.find((i) => i.thumbnailMode === 'LIGHT') ??
+    candidates.find((i) => i.thumbnailMode === 'DARK') ??
+    candidates.find((i) => i.thumbnailMode === 'BOTH') ??
+    candidates[0];
+  return pick?.thumbnailPath ?? null;
 }
 
 // ─── Device Search Modal ──────────────────────────────────────────────────────
@@ -181,9 +190,9 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
             >
               {/* Thumbnail */}
               <div className="w-9 h-9 rounded-md bg-surface-container flex-shrink-0 overflow-hidden flex items-center justify-center">
-                {device.images[0]?.thumbnailPath ? (
+                {pickAdminThumbnail(device.images) ? (
                   <img
-                    src={thumbnailUrl(device.images[0].thumbnailPath) ?? ''}
+                    src={pickAdminThumbnail(device.images) ?? ''}
                     alt=""
                     className="w-full h-full object-cover"
                   />
@@ -442,7 +451,7 @@ function DeviceRow({ sd, onNoteBlur, onToggleFeatured, onRemove }: DeviceRowProp
     setNote(sd.curatorNote ?? '');
   }, [sd.curatorNote]);
 
-  const thumbUrl = thumbnailUrl(sd.device.images[0]?.thumbnailPath ?? null);
+  const thumbUrl = pickAdminThumbnail(sd.device.images);
 
   return (
     <div className="flex items-start gap-3 px-3 py-2.5 rounded-lg bg-surface-container">

@@ -19,6 +19,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Device form includes a Historical Notes field, pre-filled from template when one is applied',
       'Expanded historical notes seed — covers NeXT Cube/Station variants, PowerBook Duo, LC family, Quadra 605/630/660AV/900/950, PowerBook G3 series, Power Mac mid-range towers, Xserve, and 60+ additional templates',
       'Fix historical notes for all Apple Newton MessagePad and eMate templates (prior seed used wrong name prefix); add notes for Apple Studio Display CRT and LCD models',
+      'Journey editor device thumbnails now use LIGHT → DARK → BOTH → first image priority in both the chapter device list and the Add Device search modal',
       'Showcase homepage: Featured Journey tile replaces static archive placeholder; Narrative Statement and Collection Overview fields now configurable from Appearance admin',
     ],
     fixed: [
