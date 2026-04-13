@@ -392,16 +392,17 @@ export default async function HomePage() {
                       <img
                         src={`/uploads/${journey.coverImagePath}`}
                         alt={journey.title}
-                        className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay"
+                        className="absolute inset-0 w-full h-full object-cover opacity-70 transition-opacity duration-500 group-hover:opacity-100"
                       />
                     )}
+                    {/* Overlay fades away on hover to reveal the full image */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 transition-opacity duration-500 group-hover:opacity-0" />
                     <div className="relative z-10">
-                      <span className="text-[10px] uppercase tracking-widest text-white/50 font-bold">
+                      <span className="text-[10px] uppercase tracking-widest text-white/60 font-bold">
                         {journey.chapters.length} chapter{journey.chapters.length !== 1 ? 's' : ''}
                       </span>
                       <h3 className="text-xl font-bold text-white mt-1">{journey.title}</h3>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   </div>
                   <div className="p-6">
                     <p className="text-sm text-on-surface-variant leading-relaxed">
