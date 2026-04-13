@@ -195,7 +195,7 @@ export const GET_ALL_JOURNEYS_FOR_EDIT = gql`
 export const CREATE_JOURNEY = gql`
   mutation CreateJourney($input: JourneyInput!) {
     createJourney(input: $input) {
-      id title slug
+      id title slug coverImagePath
     }
   }
 `;
@@ -203,7 +203,7 @@ export const CREATE_JOURNEY = gql`
 export const UPDATE_JOURNEY = gql`
   mutation UpdateJourney($id: ID!, $input: JourneyInput!) {
     updateJourney(id: $id, input: $input) {
-      id title slug description sortOrder published
+      id title slug description coverImagePath sortOrder published
     }
   }
 `;

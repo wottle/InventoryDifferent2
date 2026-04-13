@@ -327,7 +327,7 @@ export default async function HomePage() {
                   <div className="h-48 relative overflow-hidden flex items-end p-6 bg-gradient-to-br from-slate-800 to-slate-900">
                     {journey.coverImagePath && (
                       <img
-                        src={journey.coverImagePath}
+                        src={`/uploads/${journey.coverImagePath}`}
                         alt={journey.title}
                         className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay"
                       />

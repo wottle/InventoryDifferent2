@@ -78,13 +78,6 @@ function generateSlug(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-function getApiBase(): string {
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}/api/graphql`;
-  }
-  return process.env.API_URL ? `${process.env.API_URL}/graphql` : 'http://localhost:4000/graphql';
-}
-
 function thumbnailUrl(path: string | null | undefined): string | null {
   if (!path) return null;
   if (path.startsWith('http')) return path;
@@ -522,8 +515,10 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
   const [title, setTitle] = useState(journey?.title ?? '');
   const [slug, setSlug] = useState(journey?.slug ?? '');
   const [description, setDescription] = useState(journey?.description ?? '');
+  const [coverImagePath, setCoverImagePath] = useState<string | null>(journey?.coverImagePath ?? null);
   const [published, setPublished] = useState(journey?.published ?? false);
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!isNew);
 
   // Chapters local state
@@ -559,6 +554,32 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
     0
   );
 
+  // Cover image upload
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCover(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('showcase_access_token') : null;
+      const deviceId = journey?.id ? `showcase-journey-${journey.id}` : 'showcase-journey-new';
+      const res = await fetch(`/upload?deviceId=${deviceId}`, {
+        method: 'POST',
+        body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+      const json = await res.json() as { path: string };
+      const relativePath = json.path.replace(/^\/uploads\//, '');
+      setCoverImagePath(relativePath);
+    } catch {
+      // Upload failed silently — user can retry
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
   // Save journey metadata
   const handleSave = async () => {
     if (!title.trim() || !slug.trim()) {
@@ -574,6 +595,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               title: title.trim(),
               slug: slug.trim(),
               description: description.trim(),
+              coverImagePath: coverImagePath || null,
               published,
               sortOrder: 0,
             },
@@ -590,6 +612,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               title: title.trim(),
               slug: slug.trim(),
               description: description.trim(),
+              coverImagePath: coverImagePath || null,
               published,
               sortOrder: journey!.sortOrder,
             },
@@ -612,6 +635,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
             title: title.trim(),
             slug: slug.trim(),
             description: description.trim(),
+            coverImagePath: coverImagePath || null,
             published: newPublished,
             sortOrder: journey.sortOrder,
           },
@@ -768,6 +792,29 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                   rows={4}
                   className="w-full px-2.5 py-1.5 rounded-lg border border-outline-variant/40 bg-surface-container-low text-xs text-on-surface resize-none focus:outline-none focus:border-primary"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-outline mb-1">Cover Image</label>
+                {coverImagePath && (
+                  <div className="rounded-lg overflow-hidden border border-outline-variant/40 mb-2">
+                    <img
+                      src={`/uploads/${coverImagePath}`}
+                      alt="Cover"
+                      className="w-full h-24 object-cover"
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                  disabled={uploadingCover}
+                  className="text-xs text-on-surface-variant file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer disabled:opacity-50 w-full"
+                />
+                {uploadingCover && (
+                  <p className="text-xs text-outline mt-1">Uploading…</p>
+                )}
               </div>
 
               {isNew && (
