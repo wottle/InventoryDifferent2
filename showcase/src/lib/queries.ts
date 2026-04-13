@@ -47,7 +47,7 @@ export const GET_FEATURED_DEVICES = gql`
         info
         rarity
         images {
-          thumbnailPath
+          path
         }
       }
     }
@@ -102,7 +102,7 @@ export const GET_SHOWCASE_JOURNEY_BY_SLUG = gql`
             rarity
             info
             images {
-              thumbnailPath
+              path
             }
           }
         }
@@ -137,7 +137,7 @@ export const GET_TIMELINE_DATA = gql`
               type
             }
             images {
-              thumbnailPath
+              path
             }
           }
         }

@@ -7,7 +7,7 @@ interface ShowcaseConfig {
 }
 
 interface DeviceImage {
-  thumbnailPath: string;
+  path: string;
 }
 
 interface DeviceCategory {
@@ -54,7 +54,7 @@ export interface TimelineDevice {
   rarity: string | null;
   categoryName: string | null;
   categoryType: string | null;
-  thumbnailPath: string | null;
+  imagePath: string | null;
   journeyTitle: string;
 }
 
@@ -92,7 +92,7 @@ export default async function TimelinePage() {
               rarity: sd.device.rarity,
               categoryName: sd.device.category?.name ?? null,
               categoryType: sd.device.category?.type ?? null,
-              thumbnailPath: sd.device.images?.[0]?.thumbnailPath ?? null,
+              imagePath: sd.device.images?.[0]?.path ?? null,
               journeyTitle: journey.title,
             });
           }

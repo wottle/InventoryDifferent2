@@ -16,6 +16,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Seed 22 default showcase quotes from Apple history figures (Jobs, Ive, Wozniak, Raskin, Kare, Rams, Tognazzini, Think Different)',
       'Journey editor device search now shows additional name and supports searching by it',
       'Journey cover image upload in the journey editor; displayed on journey list and homepage',
+      'Showcase public pages now use full-resolution images instead of thumbnails',
     ],
     changed: [],
     fixed: [

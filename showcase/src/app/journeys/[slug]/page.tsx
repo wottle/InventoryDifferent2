@@ -14,7 +14,7 @@ interface ShowcaseDeviceItem {
     releaseYear: number | null;
     info: string | null;
     rarity: string | null;
-    images: Array<{ thumbnailPath: string | null }>;
+    images: Array<{ path: string | null }>;
   };
 }
 
@@ -57,15 +57,15 @@ function getVolumeLabel(sortOrder: number): string {
 
 function DeviceCard({ item }: { item: ShowcaseDeviceItem }) {
   const { device, curatorNote } = item;
-  const thumbnailPath = device.images?.[0]?.thumbnailPath;
+  const imagePath = device.images?.[0]?.path;
   const badge = rarityLabel(device.rarity);
 
   return (
     <div className="bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col">
       <div className="h-48 bg-surface-container-high overflow-hidden">
-        {thumbnailPath ? (
+        {imagePath ? (
           <img
-            src={thumbnailPath}
+            src={imagePath}
             alt={device.name}
             className="w-full h-full object-cover"
           />

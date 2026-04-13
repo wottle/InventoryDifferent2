@@ -13,7 +13,7 @@ interface ShowcaseConfig {
 }
 
 interface DeviceImage {
-  thumbnailPath: string;
+  path: string;
 }
 
 interface Device {
@@ -220,7 +220,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredDevices.map((showcaseDevice, idx) => {
                 const { device, curatorNote } = showcaseDevice;
-                const thumbnailUrl = device.images?.[0]?.thumbnailPath;
+                const thumbnailUrl = device.images?.[0]?.path;
                 const isRare = RARE_RARITIES.includes(device.rarity || '');
                 const badgeText = rarityLabel(device.rarity);
                 const description = curatorNote ||

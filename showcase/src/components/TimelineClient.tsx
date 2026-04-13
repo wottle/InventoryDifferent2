@@ -240,9 +240,9 @@ export default function TimelineClient({
                   >
                     {/* Image */}
                     <div className="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
-                      {device.thumbnailPath ? (
+                      {device.imagePath ? (
                         <img
-                          src={device.thumbnailPath}
+                          src={device.imagePath}
                           alt={device.name}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
