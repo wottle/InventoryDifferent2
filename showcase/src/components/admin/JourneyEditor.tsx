@@ -53,6 +53,7 @@ export interface JourneyData {
   slug: string;
   description: string;
   published: boolean;
+  publishedAt: string | null;
   sortOrder: number;
   coverImagePath: string | null;
   chapters: Chapter[];
@@ -1069,6 +1070,14 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                     <span className="text-xs font-semibold text-on-surface">{value}</span>
                   </div>
                 ))}
+                <div className="flex items-center justify-between pt-1 border-t border-outline-variant/20 mt-1">
+                  <span className="text-xs text-outline">Published</span>
+                  <span className="text-xs font-semibold text-on-surface">
+                    {journey?.publishedAt
+                      ? new Date(journey.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                      : '—'}
+                  </span>
+                </div>
               </div>
             </div>
           )}

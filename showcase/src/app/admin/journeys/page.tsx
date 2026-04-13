@@ -16,6 +16,7 @@ interface AdminJourney {
   coverImagePath: string | null;
   sortOrder: number;
   published: boolean;
+  publishedAt: string | null;
   chapters: Array<{
     id: string;
     title: string;
@@ -120,6 +121,9 @@ export default function AdminJourneysPage() {
                   <p className="font-semibold text-on-surface truncate">{journey.title}</p>
                   <p className="text-sm text-on-surface-variant truncate">
                     /{journey.slug} &middot; {chapterCount} {chapterCount === 1 ? 'chapter' : 'chapters'} &middot; {deviceCount} {deviceCount === 1 ? 'device' : 'devices'}
+                    {journey.publishedAt && (
+                      <> &middot; Published {new Date(journey.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</>
+                    )}
                   </p>
                 </div>
 

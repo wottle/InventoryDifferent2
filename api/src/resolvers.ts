@@ -813,6 +813,7 @@ export const resolvers = {
                 ...j,
                 createdAt: j.createdAt.toISOString(),
                 updatedAt: j.updatedAt.toISOString(),
+                publishedAt: j.publishedAt ? j.publishedAt.toISOString() : null,
             }));
         },
 
@@ -826,6 +827,7 @@ export const resolvers = {
                 ...journey,
                 createdAt: journey.createdAt.toISOString(),
                 updatedAt: journey.updatedAt.toISOString(),
+                publishedAt: journey.publishedAt ? journey.publishedAt.toISOString() : null,
             };
         },
 
@@ -861,6 +863,7 @@ export const resolvers = {
                 ...j,
                 createdAt: j.createdAt.toISOString(),
                 updatedAt: j.updatedAt.toISOString(),
+                publishedAt: j.publishedAt ? j.publishedAt.toISOString() : null,
             }));
         },
     },
@@ -1519,6 +1522,7 @@ export const resolvers = {
 
         createJourney: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
+            const publishing = args.input.published ?? false;
             const journey = await (context.prisma as any).showcaseJourney.create({
                 data: {
                     title: args.input.title,
@@ -1526,7 +1530,8 @@ export const resolvers = {
                     description: args.input.description,
                     coverImagePath: args.input.coverImagePath ?? null,
                     sortOrder: args.input.sortOrder ?? 0,
-                    published: args.input.published ?? false,
+                    published: publishing,
+                    publishedAt: publishing ? new Date() : null,
                 },
                 include: { chapters: { include: { devices: { include: { device: { include: DEVICE_INCLUDE } } } } } },
             });
@@ -1534,6 +1539,7 @@ export const resolvers = {
                 ...journey,
                 createdAt: journey.createdAt.toISOString(),
                 updatedAt: journey.updatedAt.toISOString(),
+                publishedAt: journey.publishedAt ? journey.publishedAt.toISOString() : null,
             };
         },
 
@@ -1545,7 +1551,19 @@ export const resolvers = {
             if (args.input.description !== undefined) data.description = args.input.description;
             if (args.input.coverImagePath !== undefined) data.coverImagePath = args.input.coverImagePath;
             if (args.input.sortOrder !== undefined) data.sortOrder = args.input.sortOrder;
-            if (args.input.published !== undefined) data.published = args.input.published;
+            if (args.input.published !== undefined) {
+                data.published = args.input.published;
+                // Set publishedAt on first publish only
+                if (args.input.published) {
+                    const current = await (context.prisma as any).showcaseJourney.findUnique({
+                        where: { id: args.id },
+                        select: { publishedAt: true },
+                    });
+                    if (!current?.publishedAt) {
+                        data.publishedAt = new Date();
+                    }
+                }
+            }
             const journey = await (context.prisma as any).showcaseJourney.update({
                 where: { id: args.id },
                 data,
@@ -1555,6 +1573,7 @@ export const resolvers = {
                 ...journey,
                 createdAt: journey.createdAt.toISOString(),
                 updatedAt: journey.updatedAt.toISOString(),
+                publishedAt: journey.publishedAt ? journey.publishedAt.toISOString() : null,
             };
         },
 

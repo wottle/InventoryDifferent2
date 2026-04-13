@@ -404,6 +404,7 @@ export const typeDefs = gql`
     coverImagePath: String
     sortOrder: Int!
     published: Boolean!
+    publishedAt: String
     chapters: [ShowcaseChapter!]!
     createdAt: String!
     updatedAt: String!

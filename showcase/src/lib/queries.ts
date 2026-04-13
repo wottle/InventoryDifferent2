@@ -26,6 +26,7 @@ export const GET_SHOWCASE_JOURNEYS = gql`
       coverImagePath
       sortOrder
       published
+      publishedAt
       chapters {
         id
         title
@@ -68,6 +69,7 @@ export const GET_ALL_SHOWCASE_JOURNEYS = gql`
       coverImagePath
       sortOrder
       published
+      publishedAt
       chapters {
         id
         devices {
@@ -185,7 +187,7 @@ export const GET_ALL_SHOWCASE_QUOTES = gql`
 export const GET_ALL_SHOWCASE_JOURNEYS_ADMIN = gql`
   query GetAllShowcaseJourneysAdmin {
     showcaseAllJourneys {
-      id title slug description coverImagePath sortOrder published
+      id title slug description coverImagePath sortOrder published publishedAt
       chapters {
         id title
         devices { id }
@@ -203,7 +205,7 @@ export const DELETE_JOURNEY = gql`
 export const GET_ALL_JOURNEYS_FOR_EDIT = gql`
   query GetAllJourneysForEdit {
     showcaseAllJourneys {
-      id title slug description coverImagePath sortOrder published
+      id title slug description coverImagePath sortOrder published publishedAt
       chapters {
         id title description sortOrder
         devices {

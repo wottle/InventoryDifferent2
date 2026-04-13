@@ -13,6 +13,7 @@ All notable changes to InventoryDifferent will be documented here.
 - Showcase homepage: Featured Journey tile replaces static archive placeholder; Narrative Statement and Collection Overview fields now configurable from Appearance admin
 - Journey editor: devices within a chapter can now be reordered using up/down buttons; order persists immediately to the server
 - Journey editor: chapters within a journey can now be reordered using up/down buttons; chapter title input now shows a focus ring so it is clearly editable
+- Journeys now have a published date — set on first publish, shown on the journey list and in the journey editor stats panel
 
 ### Fixed
 - Showcase homepage quote card now pulls a random enabled quote from the database instead of a hardcoded Dieter Rams quote

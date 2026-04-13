@@ -22,6 +22,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Journey editor device thumbnails now use LIGHT → DARK → BOTH → first image priority in both the chapter device list and the Add Device search modal',
       'Journey editor: devices within a chapter can now be reordered using up/down buttons; order persists immediately to the server',
       'Journey editor: chapters within a journey can now be reordered using up/down buttons; chapter title input now shows a focus ring so it is clearly editable',
+      'Journeys now have a published date — set on first publish, shown on the journey list and in the journey editor stats panel',
       'Showcase homepage: Featured Journey tile replaces static archive placeholder; Narrative Statement and Collection Overview fields now configurable from Appearance admin',
     ],
     fixed: [

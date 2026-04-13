@@ -10,7 +10,13 @@ interface JourneyListItem {
   coverImagePath: string | null;
   sortOrder: number;
   published: boolean;
+  publishedAt: string | null;
   chapters: Array<{ id: string; devices: Array<{ id: string }> }>;
+}
+
+function formatPublishedDate(iso: string | null): string | null {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 function getVolumeLabel(sortOrder: number): string {
@@ -104,9 +110,16 @@ export default async function JourneysPage() {
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row gap-8 items-start">
-                  <p className="text-lg md:text-xl text-on-surface-variant italic font-light max-w-2xl leading-relaxed">
-                    {featured.description}
-                  </p>
+                  <div className="flex-1">
+                    {formatPublishedDate(featured.publishedAt) && (
+                      <p className="text-xs font-label uppercase tracking-widest text-outline mb-2">
+                        Published {formatPublishedDate(featured.publishedAt)}
+                      </p>
+                    )}
+                    <p className="text-lg md:text-xl text-on-surface-variant italic font-light max-w-2xl leading-relaxed">
+                      {featured.description}
+                    </p>
+                  </div>
                   <span className="mt-4 md:mt-0 flex items-center gap-2 text-primary font-semibold group-hover:gap-4 transition-all whitespace-nowrap">
                     Explore Journey →
                   </span>
@@ -139,9 +152,19 @@ export default async function JourneysPage() {
                       <div className="w-full h-full bg-gradient-to-br from-surface-container to-surface-container-highest" />
                     )}
                   </div>
-                  <span className="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-2 block">
-                    {getVolumeLabel(journey.sortOrder)}
-                  </span>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-[0.6875rem] font-label uppercase tracking-widest text-outline">
+                      {getVolumeLabel(journey.sortOrder)}
+                    </span>
+                    {formatPublishedDate(journey.publishedAt) && (
+                      <>
+                        <span className="text-outline opacity-30">·</span>
+                        <span className="text-[0.6875rem] font-label uppercase tracking-widest text-outline">
+                          {formatPublishedDate(journey.publishedAt)}
+                        </span>
+                      </>
+                    )}
+                  </div>
                   <h3 className="text-3xl font-headline font-bold tracking-tight mb-4">{journey.title}</h3>
                   <p className="text-on-surface-variant leading-relaxed max-w-lg">{journey.description}</p>
                 </Link>
