@@ -9,7 +9,7 @@ describe('auth module', () => {
         vi.resetModules();
         process.env.JWT_SECRET = 'test-secret-key';
         process.env.AUTH_PASSWORD = 'testpassword';
-        process.env.AUTH_USERNAME = 'admin';
+        process.env.AUTH_USERNAME = 'testuser';
     });
 
     afterEach(() => {
@@ -19,12 +19,12 @@ describe('auth module', () => {
     describe('verifyAdminCredentials', () => {
         it('returns true for correct credentials', async () => {
             const { verifyAdminCredentials } = await import('../../src/auth');
-            expect(verifyAdminCredentials('admin', 'testpassword')).toBe(true);
+            expect(verifyAdminCredentials('testuser', 'testpassword')).toBe(true);
         });
 
         it('returns false for wrong password', async () => {
             const { verifyAdminCredentials } = await import('../../src/auth');
-            expect(verifyAdminCredentials('admin', 'wrongpassword')).toBe(false);
+            expect(verifyAdminCredentials('testuser', 'wrongpassword')).toBe(false);
         });
 
         it('returns false for wrong username when username is configured', async () => {
