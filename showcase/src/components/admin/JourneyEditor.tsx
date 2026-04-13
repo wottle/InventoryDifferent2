@@ -228,6 +228,8 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
 interface ChapterCardProps {
   chapter: LocalChapter;
   index: number;
+  isFirst: boolean;
+  isLast: boolean;
   journeyId: string;
   onUpdate: (tempId: string, updates: Partial<LocalChapter>) => void;
   onDelete: (tempId: string) => void;
@@ -235,11 +237,15 @@ interface ChapterCardProps {
   onDeviceUpdate: (chapterTempId: string, sdId: string, updates: Partial<ShowcaseDevice>) => void;
   onDeviceRemove: (chapterTempId: string, sdId: string) => void;
   onDeviceReorder: (chapterTempId: string, sdId: string, direction: 'up' | 'down') => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }
 
 function ChapterCard({
   chapter,
   index,
+  isFirst,
+  isLast,
   journeyId,
   onUpdate,
   onDelete,
@@ -247,6 +253,8 @@ function ChapterCard({
   onDeviceUpdate,
   onDeviceRemove,
   onDeviceReorder,
+  onMoveUp,
+  onMoveDown,
 }: ChapterCardProps) {
   const [showDeviceModal, setShowDeviceModal] = useState(false);
   const [upsertChapter] = useMutation(UPSERT_CHAPTER);
@@ -360,7 +368,7 @@ function ChapterCard({
           onChange={(e) => onUpdate(chapter.tempId, { title: e.target.value })}
           onBlur={saveChapter}
           placeholder="Chapter title"
-          className="flex-1 font-semibold text-sm text-on-surface bg-transparent border-none outline-none placeholder:text-outline focus:ring-0 min-w-0"
+          className="flex-1 font-semibold text-sm text-on-surface bg-transparent border-none outline-none placeholder:text-outline focus:bg-surface-container-low focus:ring-1 focus:ring-primary/30 rounded px-1 -mx-1 min-w-0"
         />
 
         {/* Device count */}
@@ -372,6 +380,26 @@ function ChapterCard({
         {chapter.isSaving && (
           <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin flex-shrink-0" />
         )}
+
+        {/* Reorder buttons */}
+        <div className="flex flex-col gap-0.5 flex-shrink-0">
+          <button
+            onClick={onMoveUp}
+            disabled={isFirst}
+            title="Move chapter up"
+            className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
+          >
+            ▲
+          </button>
+          <button
+            onClick={onMoveDown}
+            disabled={isLast}
+            title="Move chapter down"
+            className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
+          >
+            ▼
+          </button>
+        </div>
 
         {/* Delete button */}
         <button
@@ -748,6 +776,72 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
   };
 
   const [upsertShowcaseDevice] = useMutation(UPSERT_SHOWCASE_DEVICE);
+  const [upsertChapterMutation] = useMutation(UPSERT_CHAPTER);
+
+  const handleChapterReorder = useCallback(async (
+    tempId: string,
+    direction: 'up' | 'down'
+  ) => {
+    // Normalise sort orders to 0-based indices to handle ties
+    const sorted = [...chapters].sort((a, b) => a.sortOrder - b.sortOrder);
+    const withIndex = sorted.map((c, i) => ({ ...c, sortOrder: i }));
+
+    const idx = withIndex.findIndex((c) => c.tempId === tempId);
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= withIndex.length) return;
+
+    [withIndex[idx].sortOrder, withIndex[swapIdx].sortOrder] = [swapIdx, idx];
+
+    const a = withIndex[idx];
+    const b = withIndex[swapIdx];
+
+    // Optimistic update
+    setChapters((prev) =>
+      prev.map((c) => {
+        if (c.tempId === a.tempId) return { ...c, sortOrder: a.sortOrder };
+        if (c.tempId === b.tempId) return { ...c, sortOrder: b.sortOrder };
+        return c;
+      })
+    );
+
+    // Persist both — only chapters that have been saved have an id
+    try {
+      await Promise.all([
+        a.id ? upsertChapterMutation({
+          variables: {
+            input: {
+              id: a.id,
+              journeyId: journey?.id ?? '',
+              title: a.title,
+              description: a.description,
+              sortOrder: a.sortOrder,
+            },
+          },
+        }) : Promise.resolve(),
+        b.id ? upsertChapterMutation({
+          variables: {
+            input: {
+              id: b.id,
+              journeyId: journey?.id ?? '',
+              title: b.title,
+              description: b.description,
+              sortOrder: b.sortOrder,
+            },
+          },
+        }) : Promise.resolve(),
+      ]);
+    } catch (err) {
+      console.error('Failed to reorder chapters:', err);
+      // Revert
+      setChapters((prev) =>
+        prev.map((c) => {
+          if (c.tempId === a.tempId) return { ...c, sortOrder: b.sortOrder };
+          if (c.tempId === b.tempId) return { ...c, sortOrder: a.sortOrder };
+          return c;
+        })
+      );
+    }
+  }, [chapters, journey, upsertChapterMutation]);
 
   const handleDeviceReorder = useCallback(async (
     chapterTempId: string,
@@ -1001,11 +1095,13 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
             </div>
           )}
 
-          {chapters.map((chapter, index) => (
+          {[...chapters].sort((a, b) => a.sortOrder - b.sortOrder).map((chapter, index, sorted) => (
             <ChapterCard
               key={chapter.tempId}
               chapter={chapter}
               index={index}
+              isFirst={index === 0}
+              isLast={index === sorted.length - 1}
               journeyId={journey?.id ?? ''}
               onUpdate={handleUpdateChapter}
               onDelete={handleDeleteChapter}
@@ -1013,6 +1109,8 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               onDeviceUpdate={handleDeviceUpdate}
               onDeviceRemove={handleDeviceRemove}
               onDeviceReorder={handleDeviceReorder}
+              onMoveUp={() => handleChapterReorder(chapter.tempId, 'up')}
+              onMoveDown={() => handleChapterReorder(chapter.tempId, 'down')}
             />
           ))}
 

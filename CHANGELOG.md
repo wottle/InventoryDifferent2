@@ -11,6 +11,8 @@ All notable changes to InventoryDifferent will be documented here.
 - Device form includes a Historical Notes field, pre-filled from template when one is applied
 - Expanded historical notes seed — covers NeXT Cube/Station variants, PowerBook Duo, LC family, Quadra 605/630/660AV/900/950, PowerBook G3 series, Power Mac mid-range towers, Xserve, and 60+ additional templates
 - Showcase homepage: Featured Journey tile replaces static archive placeholder; Narrative Statement and Collection Overview fields now configurable from Appearance admin
+- Journey editor: devices within a chapter can now be reordered using up/down buttons; order persists immediately to the server
+- Journey editor: chapters within a journey can now be reordered using up/down buttons; chapter title input now shows a focus ring so it is clearly editable
 
 ### Fixed
 - Showcase homepage quote card now pulls a random enabled quote from the database instead of a hardcoded Dieter Rams quote

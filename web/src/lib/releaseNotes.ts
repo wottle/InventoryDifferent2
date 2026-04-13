@@ -21,6 +21,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Fix historical notes for all Apple Newton MessagePad and eMate templates (prior seed used wrong name prefix); add notes for Apple Studio Display CRT and LCD models',
       'Journey editor device thumbnails now use LIGHT → DARK → BOTH → first image priority in both the chapter device list and the Add Device search modal',
       'Journey editor: devices within a chapter can now be reordered using up/down buttons; order persists immediately to the server',
+      'Journey editor: chapters within a journey can now be reordered using up/down buttons; chapter title input now shows a focus ring so it is clearly editable',
       'Showcase homepage: Featured Journey tile replaces static archive placeholder; Narrative Statement and Collection Overview fields now configurable from Appearance admin',
     ],
     fixed: [
