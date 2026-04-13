@@ -158,7 +158,7 @@ export default async function HomePage() {
           </div>
           <div className="md:col-span-5">
             <p className="text-lg text-on-surface-variant leading-relaxed mb-6">
-              This collection is born from a lifelong obsession with industrial design. Each device has been sourced, cleaned, and restored to its original condition. From the pebble-like curves of the Bondi Blue iMac to the rigid, geometric lines of the PowerBook 100.
+              This collection is born from a lifelong obsession with Apple computers. Each device has been sourced, cleaned, and restored as close to its original condition as possible. From the pebble-like curves of the Flower Power iMac to the rigid, geometric lines of the Macintosh Portable, Apple's design has lead many lives.
             </p>
             <div className="h-px w-20 bg-primary" />
           </div>

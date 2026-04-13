@@ -12,7 +12,7 @@ export default function Footer({ siteTitle }: FooterProps) {
           {siteTitle}
         </div>
         <div className="font-sans text-xs font-light tracking-wide text-on-surface-variant">
-          Powered by InvDifferent
+          Powered by InventoryDifferent
         </div>
         <div className="font-sans text-xs font-light tracking-wide text-on-surface-variant">
           © {year} {siteTitle}
