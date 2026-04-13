@@ -35,6 +35,7 @@ const GET_DEVICE = gql`
         name
       }
       info
+      historicalNotes
       isFavorite
       externalUrl
       status
@@ -2127,6 +2128,18 @@ export default function DeviceDetail() {
                                         <DetailRow key={cfv.id} label={cfv.customFieldName} value={cfv.value} />
                                     ))}
                             </dl>
+                        </div>
+                    )}
+
+                    {/* Historical Notes */}
+                    {device.historicalNotes && (
+                        <div>
+                            <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
+                                Historical Notes
+                            </h2>
+                            <p className="text-sm text-[var(--foreground)] leading-relaxed whitespace-pre-wrap">
+                                {device.historicalNotes}
+                            </p>
                         </div>
                     )}
 

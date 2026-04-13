@@ -24,6 +24,7 @@ const GET_TEMPLATES = gql`
       storage
       graphics
       rarity
+      historicalNotes
       categoryId
       category {
         id
@@ -56,6 +57,7 @@ const CREATE_TEMPLATE = gql`
       storage
       graphics
       rarity
+      historicalNotes
       categoryId
       category {
         id
@@ -83,6 +85,7 @@ const UPDATE_TEMPLATE = gql`
       storage
       graphics
       rarity
+      historicalNotes
       categoryId
       category {
         id
@@ -122,6 +125,7 @@ type Template = {
   storage?: string | null;
   graphics?: string | null;
   rarity?: string | null;
+  historicalNotes?: string | null;
   categoryId: number;
   category?: Category;
 };
@@ -140,6 +144,7 @@ type TemplateFormState = {
   storage: string;
   graphics: string;
   rarity: string;
+  historicalNotes: string;
   categoryId: number;
 };
 
@@ -157,6 +162,7 @@ const emptyFormState: TemplateFormState = {
   storage: "",
   graphics: "",
   rarity: "",
+  historicalNotes: "",
   categoryId: 0,
 };
 
@@ -218,6 +224,7 @@ export default function TemplatesPage() {
       storage: tpl.storage ?? "",
       graphics: tpl.graphics ?? "",
       rarity: tpl.rarity ?? "",
+      historicalNotes: tpl.historicalNotes ?? "",
       categoryId: tpl.categoryId ?? 0,
     });
     setModalOpen(true);
@@ -246,6 +253,7 @@ export default function TemplatesPage() {
       externalUrl: form.externalUrl.trim() || null,
       externalLinkLabel: form.externalLinkLabel.trim() || null,
       rarity: form.rarity || null,
+      historicalNotes: form.historicalNotes.trim() || null,
     };
 
     if (isComputer) {
@@ -555,6 +563,17 @@ export default function TemplatesPage() {
                   </div>
                 </div>
               )}
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1">Historical Notes</label>
+                <textarea
+                  value={form.historicalNotes}
+                  onChange={(e) => setForm((prev) => ({ ...prev, historicalNotes: e.target.value }))}
+                  rows={4}
+                  placeholder="Historical context and significance of this device model…"
+                  className="input-retro w-full px-3 py-2 text-sm text-[var(--foreground)] resize-y"
+                />
+              </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">

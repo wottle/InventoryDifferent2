@@ -266,9 +266,9 @@ export default function TimelineClient({
                       <h2 className="text-2xl font-bold text-on-surface mb-3 tracking-tight">
                         {device.name}
                       </h2>
-                      {device.info && (
+                      {(device.historicalNotes || device.info) && (
                         <p className="text-sm text-on-surface-variant leading-relaxed mb-8 line-clamp-2">
-                          {device.info}
+                          {device.historicalNotes || device.info}
                         </p>
                       )}
                       <div className="mt-auto flex items-center justify-between">

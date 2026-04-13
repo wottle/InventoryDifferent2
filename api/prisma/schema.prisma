@@ -58,6 +58,9 @@ model Device {
   isPramBatteryRemoved Boolean?
   deleted             Boolean   @default(false)
 
+  // Historical / descriptive
+  historicalNotes     String?   @db.Text
+
   // External
   externalUrl         String?
 
@@ -194,6 +197,7 @@ model Template {
   isWifiEnabled       Boolean?
   isPramBatteryRemoved Boolean?
   rarity          Rarity?
+  historicalNotes String?   @db.Text
 
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])

@@ -24,6 +24,7 @@ interface RawDevice {
   manufacturer: string | null;
   releaseYear: number | null;
   info: string | null;
+  historicalNotes: string | null;
   rarity: string | null;
   category: DeviceCategory | null;
   images: DeviceImage[];
@@ -54,6 +55,7 @@ export interface TimelineDevice {
   manufacturer: string | null;
   releaseYear: number | null;
   info: string | null;
+  historicalNotes: string | null;
   rarity: string | null;
   categoryName: string | null;
   categoryType: string | null;
@@ -95,6 +97,7 @@ export default async function TimelinePage() {
               rarity: sd.device.rarity,
               categoryName: sd.device.category?.name ?? null,
               categoryType: sd.device.category?.type ?? null,
+              historicalNotes: sd.device.historicalNotes ?? null,
               imagePath: pickThumbnail(sd.device.images) ?? null,
               journeyTitle: journey.title,
             });

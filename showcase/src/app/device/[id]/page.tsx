@@ -41,6 +41,7 @@ interface DeviceDetail {
   isWifiEnabled: boolean;
   isPramBatteryRemoved: boolean;
   info: string | null;
+  historicalNotes: string | null;
   cpu: string | null;
   ram: string | null;
   storage: string | null;
@@ -231,7 +232,21 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
         </div>
       </section>
 
-      {/* Section 2: The Story */}
+      {/* Section 2: Historical Context */}
+      {device.historicalNotes && (
+        <section className="py-24 px-12 md:px-24 bg-surface">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-8">
+              Historical Context
+            </p>
+            <p className="text-on-surface-variant text-lg leading-loose">
+              {device.historicalNotes}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Section 3: The Story */}
       {device.info && (
         <section className="py-32 px-12 md:px-24 bg-surface-container-lowest">
           <div className="max-w-4xl mx-auto">

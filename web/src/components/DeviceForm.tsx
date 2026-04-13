@@ -115,6 +115,7 @@ const GET_TEMPLATES = gql`
       isWifiEnabled
       isPramBatteryRemoved
       rarity
+      historicalNotes
       categoryId
     }
   }
@@ -210,6 +211,7 @@ interface Template {
     isWifiEnabled?: boolean;
     isPramBatteryRemoved?: boolean;
     rarity?: string;
+    historicalNotes?: string;
     categoryId: number;
 }
 
@@ -223,6 +225,7 @@ interface DeviceData {
     releaseYear: number;
     location: { id: number; name: string } | null;
     info?: string;
+    historicalNotes?: string;
     isFavorite: boolean;
     externalUrl?: string;
     status: string;
@@ -343,6 +346,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         locationId: 0 as number,
         categoryId: prefill?.categoryId ?? 0,
         info: "",
+        historicalNotes: "",
         isFavorite: false,
         externalUrl: prefill?.externalUrl ?? "",
         status: "COLLECTION",
@@ -405,6 +409,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 locationId: device.location?.id ?? 0,
                 categoryId: device.category?.id || 0,
                 info: device.info || "",
+                historicalNotes: device.historicalNotes || "",
                 isFavorite: device.isFavorite || false,
                 externalUrl: device.externalUrl || "",
                 status: device.status || "COLLECTION",
@@ -527,6 +532,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
             if (typeof tpl.isWifiEnabled === 'boolean') next.isWifiEnabled = tpl.isWifiEnabled;
             if (typeof tpl.isPramBatteryRemoved === 'boolean') next.isPramBatteryRemoved = tpl.isPramBatteryRemoved;
             if (typeof tpl.rarity === 'string') next.rarity = tpl.rarity;
+            if (typeof tpl.historicalNotes === 'string') next.historicalNotes = tpl.historicalNotes;
 
             return next;
         });
@@ -577,6 +583,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         if (formData.serialNumber) input.serialNumber = formData.serialNumber;
         if (formData.locationId) input.locationId = formData.locationId;
         if (formData.info) input.info = formData.info;
+        if (formData.historicalNotes) input.historicalNotes = formData.historicalNotes;
         if (formData.externalUrl) input.externalUrl = formData.externalUrl;
         if (formData.whereAcquired) input.whereAcquired = formData.whereAcquired;
         if (formData.condition) input.condition = formData.condition;
@@ -1359,6 +1366,15 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                         onChange={handleChange}
                         className={`${inputClass} min-h-[100px]`}
                         placeholder={t.form.descriptionPlaceholder}
+                    />
+                </FormField>
+                <FormField label="Historical Notes">
+                    <textarea
+                        name="historicalNotes"
+                        value={formData.historicalNotes}
+                        onChange={handleChange}
+                        className={`${inputClass} min-h-[100px]`}
+                        placeholder="Historical context and significance of this device model…"
                     />
                 </FormField>
             </div>

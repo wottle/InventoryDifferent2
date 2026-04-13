@@ -103,6 +103,7 @@ export const GET_SHOWCASE_JOURNEY_BY_SLUG = gql`
             releaseYear
             rarity
             info
+            historicalNotes
             images {
               path
               isThumbnail
@@ -136,6 +137,7 @@ export const GET_TIMELINE_DATA = gql`
             releaseYear
             info
             rarity
+            historicalNotes
             category {
               name
               type
@@ -314,6 +316,7 @@ export const GET_SHOWCASE_DEVICE = gql`
       isWifiEnabled
       isPramBatteryRemoved
       info
+      historicalNotes
       cpu
       ram
       storage

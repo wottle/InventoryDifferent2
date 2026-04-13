@@ -54,3 +54,4 @@ ios/.build/
 ios/DerivedData/
 *.xcuserstate
 showcase-seed.js
+populate-historical-notes.js

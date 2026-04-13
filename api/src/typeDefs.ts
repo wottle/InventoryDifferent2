@@ -96,9 +96,10 @@ export const typeDefs = gql`
     operatingSystem: String
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
-    
+    historicalNotes: String
+
     externalUrl: String
-    
+
     popularity: Float
 
     category: Category!
@@ -199,6 +200,7 @@ export const typeDefs = gql`
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
     rarity: Rarity
+    historicalNotes: String
     categoryId: Int!
     category: Category!
   }
@@ -369,6 +371,7 @@ export const typeDefs = gql`
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
     rarity: Rarity
+    historicalNotes: String
   }
 
   input TemplateUpdateInput {
@@ -390,6 +393,7 @@ export const typeDefs = gql`
     isWifiEnabled: Boolean
     isPramBatteryRemoved: Boolean
     rarity: Rarity
+    historicalNotes: String
   }
 
   type ShowcaseJourney {
@@ -528,6 +532,7 @@ export const typeDefs = gql`
     releaseYear: Int
     locationId: Int
     info: String
+    historicalNotes: String
     isFavorite: Boolean
     externalUrl: String
 
@@ -577,6 +582,7 @@ export const typeDefs = gql`
 
     additionalName: String
     info: String
+    historicalNotes: String
     isFavorite: Boolean
     externalUrl: String
 
