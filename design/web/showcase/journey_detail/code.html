@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1a1c1f",
+                        "tertiary": "#6f5d00",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f9f9fe",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#adc6ff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-secondary-fixed-variant": "#46464b",
+                        "secondary-fixed": "#e3e2e7",
+                        "on-primary-fixed": "#001a41",
+                        "on-primary-fixed-variant": "#004493",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f3f8",
+                        "primary": "#0058bc",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c1c6d7",
+                        "on-secondary-container": "#626267",
+                        "inverse-surface": "#2e3034",
+                        "surface-tint": "#005bc1",
+                        "on-tertiary-fixed-variant": "#534600",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f0f0f5",
+                        "tertiary-fixed": "#ffe261",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface": "#f9f9fe",
+                        "background": "#f9f9fe",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-background": "#1a1c1f",
+                        "on-tertiary-container": "#4b3f00",
+                        "tertiary-fixed-dim": "#e2c53e",
+                        "primary-container": "#0070eb",
+                        "on-surface-variant": "#414755",
+                        "outline": "#717786",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6cb",
+                        "tertiary-container": "#c5aa22",
+                        "surface-container": "#ededf2",
+                        "surface-variant": "#e2e2e7",
+                        "on-primary-container": "#fefcff",
+                        "on-secondary-fixed": "#1a1b1f",
+                        "surface-dim": "#d9dade",
+                        "secondary": "#5d5e63",
+                        "surface-container-highest": "#e2e2e7",
+                        "surface-container-high": "#e8e8ed",
+                        "secondary-container": "#e0dfe4",
+                        "primary-fixed-dim": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .big-small-pair {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed">
+<nav class="fixed top-0 w-full z-50 glass-nav shadow-sm">
+<div class="flex justify-between items-center px-8 py-4 max-w-full mx-auto">
+<span class="text-2xl font-bold tracking-tighter text-slate-900">Technical Atelier</span>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-blue-600 border-b-2 border-blue-600 pb-1 font-sans tracking-tight text-sm uppercase font-semibold" href="#">Chronicle</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors font-sans tracking-tight text-sm uppercase font-semibold" href="#">Archive</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors font-sans tracking-tight text-sm uppercase font-semibold" href="#">Specs</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors font-sans tracking-tight text-sm uppercase font-semibold" href="#">About</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:opacity-80 transition-opacity">account_circle</span>
+</div>
+</div>
+<div class="bg-slate-200/20 h-px"></div>
+</nav>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative h-[921px] flex items-center justify-center overflow-hidden bg-surface-container-lowest">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-40 mix-blend-multiply" data-alt="Close-up of translucent teal polycarbonate plastic texture with soft internal light reflections and subtle technical components visible underneath." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKPApIDKIloo4jo5e_IFuLHRasn_T3KGBpSaa7L2kOdrWBSgHnBt7qhuf9E9H3jKsvoXMHOJa4Rd16a_H9fPo2YqJTY-iNFI9UezXzGvV5IcvYMtMUrql-kYjaUZmuuyrEUr0NRYfK9TCmooiUpjIPf1BhYi7adPNibIvvmYNwFNHLHsxFre5q-F6OwWk5-IfDxy6yvT6eW0SlXy6fHafJTcvkuMbWnmT_ujbf7E7CppkGDDlwWzy-9b-kOJqkZXloulI6Th2KN9k')"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-surface/40 to-surface"></div>
+</div>
+<div class="relative z-10 text-center px-6 max-w-5xl">
+<p class="text-xs font-medium tracking-widest uppercase mb-4 text-primary">Volume IV: Design Evolution</p>
+<h1 class="text-5xl md:text-8xl font-black tracking-tighter text-on-surface mb-6 leading-[0.9]">
+                    The Translucent Revolution
+                </h1>
+<p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                    A cinematic exploration into the era that dismantled the opaque industrial box, revealing the poetry of circuitry through tinted polycarbonate.
+                </p>
+</div>
+</section>
+<!-- Chapter 1: Breaking the Beige -->
+<section class="py-24 px-8 md:px-24 bg-surface">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+<div class="lg:col-span-5 flex flex-col gap-8">
+<div class="big-small-pair">
+<span class="text-[0.6875rem] font-bold tracking-[0.2em] uppercase text-tertiary mb-2">Chapter 01</span>
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight leading-none text-on-surface">Breaking the Beige</h2>
+</div>
+<div class="space-y-6">
+<h3 class="text-xs font-bold uppercase tracking-widest text-primary">The Narrative</h3>
+<p class="text-on-surface-variant leading-relaxed text-lg">
+                                For decades, the personal computer was a utilitarian gray slab, designed for the office, not the home. In 1998, the iMac G3 shattered this monotony. By replacing industrial plastic with 'Bondi Blue' translucency, technology became approachable, friendly, and undeniably optimistic.
+                            </p>
+</div>
+</div>
+<div class="lg:col-span-7">
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-sm">
+<img alt="Vintage iMac G3" class="w-full aspect-[4/3] object-cover" data-alt="A studio photograph of a Bondi Blue iMac G3 on a clean white surface with soft studio lighting highlighting its translucent curves." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsDr-zVn9pZsSoSG0VI6JzCkYGFsO39Kp8frLGdP2EXAZbpEaOUOCwaR6GpPMgxu003OKoe-sBJ82GASXeGumCwJqJEaz0TzboG7zJ5eg8OOGXn6W91vtiy08iZtP1Ax1cfJC5UnSAJLxi1IyF5-ONvKo6gtcjsoQvnCm7IB24roka6BgN9oARiNmjjcv9StJ0xZ36JAoixmzQdH4_Tj2GDd2eBpUshED8eNzeu4JaJAe2b29qQgACgF5Cc3_63oARze49M5mVfe0"/>
+<div class="p-8 space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold tracking-widest uppercase text-on-surface-variant">Artifact Connection</span>
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-sm">PRIMARY ARTIFACT</span>
+</div>
+<h4 class="text-xl font-bold">iMac G3 (1998)</h4>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                    The device that saved a company. Its teardrop shape and integrated handle invited touch, while its translucent shell promised a future where technology wasn't something to hide, but something to display.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Chapter 2: Internal Transparency -->
+<section class="py-24 px-8 md:px-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20 max-w-3xl mx-auto">
+<span class="text-[0.6875rem] font-bold tracking-[0.2em] uppercase text-tertiary mb-2">Chapter 02</span>
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-on-surface mb-8">Internal Transparency</h2>
+<p class="text-on-surface-variant text-lg">
+                        The philosophy shifted from color to clarity. Professionals didn't just want a colorful machine; they wanted to see the engineering excellence within.
+                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Power Mac G3 Card -->
+<div class="bg-surface-container-lowest rounded-xl p-1 flex flex-col">
+<div class="rounded-lg overflow-hidden h-64">
+<img alt="Power Mac Design" class="w-full h-full object-cover" data-alt="Detailed macro shot of translucent blue and white plastic casing on a retro computer tower showing internal metallic shielding and screws." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaI_kDOxu4MkhqwLGUEddUz1xch9KOtkkTdbRDr0oew_tTNxnVTfSE78ZKMZHoeQgeC1-6xoiEsJHEckmEjWaQwqs7sXL9w1bls7PfDhSTzjTLtMXs_aozd_NuZGTfExurHru9YDq9pHd374m-6UxiEHlPZ9ENolvre-JXRiX72-dQdoQAlpXlx27zdr6MrafSl4u8bngk-irLpI7j1mDJ3U5k1AV5cxEdCZrLgoeLr1APp4GB-aQ5x-un3LqlqGyTk1hS4zdZmDU"/>
+</div>
+<div class="p-8 flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h4 class="text-2xl font-bold tracking-tight">Power Mac G3 (B&amp;W)</h4>
+<span class="bg-surface-container-high px-3 py-1 rounded text-[10px] font-black uppercase text-on-surface-variant">Pro Series</span>
+</div>
+<p class="text-on-surface-variant mb-6 text-sm leading-relaxed">
+                                Moving beyond the consumer focus, the Blue &amp; White G3 introduced the 'Easy Access' door. The transparency served a functional purpose: revealing a meticulously organized internal architecture.
+                            </p>
+<div class="flex gap-4">
+<div class="bg-surface-container-low px-4 py-3 rounded-xl flex-1">
+<span class="block text-[10px] font-bold text-primary uppercase mb-1">Finish</span>
+<span class="text-sm font-semibold">Ice White &amp; Blue</span>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-xl flex-1">
+<span class="block text-[10px] font-bold text-primary uppercase mb-1">Release</span>
+<span class="text-sm font-semibold">Jan 1999</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Cinema Display Card -->
+<div class="bg-surface-container-lowest rounded-xl p-1 flex flex-col">
+<div class="rounded-lg overflow-hidden h-64">
+<img alt="Cinema Display" class="w-full h-full object-cover" data-alt="A minimalist 22-inch Apple Cinema Display in a translucent acrylic frame, floating in a brightly lit modern office setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzWmhyA8POrmj_lMfTL-7RaEnhbLBQ8Jj4uW7-yQ0FerSWI7W1IpaM8o70pDbLlgQc_IQ_SV-hv9f-nlJudSc-2JtjTUREkzcYKV-rGnCJl_Pf1OgTX7-4hAqZE9v22Kmygda84ugfw4m1o1P1OsBz8514uYKSUQ7RYYX8PRrc4GisY95nWZW50PViFBgosctIyLg-qb8la-M6mHozFetjRW74US8VpkZ8Froj3dSkQiVb7l1ZnE7uMmAz-FzxrBI9-OPQN5D0Fis"/>
+</div>
+<div class="p-8 flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h4 class="text-2xl font-bold tracking-tight">Cinema Display</h4>
+<span class="bg-surface-container-high px-3 py-1 rounded text-[10px] font-black uppercase text-on-surface-variant">Visual Standard</span>
+</div>
+<p class="text-on-surface-variant mb-6 text-sm leading-relaxed">
+                                Enclosed in a massive acrylic housing, the first Cinema Display made the screen appear as though it were floating in mid-air. It was the ultimate expression of the 'invisible' technology.
+                            </p>
+<button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-full text-sm font-bold flex items-center justify-center gap-2">
+                                VIEW SPECS <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Chapter 3: The Mobile Shift -->
+<section class="py-24 px-8 md:px-24 bg-surface">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+<div class="w-full lg:w-1/2 order-2 lg:order-1">
+<div class="relative">
+<div class="absolute -top-12 -left-12 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-lg relative z-10">
+<img alt="Clamshell iBook" class="rounded-lg w-full" data-alt="A vibrant Tangerine orange iBook G2 Clamshell laptop with its iconic handle, sitting open on a wooden table in soft natural light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdlGqvjWj1LnJ6lxjIlIFxnn3TqcVVXXuTZG727OGrDXMaZtPLsc0gmj5Huw2-tN790yOmXthdqcl-QFXurBFAuyHD6lc9I6JRegN5Q6H9lcENCT19x5BZ92_UQVjaYmNA4J0lbonjMUmbrmuHOSTWo5Xlu3_BzPHmjKzEh61QU7nVc-nrqvTJhraBYhXKVR-UUgFLUMYRUHwobQ-izGvapzrrhHBMhoASGqveMkU_6cRqXlFBe2F7qXpYke4X9-IsWMriG0qP3mc"/>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-1/2 order-1 lg:order-2 space-y-8">
+<div class="big-small-pair">
+<span class="text-[0.6875rem] font-bold tracking-[0.2em] uppercase text-tertiary mb-2">Chapter 03</span>
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-on-surface leading-none">The Mobile Shift</h2>
+</div>
+<div class="bg-surface-container-high p-8 rounded-xl">
+<h3 class="text-xs font-bold uppercase tracking-widest text-primary mb-4">The Narrative</h3>
+<p class="text-on-surface-variant leading-relaxed italic">
+                            "Computers shouldn't just be powerful; they should be portable and playful."
+                        </p>
+<p class="text-on-surface-variant leading-relaxed mt-4">
+                            The Clamshell iBook brought translucency to the streets. With its rugged rubberized grips and vibrant colors, it redefined the laptop from a boring business tool to a lifestyle companion. It was the first mainstream computer to offer integrated wireless networking.
+                        </p>
+</div>
+<div class="flex items-center gap-6 p-4 border border-outline-variant/20 rounded-xl">
+<div class="w-16 h-16 bg-surface-container-high flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl">wifi</span>
+</div>
+<div>
+<h5 class="font-bold text-sm">Artifact: iBook G3 Clamshell</h5>
+<p class="text-xs text-on-surface-variant">The dawn of AirPort wireless mobility.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Museum Archive / Call to Action -->
+<section class="py-20 px-8">
+<div class="max-w-7xl mx-auto bg-on-surface text-surface rounded-[2rem] overflow-hidden relative">
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<div class="w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 40px 40px;"></div>
+</div>
+<div class="relative z-10 px-12 py-20 text-center flex flex-col items-center">
+<span class="text-[0.6875rem] font-bold tracking-[0.4em] uppercase text-tertiary mb-6">Archive Access</span>
+<h2 class="text-4xl md:text-6xl font-black tracking-tighter mb-8 max-w-3xl">Deep Dive into the Museum Archive</h2>
+<div class="flex flex-wrap justify-center gap-4">
+<button class="px-8 py-4 bg-surface text-on-surface rounded-full font-bold text-sm hover:bg-surface-bright transition-all">Explore Entire Series</button>
+<button class="px-8 py-4 border border-surface/30 text-surface rounded-full font-bold text-sm hover:bg-surface/10 transition-all">Technical Documentation</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full border-t border-slate-200 bg-slate-50">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-16 gap-8 w-full">
+<div class="flex flex-col gap-4">
+<span class="text-lg font-black text-slate-900">Technical Atelier</span>
+<p class="text-xs font-medium tracking-widest uppercase text-slate-400">© 2024 Precision Editorial. The Technical Atelier Series.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-10">
+<a class="text-xs font-medium tracking-widest uppercase text-slate-400 hover:text-blue-500 transition-colors" href="#">Curation Policy</a>
+<a class="text-xs font-medium tracking-widest uppercase text-slate-400 hover:text-blue-500 transition-colors" href="#">Museum Archive</a>
+<a class="text-xs font-medium tracking-widest uppercase text-slate-400 hover:text-blue-500 transition-colors" href="#">Technical Specs</a>
+<a class="text-xs font-medium tracking-widest uppercase text-slate-400 hover:text-blue-500 transition-colors" href="#">Legal</a>
+</div>
+</div>
+</footer>
+</body></html>

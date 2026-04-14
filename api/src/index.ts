@@ -1223,6 +1223,204 @@ RESTART IDENTITY CASCADE;
         res.download(zipPath, `inventory-export-${timestamp}${partSuffix}.zip`);
     });
 
+    // ============== SHOWCASE EXPORT / IMPORT ==============
+
+    app.get('/showcase/export', requireAuth, async (_req, res) => {
+        try {
+            const [config, quotes, journeys] = await Promise.all([
+                defaultPrisma.showcaseConfig.findFirst(),
+                defaultPrisma.showcaseQuote.findMany({ orderBy: { sortOrder: 'asc' } }),
+                defaultPrisma.showcaseJourney.findMany({
+                    include: {
+                        chapters: {
+                            include: { devices: true },
+                            orderBy: { sortOrder: 'asc' },
+                        },
+                    },
+                    orderBy: { sortOrder: 'asc' },
+                }),
+            ]);
+
+            // Enrich ShowcaseDevice entries with device name/manufacturer for human reference
+            const journeysWithNames = await Promise.all(
+                journeys.map(async (journey) => ({
+                    title: journey.title,
+                    slug: journey.slug,
+                    description: journey.description,
+                    coverImagePath: journey.coverImagePath,
+                    sortOrder: journey.sortOrder,
+                    published: journey.published,
+                    publishedAt: journey.publishedAt ? journey.publishedAt.toISOString() : null,
+                    chapters: await Promise.all(
+                        journey.chapters.map(async (chapter) => ({
+                            title: chapter.title,
+                            description: chapter.description,
+                            sortOrder: chapter.sortOrder,
+                            devices: await Promise.all(
+                                chapter.devices.map(async (sd) => {
+                                    const device = await defaultPrisma.device.findUnique({
+                                        where: { id: sd.deviceId },
+                                        select: { name: true, manufacturer: true },
+                                    });
+                                    return {
+                                        deviceId: sd.deviceId,
+                                        deviceName: device?.name ?? null,
+                                        deviceManufacturer: device?.manufacturer ?? null,
+                                        curatorNote: sd.curatorNote,
+                                        sortOrder: sd.sortOrder,
+                                        isFeatured: sd.isFeatured,
+                                    };
+                                })
+                            ),
+                        }))
+                    ),
+                }))
+            );
+
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                exportVersion: '1.0',
+                config: config ? {
+                    siteTitle: config.siteTitle,
+                    tagline: config.tagline,
+                    bioText: config.bioText,
+                    heroImagePath: config.heroImagePath,
+                    accentColor: config.accentColor,
+                    timelineCuratorNote: config.timelineCuratorNote,
+                    narrativeStatement: config.narrativeStatement,
+                    collectionOverview: config.collectionOverview,
+                } : null,
+                quotes: quotes.map((q) => ({
+                    author: q.author,
+                    text: q.text,
+                    source: q.source,
+                    isDefault: q.isDefault,
+                    isEnabled: q.isEnabled,
+                    sortOrder: q.sortOrder,
+                })),
+                journeys: journeysWithNames,
+            };
+
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Disposition', 'attachment; filename="showcase-export.json"');
+            return res.json(exportData);
+        } catch (err) {
+            console.error('Showcase export error:', err);
+            return res.status(500).json({ error: 'Export failed' });
+        }
+    });
+
+    app.post('/showcase/import', requireAuth, express.json({ limit: '10mb' }), async (req, res) => {
+        const data = req.body;
+
+        if (!data || data.exportVersion !== '1.0') {
+            return res.status(400).json({ error: 'Invalid or unsupported showcase export file' });
+        }
+
+        let journeysImported = 0;
+        let chaptersImported = 0;
+        let devicesLinked = 0;
+        let devicesSkipped = 0;
+        let quotesImported = 0;
+
+        try {
+            // 1. Config
+            if (data.config) {
+                await defaultPrisma.showcaseConfig.upsert({
+                    where: { id: 'singleton' },
+                    update: data.config,
+                    create: { id: 'singleton', ...data.config },
+                });
+            }
+
+            // 2. Quotes — replace all non-default quotes with imported non-default ones
+            if (Array.isArray(data.quotes)) {
+                await defaultPrisma.showcaseQuote.deleteMany({ where: { isDefault: false } });
+                const nonDefaultQuotes = data.quotes.filter((q: any) => !q.isDefault);
+                if (nonDefaultQuotes.length > 0) {
+                    await defaultPrisma.showcaseQuote.createMany({
+                        data: nonDefaultQuotes.map((q: any) => ({
+                            author: q.author,
+                            text: q.text,
+                            source: q.source ?? null,
+                            isDefault: false,
+                            isEnabled: q.isEnabled ?? true,
+                            sortOrder: q.sortOrder ?? 0,
+                        })),
+                    });
+                    quotesImported = nonDefaultQuotes.length;
+                }
+            }
+
+            // 3. Journeys — upsert by slug
+            if (Array.isArray(data.journeys)) {
+                for (const j of data.journeys) {
+                    const journeyData = {
+                        title: j.title,
+                        description: j.description,
+                        coverImagePath: j.coverImagePath ?? null,
+                        sortOrder: j.sortOrder ?? 0,
+                        published: j.published ?? false,
+                        publishedAt: j.publishedAt ? new Date(j.publishedAt) : null,
+                    };
+
+                    const journey = await defaultPrisma.showcaseJourney.upsert({
+                        where: { slug: j.slug },
+                        update: journeyData,
+                        create: { slug: j.slug, ...journeyData },
+                    });
+
+                    // Delete existing chapters (cascades to ShowcaseDevice)
+                    await defaultPrisma.showcaseChapter.deleteMany({ where: { journeyId: journey.id } });
+
+                    if (Array.isArray(j.chapters)) {
+                        for (const c of j.chapters) {
+                            const chapter = await defaultPrisma.showcaseChapter.create({
+                                data: {
+                                    journeyId: journey.id,
+                                    title: c.title,
+                                    description: c.description,
+                                    sortOrder: c.sortOrder ?? 0,
+                                },
+                            });
+                            chaptersImported++;
+
+                            if (Array.isArray(c.devices)) {
+                                for (const d of c.devices) {
+                                    const deviceExists = await defaultPrisma.device.findUnique({
+                                        where: { id: d.deviceId },
+                                        select: { id: true },
+                                    });
+                                    if (deviceExists) {
+                                        await defaultPrisma.showcaseDevice.create({
+                                            data: {
+                                                chapterId: chapter.id,
+                                                deviceId: d.deviceId,
+                                                curatorNote: d.curatorNote ?? null,
+                                                sortOrder: d.sortOrder ?? 0,
+                                                isFeatured: d.isFeatured ?? false,
+                                            },
+                                        });
+                                        devicesLinked++;
+                                    } else {
+                                        devicesSkipped++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    journeysImported++;
+                }
+            }
+
+            return res.json({ success: true, journeysImported, chaptersImported, devicesLinked, devicesSkipped, quotesImported });
+        } catch (err) {
+            console.error('Showcase import error:', err);
+            return res.status(500).json({ error: 'Import failed' });
+        }
+    });
+
     // ============== AI IMAGE GENERATION ==============
 
     const DEFAULT_IMAGE_PROMPT =

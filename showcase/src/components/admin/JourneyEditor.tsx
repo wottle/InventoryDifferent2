@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery } from '@apollo/client';
+import { useT } from '@/i18n/context';
 import {
   CREATE_JOURNEY,
   UPDATE_JOURNEY,
@@ -106,6 +107,7 @@ interface DeviceSearchModalProps {
 
 function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: DeviceSearchModalProps) {
   const [search, setSearch] = useState('');
+  const t = useT();
   const [upsertShowcaseDevice] = useMutation(UPSERT_SHOWCASE_DEVICE);
   const [adding, setAdding] = useState<number | null>(null);
 
@@ -151,7 +153,7 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
       <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[80vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-outline-variant/30">
-          <h3 className="font-semibold text-on-surface">Add Device</h3>
+          <h3 className="font-semibold text-on-surface">{t.adminJourneyEditor.addDeviceModalTitle}</h3>
           <button
             onClick={onClose}
             className="w-7 h-7 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-low transition text-lg"
@@ -166,7 +168,7 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, manufacturer, year..."
+            placeholder={t.adminJourneyEditor.searchPlaceholder}
             className="w-full px-3 py-2 rounded-lg border border-outline-variant/40 bg-surface-container-low text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary"
             autoFocus
           />
@@ -180,7 +182,7 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
             </div>
           )}
           {!loading && filtered.length === 0 && (
-            <p className="text-center text-sm text-outline py-8">No devices found.</p>
+            <p className="text-center text-sm text-outline py-8">{t.adminJourneyEditor.noDevicesFound}</p>
           )}
           {filtered.map((device) => (
             <button
@@ -213,7 +215,7 @@ function DeviceSearchModal({ chapterId, existingDeviceIds, onAdd, onClose }: Dev
                 <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin flex-shrink-0" />
               ) : (
                 <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition flex-shrink-0">
-                  Add
+                  {t.adminJourneyEditor.addBtn}
                 </span>
               )}
             </button>
@@ -258,6 +260,7 @@ function ChapterCard({
   onMoveDown,
 }: ChapterCardProps) {
   const [showDeviceModal, setShowDeviceModal] = useState(false);
+  const t = useT();
   const [upsertChapter] = useMutation(UPSERT_CHAPTER);
   const [deleteChapter] = useMutation(DELETE_CHAPTER);
   const [upsertShowcaseDevice] = useMutation(UPSERT_SHOWCASE_DEVICE);
@@ -386,13 +389,13 @@ function ChapterCard({
           }}
           onBlur={saveChapter}
           onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-          placeholder="Chapter title"
+          placeholder={t.adminJourneyEditor.chapterTitlePlaceholder}
           className="flex-1 font-semibold text-sm text-on-surface bg-transparent border-none outline-none placeholder:text-outline focus:bg-surface-container-low focus:ring-1 focus:ring-primary/30 rounded px-1 -mx-1 min-w-0"
         />
 
         {/* Device count */}
         <span className="text-xs text-outline flex-shrink-0">
-          {chapter.devices.length} {chapter.devices.length === 1 ? 'device' : 'devices'}
+          {chapter.devices.length} {chapter.devices.length === 1 ? t.adminJourneyEditor.deviceSingular : t.adminJourneyEditor.devicePlural}
         </span>
 
         {/* Saving indicator */}
@@ -405,7 +408,7 @@ function ChapterCard({
           <button
             onClick={onMoveUp}
             disabled={isFirst}
-            title="Move chapter up"
+            title={t.adminJourneyEditor.moveUp}
             className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
           >
             ▲
@@ -413,7 +416,7 @@ function ChapterCard({
           <button
             onClick={onMoveDown}
             disabled={isLast}
-            title="Move chapter down"
+            title={t.adminJourneyEditor.moveDown}
             className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
           >
             ▼
@@ -425,7 +428,7 @@ function ChapterCard({
           onClick={handleDelete}
           disabled={isDeleting}
           className="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-error/10 hover:text-error transition text-sm flex-shrink-0"
-          title="Delete chapter"
+          title={t.adminJourneyEditor.deleteChapterTitle}
         >
           🗑
         </button>
@@ -440,7 +443,7 @@ function ChapterCard({
             onUpdate(chapter.tempId, { description: e.target.value });
           }}
           onBlur={saveChapter}
-          placeholder="Chapter description (optional)"
+          placeholder={t.adminJourneyEditor.chapterDescPlaceholder}
           rows={2}
           className="w-full text-sm text-on-surface-variant bg-transparent border-none outline-none resize-none placeholder:text-outline focus:bg-surface-container-low focus:ring-1 focus:ring-primary/30 rounded px-1 -mx-1"
         />
@@ -469,10 +472,10 @@ function ChapterCard({
             className="flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 border-dashed border-outline-variant/40 text-outline text-sm hover:border-primary hover:text-primary transition w-full"
           >
             <span className="text-base leading-none">+</span>
-            Add device to this chapter
+            {t.adminJourneyEditor.addDeviceBtn}
           </button>
         ) : (
-          <p className="text-xs text-outline italic text-center py-1">Save chapter title to add devices</p>
+          <p className="text-xs text-outline italic text-center py-1">{t.adminJourneyEditor.saveChapterFirst}</p>
         )}
       </div>
 
@@ -506,6 +509,7 @@ interface DeviceRowProps {
 }
 
 function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove, onMoveUp, onMoveDown }: DeviceRowProps) {
+  const t = useT();
   const [note, setNote] = useState(sd.curatorNote ?? '');
 
   useEffect(() => {
@@ -541,7 +545,7 @@ function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove
           value={note}
           onChange={(e) => setNote(e.target.value)}
           onBlur={() => onNoteBlur(note)}
-          placeholder="Curator note (optional)"
+          placeholder={t.adminJourneyEditor.curatorsNotePlaceholder}
           className="mt-1 w-full text-xs text-primary bg-transparent border-none outline-none placeholder:text-outline/60 focus:ring-0 italic"
         />
       </div>
@@ -553,7 +557,7 @@ function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove
           <button
             onClick={onMoveUp}
             disabled={isFirst}
-            title="Move up"
+            title={t.adminJourneyEditor.moveUp}
             className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
           >
             ▲
@@ -561,7 +565,7 @@ function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove
           <button
             onClick={onMoveDown}
             disabled={isLast}
-            title="Move down"
+            title={t.adminJourneyEditor.moveDown}
             className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
           >
             ▼
@@ -569,7 +573,7 @@ function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove
         </div>
         <button
           onClick={onToggleFeatured}
-          title={sd.isFeatured ? 'Unfeature' : 'Feature'}
+          title={sd.isFeatured ? t.adminJourneyEditor.unfeature : t.adminJourneyEditor.feature}
           className={`w-7 h-7 flex items-center justify-center rounded-lg transition text-sm ${
             sd.isFeatured
               ? 'text-amber-500 bg-amber-50 hover:bg-amber-100'
@@ -580,7 +584,7 @@ function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove
         </button>
         <button
           onClick={onRemove}
-          title="Remove device"
+          title={t.adminJourneyEditor.removeDeviceTitle}
           className="w-7 h-7 flex items-center justify-center rounded-lg text-on-surface-variant bg-surface-container-low hover:bg-error/10 hover:text-error transition text-sm"
         >
           ×
@@ -598,6 +602,7 @@ interface JourneyEditorProps {
 
 export default function JourneyEditor({ journey }: JourneyEditorProps) {
   const router = useRouter();
+  const t = useT();
   const isNew = journey === null;
 
   // Journey-level state
@@ -672,7 +677,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
   // Save journey metadata
   const handleSave = async () => {
     if (!title.trim() || !slug.trim()) {
-      alert('Title and slug are required.');
+      alert(t.adminJourneyEditor.titleSlugRequired);
       return;
     }
     setIsSaving(true);
@@ -935,14 +940,14 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           onClick={() => router.push('/admin/journeys')}
           className="text-sm text-primary hover:underline flex-shrink-0"
         >
-          ← All Journeys
+          {t.adminJourneyEditor.allJourneys}
         </button>
 
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Journey Title"
+          placeholder={t.adminJourneyEditor.titlePlaceholder}
           className="flex-1 font-semibold text-base text-on-surface bg-transparent border-none outline-none placeholder:text-outline min-w-0"
         />
 
@@ -954,7 +959,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               : 'bg-amber-100 text-amber-800'
           }`}
         >
-          {published ? 'Published' : 'Draft'}
+          {published ? t.adminJourneyEditor.published : t.adminJourneyEditor.draft}
         </span>
 
         {/* Publish toggle */}
@@ -963,7 +968,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
             onClick={handleTogglePublish}
             className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border border-outline-variant text-on-surface hover:bg-surface-container-low transition"
           >
-            {published ? 'Unpublish' : 'Publish'}
+            {published ? t.adminJourneyEditor.unpublish : t.adminJourneyEditor.publish}
           </button>
         )}
 
@@ -973,7 +978,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           disabled={isSaving}
           className="flex-shrink-0 bg-primary text-on-primary font-semibold rounded-full px-5 py-1.5 text-sm hover:opacity-90 transition disabled:opacity-60"
         >
-          {isSaving ? 'Saving…' : isNew ? 'Create Journey' : 'Save'}
+          {isSaving ? t.adminJourneyEditor.saving : isNew ? t.adminJourneyEditor.createJourney : t.adminJourneyEditor.save}
         </button>
       </div>
 
@@ -984,12 +989,12 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           {/* Journey details */}
           <div className="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/20">
             <p className="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-4">
-              Journey Details
+              {t.adminJourneyEditor.journeyDetails}
             </p>
 
             <div className="flex flex-col gap-3.5">
               <div>
-                <label className="block text-xs font-medium text-outline mb-1">URL Slug</label>
+                <label className="block text-xs font-medium text-outline mb-1">{t.adminJourneyEditor.urlSlugLabel}</label>
                 <input
                   type="text"
                   value={slug}
@@ -997,24 +1002,24 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                     setSlug(e.target.value);
                     setSlugManuallyEdited(true);
                   }}
-                  placeholder="my-journey-slug"
+                  placeholder={t.adminJourneyEditor.slugPlaceholder}
                   className="w-full px-2.5 py-1.5 rounded-lg border border-outline-variant/40 bg-surface-container-low text-xs font-mono text-on-surface focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-outline mb-1">Description</label>
+                <label className="block text-xs font-medium text-outline mb-1">{t.adminJourneyEditor.descriptionLabel}</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="A short description of this journey..."
+                  placeholder={t.adminJourneyEditor.descriptionPlaceholder}
                   rows={4}
                   className="w-full px-2.5 py-1.5 rounded-lg border border-outline-variant/40 bg-surface-container-low text-xs text-on-surface resize-none focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-outline mb-1">Cover Image</label>
+                <label className="block text-xs font-medium text-outline mb-1">{t.adminJourneyEditor.coverImageLabel}</label>
                 {coverImagePath && (
                   <div className="rounded-lg overflow-hidden border border-outline-variant/40 mb-2">
                     <img
@@ -1032,7 +1037,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                   className="text-xs text-on-surface-variant file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer disabled:opacity-50 w-full"
                 />
                 {uploadingCover && (
-                  <p className="text-xs text-outline mt-1">Uploading…</p>
+                  <p className="text-xs text-outline mt-1">{t.adminJourneyEditor.uploading}</p>
                 )}
               </div>
 
@@ -1046,7 +1051,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                     className="w-4 h-4 accent-primary cursor-pointer"
                   />
                   <label htmlFor="published-new" className="text-xs text-on-surface cursor-pointer">
-                    Publish immediately
+                    {t.adminJourneyEditor.publishImmediately}
                   </label>
                 </div>
               )}
@@ -1057,13 +1062,13 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           {!isNew && (
             <div className="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/20">
               <p className="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-4">
-                Stats
+                {t.adminJourneyEditor.statsSection}
               </p>
               <div className="flex flex-col gap-2">
                 {[
-                  { label: 'Chapters', value: String(chapters.length) },
-                  { label: 'Devices', value: String(totalDevices) },
-                  { label: 'Featured', value: `${totalFeatured} ★` },
+                  { label: t.adminJourneyEditor.chaptersLabel, value: String(chapters.length) },
+                  { label: t.adminJourneyEditor.devicesLabel, value: String(totalDevices) },
+                  { label: t.adminJourneyEditor.featuredLabel, value: `${totalFeatured} ★` },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between">
                     <span className="text-xs text-outline">{label}</span>
@@ -1071,7 +1076,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                   </div>
                 ))}
                 <div className="flex items-center justify-between pt-1 border-t border-outline-variant/20 mt-1">
-                  <span className="text-xs text-outline">Published</span>
+                  <span className="text-xs text-outline">{t.adminJourneyEditor.publishedLabel}</span>
                   <span className="text-xs font-semibold text-on-surface">
                     {journey?.publishedAt
                       ? new Date(journey.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
@@ -1086,7 +1091,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           {!isNew && (
             <div className="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/20">
               <p className="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-2">
-                Journey ID
+                {t.adminJourneyEditor.journeyIdSection}
               </p>
               <p className="text-xs text-outline font-mono break-all">{journey!.id}</p>
             </div>
@@ -1097,13 +1102,13 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
         <div className="flex-1 flex flex-col gap-4 min-w-0">
           {/* Chapters header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-on-surface">Chapters</h2>
+            <h2 className="text-base font-semibold text-on-surface">{t.adminJourneyEditor.chaptersHeader}</h2>
             {!isNew && (
               <button
                 onClick={handleAddChapter}
                 className="px-4 py-1.5 rounded-full text-sm font-medium border border-outline-variant text-on-surface hover:bg-surface-container-low transition"
               >
-                + Add Chapter
+                {t.adminJourneyEditor.addChapter}
               </button>
             )}
           </div>
@@ -1112,7 +1117,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           {isNew && (
             <div className="bg-surface-container-lowest rounded-xl p-8 text-center border border-outline-variant/20">
               <p className="text-sm text-outline">
-                Create the journey first, then you can add chapters and devices.
+                {t.adminJourneyEditor.createFirst}
               </p>
             </div>
           )}
@@ -1120,8 +1125,8 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
           {/* Chapter cards */}
           {!isNew && chapters.length === 0 && (
             <div className="bg-surface-container-lowest rounded-xl p-8 text-center border border-outline-variant/20">
-              <p className="text-sm text-outline">No chapters yet.</p>
-              <p className="text-xs text-outline mt-1">Add a chapter to start building this journey.</p>
+              <p className="text-sm text-outline">{t.adminJourneyEditor.noChapters}</p>
+              <p className="text-xs text-outline mt-1">{t.adminJourneyEditor.noChaptersSubtext}</p>
             </div>
           )}
 
@@ -1150,7 +1155,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               onClick={handleAddChapter}
               className="self-start px-4 py-1.5 rounded-full text-sm font-medium border border-outline-variant text-on-surface hover:bg-surface-container-low transition"
             >
-              + Add Chapter
+              {t.adminJourneyEditor.addChapter}
             </button>
           )}
         </div>

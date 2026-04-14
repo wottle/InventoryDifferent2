@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from '@apollo/client';
+import { useT } from '@/i18n/context';
 import {
   GET_ALL_SHOWCASE_JOURNEYS_ADMIN,
   UPDATE_JOURNEY,
@@ -26,6 +27,7 @@ interface AdminJourney {
 
 export default function AdminJourneysPage() {
   const router = useRouter();
+  const t = useT();
   const { data, loading, refetch } = useQuery<{ showcaseAllJourneys: AdminJourney[] }>(
     GET_ALL_SHOWCASE_JOURNEYS_ADMIN
   );
@@ -67,12 +69,12 @@ export default function AdminJourneysPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-headline font-bold tracking-tight text-on-surface">Journeys</h1>
+        <h1 className="text-3xl font-headline font-bold tracking-tight text-on-surface">{t.adminJourneys.title}</h1>
         <button
           onClick={() => router.push('/admin/journeys/new')}
           className="bg-primary text-on-primary font-semibold rounded-full px-5 py-2 text-sm hover:opacity-90 transition"
         >
-          + New Journey
+          {t.adminJourneys.newJourney}
         </button>
       </div>
 
@@ -86,8 +88,8 @@ export default function AdminJourneysPage() {
       {/* Empty state */}
       {!loading && journeys.length === 0 && (
         <div className="bg-surface-container-lowest rounded-xl p-16 text-center">
-          <p className="text-on-surface-variant mb-2">No journeys yet.</p>
-          <p className="text-sm text-outline">Create your first journey to get started.</p>
+          <p className="text-on-surface-variant mb-2">{t.adminJourneys.emptyTitle}</p>
+          <p className="text-sm text-outline">{t.adminJourneys.emptySubtext}</p>
         </div>
       )}
 
@@ -112,7 +114,7 @@ export default function AdminJourneysPage() {
                     className="w-4 h-4 accent-primary cursor-pointer"
                   />
                   <span className="text-xs text-on-surface-variant">
-                    {journey.published ? 'Published' : 'Draft'}
+                    {journey.published ? t.adminJourneys.published : t.adminJourneys.draft}
                   </span>
                 </label>
 
@@ -120,7 +122,7 @@ export default function AdminJourneysPage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-on-surface truncate">{journey.title}</p>
                   <p className="text-sm text-on-surface-variant truncate">
-                    /{journey.slug} &middot; {chapterCount} {chapterCount === 1 ? 'chapter' : 'chapters'} &middot; {deviceCount} {deviceCount === 1 ? 'device' : 'devices'}
+                    /{journey.slug} &middot; {chapterCount} {chapterCount === 1 ? t.adminJourneys.chapterSingular : t.adminJourneys.chapterPlural} &middot; {deviceCount} {deviceCount === 1 ? t.adminJourneys.deviceSingular : t.adminJourneys.devicePlural}
                     {journey.publishedAt && (
                       <> &middot; Published {new Date(journey.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</>
                     )}
@@ -133,13 +135,13 @@ export default function AdminJourneysPage() {
                     onClick={() => router.push(`/admin/journeys/${journey.id}`)}
                     className="px-4 py-1.5 rounded-full text-sm font-medium border border-outline-variant text-on-surface hover:bg-surface-container-low transition"
                   >
-                    Edit
+                    {t.adminJourneys.edit}
                   </button>
                   <button
                     onClick={() => handleDelete(journey)}
                     className="px-4 py-1.5 rounded-full text-sm font-medium text-error border border-error/30 hover:bg-error/10 transition"
                   >
-                    Delete
+                    {t.adminJourneys.delete}
                   </button>
                 </div>
               </div>

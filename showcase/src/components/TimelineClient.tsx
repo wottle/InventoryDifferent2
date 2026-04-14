@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { TimelineDevice } from '@/app/timeline/page';
+import { useT } from '@/i18n/context';
 
 interface TimelineClientProps {
   devices: TimelineDevice[];
@@ -11,25 +12,13 @@ interface TimelineClientProps {
   curatorNote: string;
 }
 
-const ERAS = [
-  { label: 'The Foundation', range: [1976, 1983] as [number, number] },
-  { label: 'The Sculley Years', range: [1984, 1993] as [number, number] },
-  { label: 'The Interim', range: [1994, 1997] as [number, number] },
-  { label: 'The Return', range: [1998, 2011] as [number, number] },
-  { label: 'Modern Era', range: [2012, 2030] as [number, number] },
+const ERA_RANGES: [number, number][] = [
+  [1976, 1983],
+  [1984, 1993],
+  [1994, 1997],
+  [1998, 2011],
+  [2012, 2030],
 ];
-
-function rarityLabel(rarity: string | null): string {
-  if (!rarity) return '';
-  switch (rarity) {
-    case 'COMMON': return 'Common';
-    case 'UNCOMMON': return 'Uncommon';
-    case 'RARE': return 'Rare';
-    case 'VERY_RARE': return 'Very Rare';
-    case 'UNIQUE': return 'Unique';
-    default: return rarity;
-  }
-}
 
 const RARE_RARITIES = ['RARE', 'VERY_RARE', 'UNIQUE'];
 
@@ -41,6 +30,16 @@ export default function TimelineClient({
   categoryNames,
   curatorNote,
 }: TimelineClientProps) {
+  const t = useT();
+
+  const ERAS = [
+    { label: t.timeline.eraFoundation, range: ERA_RANGES[0] },
+    { label: t.timeline.eraSculley, range: ERA_RANGES[1] },
+    { label: t.timeline.eraInterim, range: ERA_RANGES[2] },
+    { label: t.timeline.eraReturn, range: ERA_RANGES[3] },
+    { label: t.timeline.eraModern, range: ERA_RANGES[4] },
+  ];
+
   const [selectedJourney, setSelectedJourney] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedEra, setSelectedEra] = useState<[number, number] | null>(null);
@@ -89,10 +88,10 @@ export default function TimelineClient({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
             <label className="text-xs uppercase tracking-widest text-tertiary font-bold mb-4 block">
-              Chronological Catalog
+              {t.timeline.chronologicalCatalog}
             </label>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-none">
-              The Timeline
+              {t.timeline.heading}
             </h1>
           </div>
 
@@ -106,7 +105,7 @@ export default function TimelineClient({
                   : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
               }`}
             >
-              All Eras
+              {t.timeline.allEras}
             </button>
             {journeyTitles.map((title) => (
               <button
@@ -131,7 +130,7 @@ export default function TimelineClient({
           {/* Historical Eras */}
           <div>
             <h3 className="text-[11px] uppercase tracking-[0.2em] font-bold text-outline mb-6">
-              Historical Eras
+              {t.timeline.historicalEras}
             </h3>
             <ul className="space-y-4">
               {ERAS.map((era) => {
@@ -177,7 +176,7 @@ export default function TimelineClient({
           {categoryNames.length > 0 && (
             <div>
               <h3 className="text-[11px] uppercase tracking-[0.2em] font-bold text-outline mb-6">
-                Category Filter
+                {t.timeline.categoryFilter}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {categoryNames.map((name) => {
@@ -210,7 +209,7 @@ export default function TimelineClient({
               >
                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z" />
               </svg>
-              <h4 className="text-sm font-bold text-on-surface mb-2">Curator&apos;s Note</h4>
+              <h4 className="text-sm font-bold text-on-surface mb-2">{t.timeline.curatorsNote}</h4>
               <p className="text-xs text-on-surface-variant leading-relaxed">{curatorNote}</p>
             </div>
           )}
@@ -221,17 +220,18 @@ export default function TimelineClient({
           {visible.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 text-center">
               <p className="text-on-surface-variant text-lg font-medium mb-2">
-                No devices found
+                {t.timeline.noDevices}
               </p>
               <p className="text-on-surface-variant text-sm opacity-60">
-                Try adjusting your filters to see more results.
+                {t.timeline.noDevicesSubtext}
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {visible.map((device) => {
                 const isRare = RARE_RARITIES.includes(device.rarity ?? '');
-                const rarity = rarityLabel(device.rarity);
+                const rarityKey = device.rarity as keyof typeof t.rarity | null;
+                const rarity = rarityKey && t.rarity[rarityKey] ? t.rarity[rarityKey] : (device.rarity ?? '');
                 return (
                   <div
                     key={device.showcaseId}
@@ -276,7 +276,7 @@ export default function TimelineClient({
                           href={`/device/${device.id}`}
                           className="text-sm font-bold text-on-surface flex items-center gap-2 group/btn hover:text-primary transition-colors"
                         >
-                          View Record
+                          {t.timeline.viewRecord}
                           <svg
                             className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform"
                             fill="none"
@@ -315,7 +315,7 @@ export default function TimelineClient({
                 onClick={handleLoadMore}
                 className="bg-surface-container-high text-on-surface-variant px-10 py-4 rounded-full text-xs uppercase font-bold tracking-widest hover:bg-surface-container-highest transition-all flex items-center gap-3"
               >
-                Load More Artifacts
+                {t.timeline.loadMore}
                 <svg
                   className="w-5 h-5"
                   fill="none"

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useT } from '@/i18n/context';
 
 interface NavProps {
   siteTitle: string;
@@ -9,11 +10,12 @@ interface NavProps {
 
 export default function Nav({ siteTitle }: NavProps) {
   const pathname = usePathname();
+  const t = useT();
 
   const links = [
-    { href: '/journeys', label: 'Journeys' },
-    { href: '/timeline', label: 'Timeline' },
-    { href: '/#about', label: 'About' },
+    { href: '/journeys', label: t.nav.journeys },
+    { href: '/timeline', label: t.nav.timeline },
+    { href: '/#about', label: t.nav.about },
   ];
 
   return (
@@ -52,7 +54,7 @@ export default function Nav({ siteTitle }: NavProps) {
             href="/journeys"
             className="bg-primary text-on-primary px-6 py-2 rounded-full font-medium text-sm hover:opacity-80 transition-all duration-200 active:scale-95"
           >
-            Explore
+            {t.nav.explore}
           </Link>
         </div>
       </div>

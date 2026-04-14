@@ -356,6 +356,7 @@ struct ShareView: View {
         releaseYear: 1987,
         location: LocationRef(id: 1, name: "Shelf A"),
         info: nil,
+        historicalNotes: nil,
         searchText: nil,
         isFavorite: true,
         status: .COLLECTION,

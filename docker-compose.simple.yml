@@ -105,6 +105,7 @@ services:
       API_URL: http://api:4000
       AUTH_PASSWORD: ${AUTH_PASSWORD:-}
       JWT_SECRET: ${JWT_SECRET:-}
+      LANGUAGE: ${LANGUAGE:-en}
     depends_on:
       api:
         condition: service_healthy

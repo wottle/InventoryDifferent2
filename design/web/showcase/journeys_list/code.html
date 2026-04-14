@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#1a1b1f",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-primary": "#adc6ff",
+                    "outline-variant": "#c1c6d7",
+                    "surface": "#f9f9fe",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-variant": "#e2e2e7",
+                    "on-secondary": "#ffffff",
+                    "on-primary-container": "#fefcff",
+                    "secondary-fixed": "#e3e2e7",
+                    "on-surface": "#1a1c1f",
+                    "surface-dim": "#d9dade",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#6f5d00",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface-variant": "#414755",
+                    "on-tertiary-container": "#4b3f00",
+                    "surface-tint": "#005bc1",
+                    "primary": "#0058bc",
+                    "secondary-fixed-dim": "#c6c6cb",
+                    "background": "#f9f9fe",
+                    "inverse-on-surface": "#f0f0f5",
+                    "surface-container": "#ededf2",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#e0dfe4",
+                    "on-primary-fixed": "#001a41",
+                    "surface-container-highest": "#e2e2e7",
+                    "primary-container": "#0070eb",
+                    "surface-container-high": "#e8e8ed",
+                    "tertiary-fixed-dim": "#e2c53e",
+                    "on-tertiary-fixed": "#221b00",
+                    "on-secondary-container": "#626267",
+                    "tertiary-container": "#c5aa22",
+                    "secondary": "#5d5e63",
+                    "surface-container-low": "#f3f3f8",
+                    "surface-bright": "#f9f9fe",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed-variant": "#004493",
+                    "on-error": "#ffffff",
+                    "on-background": "#1a1c1f",
+                    "tertiary-fixed": "#ffe261",
+                    "on-secondary-fixed-variant": "#46464b",
+                    "inverse-surface": "#2e3034",
+                    "outline": "#717786",
+                    "on-tertiary-fixed-variant": "#534600"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 32px 64px -12px rgba(26, 28, 31, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#f9f9fe]/80 dark:bg-slate-950/80 backdrop-blur-xl flex justify-between items-center px-12 py-6 max-w-full mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#1a1c1f] dark:text-white uppercase">
+            Technical Atelier
+        </div>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] dark:text-slate-400 hover:text-[#0058bc] transition-colors duration-300" href="#">Gallery</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#0058bc] border-b-2 border-[#0058bc] pb-1 hover:text-[#0058bc] transition-colors duration-300" href="#">Journeys</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] dark:text-slate-400 hover:text-[#0058bc] transition-colors duration-300" href="#">About</a>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">search</span>
+<button class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#0058bc] opacity-80 active:opacity-100 transition-opacity">Archive</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="Curator Profile" data-alt="Close-up portrait of a professional curator in a minimalist studio setting with soft side lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk6BIawjRH1PB1jT-J3Z31kpIB5c6ddFrVDX98-hHkCm3OoHFeIgaVer6Fg1TTTqB7IkdqJdsdv4gsmfqL1HepGqMspLvpMUUO4FX_hiymBx4eQ8cPJkoIvVBreXI2bpnkML5g8d0llCQHJAKtKdCwIHtLHRvVAbJL6usYAptRjSCBEiDfRED5utOcf7-oLJNKTvAqESfMbcdR6e5gq4SsA0tMWGqOb8BqVoYm9hHiMW5zYjWkUGpXEgmMQtfGafyZVm392KJVbGI"/>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="pt-32 pb-24 px-6 md:px-12 lg:px-24">
+<!-- Hero Section -->
+<header class="mb-24">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-3xl">
+<span class="text-[0.75rem] font-label font-semibold tracking-[0.05em] uppercase text-tertiary mb-4 block">Curated Narratives</span>
+<h1 class="text-5xl md:text-7xl font-headline font-black tracking-tighter text-on-surface mb-8 leading-none">
+                        Digital <br/>Histories.
+                    </h1>
+<p class="text-xl text-on-surface-variant font-light leading-relaxed max-w-2xl">
+                        A chronological odyssey through the platinum and polycarbonate that defined an era. Each journey is a precision-curated chapter of our collection.
+                    </p>
+</div>
+<div class="flex gap-4 pb-2">
+<div class="flex flex-col items-center gap-1">
+<span class="text-2xl font-bold">14</span>
+<span class="text-[0.6875rem] font-label uppercase text-outline">Journeys</span>
+</div>
+<div class="w-px h-12 bg-outline-variant opacity-30"></div>
+<div class="flex flex-col items-center gap-1">
+<span class="text-2xl font-bold">120+</span>
+<span class="text-[0.6875rem] font-label uppercase text-outline">Artifacts</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Editorial Grid -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-y-32">
+<!-- Journey 1: Full Width Featured -->
+<div class="md:col-span-12 group cursor-pointer">
+<div class="relative overflow-hidden rounded-xl aspect-[21/9] bg-surface-container-low mb-8 transition-transform duration-500 hover:scale-[1.01]">
+<img class="w-full h-full object-cover grayscale contrast-125 opacity-90 group-hover:grayscale-0 transition-all duration-700" data-alt="Cinematic shot of a vintage beige Macintosh computer on a clean white desk, sharp focus, high-end editorial lighting, minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC21K-why9CyWdXjJFOiDrf2g56oBHbCrS_fuZIoDA6QZ1RU68DkNf8QoYA5qOtqUKOqefmKChH1fqtCn4XQGfvjQNU38dLs4xMB1qvhd5y7x6PQ6gFjJZYs63f_L1-7zl6e4Bq-7u_UfScN6dddf_6BjxcAvihsa6x_HgYwLUx94Yf9qFXb80oLMgNpRRDS0vWGXvDlHFDWtEOXlzXGphYeMjqq1ZGCKb5D7l5fy1Yc9kTba3nTuEwSt8S5MCFI1ZCQQJc6MYiRrI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-12 left-12">
+<span class="inline-block px-3 py-1 bg-tertiary text-on-tertiary text-[0.6875rem] font-label uppercase tracking-wider rounded-sm mb-4">Volume I</span>
+<h2 class="text-4xl md:text-5xl font-headline font-bold text-white tracking-tighter">The Beige Foundation</h2>
+</div>
+</div>
+<div class="flex flex-col md:flex-row gap-8 items-start">
+<p class="text-lg md:text-xl text-on-surface-variant italic font-light max-w-2xl leading-relaxed">
+                        "The architecture of the personal computer began not with transparency, but with the solidity of the block. A vision of utility that promised a desktop for every soul."
+                    </p>
+<button class="mt-4 md:mt-0 flex items-center gap-2 text-primary font-semibold group">
+                        Explore Chapter <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Journey 2: Left Column -->
+<div class="md:col-span-7 group cursor-pointer">
+<div class="relative rounded-xl overflow-hidden aspect-[4/5] bg-surface-container-high mb-6 transition-all duration-500 editorial-shadow">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Vibrant close-up of a translucent teal iMac G3 showing the inner components through the plastic shell, high-end product photography, soft studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBic2wa4N3SEO__d1_-CN0vPwAqEmC31DnWlFc4VmPdYsfPGbKc1RDx2NRXFhl4h2njuEYU9bjnp2E77TBpSq6F--ipp2j1KyNsDr25JL86xgEMSb-n8uPEaukdhJYUpDvyS0r8qK8MsHH-FICxisQfXVcmsV2PQJHWop_GyworMcs7WspNjJZxtu_e3GHa7Dj_oAPc0sgmR1ZXabZwh2A5sJMztNvuo3JI4fbohNj6x5Yb9DBbJiewXN0V_2hQlyFBuXYsMbCITu0"/>
+</div>
+<span class="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-2 block">1998 — 2003</span>
+<h3 class="text-3xl font-headline font-bold tracking-tight mb-4">The Translucent Revolution</h3>
+<p class="text-on-surface-variant leading-relaxed max-w-lg">
+                    When color became a form of protest. A departure from the mundane toward the expressive, revealing the internal logic of the machine through candy-coated shells.
+                </p>
+</div>
+<!-- Journey 3: Right Column Asymmetric -->
+<div class="md:col-span-5 md:mt-24 group cursor-pointer">
+<div class="relative rounded-xl overflow-hidden aspect-[3/4] bg-surface-container mb-6 transition-all duration-500 editorial-shadow">
+<img class="w-full h-full object-cover grayscale opacity-80 group-hover:opacity-100 transition-opacity duration-700" data-alt="Minimalist dark studio shot of a NeXT workstation, black magnesium cube with subtle highlights on its geometric edges, mysterious and industrial." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUn3mIgYYnBbsrB48tPA_CEIIlSL9fm1greFWRMRrJ1RCl5Wn5v9_pa44J9VqVcn1ZUmi0DQlzGiyPS6qOiBG2q8I6_JMoo5iyaPnekZjWkuPAzm_oBeZ3KMfquAS85HGZSMjrsaIsOevHgwheCdpcHkAEv2hnxAQdFv-3l88QobQ3d1ZoUbp8jV2nvUSTIHdNQiUO0oJ_fRCm4ewsk0Q6wuZHTu3DNd0z9VtGz5ed_TtU7GaaOkS69sLDBLOJljrHYpSM1S1H4ZU"/>
+</div>
+<span class="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-2 block">The Exile Years</span>
+<h3 class="text-3xl font-headline font-bold tracking-tight mb-4">The NeXT Years</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                    A period of profound architectural refinement. The black cube as a monolithic monument to high-performance computing and the future of OS design.
+                </p>
+</div>
+<!-- Journey 4: Centered Focus -->
+<div class="md:col-start-3 md:col-span-8 group cursor-pointer">
+<div class="bg-surface-container-low rounded-xl p-1 md:p-2 editorial-shadow">
+<div class="relative rounded-lg overflow-hidden aspect-video transition-all duration-500">
+<img class="w-full h-full object-cover opacity-90 group-hover:opacity-100" data-alt="Overhead shot of sleek aluminum MacBook Pro and iPod models arranged in a clean grid, polished metal surfaces reflecting soft white light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyEmvcnkAL5a6P-PIhqFwD7nd5A-MJXV0o05ZN2P1k6yU9Tr_vcinxockfq5j5im7DRqFo4wRnrgXPR1eGR5tEZ7ToUC6WsvtA7k75_WWCI4or0VltvMExE84meHlCF0VP8YpRXXuDyrwoAG9CN4qtDH5B8VkRQ2wFr8eS7KMwNFNllvxmEsmnbd4I5gTeKqZ8gXcdol3hAfMwD0ifMBPcGaoPSGgemkVnC1G_WMg43VFKOygT7R51dbn2WKAgKYQguponflU7HvY"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/0 transition-colors">
+<div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-4xl">play_arrow</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center max-w-2xl mx-auto">
+<span class="text-[0.6875rem] font-label uppercase tracking-widest text-tertiary mb-2 block">Modernity Arrives</span>
+<h3 class="text-3xl md:text-4xl font-headline font-bold tracking-tight mb-4">The Unibody Era</h3>
+<p class="text-on-surface-variant leading-relaxed italic">
+                        "Precision-milled from a single block of aluminum. The moment the computer became an object of jewelry and industrial perfection."
+                    </p>
+</div>
+</div>
+</section>
+<!-- Newsletter / Archive Link -->
+<section class="mt-48 py-24 bg-surface-container-lowest rounded-xl border border-outline-variant/10 text-center">
+<span class="material-symbols-outlined text-5xl text-primary mb-6">inventory_2</span>
+<h2 class="text-3xl md:text-4xl font-headline font-bold tracking-tighter mb-4">Preserve the Narrative.</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto mb-10 px-6">
+                Receive quarterly monographs on significant acquisitions and technical deep-dives from the Atelier curators.
+            </p>
+<div class="flex flex-col md:flex-row justify-center gap-4 px-6">
+<input class="bg-surface-container-low border-none rounded-full px-8 py-3 w-full md:w-80 focus:ring-1 focus:ring-primary text-sm" placeholder="Email Address" type="email"/>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-10 py-3 rounded-full font-semibold text-sm hover:opacity-90 transition-opacity">Subscribe</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-16 border-t border-slate-200 dark:border-slate-800 bg-[#f9f9fe] dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 w-full gap-8">
+<div class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-[#414755]">
+                © 2024 The Technical Atelier. All Rights Reserved. Preservation of Digital History.
+            </div>
+<div class="flex gap-10">
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-[#414755] hover:text-[#0058bc] transition-all" href="#">Collection Policy</a>
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-[#414755] hover:text-[#0058bc] transition-all" href="#">Terms of Service</a>
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-[#1a1c1f] dark:text-white font-bold transition-all" href="#">Archive Access</a>
+</div>
+</div>
+</footer>
+</body></html>

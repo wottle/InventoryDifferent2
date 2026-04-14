@@ -26,6 +26,7 @@ struct EditDeviceView: View {
     @State private var showingNewLocationAlert = false
     @State private var newLocationName = ""
     @State private var info: String
+    @State private var historicalNotes: String
 
     @State private var status: Status
     @State private var functionalStatus: FunctionalStatus
@@ -80,6 +81,7 @@ struct EditDeviceView: View {
         _releaseYear = State(initialValue: device.releaseYear.map { String($0) } ?? "")
         _selectedLocationId = State(initialValue: device.location?.id)
         _info = State(initialValue: device.info ?? "")
+        _historicalNotes = State(initialValue: device.historicalNotes ?? "")
 
         _status = State(initialValue: device.status)
         _functionalStatus = State(initialValue: device.functionalStatus)
@@ -246,6 +248,7 @@ struct EditDeviceView: View {
             .disabled(isLoadingCategories)
 
             LabeledTextEditor(label: t.addEditDevice.info, text: $info)
+            LabeledTextEditor(label: t.addEditDevice.historicalNotes, text: $historicalNotes)
 
             DatePicker(t.addEditDevice.lastPowerOn, selection: Binding(
                 get: { lastPowerOnDate ?? Date() },
@@ -550,6 +553,7 @@ struct EditDeviceView: View {
             if let year = Int(releaseYear) { input["releaseYear"] = year }
             input["locationId"] = selectedLocationId ?? NSNull()
             if !info.isEmpty { input["info"] = info }
+            if !historicalNotes.isEmpty { input["historicalNotes"] = historicalNotes }
 
             input["status"] = status.rawValue
             input["functionalStatus"] = functionalStatus.rawValue
@@ -697,6 +701,7 @@ struct SerialBarcodeCaptureSheet: View {
         releaseYear: 1987,
         location: LocationRef(id: 1, name: "Shelf A"),
         info: "Great condition",
+        historicalNotes: nil,
         searchText: nil,
         isFavorite: true,
         status: .COLLECTION,

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#00e5ff",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#414755",
+                        "secondary-container": "#2c2d30",
+                        "on-surface-variant": "#c1c6d7",
+                        "surface-container-highest": "#36393e",
+                        "inverse-primary": "#005bc1",
+                        "tertiary": "#39ff14", // Neon Green
+                        "surface-container-high": "#282a2f",
+                        "on-tertiary-fixed": "#002204",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#39ff14",
+                        "surface-container": "#1e1f23",
+                        "on-primary": "#000000",
+                        "on-tertiary-fixed-variant": "#00530a",
+                        "on-background": "#f0f0f5",
+                        "outline": "#717786",
+                        "primary-fixed-dim": "#00b2cc",
+                        "primary-fixed": "#00e5ff",
+                        "background": "#0a0a0b",
+                        "surface-dim": "#121214",
+                        "surface-container-low": "#151619",
+                        "tertiary-container": "#00530a",
+                        "tertiary-fixed-dim": "#2ce010",
+                        "inverse-on-surface": "#1a1c1f",
+                        "error": "#ff5449",
+                        "primary-container": "#00e5ff",
+                        "on-surface": "#ffffff",
+                        "on-secondary-fixed": "#ffffff",
+                        "surface": "#0a0a0b",
+                        "surface-container-lowest": "#050505",
+                        "on-secondary-fixed-variant": "#c6c6cb",
+                        "on-secondary-container": "#e3e2e7",
+                        "secondary": "#919196",
+                        "on-tertiary-container": "#d0ffa9",
+                        "surface-bright": "#1a1c1f",
+                        "surface-tint": "#00e5ff",
+                        "on-tertiary": "#000000",
+                        "on-primary-container": "#001f24",
+                        "secondary-fixed": "#46464b",
+                        "secondary-fixed-dim": "#2e2f33",
+                        "inverse-surface": "#e2e2e7",
+                        "on-secondary": "#1a1b1f",
+                        "on-error": "#690005",
+                        "primary": "#00e5ff", // Electric Cyan
+                        "on-primary-fixed": "#00363d",
+                        "surface-variant": "#414755"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl flex justify-between items-center px-6 py-4 border-b border-surface-container">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer">arrow_back</span>
+<h1 class="text-xl font-bold tracking-tight text-white">Device Details</h1>
+</div>
+<button class="text-primary font-semibold hover:opacity-80 transition-all">Edit</button>
+</header>
+<main class="pt-20 px-6 max-w-2xl mx-auto space-y-6">
+<section class="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-surface-container-high shadow-sm">
+<img class="w-full h-full object-cover grayscale-[0.2]" data-alt="Studio close-up of a vintage metallic titanium laptop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOEHRfy6XthkslDN9O5Hsvaa6i_FtFItcvmlN1Q8KFxP7OigXS0O53YQuiupDBmWhemrghT61VyXenS-7YnwUaIxFLo-iSPZ82GwPN5JhNrH0UcwrUCYDvUim5ahQDiIBP1tidQG74jUdy3MCnMz1DaLIwGDhBDhxoRuGFDHDG_7xkzyxhd2ZjrWrdC2xKOyglk9sIpMvyg3-eCxUOLSKWM7dyGIz-JwK7INaNh-q1DSUskmRtlmJGckEU9cJ9IDuOxFzvaylF7Y4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 text-white">
+<span class="text-[11px] font-bold uppercase tracking-widest opacity-80">Laptops • 2001</span>
+<h2 class="text-3xl font-extrabold tracking-tight mt-1">PowerBook G4 Titanium</h2>
+</div>
+</section>
+<section class="bg-surface-container-lowest p-5 rounded-xl border border-surface-container shadow-sm space-y-3">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-[11px] font-bold uppercase tracking-widest text-primary mb-1 block">Quick Overview</span>
+<h3 class="text-lg font-bold tracking-tight text-white">Apple Computer M8363</h3>
+</div>
+<div class="bg-surface-container-high px-3 py-1 rounded-sm">
+<span class="text-[12px] font-mono font-bold text-on-surface">UV21400TLL6</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+            Near-mint condition classic. Iconic metal chassis and translucent keyboard.
+        </p>
+</section>
+<section class="grid grid-cols-3 gap-3">
+<div class="bg-surface-container-low p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-surface-container">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Functional</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-surface-container">
+<span class="material-symbols-outlined text-tertiary text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Rare</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-surface-container">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">sell</span>
+<span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Tagged</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-surface-container">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">inventory_2</span>
+<span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Boxed</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-surface-container">
+<span class="material-symbols-outlined text-error text-xl">battery_alert</span>
+<span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">No PRAM</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-surface-container">
+<span class="material-symbols-outlined text-tertiary text-xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Favorite</span>
+</div>
+</section>
+<section class="grid grid-cols-2 gap-3">
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-surface-container shadow-sm">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Acquisition</span>
+<div class="mt-2">
+<p class="text-2xl font-extrabold text-white">$350</p>
+<p class="text-[11px] text-on-surface-variant mt-0.5">Source: eBay</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-surface-container shadow-sm border-l-4 border-l-tertiary">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Est. Value</span>
+<div class="mt-2">
+<p class="text-2xl font-extrabold text-tertiary">$600</p>
+<p class="text-[11px] text-tertiary font-medium mt-0.5">+71% Appreciation</p>
+</div>
+</div>
+</section>
+<section class="space-y-6">
+<div class="space-y-3">
+<h4 class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant px-2">Media &amp; Assets</h4>
+<div class="grid grid-cols-4 gap-2">
+<div class="aspect-square bg-surface-container-high rounded-lg overflow-hidden border border-surface-container">
+<img class="w-full h-full object-cover grayscale-[0.1]" data-alt="close up macro shot of the keyboard and trackpad" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYkqGxabJkrpyTow3sXMIzxRGa8VlQlIiQeKYrO7zjYdEmBLxFRZFeqRh3lV0sogxn3gbfS2Q3yWDrtovbZ_GEPDxSU-NfMpVFp4tR6xlOCWECaZO51CFV9h_RxTDvLIpKWA-ZTbFeq1MqHZyfhOa8Gu3Qy3odl8blKn7Kfo4PT6Erw5HXqn0BZE-N4EkmTjyV_bDG29MpLqsIM5IOeTyvmFf9JKyVkx_vUFAd33UtJfFbe0WvSU2MFfUF8jTQ8B8MIXtbm0npuuI"/>
+</div>
+<div class="aspect-square bg-surface-container-high rounded-lg overflow-hidden flex items-center justify-center flex-col gap-1 border-2 border-dashed border-outline-variant hover:border-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-outline text-lg">add_a_photo</span>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<h4 class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant px-2">Accessories</h4>
+<div class="bg-surface-container-low p-4 rounded-xl flex gap-4 overflow-x-auto border border-surface-container no-scrollbar">
+<div class="flex items-center gap-2 text-xs font-semibold whitespace-nowrap bg-surface-container-lowest text-white px-3 py-2 rounded-lg border border-surface-container">
+<span class="material-symbols-outlined text-sm text-primary">power</span> Original 45W Charger
+                </div>
+<div class="flex items-center gap-2 text-xs font-semibold whitespace-nowrap bg-surface-container-lowest text-white px-3 py-2 rounded-lg border border-surface-container">
+<span class="material-symbols-outlined text-sm text-primary">cases</span> Incase Neoprene Sleeve
+                </div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between px-2">
+<h4 class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Maintenance Logs</h4>
+<button class="text-xs font-bold text-primary">+ New Log</button>
+</div>
+<div class="space-y-2">
+<div class="bg-surface-container-low p-4 rounded-xl flex items-center gap-4 border border-surface-container">
+<div class="h-10 w-10 rounded-full bg-surface-container-high flex items-center justify-center border border-surface-container">
+<span class="material-symbols-outlined text-primary text-lg">construction</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">New HDD Installation</p>
+<p class="text-xs text-on-surface-variant">Aug 12, 2023 • Verified health</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="space-y-3 pt-2">
+<h4 class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant px-2">Technical Specifications</h4>
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-surface-container divide-y divide-surface-container">
+<div class="grid grid-cols-2 p-3 text-[13px]">
+<span class="text-on-surface-variant">Processor</span>
+<span class="font-bold text-right text-white">667MHz G4</span>
+</div>
+<div class="grid grid-cols-2 p-3 text-[13px]">
+<span class="text-on-surface-variant">Memory</span>
+<span class="font-bold text-right text-white">512MB SDRAM</span>
+</div>
+<div class="grid grid-cols-2 p-3 text-[13px]">
+<span class="text-on-surface-variant">Storage</span>
+<span class="font-bold text-right text-white">30GB HDD</span>
+</div>
+<div class="p-3 text-[13px] flex justify-between items-center">
+<span class="text-on-surface-variant">Networking</span>
+<div class="flex gap-1">
+<span class="text-[9px] font-bold text-on-primary bg-primary px-1.5 py-0.5 rounded uppercase">AirPort</span>
+<span class="text-[9px] font-bold text-on-primary bg-primary px-1.5 py-0.5 rounded uppercase">Eth</span>
+</div>
+</div>
+</div>
+</section>
+<section class="space-y-3 pb-8">
+<h4 class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant px-2">Archive Notes</h4>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-surface-container shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-6xl text-primary">sticky_note_2</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<p class="text-[11px] font-bold text-on-surface-variant">Aug 10, 2023</p>
+</div>
+<p class="text-xs italic text-on-surface-variant leading-relaxed">"Received unit via courier. Packaging was exceptional. No hinge cracks detected—rare for this specific model variant."</p>
+</div>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-2 pb-6 bg-surface-container-low/95 backdrop-blur-2xl z-50 border-t border-outline-variant/30">
+<a class="flex flex-col items-center justify-center bg-primary/20 text-primary rounded-2xl px-5 py-1.5 active:scale-95 transition-transform border border-primary/20" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="text-[11px] font-bold tracking-tight">Collection</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[11px] font-medium tracking-tight">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[11px] font-medium tracking-tight">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="text-[11px] font-medium tracking-tight">Vault</span>
+</a>
+</nav>
+
+</body></html>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getClient } from '@/lib/apollo-rsc';
+import { getTranslations } from '@/i18n';
 import { GET_ALL_SHOWCASE_JOURNEYS } from '@/lib/queries';
 
 interface JourneyListItem {
@@ -14,18 +15,18 @@ interface JourneyListItem {
   chapters: Array<{ id: string; devices: Array<{ id: string }> }>;
 }
 
-function formatPublishedDate(iso: string | null): string | null {
-  if (!iso) return null;
-  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-function getVolumeLabel(sortOrder: number): string {
-  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
-    'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'];
-  return `Volume ${numerals[sortOrder - 1] || sortOrder}`;
-}
 
 export default async function JourneysPage() {
+  const t = getTranslations(process.env.LANGUAGE);
+
+  function formatPublishedDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(process.env.LANGUAGE ?? 'en', { year: 'numeric', month: 'long' });
+  }
+
+  function getVolumeLabel(sortOrder: number): string {
+    return `${t.journeys.volume} ${String(sortOrder).padStart(2, '0')}`;
+  }
   let journeys: JourneyListItem[] = [];
 
   try {
@@ -50,25 +51,32 @@ export default async function JourneysPage() {
       <header className="mb-24">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="max-w-3xl">
-            <span className="text-xs font-label font-semibold tracking-[0.05em] uppercase text-tertiary mb-4 block">
-              Curated Narratives
-            </span>
-            <h1 className="text-5xl md:text-7xl font-headline font-black tracking-tighter text-on-surface mb-8 leading-none">
-              Digital <br />Histories.
+            <label className="text-xs uppercase tracking-widest text-outline font-bold mb-4 block">
+              {t.journeys.curatedNarratives}
+            </label>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-none mb-6">
+              {t.journeys.heading}
             </h1>
-            <p className="text-xl text-on-surface-variant font-light leading-relaxed max-w-2xl">
-              A chronological odyssey through the platinum and polycarbonate that defined an era.
+            <p className="text-lg text-on-surface-variant max-w-xl leading-relaxed">
+              {t.journeys.subheading}
             </p>
           </div>
           <div className="flex gap-4 pb-2">
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold">{journeys.length}</span>
-              <span className="text-[0.6875rem] font-label uppercase text-outline">Journeys</span>
-            </div>
-            <div className="w-px h-12 bg-outline-variant opacity-30" />
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold">{totalDevices}+</span>
-              <span className="text-[0.6875rem] font-label uppercase text-outline">Artifacts</span>
+            <div className="flex gap-8">
+              <div>
+                <p className="text-3xl font-black tracking-tighter text-on-surface">{journeys.length}</p>
+                <p className="text-xs text-outline uppercase tracking-widest">
+                  {t.journeys.journeysLabel}
+                </p>
+              </div>
+              <div>
+                <p className="text-3xl font-black tracking-tighter text-on-surface">
+                  {journeys.reduce((acc, j) => acc + j.chapters.reduce((a, c) => a + c.devices.length, 0), 0)}
+                </p>
+                <p className="text-xs text-outline uppercase tracking-widest">
+                  {t.journeys.artifactsLabel}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -77,8 +85,8 @@ export default async function JourneysPage() {
       {/* Empty State */}
       {journeys.length === 0 && (
         <div className="flex flex-col items-center justify-center py-40 text-center">
-          <p className="text-on-surface-variant text-xl font-light mb-4">No journeys published yet.</p>
-          <p className="text-sm text-outline">Check back soon for curated narratives.</p>
+          <p className="text-on-surface-variant text-lg font-medium mb-2">{t.journeys.noJourneys}</p>
+          <p className="text-sm text-outline">{t.journeys.noJourneysSubtext}</p>
         </div>
       )}
 
@@ -111,9 +119,9 @@ export default async function JourneysPage() {
                 </div>
                 <div className="flex flex-col md:flex-row gap-8 items-start">
                   <div className="flex-1">
-                    {formatPublishedDate(featured.publishedAt) && (
+                    {featured.publishedAt && (
                       <p className="text-xs font-label uppercase tracking-widest text-outline mb-2">
-                        Published {formatPublishedDate(featured.publishedAt)}
+                        {t.journeys.published} {formatPublishedDate(featured.publishedAt!)}
                       </p>
                     )}
                     <p className="text-lg md:text-xl text-on-surface-variant italic font-light max-w-2xl leading-relaxed">
@@ -121,7 +129,7 @@ export default async function JourneysPage() {
                     </p>
                   </div>
                   <span className="mt-4 md:mt-0 flex items-center gap-2 text-primary font-semibold group-hover:gap-4 transition-all whitespace-nowrap">
-                    Explore Journey →
+                    {t.journeys.exploreJourney}
                   </span>
                 </div>
               </Link>
@@ -153,10 +161,10 @@ export default async function JourneysPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-[0.6875rem] font-label uppercase tracking-widest text-outline">
-                      {getVolumeLabel(journey.sortOrder)}
+                    <span className="text-[0.65rem] uppercase tracking-widest font-bold text-primary">
+                      {t.journeys.published}
                     </span>
-                    {formatPublishedDate(journey.publishedAt) && (
+                    {journey.publishedAt && (
                       <>
                         <span className="text-outline opacity-30">·</span>
                         <span className="text-[0.6875rem] font-label uppercase tracking-widest text-outline">

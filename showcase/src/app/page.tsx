@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getClient } from '@/lib/apollo-rsc';
+import { getTranslations } from '@/i18n';
 import { GET_SHOWCASE_CONFIG, GET_FEATURED_DEVICES, GET_SHOWCASE_JOURNEYS, GET_SHOWCASE_QUOTES } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
 
@@ -66,19 +67,8 @@ interface ShowcaseQuote {
 
 const RARE_RARITIES = ['RARE', 'VERY_RARE', 'UNIQUE'];
 
-function rarityLabel(rarity: string | null): string {
-  if (!rarity) return 'Featured';
-  switch (rarity) {
-    case 'COMMON': return 'Common';
-    case 'UNCOMMON': return 'Uncommon';
-    case 'RARE': return 'Rare';
-    case 'VERY_RARE': return 'Very Rare';
-    case 'UNIQUE': return 'Unique';
-    default: return 'Featured';
-  }
-}
-
 export default async function HomePage() {
+  const t = getTranslations(process.env.LANGUAGE);
   let config: ShowcaseConfig | null = null;
   let featuredDevices: ShowcaseDevice[] = [];
   let journeys: ShowcaseJourney[] = [];
@@ -138,9 +128,9 @@ export default async function HomePage() {
         )}
         <div className="container mx-auto px-8 relative z-10">
           <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.2em] text-primary mb-6 font-bold">
-              {siteTitle}
-            </p>
+            <label className="text-[0.65rem] font-bold uppercase tracking-widest text-outline mb-2 block">
+              {t.home.curatedNarratives}
+            </label>
             <h1 className="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-on-surface mb-8">
               {tagline}
             </h1>
@@ -152,7 +142,7 @@ export default async function HomePage() {
                 href="/journeys"
                 className="bg-primary text-on-primary px-8 py-4 rounded-full font-semibold hover:opacity-90 transition-all flex items-center gap-2 group"
               >
-                Start Exploring
+                {t.home.startExploring}
                 <svg
                   className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                   fill="none"
@@ -172,9 +162,9 @@ export default async function HomePage() {
       <section id="about" className="scroll-mt-[68px] py-32 px-8 bg-surface">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
           <div className="md:col-span-7">
-            <h2 className="text-xs uppercase tracking-widest text-primary font-bold mb-4">
-              The Narrative
-            </h2>
+            <label className="text-xs uppercase tracking-widest text-outline font-bold mb-6 block">
+              {t.home.theNarrative}
+            </label>
             <p className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-on-surface">
               {narrativeStatement}
             </p>
@@ -212,14 +202,14 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <div className="absolute bottom-8 left-8 right-8 z-10">
                   <span className="text-xs uppercase tracking-widest text-white/60 font-bold">
-                    Featured Journey · {featuredJourney.chapters.length} chapter{featuredJourney.chapters.length !== 1 ? 's' : ''}
+                    {t.home.featuredJourney} · {featuredJourney.chapters.length} {featuredJourney.chapters.length === 1 ? t.home.chapterSingular : t.home.chapterPlural}
                   </span>
                   <h3 className="text-3xl font-bold text-white mt-1 mb-2">{featuredJourney.title}</h3>
                   <p className="text-white/70 text-sm leading-relaxed line-clamp-2 max-w-lg">{featuredJourney.description}</p>
                 </div>
                 <div className="absolute top-6 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-full flex items-center gap-1.5">
-                    Read the story
+                    {t.home.readTheStory}
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -231,8 +221,8 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-8 left-8 text-white z-10">
-                  <span className="text-xs uppercase tracking-widest opacity-60">The Archive</span>
-                  <h3 className="text-2xl font-bold">Curated Journeys Coming Soon</h3>
+                  <span className="text-xs uppercase tracking-widest opacity-60">{t.home.theArchive}</span>
+                  <h3 className="text-2xl font-bold">{t.home.comingSoon}</h3>
                 </div>
               </div>
             )}
@@ -243,7 +233,7 @@ export default async function HomePage() {
               <div className="h-1/2 rounded-xl overflow-hidden relative group bg-surface-container-high">
                 <div className="w-full h-full bg-gradient-to-br from-surface-container to-surface-container-highest" />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="text-white font-medium underline">View Detail</span>
+                  <span className="text-white font-medium underline">{t.home.viewDetail}</span>
                 </div>
               </div>
 
@@ -275,9 +265,9 @@ export default async function HomePage() {
             <div className="flex justify-between items-end mb-16">
               <div>
                 <span className="text-sm uppercase tracking-widest text-primary font-bold">
-                  Selection 01
+                  {t.home.selectionLabel}
                 </span>
-                <h2 className="text-5xl font-black tracking-tighter mt-2">Featured Artifacts</h2>
+                <h2 className="text-5xl font-black tracking-tighter mt-2">{t.home.featuredArtifacts}</h2>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -285,7 +275,8 @@ export default async function HomePage() {
                 const { device, curatorNote } = showcaseDevice;
                 const thumbnailUrl = pickThumbnail(device.images);
                 const isRare = RARE_RARITIES.includes(device.rarity || '');
-                const badgeText = rarityLabel(device.rarity);
+                const rarityKey = device.rarity as keyof typeof t.rarity | null;
+                const badgeText = (rarityKey && t.rarity[rarityKey]) ? t.rarity[rarityKey] : t.home.featuredJourney;
                 const description = curatorNote ||
                   (device.info ? device.info.slice(0, 150) + (device.info.length > 150 ? '…' : '') : null);
 
@@ -321,6 +312,9 @@ export default async function HomePage() {
                       <span className="text-primary font-black italic text-lg">
                         #{String(device.id).padStart(3, '0')}
                       </span>
+                      <span className="text-[0.65rem] font-bold uppercase tracking-widest text-outline mr-2">
+                        {t.home.selectionLabel.replace('01', String(idx + 1).padStart(2, '0'))}
+                      </span>
                     </div>
                     {description && (
                       <p className="mt-4 text-on-surface-variant text-sm leading-relaxed border-l-2 border-primary/20 pl-4">
@@ -340,10 +334,10 @@ export default async function HomePage() {
         <section className="py-32 px-8 bg-surface">
           <div className="max-w-7xl mx-auto">
             <div className="mb-16">
-              <span className="text-sm uppercase tracking-widest text-primary font-bold">
-                Selection 01
+              <span className="text-[0.6rem] font-bold uppercase tracking-widest text-outline">
+                {t.home.featuredJourney}
               </span>
-              <h2 className="text-5xl font-black tracking-tighter mt-2">Featured Artifacts</h2>
+              <h2 className="text-5xl font-black tracking-tighter mt-2">{t.home.featuredArtifacts}</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[0, 1, 2].map((i) => (
@@ -365,15 +359,15 @@ export default async function HomePage() {
             <div className="flex justify-between items-end mb-16">
               <div>
                 <span className="text-sm uppercase tracking-widest text-primary font-bold">
-                  Curated Narratives
+                  {t.home.curatedNarratives}
                 </span>
-                <h2 className="text-5xl font-black tracking-tighter mt-2">The Journeys</h2>
+                <h2 className="text-5xl font-black tracking-tighter mt-2">{t.home.theJourneys}</h2>
               </div>
               <Link
                 href="/journeys"
                 className="text-primary font-semibold text-sm flex items-center gap-1 hover:opacity-70 transition-opacity"
               >
-                All Journeys
+                {t.home.allJourneys}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -399,7 +393,7 @@ export default async function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 transition-opacity duration-500 group-hover:opacity-0" />
                     <div className="relative z-10">
                       <span className="text-[10px] uppercase tracking-widest text-white/60 font-bold">
-                        {journey.chapters.length} chapter{journey.chapters.length !== 1 ? 's' : ''}
+                        {journey.chapters.length} {journey.chapters.length === 1 ? t.home.chapterSingular : t.home.chapterPlural}
                       </span>
                       <h3 className="text-xl font-bold text-white mt-1">{journey.title}</h3>
                     </div>
@@ -409,7 +403,7 @@ export default async function HomePage() {
                       {journey.description}
                     </p>
                     <div className="mt-4 text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Read the story
+                      {t.home.readTheStory}
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
@@ -426,30 +420,30 @@ export default async function HomePage() {
       <section className="py-40 bg-surface-container-lowest">
         <div className="max-w-4xl mx-auto text-center px-8">
           <h2 className="text-6xl font-black tracking-tighter text-on-surface mb-8">
-            Ready for a deeper dive into the vault?
+            {t.home.ctaHeading}
           </h2>
           <p className="text-xl text-on-surface-variant mb-12 max-w-2xl mx-auto">
-            Browse the full timeline of every device in the collection — filterable by era, category, and condition.
+            {t.home.ctaSubtext}
           </p>
           <div className="inline-flex flex-col items-center">
             <Link
               href="/timeline"
               className="bg-primary hover:bg-primary-container text-on-primary px-12 py-5 rounded-full text-lg font-bold transition-all shadow-xl shadow-primary/20 hover:shadow-primary/40 mb-6 uppercase tracking-widest"
             >
-              Explore All Devices
+              {t.home.exploreAllDevices}
             </Link>
             <div className="flex items-center gap-6 text-on-surface-variant text-sm font-medium">
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
-                Every device documented
+                {t.home.everyDeviceDocumented}
               </span>
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
-                Original photography
+                {t.home.originalPhotography}
               </span>
             </div>
           </div>

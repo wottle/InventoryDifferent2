@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getClient } from '@/lib/apollo-rsc';
+import { getTranslations } from '@/i18n';
 import { GET_SHOWCASE_JOURNEY_BY_SLUG } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
 
@@ -40,26 +41,22 @@ interface JourneyDetail {
 
 const RARE_RARITIES = ['RARE', 'VERY_RARE', 'UNIQUE'];
 
-function rarityLabel(rarity: string | null): string | null {
-  if (!rarity || !RARE_RARITIES.includes(rarity)) return null;
-  switch (rarity) {
-    case 'RARE': return 'Rare';
-    case 'VERY_RARE': return 'Very Rare';
-    case 'UNIQUE': return 'Unique';
-    default: return null;
-  }
+function rarityLabel(rarity: string | null, t: any): string | null {
+  if (!rarity) return null;
+  const key = rarity as keyof typeof t.rarity;
+  return t.rarity[key] ?? null;
 }
 
-function getVolumeLabel(sortOrder: number): string {
+function getVolumeLabel(sortOrder: number, t: any): string {
   const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
     'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'];
-  return `Volume ${numerals[sortOrder - 1] || sortOrder}`;
+  return `${t.journeys.volume} ${numerals[sortOrder - 1] || sortOrder}`;
 }
 
-function DeviceCard({ item }: { item: ShowcaseDeviceItem }) {
+function DeviceCard({ item, t }: { item: ShowcaseDeviceItem; t: any }) {
   const { device, curatorNote } = item;
   const imagePath = pickThumbnail(device.images.map(i => ({ path: i.path ?? '', isThumbnail: i.isThumbnail, thumbnailMode: i.thumbnailMode })));
-  const badge = rarityLabel(device.rarity);
+  const badge = rarityLabel(device.rarity, t);
 
   return (
     <div className="bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col">
@@ -95,14 +92,14 @@ function DeviceCard({ item }: { item: ShowcaseDeviceItem }) {
           href={`/device/${device.id}`}
           className="mt-auto flex items-center gap-1 text-primary text-sm font-semibold hover:opacity-80 transition-opacity"
         >
-          View Record →
+          {t.journeyDetail.viewRecord}
         </a>
       </div>
     </div>
   );
 }
 
-function ChapterSection({ chapter, index }: { chapter: ChapterDetail; index: number }) {
+function ChapterSection({ chapter, index, t }: { chapter: ChapterDetail; index: number; t: any }) {
   const isOdd = index % 2 === 0; // 0-indexed: 0=Pattern A, 1=Pattern B, etc.
   const chapterNum = String(chapter.sortOrder).padStart(2, '0');
   const sortedDevices = [...chapter.devices].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -110,7 +107,7 @@ function ChapterSection({ chapter, index }: { chapter: ChapterDetail; index: num
   const deviceGrid = (
     <div className={`grid grid-cols-1 ${sortedDevices.length === 1 ? '' : 'md:grid-cols-2'} gap-6`}>
       {sortedDevices.map((item) => (
-        <DeviceCard key={item.id} item={item} />
+        <DeviceCard key={item.id} item={item} t={t} />
       ))}
     </div>
   );
@@ -124,14 +121,14 @@ function ChapterSection({ chapter, index }: { chapter: ChapterDetail; index: num
             <div className="lg:col-span-5 flex flex-col gap-8">
               <div>
                 <span className="text-[0.6875rem] font-bold tracking-[0.2em] uppercase text-tertiary mb-2 block">
-                  Chapter {chapterNum}
+                  {t.journeyDetail.chapter} {chapterNum}
                 </span>
                 <h2 className="text-4xl font-bold tracking-tight leading-none text-on-surface">
                   {chapter.title}
                 </h2>
               </div>
               <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-primary">The Narrative</h3>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-primary">{t.journeyDetail.theNarrative}</h3>
                 <p className="text-on-surface-variant leading-relaxed text-lg">{chapter.description}</p>
               </div>
             </div>
@@ -148,7 +145,7 @@ function ChapterSection({ chapter, index }: { chapter: ChapterDetail; index: num
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <span className="text-[0.6875rem] font-bold tracking-[0.2em] uppercase text-tertiary mb-2 block">
-            Chapter {chapterNum}
+            {t.journeyDetail.chapter} {chapterNum}
           </span>
           <h2 className="text-4xl font-bold tracking-tight text-on-surface mb-8">{chapter.title}</h2>
           <p className="text-on-surface-variant text-lg leading-relaxed">{chapter.description}</p>
@@ -160,6 +157,7 @@ function ChapterSection({ chapter, index }: { chapter: ChapterDetail; index: num
 }
 
 export default async function JourneyDetailPage({ params }: { params: { slug: string } }) {
+  const t = getTranslations(process.env.LANGUAGE);
   let journey: JourneyDetail | null = null;
 
   try {
@@ -197,7 +195,7 @@ export default async function JourneyDetailPage({ params }: { params: { slug: st
         )}
         <div className="relative z-10 text-center px-6 max-w-5xl">
           <p className="text-xs font-medium tracking-widest uppercase mb-4 text-primary">
-            {getVolumeLabel(journey.sortOrder)}
+            {getVolumeLabel(journey.sortOrder, t)}
           </p>
           <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-on-surface mb-6 leading-[0.9]">
             {journey.title}
@@ -210,7 +208,7 @@ export default async function JourneyDetailPage({ params }: { params: { slug: st
 
       {/* Chapter Sections */}
       {sortedChapters.map((chapter, index) => (
-        <ChapterSection key={chapter.id} chapter={chapter} index={index} />
+        <ChapterSection key={chapter.id} chapter={chapter} index={index} t={t} />
       ))}
 
       {/* CTA Section */}
@@ -226,23 +224,23 @@ export default async function JourneyDetailPage({ params }: { params: { slug: st
           />
           <div className="relative z-10 px-12 py-20 text-center">
             <span className="text-xs font-bold tracking-[0.4em] uppercase text-tertiary mb-6 block">
-              Next Stop
+              {t.journeyDetail.nextStop}
             </span>
             <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8">
-              Explore the Full Archive
+              {t.journeyDetail.exploreArchive}
             </h2>
             <div className="flex flex-wrap justify-center gap-4">
               <a
                 href="/timeline"
                 className="px-8 py-4 bg-surface text-on-surface rounded-full font-bold text-sm hover:opacity-90 transition-all"
               >
-                Browse Timeline
+                {t.journeyDetail.browseTimeline}
               </a>
               <a
                 href="/journeys"
                 className="px-8 py-4 border border-surface/30 text-surface rounded-full font-bold text-sm hover:bg-surface/10 transition-all"
               >
-                All Journeys
+                {t.journeyDetail.allJourneys}
               </a>
             </div>
           </div>

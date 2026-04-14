@@ -42,6 +42,7 @@ struct AddDeviceView: View {
     @State private var showingNewLocationAlert = false
     @State private var newLocationName = ""
     @State private var info = ""
+    @State private var historicalNotes = ""
 
     @State private var status: Status = .COLLECTION
     @State private var functionalStatus: FunctionalStatus = .YES
@@ -263,6 +264,7 @@ struct AddDeviceView: View {
             .disabled(isLoadingCategories)
 
             LabeledTextEditor(label: t.addEditDevice.info, text: $info)
+            LabeledTextEditor(label: t.addEditDevice.historicalNotes, text: $historicalNotes)
         } header: {
             Text(t.addEditDevice.basicInformation)
         }
@@ -610,6 +612,7 @@ struct AddDeviceView: View {
             if let year = Int(releaseYear) { input["releaseYear"] = year }
             if let locationId = selectedLocationId { input["locationId"] = locationId }
             if !info.isEmpty { input["info"] = info }
+            if !historicalNotes.isEmpty { input["historicalNotes"] = historicalNotes }
 
             input["status"] = status.rawValue
             input["functionalStatus"] = functionalStatus.rawValue

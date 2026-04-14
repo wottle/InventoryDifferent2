@@ -1,8 +1,13 @@
+"use client";
+
+import { useT } from '@/i18n/context';
+
 interface FooterProps {
   siteTitle: string;
 }
 
 export default function Footer({ siteTitle }: FooterProps) {
+  const t = useT();
   const year = new Date().getFullYear();
 
   return (
@@ -12,7 +17,7 @@ export default function Footer({ siteTitle }: FooterProps) {
           {siteTitle}
         </div>
         <div className="font-sans text-xs font-light tracking-wide text-on-surface-variant">
-          Powered by InventoryDifferent
+          {t.footer.poweredBy}
         </div>
         <div className="font-sans text-xs font-light tracking-wide text-on-surface-variant">
           © {year} {siteTitle}

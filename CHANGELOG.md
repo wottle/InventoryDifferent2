@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- Showcase admin: export and import appearance, quotes, and journeys as a JSON file; devices missing on the target system are silently dropped from chapters
+
 ---
 
 ## [2.3.0] - 2026-04-13

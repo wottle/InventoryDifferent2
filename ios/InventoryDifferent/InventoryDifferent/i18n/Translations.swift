@@ -92,6 +92,7 @@ struct Translations {
         let markRepaired: String
         let markReturned: String
         let backToRepair: String
+        let historicalNotes: String
     }
 
     // MARK: - Add / Edit Device
@@ -119,6 +120,7 @@ struct Translations {
         let wifiEnabled, pramRemoved: String
         let lastPowerOn, setLastPowerOn, clearLastPowerOn: String
         let customFields: String
+        let historicalNotes: String
         let accessorySuggestions, accessoryCustom, accessoryNamePlaceholder: String
         let linkDetails, linkLabelPlaceholder, linkURLPlaceholder: String
     }

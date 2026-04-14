@@ -2409,6 +2409,7 @@ struct MarkReturnedSheet: View {
                     releaseYear: 1987,
                     location: LocationRef(id: 1, name: "Shelf A"),
                     info: "Great condition vintage Mac",
+                    historicalNotes: nil,
                     searchText: nil,
                     isFavorite: true,
                     status: .COLLECTION,

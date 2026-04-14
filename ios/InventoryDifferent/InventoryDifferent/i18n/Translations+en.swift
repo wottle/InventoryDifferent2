@@ -201,7 +201,8 @@ extension Translations {
             lifecycleActions: "Lifecycle Actions",
             markRepaired: "Mark Repaired",
             markReturned: "Mark Returned",
-            backToRepair: "Back to Repair"
+            backToRepair: "Back to Repair",
+            historicalNotes: "Historical Notes"
         ),
         addEditDevice: .init(
             addTitle: "Add Device",
@@ -275,6 +276,7 @@ extension Translations {
             setLastPowerOn: "Set Last Power On Date",
             clearLastPowerOn: "Clear Last Power On Date",
             customFields: "Custom Fields",
+            historicalNotes: "Historical Notes",
             accessorySuggestions: "Suggestions",
             accessoryCustom: "Custom",
             accessoryNamePlaceholder: "Accessory name",

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SHOWCASE_CONFIG, UPSERT_SHOWCASE_CONFIG } from '@/lib/queries';
+import { useT } from '@/i18n/context';
 
 interface ShowcaseConfig {
   id: string;
@@ -17,6 +18,7 @@ interface ShowcaseConfig {
 }
 
 export default function AdminAppearancePage() {
+  const t = useT();
   const { data, loading } = useQuery<{ showcaseConfig: ShowcaseConfig }>(GET_SHOWCASE_CONFIG);
   const [upsertConfig] = useMutation(UPSERT_SHOWCASE_CONFIG);
 
@@ -66,7 +68,7 @@ export default function AdminAppearancePage() {
       const relativePath = json.path.replace(/^\/uploads\//, '');
       setHeroImagePath(relativePath);
     } catch {
-      setSaveError('Image upload failed. Please try again.');
+      setSaveError(t.adminAppearance.errorImageUpload);
     } finally {
       setUploadingImage(false);
     }
@@ -78,7 +80,7 @@ export default function AdminAppearancePage() {
     setSaveError('');
     setSavedMessage(false);
     if (accentColor && !/^#[0-9A-Fa-f]{6}$/.test(accentColor)) {
-      setSaveError('Accent color must be a valid 6-digit hex color (e.g. #6750A4).');
+      setSaveError(t.adminAppearance.errorAccentColor);
       setSaving(false);
       return;
     }
@@ -100,7 +102,7 @@ export default function AdminAppearancePage() {
       setSavedMessage(true);
       setTimeout(() => setSavedMessage(false), 2000);
     } catch {
-      setSaveError('Failed to save. Please try again.');
+      setSaveError(t.adminAppearance.errorSave);
     } finally {
       setSaving(false);
     }
@@ -119,14 +121,14 @@ export default function AdminAppearancePage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-headline font-bold tracking-tight text-on-surface">Appearance</h1>
+          <h1 className="text-3xl font-headline font-bold tracking-tight text-on-surface">{t.adminAppearance.title}</h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Customize your site&apos;s title, copy, and visual identity.
+            {t.adminAppearance.subtitle}
           </p>
         </div>
         {savedMessage && (
           <span className="text-sm font-medium text-primary bg-primary/10 px-4 py-2 rounded-full">
-            Saved!
+            {t.adminAppearance.saved}
           </span>
         )}
       </div>
@@ -135,12 +137,12 @@ export default function AdminAppearancePage() {
         {/* Site Identity */}
         <section className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-5">
           <h2 className="text-xs font-label uppercase tracking-widest text-outline">
-            Site Identity
+            {t.adminAppearance.siteIdentitySection}
           </h2>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-              Site Title
+              {t.adminAppearance.siteTitleLabel}
             </label>
             <input
               type="text"
@@ -153,7 +155,7 @@ export default function AdminAppearancePage() {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-              Tagline
+              {t.adminAppearance.taglineLabel}
             </label>
             <input
               type="text"
@@ -166,7 +168,7 @@ export default function AdminAppearancePage() {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-              Bio Text
+              {t.adminAppearance.bioTextLabel}
             </label>
             <textarea
               value={bioText}
@@ -181,14 +183,14 @@ export default function AdminAppearancePage() {
         {/* Homepage Copy */}
         <section className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-5">
           <h2 className="text-xs font-label uppercase tracking-widest text-outline">
-            Homepage
+            {t.adminAppearance.homepageSection}
           </h2>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-              Narrative Statement
+              {t.adminAppearance.narrativeStatementLabel}
             </label>
-            <p className="text-xs text-outline -mt-0.5">The large bold heading in the &ldquo;The Narrative&rdquo; section.</p>
+            <p className="text-xs text-outline -mt-0.5">{t.adminAppearance.narrativeStatementHint}</p>
             <textarea
               value={narrativeStatement}
               onChange={(e) => setNarrativeStatement(e.target.value)}
@@ -200,9 +202,9 @@ export default function AdminAppearancePage() {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-              Collection Overview
+              {t.adminAppearance.collectionOverviewLabel}
             </label>
-            <p className="text-xs text-outline -mt-0.5">The body text in the right column of the narrative section.</p>
+            <p className="text-xs text-outline -mt-0.5">{t.adminAppearance.collectionOverviewHint}</p>
             <textarea
               value={collectionOverview}
               onChange={(e) => setCollectionOverview(e.target.value)}
@@ -216,12 +218,12 @@ export default function AdminAppearancePage() {
         {/* Timeline */}
         <section className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-5">
           <h2 className="text-xs font-label uppercase tracking-widest text-outline">
-            Timeline
+            {t.adminAppearance.timelineSection}
           </h2>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-              Curator&apos;s Note
+              {t.adminAppearance.curatorsNoteLabel}
             </label>
             <textarea
               value={timelineCuratorNote}
@@ -236,7 +238,7 @@ export default function AdminAppearancePage() {
         {/* Hero Image */}
         <section className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-5">
           <h2 className="text-xs font-label uppercase tracking-widest text-outline">
-            Hero Image
+            {t.adminAppearance.heroImageSection}
           </h2>
 
           {heroImagePath && (
@@ -252,7 +254,7 @@ export default function AdminAppearancePage() {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-              {heroImagePath ? 'Replace Image' : 'Upload Image'}
+              {heroImagePath ? t.adminAppearance.replaceImage : t.adminAppearance.uploadImage}
             </label>
             <input
               type="file"
@@ -262,7 +264,7 @@ export default function AdminAppearancePage() {
               className="text-sm text-on-surface-variant file:mr-3 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer disabled:opacity-50"
             />
             {uploadingImage && (
-              <p className="text-xs text-on-surface-variant">Uploading…</p>
+              <p className="text-xs text-on-surface-variant">{t.adminAppearance.uploading}</p>
             )}
           </div>
         </section>
@@ -270,7 +272,7 @@ export default function AdminAppearancePage() {
         {/* Accent Color */}
         <section className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-5">
           <h2 className="text-xs font-label uppercase tracking-widest text-outline">
-            Accent Color
+            {t.adminAppearance.accentColorSection}
           </h2>
 
           <div className="flex items-center gap-4">
@@ -294,7 +296,7 @@ export default function AdminAppearancePage() {
               className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition w-32 font-mono"
             />
             <span className="text-xs text-on-surface-variant">
-              Used for highlights and interactive elements
+              {t.adminAppearance.accentColorHint}
             </span>
           </div>
         </section>
@@ -309,7 +311,7 @@ export default function AdminAppearancePage() {
             disabled={saving || uploadingImage}
             className="bg-primary text-on-primary font-semibold rounded-full px-6 py-2.5 text-sm hover:opacity-90 transition disabled:opacity-50"
           >
-            {saving ? 'Saving…' : 'Save Changes'}
+            {saving ? t.adminAppearance.saving : t.adminAppearance.saveChanges}
           </button>
         </div>
       </form>

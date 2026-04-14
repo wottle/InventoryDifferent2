@@ -216,6 +216,7 @@ struct DeviceDetailRedesignView: View {
                                 archiveNotesSection
                             }
                             techSpecsSection
+                            historicalNotesSection
                             if authService.isAuthenticated {
                                 deleteButton
                             }
@@ -1308,6 +1309,28 @@ struct DeviceDetailRedesignView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
         )
+    }
+
+    // MARK: - Historical Notes
+
+    @ViewBuilder
+    private var historicalNotesSection: some View {
+        let t = lm.t
+        if let notes = device.historicalNotes, !notes.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                sectionOverline(t.deviceDetail.historicalNotes)
+
+                Text(notes)
+                    .font(.system(size: 14))
+                    .foregroundColor(.secondary)
+                    .lineSpacing(3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(14)
+                    .background(Color.edSurfaceLowest)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .padding(.top, 6)
+        }
     }
 
     // MARK: - Recent Notes

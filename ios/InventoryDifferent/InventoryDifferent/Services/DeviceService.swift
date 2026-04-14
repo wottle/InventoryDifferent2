@@ -188,6 +188,7 @@ class DeviceService {
                 releaseYear
                 location { id name }
                 info
+                historicalNotes
                 searchText
                 isFavorite
                 status

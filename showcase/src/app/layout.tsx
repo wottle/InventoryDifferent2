@@ -5,6 +5,8 @@ import { AuthProvider } from '@/lib/auth-context';
 import { getClient } from '@/lib/apollo-rsc';
 import { GET_SHOWCASE_CONFIG } from '@/lib/queries';
 import { NavWrapper, FooterWrapper } from '@/components/NavFooterWrapper';
+import { TranslationProvider } from '@/i18n/context';
+import { getTranslations } from '@/i18n';
 
 export const metadata: Metadata = {
   title: 'The Collection',
@@ -26,6 +28,8 @@ const DEFAULT_CONFIG: Pick<ShowcaseConfig, 'siteTitle' | 'tagline'> = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = process.env.LANGUAGE ?? 'en';
+  const t = getTranslations(locale);
   let siteTitle = DEFAULT_CONFIG.siteTitle;
 
   try {
@@ -40,15 +44,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className="bg-surface text-on-surface selection:bg-primary/20 selection:text-primary">
         <ApolloWrapper>
           <AuthProvider>
+            <TranslationProvider translations={t} locale={locale}>
             <NavWrapper siteTitle={siteTitle} />
             <div className="pt-[68px]">
               {children}
             </div>
             <FooterWrapper siteTitle={siteTitle} />
+            </TranslationProvider>
           </AuthProvider>
         </ApolloWrapper>
       </body>

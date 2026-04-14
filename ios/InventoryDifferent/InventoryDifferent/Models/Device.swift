@@ -217,6 +217,7 @@ struct Device: Codable, Identifiable, Hashable {
     let releaseYear: Int?
     let location: LocationRef?
     let info: String?
+    let historicalNotes: String?
     let searchText: String?
     let isFavorite: Bool
 

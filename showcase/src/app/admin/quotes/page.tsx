@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
+import { useT } from '@/i18n/context';
 import {
   GET_ALL_SHOWCASE_QUOTES,
   UPSERT_SHOWCASE_QUOTE,
@@ -18,6 +19,7 @@ interface ShowcaseQuote {
 }
 
 export default function AdminQuotesPage() {
+  const t = useT();
   const { data, loading, refetch } = useQuery<{ showcaseAllQuotes: ShowcaseQuote[] }>(
     GET_ALL_SHOWCASE_QUOTES
   );
@@ -50,7 +52,7 @@ export default function AdminQuotesPage() {
       });
       refetch();
     } catch {
-      setSaveError('Failed to update quote. Please try again.');
+      setSaveError(t.adminQuotes.errorUpdate);
     }
   };
 
@@ -60,14 +62,14 @@ export default function AdminQuotesPage() {
       await deleteQuote({ variables: { id: quote.id } });
       refetch();
     } catch {
-      setSaveError('Failed to delete quote. Please try again.');
+      setSaveError(t.adminQuotes.errorDelete);
     }
   };
 
   const handleAddQuote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAuthor.trim() || !newText.trim()) {
-      setSaveError('Author and text are required.');
+      setSaveError(t.adminQuotes.errorRequired);
       return;
     }
     setSaving(true);
@@ -88,7 +90,7 @@ export default function AdminQuotesPage() {
       setNewSource('');
       refetch();
     } catch {
-      setSaveError('Failed to save quote.');
+      setSaveError(t.adminQuotes.errorSave);
     } finally {
       setSaving(false);
     }
@@ -98,9 +100,9 @@ export default function AdminQuotesPage() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-headline font-bold tracking-tight text-on-surface">Quotes</h1>
+        <h1 className="text-3xl font-headline font-bold tracking-tight text-on-surface">{t.adminQuotes.title}</h1>
         <p className="text-sm text-on-surface-variant mt-1">
-          Manage the quotes shown throughout the site. Enable or disable individual quotes.
+          {t.adminQuotes.subtitle}
         </p>
       </div>
 
@@ -116,11 +118,11 @@ export default function AdminQuotesPage() {
           {/* Default Quotes */}
           <section>
             <h2 className="text-xs font-label uppercase tracking-widest text-outline mb-3">
-              Default Quotes
+              {t.adminQuotes.defaultQuotesSection}
             </h2>
             {defaultQuotes.length === 0 ? (
               <div className="bg-surface-container-lowest rounded-xl p-8 text-center text-on-surface-variant text-sm">
-                No default quotes.
+                {t.adminQuotes.noDefaultQuotes}
               </div>
             ) : (
               <div className="flex flex-col gap-3">
@@ -139,11 +141,11 @@ export default function AdminQuotesPage() {
           {/* Your Quotes */}
           <section>
             <h2 className="text-xs font-label uppercase tracking-widest text-outline mb-3">
-              Your Quotes
+              {t.adminQuotes.yourQuotesSection}
             </h2>
             {userQuotes.length === 0 ? (
               <div className="bg-surface-container-lowest rounded-xl p-8 text-center text-on-surface-variant text-sm">
-                No custom quotes yet. Add one below.
+                {t.adminQuotes.noCustomQuotes}
               </div>
             ) : (
               <div className="flex flex-col gap-3">
@@ -162,44 +164,44 @@ export default function AdminQuotesPage() {
           {/* Add Quote */}
           <section>
             <h2 className="text-xs font-label uppercase tracking-widest text-outline mb-3">
-              Add Quote
+              {t.adminQuotes.addQuoteSection}
             </h2>
             <div className="bg-surface-container-lowest rounded-xl p-6">
               <form onSubmit={handleAddQuote} className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-                      Author <span className="text-error">*</span>
+                      {t.adminQuotes.authorLabel} <span className="text-error">*</span>
                     </label>
                     <input
                       type="text"
                       value={newAuthor}
                       onChange={(e) => setNewAuthor(e.target.value)}
-                      placeholder="e.g. Steve Jobs"
+                      placeholder={t.adminQuotes.authorPlaceholder}
                       className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-                      Source
+                      {t.adminQuotes.sourceLabel}
                     </label>
                     <input
                       type="text"
                       value={newSource}
                       onChange={(e) => setNewSource(e.target.value)}
-                      placeholder="e.g. WWDC 1997"
+                      placeholder={t.adminQuotes.sourcePlaceholder}
                       className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">
-                    Text <span className="text-error">*</span>
+                    {t.adminQuotes.textLabel} <span className="text-error">*</span>
                   </label>
                   <textarea
                     value={newText}
                     onChange={(e) => setNewText(e.target.value)}
-                    placeholder="Enter the quote text…"
+                    placeholder={t.adminQuotes.textPlaceholder}
                     rows={3}
                     className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition resize-none"
                   />
@@ -213,7 +215,7 @@ export default function AdminQuotesPage() {
                     disabled={saving}
                     className="bg-primary text-on-primary font-semibold rounded-full px-5 py-2 text-sm hover:opacity-90 transition disabled:opacity-50"
                   >
-                    {saving ? 'Saving…' : 'Save Quote'}
+                    {saving ? t.adminQuotes.saving : t.adminQuotes.saveQuote}
                   </button>
                 </div>
               </form>
@@ -234,6 +236,7 @@ function QuoteRow({
   onToggle: (q: ShowcaseQuote) => void;
   onDelete: ((q: ShowcaseQuote) => void) | null;
 }) {
+  const t = useT();
   return (
     <div
       className={`bg-surface-container-lowest rounded-xl px-6 py-4 flex items-start gap-4 hover:bg-surface-container-low transition ${
@@ -249,7 +252,7 @@ function QuoteRow({
           className="w-4 h-4 accent-primary cursor-pointer"
         />
         <span className="text-xs text-on-surface-variant whitespace-nowrap">
-          {quote.isEnabled ? 'Enabled' : 'Disabled'}
+          {quote.isEnabled ? t.adminQuotes.enabled : t.adminQuotes.disabled}
         </span>
       </label>
 
@@ -270,7 +273,7 @@ function QuoteRow({
           onClick={() => onDelete(quote)}
           className="px-4 py-1.5 rounded-full text-sm font-medium text-error border border-error/30 hover:bg-error/10 transition shrink-0"
         >
-          Delete
+          {t.adminQuotes.delete}
         </button>
       )}
     </div>

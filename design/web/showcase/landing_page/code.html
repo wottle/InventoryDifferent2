@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Technical Atelier | A Legacy of Silicon &amp; Steel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c1c6d7",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#c6c6cb",
+                        "surface": "#f9f9fe",
+                        "primary-container": "#0070eb",
+                        "on-secondary-fixed-variant": "#46464b",
+                        "on-tertiary-fixed-variant": "#534600",
+                        "surface-dim": "#d9dade",
+                        "outline": "#717786",
+                        "on-tertiary-container": "#4b3f00",
+                        "surface-bright": "#f9f9fe",
+                        "inverse-primary": "#adc6ff",
+                        "surface-variant": "#e2e2e7",
+                        "primary-fixed-dim": "#adc6ff",
+                        "tertiary-fixed-dim": "#e2c53e",
+                        "on-surface-variant": "#414755",
+                        "secondary": "#5d5e63",
+                        "on-secondary-fixed": "#1a1b1f",
+                        "surface-container-low": "#f3f3f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f0f0f5",
+                        "on-tertiary-fixed": "#221b00",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e7",
+                        "secondary-container": "#e0dfe4",
+                        "inverse-surface": "#2e3034",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#626267",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1a1c1f",
+                        "on-primary-container": "#fefcff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#c5aa22",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#0058bc",
+                        "surface-container-high": "#e8e8ed",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#005bc1",
+                        "secondary-fixed": "#e3e2e7",
+                        "on-surface": "#1a1c1f",
+                        "surface-container": "#ededf2",
+                        "background": "#f9f9fe",
+                        "on-primary-fixed": "#001a41",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary": "#6f5d00",
+                        "on-primary-fixed-variant": "#004493",
+                        "tertiary-fixed": "#ffe261"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary/20 selection:text-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-slate-50 uppercase">Technical Atelier</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-['Inter'] tracking-tight text-sm font-medium uppercase text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1" href="#">Gallery</a>
+<a class="font-['Inter'] tracking-tight text-sm font-medium uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-opacity duration-300" href="#">Featured</a>
+<a class="font-['Inter'] tracking-tight text-sm font-medium uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-opacity duration-300" href="#">About</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-medium text-sm hover:opacity-80 transition-all duration-200 scale-95 active:scale-90">
+                    Connect
+                </button>
+</div>
+</div>
+</nav>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative h-[921px] flex items-center overflow-hidden bg-surface-container-lowest">
+<div class="absolute inset-0 z-0">
+<img alt="Vintage Macintosh" class="w-full h-full object-cover opacity-60 mix-blend-multiply" data-alt="Close-up of a vintage Macintosh 128K on a clean white desk with soft, editorial studio lighting and deep shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT5n17at24io1_ucEmYqoNwhKW8DjH5Ai4rYDmcnT1kZ_8hi7ELQngvEzws4KQglWhGVm4-06EwwVFcYBoxwV2o4mX5VmGN_3G44jgDbrdbj1f9a9C5qmME15vFvdUVyATZg-qKyGvub1sUwBi68psqk3MLLGNVvTnp7S0BxXS7x1lDZGKHQVQc4DVuTj1wlQa-VsuSgzHzGDWTgYDgxyDq89LCPYfYhtBjE7bBZSfbq9u_I5txcVIEEoGdfJvYwoy0I9ZkhS1FgI"/>
+<div class="absolute inset-0 bg-gradient-to-r from-surface via-transparent to-transparent"></div>
+</div>
+<div class="container mx-auto px-8 relative z-10">
+<div class="max-w-3xl">
+<p class="font-label text-sm uppercase tracking-[0.2em] text-primary mb-6 font-bold">The Technical Atelier</p>
+<h1 class="font-headline text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-on-surface mb-8">
+                        A Legacy of Silicon <br/>&amp; Steel
+                    </h1>
+<p class="font-body text-xl text-on-surface-variant max-w-xl leading-relaxed mb-10">
+                        Explore a curated archive of Apple's most iconic hardware, meticulously preserved for the next generation of design enthusiasts.
+                    </p>
+<div class="flex gap-4">
+<button class="bg-primary text-white px-8 py-4 rounded-full font-semibold hover:opacity-90 transition-all flex items-center gap-2 group">
+                            Start Journey
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Overview Section -->
+<section class="py-32 px-8 bg-surface">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
+<div class="md:col-span-7">
+<h2 class="text-label-md uppercase tracking-widest text-primary font-bold mb-4">The Narrative</h2>
+<p class="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-on-surface">
+                        Precision isn't just a measurement; it's a philosophy. We celebrate the era when hardware was sculpted, and every screw served a purpose.
+                    </p>
+</div>
+<div class="md:col-span-5">
+<p class="text-lg text-on-surface-variant leading-relaxed mb-6">
+                        This collection is born from a lifelong obsession with industrial design. Each device in the Atelier has been sourced, cleaned, and restored to its original glory. From the pebble-like curves of the Bondi Blue iMac to the rigid, geometric perfection of the NeXTcube.
+                    </p>
+<div class="h-px w-20 bg-primary"></div>
+</div>
+</div>
+</section>
+<!-- Collection Highlights (Asymmetric Gallery) -->
+<section class="py-20 bg-surface-container-low overflow-hidden">
+<div class="max-w-[1400px] mx-auto px-8">
+<div class="grid grid-cols-12 gap-6 h-[800px]">
+<div class="col-span-8 h-full rounded-xl overflow-hidden relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A collection of vintage beige computers arranged artistically in a high-end minimalist apartment with large windows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiE3nWsCK-An1MciOj99M7tNB0t8tRXctnFoshAuZ0S3Bs4ghExQ4hmdi8bniDv5fpFSChrS64-aZq1ubpgirVjHlLDEJTYkQQK0nOOvIZ4pGKsnI8AK4ifrV6o6WEm5AWRHhGeUT7O_66x6kZKIhMHeguQHDAqEYiF9j3xcah2CtT1yhYo5rlO_h5GLgrB8FK0go71ZZO_SQmL1kMMRMbKLQ2lDqOi1OqNH3Q7_mnVJ2D1vXJZeoqdEpS7Zg2NPPxCtan0UweTa4"/>
+<div class="absolute bottom-8 left-8 text-white z-10">
+<span class="text-xs uppercase tracking-widest opacity-80">Lifestyle Archive</span>
+<h3 class="text-2xl font-bold">Studio Arrangement</h3>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<div class="col-span-4 flex flex-col gap-6 h-full">
+<div class="h-1/2 rounded-xl overflow-hidden relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Extreme macro shot of a vintage laptop keyboard, focusing on the mechanical texture and subtle patina of the keys." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSyHS3FWNE07JVLFLB7ovkT4_5pFbkeGbWBy0pPj1H7qz9oGj8JcJf_vV6NFr_z5_DgWWPtbxJdE-Qxg1DyjriH-czXMONvg_34uzZyeTzSMt-y3NHZzULKRQl4ZByk5Iuo094yiM_I2WGdQzR7Ok82AZsMzK5LZDazj6zIDhdncUeXv8SGMwaANYF-C6YEqHIVDQKqcK5HQXY6mKaaJmMugaq2OXzklSSr7EbMBlOQGaRD99k_2bpJwd_vz5VWKo5Z3SZsuxZNpw"/>
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="text-white font-medium underline">View Detail</span>
+</div>
+</div>
+<div class="h-1/2 rounded-xl overflow-hidden bg-primary p-10 flex flex-col justify-center text-white">
+<span class="material-symbols-outlined text-5xl mb-6" data-weight="fill">history_edu</span>
+<p class="text-2xl font-medium leading-snug">"Good design is as little design as possible."</p>
+<span class="mt-4 opacity-60">— Dieter Rams influence</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Devices Grid -->
+<section class="py-32 px-8 bg-surface">
+<div class="max-w-7xl mx-auto">
+<div class="flex justify-between items-end mb-16">
+<div>
+<span class="text-sm uppercase tracking-widest text-primary font-bold">Selection 01</span>
+<h2 class="text-5xl font-black tracking-tighter mt-2">Featured Artifacts</h2>
+</div>
+<div class="flex gap-2">
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Device 1 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-high rounded-xl overflow-hidden mb-6 relative">
+<img class="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105" data-alt="Portrait of a classic G3 iMac Bondi Blue standing alone in a pristine white studio space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS1HpMdF4SLju54WwkWmoiLnmAAW0CidfHWL2G-UeqY0xIqcapB3vIAk6mQpwlWG5MA7QR2XS2_EE_A-2Co-EnEjuqExYzQWcnaSXXicrPjvEnSewcIi69TWuzKwjpExwWBV01iqcXfgessRsvfRh92b7vdKgQJzOlbkjTuLh7VvopzVY6LNbYLJ5AoKaXVQRSLG_ejqtRht5PztW4SripI9mtzPCkwoeTY-vRYY0x0QiDh9TAcSOb01_iVPULkaVLcfXpqZDTITU"/>
+<span class="absolute top-4 right-4 bg-tertiary text-white text-[10px] px-2 py-1 rounded tracking-tighter uppercase font-bold">Pristine</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-bold tracking-tight">iMac G3</h3>
+<p class="text-on-surface-variant font-medium">1998 • Bondi Blue</p>
+</div>
+<span class="text-primary font-black italic text-lg">#001</span>
+</div>
+<p class="mt-4 text-on-surface-variant text-sm leading-relaxed border-l-2 border-primary/20 pl-4">
+                            The computer that saved Apple. This unit is a Revision A, featuring the original tray-loading drive and the rare translucent mouse.
+                        </p>
+</div>
+<!-- Device 2 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-high rounded-xl overflow-hidden mb-6 relative">
+<img class="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105" data-alt="Minimalist top-down view of a PowerBook G4 Titanium on a dark grey felt desk mat." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6ppNqA2fqS-pvsBvH-vvaxxW7IaF5p2NnccY-5nDXI7tURn367nPm-L83nY0mFG_36B1cSq-16HoO6rFrDeuSHJHCTPT0-JUSVotiFekJ9syQ_VK2ZVI3vfacVVyija-V_5ltQavXAucmqyfWInWo9mhHzyD7xY1zMd-1PRWQ5g4D9zj_iAhcICLLTatlhJpiA3BeEjK-1aN5QuofDaiI1D1RsY8Y_qYMl8wE9igt9kTNNL6RlCaqSKS-aekxKspTU5xc9R6o5sc"/>
+<span class="absolute top-4 right-4 bg-primary text-white text-[10px] px-2 py-1 rounded tracking-tighter uppercase font-bold">Featured</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-bold tracking-tight">PowerBook G4</h3>
+<p class="text-on-surface-variant font-medium">2001 • Titanium</p>
+</div>
+<span class="text-primary font-black italic text-lg">#042</span>
+</div>
+<p class="mt-4 text-on-surface-variant text-sm leading-relaxed border-l-2 border-primary/20 pl-4">
+                            Known as the "TiBook." At only 1 inch thick, it was a marvel of aerospace engineering. This unit maintains its original hinge integrity.
+                        </p>
+</div>
+<!-- Device 3 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-high rounded-xl overflow-hidden mb-6 relative">
+<img class="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105" data-alt="Frontal shot of an Apple Lisa computer, showcasing its unique screen ratio and floppy drive detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt8cD-zJI6EN4Ld_YicJD479ZAAcVB-aUF5Fluj0nyv9aQSCVXgi7vI9yHW5Ws_HN8Vm-ZFnQ-X94bZA0Tc8PKZvgM3CGHRbzRBNaRhDrGx8gWesAOqQ8YB-HaaBfHOqsJJyxv5Rs4jlJ5epT1k0hAuRnCGo78GuITkMddJy31WxSVUGolHMAYCK-0vRYaJYBz01uPfQ8JGCkeJY6UqRDDLDX1GpwWH_CadgHPEN-_b6jRwhTfp2n9QM_cWuZF_nPJT5-t6tOZDnM"/>
+<span class="absolute top-4 right-4 bg-tertiary text-white text-[10px] px-2 py-1 rounded tracking-tighter uppercase font-bold">Rare</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-bold tracking-tight">Apple Lisa 2</h3>
+<p class="text-on-surface-variant font-medium">1984 • Beige</p>
+</div>
+<span class="text-primary font-black italic text-lg">#009</span>
+</div>
+<p class="mt-4 text-on-surface-variant text-sm leading-relaxed border-l-2 border-primary/20 pl-4">
+                            A cornerstone of computing history. The Lisa brought the GUI to the masses, though at a steep price. Fully functional boot sequence.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Call to Action -->
+<section class="py-40 bg-surface-container-lowest">
+<div class="max-w-4xl mx-auto text-center px-8">
+<h2 class="text-6xl font-black tracking-tighter text-on-surface mb-8">Ready for a deeper dive into the vault?</h2>
+<p class="text-xl text-on-surface-variant mb-12 max-w-2xl mx-auto">
+                    Access our full database of technical specifications, high-resolution teardowns, and historical documentation.
+                </p>
+<div class="inline-flex flex-col items-center">
+<button class="bg-primary hover:bg-primary-container text-on-primary px-12 py-5 rounded-full text-lg font-bold transition-all shadow-xl shadow-primary/20 hover:shadow-primary/40 mb-6 uppercase tracking-widest">
+                        Explore the Full Vault
+                    </button>
+<div class="flex items-center gap-4 text-on-surface-variant text-sm font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> 150+ Devices</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> 4K Photography</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 w-full py-12 px-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
+<div class="text-lg font-black text-slate-900 dark:text-slate-100 uppercase tracking-tighter">Technical Atelier</div>
+<div class="flex gap-8">
+<a class="font-['Inter'] text-xs font-light tracking-wide text-slate-400 hover:text-blue-600 transition-colors duration-200 underline-offset-4 hover:underline" href="#">Instagram</a>
+<a class="font-['Inter'] text-xs font-light tracking-wide text-slate-400 hover:text-blue-600 transition-colors duration-200 underline-offset-4 hover:underline" href="#">Twitter</a>
+<a class="font-['Inter'] text-xs font-light tracking-wide text-slate-400 hover:text-blue-600 transition-colors duration-200 underline-offset-4 hover:underline" href="#">LinkedIn</a>
+<a class="font-['Inter'] text-xs font-light tracking-wide text-slate-400 hover:text-blue-600 transition-colors duration-200 underline-offset-4 hover:underline" href="#">Collection Stats</a>
+</div>
+<div class="font-['Inter'] text-xs font-light tracking-wide text-slate-500">
+                © 2024 Technical Atelier. Precision Editorial.
+            </div>
+</div>
+</footer>
+</body></html>

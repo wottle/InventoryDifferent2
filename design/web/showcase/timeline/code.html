@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Timeline - Vintage Archive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f8",
+                        "on-error-container": "#93000a",
+                        "outline": "#717786",
+                        "background": "#f9f9fe",
+                        "secondary-fixed": "#e3e2e7",
+                        "surface-dim": "#d9dade",
+                        "on-surface": "#1a1c1f",
+                        "on-primary-fixed": "#001a41",
+                        "on-primary-container": "#fefcff",
+                        "on-secondary-container": "#626267",
+                        "on-secondary-fixed-variant": "#46464b",
+                        "inverse-on-surface": "#f0f0f5",
+                        "outline-variant": "#c1c6d7",
+                        "on-primary": "#ffffff",
+                        "primary": "#0058bc",
+                        "on-primary-fixed-variant": "#004493",
+                        "primary-fixed": "#d8e2ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#4b3f00",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6cb",
+                        "inverse-primary": "#adc6ff",
+                        "surface-bright": "#f9f9fe",
+                        "on-tertiary-fixed": "#221b00",
+                        "secondary-container": "#e0dfe4",
+                        "on-surface-variant": "#414755",
+                        "surface": "#f9f9fe",
+                        "inverse-surface": "#2e3034",
+                        "primary-container": "#0070eb",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ededf2",
+                        "on-secondary-fixed": "#1a1b1f",
+                        "tertiary-container": "#c5aa22",
+                        "on-background": "#1a1c1f",
+                        "surface-tint": "#005bc1",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#534600",
+                        "tertiary-fixed": "#ffe261",
+                        "surface-variant": "#e2e2e7",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#e2c53e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#5d5e63",
+                        "surface-container-highest": "#e2e2e7",
+                        "tertiary": "#6f5d00",
+                        "surface-container-high": "#e8e8ed"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 0 32px 0 rgba(26, 28, 31, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface-variant antialiased">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#f9f9fe]/80 dark:bg-slate-950/80 backdrop-blur-xl">
+<div class="flex justify-between items-center px-12 h-20 w-full mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#1a1c1f] dark:text-white">VINTAGE ARCHIVE</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] dark:text-slate-400 hover:text-[#0058bc] transition-colors duration-300" href="#">Mainframes</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] dark:text-slate-400 hover:text-[#0058bc] transition-colors duration-300" href="#">Home Computing</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#0058bc] dark:text-[#0070eb] border-b-2 border-[#0058bc] pb-1" href="#">The 8-bit Era</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] dark:text-slate-400 hover:text-[#0058bc] transition-colors duration-300" href="#">Workstations</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] dark:text-slate-400 hover:text-[#0058bc] transition-colors duration-300" href="#">Portables</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-['Inter'] text-sm uppercase font-semibold tracking-tight hover:opacity-80 transition-all">Curate</button>
+<span class="material-symbols-outlined text-2xl cursor-pointer text-[#414755] dark:text-slate-400">account_circle</span>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
+<!-- Header Section -->
+<header class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div>
+<label class="font-label text-xs uppercase tracking-widest text-tertiary font-bold mb-4 block">Chronological Catalog</label>
+<h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-none">The Timeline</h1>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+<button class="whitespace-nowrap px-6 py-3 bg-surface-container-high rounded-full text-sm font-semibold text-on-surface hover:bg-surface-container-highest transition-colors">All Eras</button>
+<button class="whitespace-nowrap px-6 py-3 bg-surface-container-low rounded-full text-sm font-semibold text-on-surface-variant">The 8-bit Era</button>
+<button class="whitespace-nowrap px-6 py-3 bg-surface-container-low rounded-full text-sm font-semibold text-on-surface-variant">The Sculley Years</button>
+<button class="whitespace-nowrap px-6 py-3 bg-surface-container-low rounded-full text-sm font-semibold text-on-surface-variant">The Return</button>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Sidebar Filters -->
+<aside class="lg:col-span-3 space-y-10">
+<div>
+<h3 class="font-label text-[11px] uppercase tracking-[0.2em] font-bold text-outline mb-6">Historical Eras</h3>
+<ul class="space-y-4">
+<li class="flex items-center justify-between group cursor-pointer">
+<span class="text-on-surface font-medium group-hover:text-primary transition-colors">The Foundation (1976-1983)</span>
+<span class="text-[10px] bg-surface-container-high px-2 py-1 rounded text-outline group-hover:bg-primary group-hover:text-white transition-all">08</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<span class="text-primary font-bold">The Sculley Years (1983-1993)</span>
+<span class="text-[10px] bg-primary text-white px-2 py-1 rounded">24</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<span class="text-on-surface font-medium group-hover:text-primary transition-colors">The Interim (1993-1997)</span>
+<span class="text-[10px] bg-surface-container-high px-2 py-1 rounded text-outline group-hover:bg-primary group-hover:text-white transition-all">12</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<span class="text-on-surface font-medium group-hover:text-primary transition-colors">The Return (1997-2011)</span>
+<span class="text-[10px] bg-surface-container-high px-2 py-1 rounded text-outline group-hover:bg-primary group-hover:text-white transition-all">36</span>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="font-label text-[11px] uppercase tracking-[0.2em] font-bold text-outline mb-6">Category Filter</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-lowest border border-outline-variant/15 text-xs font-semibold rounded-lg text-on-surface-variant hover:border-primary cursor-pointer transition-all">Workstation</span>
+<span class="px-3 py-1 bg-surface-container-lowest border border-outline-variant/15 text-xs font-semibold rounded-lg text-on-surface-variant hover:border-primary cursor-pointer transition-all">Portable</span>
+<span class="px-3 py-1 bg-surface-container-lowest border border-outline-variant/15 text-xs font-semibold rounded-lg text-on-surface-variant hover:border-primary cursor-pointer transition-all">Server</span>
+<span class="px-3 py-1 bg-surface-container-lowest border border-outline-variant/15 text-xs font-semibold rounded-lg text-on-surface-variant hover:border-primary cursor-pointer transition-all">Consumer</span>
+<span class="px-3 py-1 bg-surface-container-lowest border border-outline-variant/15 text-xs font-semibold rounded-lg text-on-surface-variant hover:border-primary cursor-pointer transition-all">Peripheral</span>
+</div>
+</div>
+<div class="p-6 bg-surface-container rounded-xl border border-outline-variant/10">
+<span class="material-symbols-outlined text-tertiary mb-4" data-icon="auto_awesome">auto_awesome</span>
+<h4 class="text-sm font-bold text-on-surface mb-2">Curator's Note</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">This selection focuses on the industrial design language of the Frog Design era, characterized by 'Snow White' vertical grooves.</p>
+</div>
+</aside>
+<!-- Main Grid Content -->
+<div class="lg:col-span-9">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+<!-- Card 1 -->
+<div class="group flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden editorial-shadow transition-all hover:translate-y-[-4px]">
+<div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Minimalist studio shot of a classic beige Macintosh computer with its characteristic vertical grill lines on a soft gray background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7XZHG6NX2umpham5akeIFnA_nfDwEAS5-VkKaF1JgieQp_2VIkYj6gUxA3prg9lZTF0du6V6nU7gBtcjqPrI0AHjWy8FSfeyI7q6Eom-CXCIqFf6rYi7NFQv2lmq-fuFZmLBfhCWg7K9q3gRLg8J_S74j7GbXT6ICFIgmGCXT_VO0SPGM0niQSWM_rkwfahmOLRsyZDbp_9sS3-flvjOlI3hlL1DonBsr3n1IQ35MXbJj-sNXa8HIuCovB4TJ5ZtaCQDEiVzESaA"/>
+<div class="absolute top-4 left-4 bg-tertiary/90 backdrop-blur-md px-3 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">1989</div>
+</div>
+<div class="p-8 flex flex-col flex-grow">
+<label class="text-[11px] font-bold text-primary uppercase tracking-widest mb-2">Workstation</label>
+<h2 class="text-2xl font-bold text-on-surface mb-3 tracking-tight">Macintosh IIci</h2>
+<p class="text-sm text-on-surface-variant leading-relaxed mb-8 line-clamp-2">The high-performance variant of the IIcx, representing the peak of modular Macintosh design before the Quadra era.</p>
+<div class="mt-auto flex items-center justify-between">
+<button class="text-sm font-bold text-on-surface flex items-center gap-2 group/btn">
+                                    View Record
+                                    <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="text-[10px] font-medium text-outline">INV-89-002</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden editorial-shadow transition-all hover:translate-y-[-4px]">
+<div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Professional product photograph of a vintage 1980s personal computer with a CRT monitor and mechanical keyboard in a clean archive setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWHNbd7JAXaS_aqb75voqRlQYO9PgtQAfeu2q6FkmgycEnP21xVfY_0w1-h7BbYMxCeK3Ij6QkNRSVThfjvJsH64pJ59AEkYqDBmG__b59emxVOzUEf1N7YqSJExmRDcbnfgB9OsGjvB3XzOHodQkBPcLp2MHsFkpbVV35CM6bEJKdGxu01PSs_Fq8zV81LHZ43FDzDS-t5gl-JfuvDrJJCz5RJybh8nzDvp0gnZD_ur81BDbujqwxrtL44hvdtNFG28JAaqpE5P8"/>
+<div class="absolute top-4 left-4 bg-tertiary/90 backdrop-blur-md px-3 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">1984</div>
+</div>
+<div class="p-8 flex flex-col flex-grow">
+<label class="text-[11px] font-bold text-primary uppercase tracking-widest mb-2">Consumer</label>
+<h2 class="text-2xl font-bold text-on-surface mb-3 tracking-tight">Apple IIc</h2>
+<p class="text-sm text-on-surface-variant leading-relaxed mb-8 line-clamp-2">The first portable Apple computer, notable for its compact 'Snow White' design and integrated floppy drive.</p>
+<div class="mt-auto flex items-center justify-between">
+<button class="text-sm font-bold text-on-surface flex items-center gap-2 group/btn">
+                                    View Record
+                                    <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="text-[10px] font-medium text-outline">INV-84-015</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden editorial-shadow transition-all hover:translate-y-[-4px]">
+<div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="High-detail shot of a classic Macintosh SE/30 with its iconic compact design and monochrome screen in a brightly lit studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyrDyrbu0Zl6qNKefmMCcWO2Ez7Mk0UNXvXL585qd6qI5dd_XCBo2j45Ysy8Z42EebRxNmcbG9-H34r3N-lJ-0RJHMiMXJ49XFAylHPbMOzJRiJXC0T94qL-uGGwEc8-CrTP31s2yVTDE8SQL-IXzHXF_1DnMPxMjc6r2SgL7h4t5pB6RlVPe056B3YNHr9L7E38fI4z6gLFZPvWHgTGTUTARYnn2G73gpXli9tDKkOJs2Z3-BWUKz5Ys-q7GymTQa9NJR6nrdK9o"/>
+<div class="absolute top-4 left-4 bg-tertiary/90 backdrop-blur-md px-3 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">1989</div>
+</div>
+<div class="p-8 flex flex-col flex-grow">
+<label class="text-[11px] font-bold text-primary uppercase tracking-widest mb-2">Compact</label>
+<h2 class="text-2xl font-bold text-on-surface mb-3 tracking-tight">Macintosh SE/30</h2>
+<p class="text-sm text-on-surface-variant leading-relaxed mb-8 line-clamp-2">Widely considered the best of the compact Macs, combining the classic form factor with 030 processing power.</p>
+<div class="mt-auto flex items-center justify-between">
+<button class="text-sm font-bold text-on-surface flex items-center gap-2 group/btn">
+                                    View Record
+                                    <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="text-[10px] font-medium text-outline">INV-89-088</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden editorial-shadow transition-all hover:translate-y-[-4px]">
+<div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Modern high-end photography of an early PowerBook laptop with its distinctive trackball and dark gray case on a wooden desk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSB06h1lSK-0FAiJr9YCVOJSsIuKwLm96LJVnDl8-nFKma23DXc6Xr-ZgIgt4J0bNxEq-oCLvEsnsaNqt7cOmemu1yQpnlcqwGXC9lGP_GA2w3L9fsYAs2lY0eTAHgcjAgOHl5Sy94n8wabgOnViVrln98ddcpqG7bPMV3ZsCWX0t9z90AdVl_DtKOt18CtcczQ0Z6OE1H87fhvUZj0yPjP8LU9PpRDDIqMh5dBGERzqxFItjZDywGMamc8byEGZehyjdT7muVglU"/>
+<div class="absolute top-4 left-4 bg-tertiary/90 backdrop-blur-md px-3 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">1991</div>
+</div>
+<div class="p-8 flex flex-col flex-grow">
+<label class="text-[11px] font-bold text-primary uppercase tracking-widest mb-2">Portable</label>
+<h2 class="text-2xl font-bold text-on-surface mb-3 tracking-tight">PowerBook 170</h2>
+<p class="text-sm text-on-surface-variant leading-relaxed mb-8 line-clamp-2">The flagship of the first PowerBook line, featuring an active-matrix screen and revolutionary ergonomic layout.</p>
+<div class="mt-auto flex items-center justify-between">
+<button class="text-sm font-bold text-on-surface flex items-center gap-2 group/btn">
+                                    View Record
+                                    <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="text-[10px] font-medium text-outline">INV-91-004</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination / Load More -->
+<div class="mt-20 flex justify-center">
+<button class="bg-surface-container-high text-on-surface-variant px-10 py-4 rounded-full text-xs uppercase font-bold tracking-widest hover:bg-surface-container-highest transition-all flex items-center gap-3">
+                        Load More Artifacts
+                        <span class="material-symbols-outlined text-lg" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#e2e2e7] dark:border-slate-800 bg-[#ffffff] dark:bg-slate-900">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-16 w-full mx-auto">
+<div class="mb-8 md:mb-0">
+<div class="text-lg font-bold text-[#1a1c1f] dark:text-white mb-2">VINTAGE ARCHIVE</div>
+<p class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755]">© 2024 THE TECHNICAL ATELIER. ALL RIGHTS RESERVED. PRECISION EDITORIAL NO. 04.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">The Collection</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Conservation</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Acquisitions</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Digital Museum</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Privacy</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Terms</a>
+</div>
+</div>
+</footer>
+</body></html>

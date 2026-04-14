@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'Showcase admin: export and import appearance, quotes, and journeys as a JSON file; devices missing on the target system are silently dropped from chapters',
+    ],
     changed: [],
     fixed: [],
   },

@@ -200,7 +200,8 @@ extension Translations {
             lifecycleActions: "Ciclo de vida",
             markRepaired: "Marcar como reparado",
             markReturned: "Marcar como devuelto",
-            backToRepair: "Volver a reparación"
+            backToRepair: "Volver a reparación",
+            historicalNotes: "Notas históricas"
         ),
         addEditDevice: .init(
             addTitle: "Añadir dispositivo",
@@ -274,6 +275,7 @@ extension Translations {
             setLastPowerOn: "Establecer último encendido",
             clearLastPowerOn: "Limpiar último encendido",
             customFields: "Campos personalizados",
+            historicalNotes: "Notas históricas",
             accessorySuggestions: "Sugerencias",
             accessoryCustom: "Personalizado",
             accessoryNamePlaceholder: "Nombre del accesorio",

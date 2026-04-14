@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f8",
+                        "on-error-container": "#93000a",
+                        "outline": "#717786",
+                        "background": "#f9f9fe",
+                        "secondary-fixed": "#e3e2e7",
+                        "surface-dim": "#d9dade",
+                        "on-surface": "#1a1c1f",
+                        "on-primary-fixed": "#001a41",
+                        "on-primary-container": "#fefcff",
+                        "on-secondary-container": "#626267",
+                        "on-secondary-fixed-variant": "#46464b",
+                        "inverse-on-surface": "#f0f0f5",
+                        "outline-variant": "#c1c6d7",
+                        "on-primary": "#ffffff",
+                        "primary": "#0058bc",
+                        "on-primary-fixed-variant": "#004493",
+                        "primary-fixed": "#d8e2ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#4b3f00",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6cb",
+                        "inverse-primary": "#adc6ff",
+                        "surface-bright": "#f9f9fe",
+                        "on-tertiary-fixed": "#221b00",
+                        "secondary-container": "#e0dfe4",
+                        "on-surface-variant": "#414755",
+                        "surface": "#f9f9fe",
+                        "inverse-surface": "#2e3034",
+                        "primary-container": "#0070eb",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ededf2",
+                        "on-secondary-fixed": "#1a1b1f",
+                        "tertiary-container": "#c5aa22",
+                        "on-background": "#1a1c1f",
+                        "surface-tint": "#005bc1",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#534600",
+                        "tertiary-fixed": "#ffe261",
+                        "surface-variant": "#e2e2e7",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#e2c53e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#5d5e63",
+                        "surface-container-highest": "#e2e2e7",
+                        "tertiary": "#6f5d00",
+                        "surface-container-high": "#e8e8ed"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-[#f9f9fe]/80 dark:bg-slate-950/80 backdrop-blur-xl transition-all">
+<div class="flex justify-between items-center px-12 h-20 w-full mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#1a1c1f] dark:text-white">VINTAGE ARCHIVE</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] hover:text-[#0058bc] transition-colors duration-300" href="#">Mainframes</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] hover:text-[#0058bc] transition-colors duration-300" href="#">Home Computing</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#0058bc] dark:text-[#0070eb] border-b-2 border-[#0058bc] pb-1" href="#">The 8-bit Era</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] hover:text-[#0058bc] transition-colors duration-300" href="#">Workstations</a>
+<a class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#414755] hover:text-[#0058bc] transition-colors duration-300" href="#">Portables</a>
+</div>
+<div class="flex items-center space-x-6">
+<button class="font-['Inter'] tracking-tight text-sm uppercase font-semibold text-[#0058bc] dark:text-[#0070eb] hover:opacity-80 transition-all">Curate</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">account_circle</span>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section: Editorial Asymmetry -->
+<section class="min-h-screen flex flex-col md:flex-row items-center">
+<div class="w-full md:w-1/2 h-[614px] md:h-screen relative overflow-hidden">
+<img alt="Macintosh SE/30" class="w-full h-full object-cover" data-alt="Close up studio photograph of a vintage Macintosh SE/30 with its iconic beige chassis and monochrome screen, soft cinematic lighting highlighting texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuhZUA5rb94eV8PUQTJyGLLFxqxnaieglxlNPXklJububxRjCSsJIoJpXljjhXXa4Ebvk26FaCxwU6ay3NQydBunSGDlaDPTS3qJPJ97MknXEgUmnDSOIbmwQ8Ozz19CiM8Y84zB8LUo9AX_QXpSrrsji2V1PWct-3s33CSdzbccNV0J_pNjDxAR_qqtlDrIJYD4a8YrOe1AbwRvl4eOJZoMT_NXT_ibQDAnkFzc4PWftYeo5n5sL8t2N9k86sWZvZ7-lJveqApbU"/>
+</div>
+<div class="w-full md:w-1/2 p-12 md:p-24 bg-surface flex flex-col justify-center">
+<p class="text-label-md uppercase tracking-[0.2em] font-semibold text-primary mb-6">Masterpiece Archive No. 042</p>
+<h1 class="text-[4rem] md:text-[6rem] font-black tracking-tighter leading-none text-on-surface mb-8">Macintosh SE/30</h1>
+<p class="text-xl md:text-2xl text-on-surface-variant font-light leading-relaxed max-w-lg">
+                    The fastest of the classic compact Macs. A powerhouse in a portable frame, defining the pinnacle of monochrome computing.
+                </p>
+<div class="mt-12 flex items-center gap-4">
+<span class="px-4 py-1 rounded bg-tertiary-container text-on-tertiary-container text-xs font-bold uppercase tracking-widest">Premium Collection</span>
+<span class="px-4 py-1 rounded bg-surface-container-high text-on-surface-variant text-xs font-bold uppercase tracking-widest">Circa 1989</span>
+</div>
+</div>
+</section>
+<!-- The Story: Long-form Narrative -->
+<section class="py-32 px-12 md:px-24 bg-surface-container-lowest">
+<div class="max-w-4xl mx-auto">
+<p class="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-12">The Story</p>
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-16">The Engine of the Desktop Publishing Revolution</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+<div class="text-on-surface-variant text-lg leading-loose space-y-8">
+<p>Released in 1989, the Macintosh SE/30 remains the ultimate expression of the original all-in-one form factor. While it looked nearly identical to its predecessors, its internals told a vastly different story. Built around the powerful Motorola 68030 processor, it offered speeds that rivaled the high-end Macintosh IIx.</p>
+<p>It was the first compact Mac to support high-density 1.44MB floppy disks and could be expanded to a then-staggering 128MB of RAM. For the professionals of the late 80s, this was the ultimate workstation.</p>
+</div>
+<div class="text-on-surface-variant text-lg leading-loose space-y-8">
+<p>This specific unit was sourced from a design studio in Basel, Switzerland, where it served as the primary typesetting machine for editorial layouts throughout the early 90s. The chassis retains its original texture with minimal UV discoloration—a rarity for this era.</p>
+<div class="pt-8 border-t border-outline-variant/30">
+<span class="material-symbols-outlined text-tertiary block mb-4" style="font-variation-settings: 'FILL' 1;">verified</span>
+<p class="text-sm italic font-medium">Archival Status: Fully Operational. Recapped logic board with original peripherals preserved.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Blueprint: Spec Grid -->
+<section class="py-32 px-12 md:px-24 bg-surface">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+<div>
+<p class="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Specifications</p>
+<h2 class="text-5xl font-black tracking-tighter">Technical Blueprint</h2>
+</div>
+<div class="h-[1px] flex-grow bg-outline-variant/20 mx-12 hidden md:block"></div>
+<p class="text-on-surface-variant uppercase text-xs tracking-widest font-bold">Ref: M5119</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- CPU Spec -->
+<div class="bg-surface-container-low p-10 rounded-xl hover:bg-surface-container-lowest transition-colors duration-500 group">
+<p class="text-xs uppercase tracking-widest text-on-surface-variant/60 font-bold mb-6">Processor</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-5xl font-black text-primary">16</h3>
+<span class="text-xl font-bold text-on-surface-variant">MHz</span>
+</div>
+<p class="mt-4 font-bold text-on-surface">Motorola 68030 CPU</p>
+<p class="mt-2 text-sm text-on-surface-variant leading-relaxed">Equipped with the 68882 FPU for high-performance mathematical operations.</p>
+</div>
+<!-- RAM Spec -->
+<div class="bg-surface-container-low p-10 rounded-xl hover:bg-surface-container-lowest transition-colors duration-500">
+<p class="text-xs uppercase tracking-widest text-on-surface-variant/60 font-bold mb-6">Memory</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-5xl font-black text-primary">128</h3>
+<span class="text-xl font-bold text-on-surface-variant">MB</span>
+</div>
+<p class="mt-4 font-bold text-on-surface">Max RAM Capability</p>
+<p class="mt-2 text-sm text-on-surface-variant leading-relaxed">Unprecedented for the compact series, utilizing 30-pin SIMM architecture.</p>
+</div>
+<!-- Storage Spec -->
+<div class="bg-surface-container-low p-10 rounded-xl hover:bg-surface-container-lowest transition-colors duration-500">
+<p class="text-xs uppercase tracking-widest text-on-surface-variant/60 font-bold mb-6">Storage</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-5xl font-black text-primary">40</h3>
+<span class="text-xl font-bold text-on-surface-variant">MB</span>
+</div>
+<p class="mt-4 font-bold text-on-surface">Internal SCSI Drive</p>
+<p class="mt-2 text-sm text-on-surface-variant leading-relaxed">Original Quantum ProDrive with full archival data integrity.</p>
+</div>
+<!-- Display Spec -->
+<div class="bg-surface-container-low p-10 rounded-xl md:col-span-2 hover:bg-surface-container-lowest transition-colors duration-500">
+<div class="flex flex-col md:flex-row gap-12">
+<div class="md:w-1/3">
+<p class="text-xs uppercase tracking-widest text-on-surface-variant/60 font-bold mb-6">Display</p>
+<h3 class="text-5xl font-black text-primary leading-tight">9"</h3>
+<p class="mt-4 font-bold text-on-surface">Monochrome CRT</p>
+<p class="mt-2 text-sm text-on-surface-variant">512 x 342 pixels</p>
+</div>
+<div class="md:w-2/3 flex items-center justify-center p-8 bg-surface-container-high rounded-lg">
+<div class="text-center">
+<p class="text-[0.6rem] uppercase tracking-[0.4em] text-on-surface-variant mb-4">Rendering Accuracy</p>
+<div class="w-48 h-32 border-2 border-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-4xl">grid_view</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Audio Spec -->
+<div class="bg-surface-container-low p-10 rounded-xl hover:bg-surface-container-lowest transition-colors duration-500">
+<p class="text-xs uppercase tracking-widest text-on-surface-variant/60 font-bold mb-6">Audio</p>
+<h3 class="text-5xl font-black text-primary">Stereo</h3>
+<p class="mt-4 font-bold text-on-surface">Digital Sound Chip</p>
+<p class="mt-2 text-sm text-on-surface-variant leading-relaxed">8-bit stereo output via 3.5mm jack.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Gallery: Detail Shots -->
+<section class="py-32 bg-surface-container-low">
+<div class="px-12 md:px-24 mb-16">
+<p class="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Gallery</p>
+<h2 class="text-5xl font-black tracking-tighter">Detailed Observations</h2>
+</div>
+<div class="flex overflow-x-auto pb-12 px-12 md:px-24 space-x-8 no-scrollbar">
+<div class="flex-none w-80 md:w-[30rem]">
+<div class="aspect-[4/5] bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500">
+<img alt="Detail shot 1" class="w-full h-full object-cover" data-alt="Macro detail shot of mechanical keyboard keys of a vintage Macintosh, soft lighting on matte plastic texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbSd-bpFQTZZNVf8v_2K2tq_wVLuYzFwAFSCe7a-92XxUbqqJ1wAUOlFTr_EuctOXiqUa_v8oeoHcW7Gk_qNd9PVHrt1nfHqY9A1qmEaSnoe_Z__755ayoncKqyK_sEkL3yq4fyPclmVdjcYmdfxQ3z9SxfBPnoJwMQivTrhXyfBl44a3lNwkVG0tYHrmPqWl3Jcm0uWIURQEBbrjNOCkOpZFGb3o2CPXLW1iNcpSGjM4yMYAwSQ6A5hXyzsKr1Gawt6rjEH3h4-Q"/>
+</div>
+<p class="mt-6 text-sm font-bold text-on-surface">Keyboard Mechanism</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest">Alpine switches</p>
+</div>
+<div class="flex-none w-80 md:w-[30rem]">
+<div class="aspect-[4/5] bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500">
+<img alt="Detail shot 2" class="w-full h-full object-cover" data-alt="Rear view of a Macintosh computer showing its iconic port layout and serial number plate in studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFOkeR30iKXc4fLxM3vfI4WQUhj3myPlk2XIAAv_XFfUKcClxP0yAJGGB4nk1XLn6g2oS1DZNkjp7mimxoy8gtlvX3K02WeML6nzV5rz9TzGlouuNPAfckEF5x1lNnsRkyjff8VbKwS2U0I5WzjB3EClFO8MWHjTK8QHDS1lDHfzcDqj5i9-gYbolqW6pJ8ABjKfrcc5rvyMw6P0fKobknvvBZNi0wUWM0dRFLEOkdL64_BXejiUpr9vVxf1tujvP7q5FQ5LSKyTk"/>
+</div>
+<p class="mt-6 text-sm font-bold text-on-surface">Expansion Ports</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest">SCSI &amp; PDS Slot</p>
+</div>
+<div class="flex-none w-80 md:w-[30rem]">
+<div class="aspect-[4/5] bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500">
+<img alt="Detail shot 3" class="w-full h-full object-cover" data-alt="Minimalist top view of the Macintosh SE/30 handle and vents, focusing on geometric design and shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpdbvk2tDRYnkB3cuDgZtGsVOy1OCyCHsr6DchU1p1zu4SpZOKxry4d2VQXhU1spVSnadOShQbUr9CUL374-lXCK4sH8Lw9hi21lq7L4kxF3TfWAh8SqtHlKIRbhTqihlJcro3e3RHLirSeE2fgyUPH3q8e6C2Gsl_s2Zh7JAF4-qvGvXTUo6MTAQ5bqY_dRhXt-1eNl4DOtzxR1S4lD_SzVW0re2DLKourLpdv3X-lmBuNL-5d68R8WwPD03mMJb2qvdbShsbMhU"/>
+</div>
+<p class="mt-6 text-sm font-bold text-on-surface">Form Factor</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest">Industrial Design</p>
+</div>
+</div>
+</section>
+<!-- Provenance: Acquisition History -->
+<section class="py-32 px-12 md:px-24 bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-24">
+<div class="md:w-1/3">
+<p class="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Provenance</p>
+<h2 class="text-5xl font-black tracking-tighter mb-8 leading-tight">History of Possession</h2>
+<p class="text-on-surface-variant leading-relaxed">Our archive tracks the journey of each piece with clinical precision. Every transition is documented, every restoration logged.</p>
+</div>
+<div class="md:w-2/3 space-y-4">
+<div class="flex items-start gap-8 p-8 bg-surface-container-low rounded-xl border-l-4 border-primary">
+<div class="text-primary font-black text-2xl">2024</div>
+<div>
+<h4 class="font-bold text-on-surface">Acquired by The Technical Atelier</h4>
+<p class="text-sm text-on-surface-variant mt-2">Private auction, Zurich. Catalogued under 'Early Computing - Tier I'.</p>
+</div>
+</div>
+<div class="flex items-start gap-8 p-8 bg-surface-container-low rounded-xl border-l-4 border-outline-variant/30">
+<div class="text-on-surface-variant/40 font-black text-2xl">2005</div>
+<div>
+<h4 class="font-bold text-on-surface">The Steiner Collection</h4>
+<p class="text-sm text-on-surface-variant mt-2">Stored in climate-controlled archive. Initial recap performed.</p>
+</div>
+</div>
+<div class="flex items-start gap-8 p-8 bg-surface-container-low rounded-xl border-l-4 border-outline-variant/30">
+<div class="text-on-surface-variant/40 font-black text-2xl">1989</div>
+<div>
+<h4 class="font-bold text-on-surface">First Commission</h4>
+<p class="text-sm text-on-surface-variant mt-2">Supplied new to 'Atelier Typographique', Basel via Apple Switzerland.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#e2e2e7] dark:border-slate-800 bg-[#ffffff] dark:bg-slate-900">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-16 w-full mx-auto">
+<div class="mb-8 md:mb-0">
+<div class="text-lg font-bold text-[#1a1c1f] dark:text-white mb-2">VINTAGE ARCHIVE</div>
+<p class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755]">© 2024 THE TECHNICAL ATELIER. ALL RIGHTS RESERVED. PRECISION EDITORIAL NO. 04.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">The Collection</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Conservation</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Acquisitions</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Digital Museum</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Privacy</a>
+<a class="font-['Inter'] text-[11px] tracking-widest uppercase text-[#414755] hover:text-[#0058bc] transition-all" href="#">Terms</a>
+</div>
+</div>
+</footer>
+</body></html>

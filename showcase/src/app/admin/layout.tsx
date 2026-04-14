@@ -4,17 +4,13 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-
-const NAV_LINKS = [
-  { label: 'Journeys', href: '/admin/journeys', icon: '📖' },
-  { label: 'Quotes', href: '/admin/quotes', icon: '💬' },
-  { label: 'Appearance', href: '/admin/appearance', icon: '🎨' },
-];
+import { useT } from '@/i18n/context';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useT();
 
   const isLoginPage = pathname === '/admin/login';
 
@@ -53,18 +49,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 bg-surface-container-lowest shadow-sm flex flex-col p-6 shrink-0">
         {/* Logo / Wordmark */}
         <div className="mb-8">
-          <p className="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-1">Admin</p>
+          <p className="text-[0.6875rem] font-label uppercase tracking-widest text-outline mb-1">{t.admin.adminLabel}</p>
           <Link
             href="/admin/journeys"
             className="text-lg font-headline font-bold tracking-tight text-on-surface hover:text-primary transition"
           >
-            The Collection
+            {t.admin.siteTitle}
           </Link>
         </div>
 
         {/* Nav */}
         <nav className="flex flex-col gap-1 flex-1">
-          {NAV_LINKS.map((link) => {
+          {[
+            { label: t.admin.navJourneys, href: '/admin/journeys', icon: '📖' },
+            { label: t.admin.navQuotes, href: '/admin/quotes', icon: '💬' },
+            { label: t.admin.navAppearance, href: '/admin/appearance', icon: '🎨' },
+            { label: t.admin.navData, href: '/admin/data', icon: '💾' },
+          ].map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
             return (
               <Link
@@ -92,14 +93,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition"
           >
             <span className="text-base">↗</span>
-            View Site
+            {t.admin.viewSite}
           </Link>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-error/10 hover:text-error transition text-left"
           >
             <span className="text-base">→</span>
-            Logout
+            {t.admin.logout}
           </button>
         </div>
       </aside>

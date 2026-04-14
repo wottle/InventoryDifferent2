@@ -21,12 +21,6 @@ interface MaintenanceTask {
   notes: string | null;
 }
 
-interface DeviceNote {
-  id: string;
-  content: string;
-  date: string;
-}
-
 interface DeviceDetail {
   id: number;
   name: string;
@@ -54,7 +48,6 @@ interface DeviceDetail {
   category: { name: string; type: string } | null;
   images: DeviceImage[];
   maintenanceTasks: MaintenanceTask[];
-  notes: DeviceNote[];
 }
 
 // --- Helpers ---
@@ -87,26 +80,11 @@ function functionalStatusBadge(status: string | null): { label: string; classNam
   }
 }
 
-function functionalStatusLabel(status: string | null): string {
-  switch (status) {
-    case 'YES': return 'Fully Operational';
-    case 'PARTIAL': return 'Partial Functionality';
-    case 'NO': return 'Non-functional';
-    default: return 'Unknown';
-  }
-}
-
 function taskYear(dateCompleted: string | null): string {
   if (!dateCompleted) return '—';
   const d = new Date(dateCompleted);
   if (isNaN(d.getTime())) return '—';
   return String(d.getFullYear());
-}
-
-function formatNoteDate(date: string): string {
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return date;
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 // --- Page Component ---
@@ -133,14 +111,6 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
 
   const rarity = rarityBadge(device.rarity);
   const funcBadge = functionalStatusBadge(device.functionalStatus);
-
-  // Split info into two halves for the narrative section
-  const infoText = device.info ?? '';
-  const midpoint = Math.ceil(infoText.length / 2);
-  const lastSpaceBefore = infoText.lastIndexOf(' ', midpoint);
-  const splitIndex = lastSpaceBefore > 0 ? lastSpaceBefore : midpoint;
-  const infoLeft = infoText.slice(0, splitIndex).trim();
-  const infoRight = infoText.slice(splitIndex).trim();
 
   // Spec cards
   const hardwareNotes: string[] = [];
@@ -246,48 +216,6 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
         </section>
       )}
 
-      {/* Section 3: The Story */}
-      {device.info && (
-        <section className="py-32 px-12 md:px-24 bg-surface-container-lowest">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-12">
-              The Story
-            </p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-16">
-              {device.name}
-              {device.additionalName ? ` ${device.additionalName}` : ''}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-              {/* Left column */}
-              <div className="text-on-surface-variant text-lg leading-loose space-y-8">
-                <p>{infoLeft || infoText}</p>
-              </div>
-              {/* Right column */}
-              <div className="text-on-surface-variant text-lg leading-loose space-y-8">
-                {infoRight && <p>{infoRight}</p>}
-
-                {/* Notes */}
-                {device.notes.slice(0, 2).map((note) => (
-                  <div key={note.id} className="text-sm italic text-on-surface-variant/80">
-                    <span className="font-semibold not-italic text-on-surface-variant/60 mr-2">
-                      {formatNoteDate(note.date)}
-                    </span>
-                    {note.content}
-                  </div>
-                ))}
-
-                {/* Archival status footer */}
-                <div className="pt-8 border-t border-outline-variant/30">
-                  <p className="text-sm italic font-medium">
-                    Archival Status: {functionalStatusLabel(device.functionalStatus)}.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Section 3: Technical Blueprint */}
       {specCards.length > 0 && (
         <section className="py-32 px-12 md:px-24 bg-surface">
@@ -352,7 +280,21 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
         </section>
       )}
 
-      {/* Section 5: Restoration Log */}
+      {/* Section 5: The Story */}
+      {device.info && (
+        <section className="py-32 px-12 md:px-24 bg-surface-container-lowest">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-8">
+              The Story
+            </p>
+            <p className="text-on-surface-variant text-lg leading-loose">
+              {device.info}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Section 6: Restoration Log */}
       {device.maintenanceTasks.length > 0 && (
         <section className="py-32 px-12 md:px-24 bg-surface-container-lowest">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-24">
