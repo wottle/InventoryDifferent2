@@ -6,6 +6,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [2.3.0] - 2026-04-13
+
+### Added
+- iOS: Historical Notes field now displayed below Technical Specifications on device detail and editable in the Add/Edit form
+
+---
+
 ## [2.2.0] - 2026-04-13
 
 ### Added

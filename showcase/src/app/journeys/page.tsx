@@ -57,7 +57,7 @@ export default async function JourneysPage() {
               Digital <br />Histories.
             </h1>
             <p className="text-xl text-on-surface-variant font-light leading-relaxed max-w-2xl">
-              A chronological odyssey through the silicon and polycarbonate that defined an era.
+              A chronological odyssey through the platinum and polycarbonate that defined an era.
             </p>
           </div>
           <div className="flex gap-4 pb-2">

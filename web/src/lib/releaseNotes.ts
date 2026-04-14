@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.2.0';
+export const APP_VERSION = '2.3.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -13,6 +13,15 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '2.3.0',
+    date: '2026-04-13',
+    added: [
+      'iOS: Historical Notes field now displayed below Technical Specifications on device detail and editable in the Add/Edit form',
+    ],
     changed: [],
     fixed: [],
   },
