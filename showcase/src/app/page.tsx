@@ -73,6 +73,7 @@ export default async function HomePage() {
   let featuredDevices: ShowcaseDevice[] = [];
   let journeys: ShowcaseJourney[] = [];
   let quote: ShowcaseQuote | null = null;
+  let quote2: ShowcaseQuote | null = null;
 
   try {
     const [configResult, devicesResult, journeysResult, quotesResult] = await Promise.allSettled([
@@ -94,7 +95,13 @@ export default async function HomePage() {
     if (quotesResult.status === 'fulfilled') {
       const quotes = quotesResult.value.data?.showcaseQuotes ?? [];
       if (quotes.length > 0) {
-        quote = quotes[Math.floor(Math.random() * quotes.length)];
+        const idx = Math.floor(Math.random() * quotes.length);
+        quote = quotes[idx];
+        if (quotes.length > 1) {
+          let idx2;
+          do { idx2 = Math.floor(Math.random() * quotes.length); } while (idx2 === idx);
+          quote2 = quotes[idx2];
+        }
       }
     }
   } catch {
@@ -229,13 +236,24 @@ export default async function HomePage() {
 
             {/* Right column */}
             <div className="col-span-4 flex flex-col gap-6 h-full">
-              {/* Top image */}
-              <div className="h-1/2 rounded-xl overflow-hidden relative group bg-surface-container-high">
-                <div className="w-full h-full bg-gradient-to-br from-surface-container to-surface-container-highest" />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="text-white font-medium underline">{t.home.viewDetail}</span>
+              {/* Second quote card (inverted) */}
+              {quote2 ? (
+                <div className="h-1/2 rounded-xl overflow-hidden bg-surface-container-high p-10 flex flex-col justify-center">
+                  <svg
+                    className="w-12 h-12 mb-6 text-primary opacity-60"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                  </svg>
+                  <p className="text-xl font-medium leading-snug text-primary">
+                    &ldquo;{quote2.text}&rdquo;
+                  </p>
+                  <span className="mt-4 text-on-surface-variant text-sm">— {quote2.author}{quote2.source ? `, ${quote2.source}` : ''}</span>
                 </div>
-              </div>
+              ) : (
+                <div className="h-1/2 rounded-xl overflow-hidden bg-surface-container-high" />
+              )}
 
               {/* Quote card */}
               {quote && (
