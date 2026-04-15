@@ -7,6 +7,8 @@ const nextConfig = {
       { source: '/uploads/:path*', destination: `${apiUrl}/uploads/:path*` },
       { source: '/upload', destination: `${apiUrl}/upload` },
       { source: '/auth/:path*', destination: `${apiUrl}/auth/:path*` },
+      { source: '/showcase/export', destination: `${apiUrl}/showcase/export` },
+      { source: '/showcase/import', destination: `${apiUrl}/showcase/import` },
     ];
   },
 };
