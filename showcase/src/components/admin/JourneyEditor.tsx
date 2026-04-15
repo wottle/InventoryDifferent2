@@ -1079,7 +1079,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                   <span className="text-xs text-outline">{t.adminJourneyEditor.publishedLabel}</span>
                   <span className="text-xs font-semibold text-on-surface">
                     {journey?.publishedAt
-                      ? new Date(journey.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                      ? new Date(journey.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
                       : '—'}
                   </span>
                 </div>
