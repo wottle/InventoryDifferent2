@@ -7,6 +7,7 @@ import { GET_SHOWCASE_CONFIG } from '@/lib/queries';
 import { NavWrapper, FooterWrapper } from '@/components/NavFooterWrapper';
 import { TranslationProvider } from '@/i18n/context';
 import { getTranslations } from '@/i18n';
+import { UmamiScript } from '@/components/UmamiScript';
 
 export const metadata: Metadata = {
   title: 'The Collection',
@@ -57,6 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </TranslationProvider>
           </AuthProvider>
         </ApolloWrapper>
+        <UmamiScript />
       </body>
     </html>
   );

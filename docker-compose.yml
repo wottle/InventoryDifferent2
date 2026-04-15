@@ -116,6 +116,8 @@ services:
       AUTH_PASSWORD: ${AUTH_PASSWORD:-}
       JWT_SECRET: ${JWT_SECRET:-}
       LANGUAGE: ${LANGUAGE:-en}
+      UMAMI_URL: ${UMAMI_URL:-}
+      UMAMI_SHOWCASE_WEBSITE_ID: ${UMAMI_SHOWCASE_WEBSITE_ID:-}
     depends_on:
       - api
     networks:
