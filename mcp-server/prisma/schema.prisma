@@ -47,6 +47,8 @@ model Device {
   isPramBatteryRemoved Boolean?
   deleted             Boolean   @default(false)
 
+  historicalNotes     String?   @db.Text
+
   externalUrl         String?
 
   categoryId          Int

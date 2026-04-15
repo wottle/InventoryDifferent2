@@ -279,7 +279,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
       }),
 
       get_device_details: tool({
-        description: 'Get full details for a specific device by ID, including all specs, notes, maintenance logs, and tags.',
+        description: 'Get full details for a specific device by ID, including all specs, historical notes, notes, maintenance logs, and tags.',
         parameters: z.object({
           deviceId: z.number().describe('The device ID to retrieve'),
         }),
@@ -307,6 +307,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                         name
                       }
                       info
+                      historicalNotes
                       isFavorite
                       status
                       functionalStatus
@@ -374,6 +375,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
               releaseYear: device.releaseYear,
               location: device.location?.name ?? null,
               info: device.info,
+              historicalNotes: device.historicalNotes ?? null,
               isFavorite: device.isFavorite,
               status: device.status,
               functionalStatus: device.functionalStatus,
@@ -458,6 +460,7 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
               isWifiEnabled: 'isWifiEnabled',
               isPramBatteryRemoved: 'isPramBatteryRemoved',
               lastPowerOnDate: 'lastPowerOnDate',
+              historicalNotes: 'historicalNotes',
               externalUrl: 'externalUrl',
             };
 

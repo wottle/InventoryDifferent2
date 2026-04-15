@@ -20,6 +20,7 @@ describe('handleGetDeviceDetails', () => {
                 categoryId: categories.computer.id,
                 manufacturer: 'Apple',
                 cpu: '68000',
+                historicalNotes: 'Released in 1987, the Macintosh SE was the first Mac with an internal hard drive bay.',
             },
         });
 
@@ -29,6 +30,7 @@ describe('handleGetDeviceDetails', () => {
         expect(result!.manufacturer).toBe('Apple');
         expect(result!.specs.cpu).toBe('68000');
         expect(result!.category.name).toBe('Computers');
+        expect(result!.historicalNotes).toBe('Released in 1987, the Macintosh SE was the first Mac with an internal hard drive bay.');
     });
 
     it('returns null for nonexistent device', async () => {

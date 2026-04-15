@@ -425,6 +425,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           releaseYear: device.releaseYear,
           location: (device as any).location?.name ?? null,
           info: device.info,
+          historicalNotes: device.historicalNotes ?? null,
           isFavorite: device.isFavorite,
           status: device.status,
           functionalStatus: device.functionalStatus,
