@@ -43,7 +43,7 @@ interface ShowcaseDevice {
 interface Chapter {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   sortOrder: number;
   devices: ShowcaseDevice[];
 }
@@ -65,7 +65,7 @@ interface LocalChapter {
   id: string | null; // null if not yet saved
   tempId: string;    // local key
   title: string;
-  description: string;
+  description: string | null;
   sortOrder: number;
   devices: ShowcaseDevice[];
   isSaving: boolean;

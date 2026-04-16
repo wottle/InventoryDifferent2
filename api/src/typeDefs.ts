@@ -414,7 +414,7 @@ export const typeDefs = gql`
     id: ID!
     journeyId: String!
     title: String!
-    description: String!
+    description: String
     sortOrder: Int!
     devices: [ShowcaseDevice!]!
   }
@@ -475,7 +475,7 @@ export const typeDefs = gql`
     id: String
     journeyId: String!
     title: String!
-    description: String!
+    description: String
     sortOrder: Int
   }
 

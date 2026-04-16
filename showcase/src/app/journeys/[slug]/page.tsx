@@ -23,7 +23,7 @@ interface ShowcaseDeviceItem {
 interface ChapterDetail {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   sortOrder: number;
   devices: ShowcaseDeviceItem[];
 }
@@ -127,10 +127,12 @@ function ChapterSection({ chapter, index, t }: { chapter: ChapterDetail; index: 
                   {chapter.title}
                 </h2>
               </div>
-              <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-primary">{t.journeyDetail.theNarrative}</h3>
-                <p className="text-on-surface-variant leading-relaxed text-lg">{chapter.description}</p>
-              </div>
+              {chapter.description && (
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-primary">{t.journeyDetail.theNarrative}</h3>
+                  <p className="text-on-surface-variant leading-relaxed text-lg">{chapter.description}</p>
+                </div>
+              )}
             </div>
             <div className="lg:col-span-7">{deviceGrid}</div>
           </div>
@@ -147,8 +149,10 @@ function ChapterSection({ chapter, index, t }: { chapter: ChapterDetail; index: 
           <span className="text-[0.6875rem] font-bold tracking-[0.2em] uppercase text-tertiary mb-2 block">
             {t.journeyDetail.chapter} {chapterNum}
           </span>
-          <h2 className="text-4xl font-bold tracking-tight text-on-surface mb-8">{chapter.title}</h2>
-          <p className="text-on-surface-variant text-lg leading-relaxed">{chapter.description}</p>
+          <h2 className={`text-4xl font-bold tracking-tight text-on-surface ${chapter.description ? 'mb-8' : ''}`}>{chapter.title}</h2>
+          {chapter.description && (
+            <p className="text-on-surface-variant text-lg leading-relaxed">{chapter.description}</p>
+          )}
         </div>
         {deviceGrid}
       </div>

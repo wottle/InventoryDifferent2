@@ -328,7 +328,7 @@ model ShowcaseChapter {
   journey     ShowcaseJourney  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   journeyId   String
   title       String
-  description String
+  description String?
   sortOrder   Int              @default(0)
   devices     ShowcaseDevice[]
 }

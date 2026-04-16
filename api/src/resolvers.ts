@@ -1586,15 +1586,16 @@ export const resolvers = {
         upsertChapter: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
             const { id, journeyId, title, description, sortOrder } = args.input;
+            const descriptionValue = description ?? null;
             if (id) {
                 return (context.prisma as any).showcaseChapter.update({
                     where: { id },
-                    data: { title, description, sortOrder: sortOrder ?? 0 },
+                    data: { title, description: descriptionValue, sortOrder: sortOrder ?? 0 },
                     include: { devices: { include: { device: { include: DEVICE_INCLUDE } } } },
                 });
             }
             return (context.prisma as any).showcaseChapter.create({
-                data: { journeyId, title, description, sortOrder: sortOrder ?? 0 },
+                data: { journeyId, title, description: descriptionValue, sortOrder: sortOrder ?? 0 },
                 include: { devices: { include: { device: { include: DEVICE_INCLUDE } } } },
             });
         },
