@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.3.0';
+export const APP_VERSION = '2.4.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,11 +12,30 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [
-      'Showcase admin: export and import appearance, quotes, and journeys as a JSON file; devices missing on the target system are silently dropped from chapters',
-    ],
+    added: [],
     changed: [],
     fixed: [],
+  },
+  {
+    version: '2.4.0',
+    date: '2026-04-16',
+    added: [
+      'Showcase admin: export and import appearance, quotes, and journeys as a JSON file; devices missing on the target system are silently dropped from chapters',
+      'Showcase: multi-language support via the LANGUAGE env var (en/de/fr/es), matching web and iOS',
+      'Showcase: Umami analytics integration via SHOWCASE_UMAMI_SRC and SHOWCASE_UMAMI_WEBSITE_ID environment variables',
+      'Showcase homepage: empty placeholder box replaced with a second random quote card',
+      'Showcase journey chapters: descriptions are now optional',
+    ],
+    changed: [
+      'Showcase journeys listings (homepage and /journeys) now sort newest to oldest by publishedAt',
+      'MCP tools and AI chat device-details responses now include historicalNotes',
+    ],
+    fixed: [
+      'Showcase export/import 404 — added proxy rewrites in showcase next.config so /showcase/export and /showcase/import reach the API server',
+      'Showcase journey publish date now formats with the configured LANGUAGE locale',
+      'Showcase device detail gallery now excludes images flagged as thumbnails',
+      'AI image generation: when assigning a LIGHT or DARK thumbnail to a device that already has a BOTH thumbnail, the BOTH is now promoted to the converse mode (DARK or LIGHT) instead of being unset entirely — fixes both web and iOS which share the /generate-image endpoint',
+    ],
   },
   {
     version: '2.3.0',
