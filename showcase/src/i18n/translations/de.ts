@@ -234,5 +234,8 @@ export const de: Translations = {
     unfeature: 'Hervorhebung entfernen',
     uploading: 'Hochladen\u2026',
     titleSlugRequired: 'Titel und Slug sind erforderlich.',
+    volumeNumberLabel: 'Bandnummer',
+    volumeNumberHint: 'Leer lassen für automatische Zuordnung basierend auf Veröffentlichungsdatum',
+    autoVolumePreview: 'Wird angezeigt als',
   },
 };

@@ -234,5 +234,8 @@ export const fr: Translations = {
     unfeature: 'Retirer de la vedette',
     uploading: 'Téléversement\u2026',
     titleSlugRequired: 'Le titre et le slug sont obligatoires.',
+    volumeNumberLabel: 'Numéro de volume',
+    volumeNumberHint: 'Laissez vide pour attribution automatique basée sur la date de publication',
+    autoVolumePreview: 'Sera affiché comme',
   },
 };

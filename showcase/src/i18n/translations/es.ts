@@ -234,5 +234,8 @@ export const es: Translations = {
     unfeature: 'Quitar de destacados',
     uploading: 'Subiendo\u2026',
     titleSlugRequired: 'El título y el slug son obligatorios.',
+    volumeNumberLabel: 'Número de volumen',
+    volumeNumberHint: 'Dejar en blanco para asignación automática basada en fecha de publicación',
+    autoVolumePreview: 'Se mostrará como',
   },
 };
