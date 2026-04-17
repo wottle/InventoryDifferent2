@@ -160,16 +160,24 @@ export default function BackupPage() {
 
   // Apply filters
   const filteredDevices = useMemo(() => {
+    console.log('DEBUG: devices.length =', devices.length);
+    console.log('DEBUG: filters =', JSON.stringify(filters));
     let result = [...devices];
 
     if (filters.categoryIds.length > 0) {
-      result = result.filter((d: any) => filters.categoryIds.includes(d.category.id));
+      console.log('DEBUG: filtering by categoryIds:', filters.categoryIds);
+      result = result.filter((d: any) => d.category && filters.categoryIds.includes(d.category.id));
+      console.log('DEBUG: after category filter, result.length =', result.length);
     }
     if (filters.statuses.length > 0) {
+      console.log('DEBUG: filtering by statuses:', filters.statuses);
       result = result.filter((d: any) => filters.statuses.includes(d.status));
+      console.log('DEBUG: after status filter, result.length =', result.length);
     }
     if (filters.functionalStatuses.length > 0) {
+      console.log('DEBUG: filtering by functionalStatuses:', filters.functionalStatuses);
       result = result.filter((d: any) => filters.functionalStatuses.includes(d.functionalStatus));
+      console.log('DEBUG: after functionalStatus filter, result.length =', result.length);
     }
     if (filters.searchTerm) {
       const term = filters.searchTerm.toLowerCase();
@@ -195,6 +203,7 @@ export default function BackupPage() {
       return backupSort.dir === 'asc' ? cmp : -cmp;
     });
 
+    console.log('DEBUG: final filteredDevices.length =', result.length);
     return result;
   }, [devices, filters, backupSort]);
 
@@ -832,7 +841,7 @@ export default function BackupPage() {
                           />
                         </td>
                         <td className="px-4 py-3 text-sm font-mono text-[var(--foreground)]">{device.id}</td>
-                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.category.name}</td>
+                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.category?.name ?? '-'}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">
                           {device.name}
                           {device.additionalName && (
@@ -840,7 +849,7 @@ export default function BackupPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.releaseYear || ""}</td>
-                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{(t.status as Record<string, string>)[device.status] ?? device.status.replace("_", " ")}</td>
+                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">{(t.status as Record<string, string>)[device.status] ?? device.status?.replace("_", " ") ?? '-'}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.images?.length || 0}</td>
                         <td className="px-4 py-3 text-sm text-[var(--foreground)]">{device.notes?.length || 0}</td>
                       </tr>
