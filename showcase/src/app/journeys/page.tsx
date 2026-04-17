@@ -24,9 +24,6 @@ export default async function JourneysPage() {
     return date.toLocaleDateString(process.env.LANGUAGE ?? 'en', { year: 'numeric', month: 'long' });
   }
 
-  function getVolumeLabel(sortOrder: number): string {
-    return `${t.journeys.volume} ${String(sortOrder).padStart(2, '0')}`;
-  }
   let journeys: JourneyListItem[] = [];
 
   try {
@@ -109,9 +106,6 @@ export default async function JourneysPage() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-12 left-12">
-                    <span className="inline-block px-3 py-1 bg-tertiary text-on-tertiary text-[0.6875rem] font-label uppercase tracking-wider rounded-sm mb-4">
-                      {getVolumeLabel(featured.sortOrder)}
-                    </span>
                     <h2 className="text-4xl md:text-5xl font-headline font-bold text-white tracking-tighter">
                       {featured.title}
                     </h2>

@@ -289,7 +289,7 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {featuredDevices.map((showcaseDevice, idx) => {
+              {featuredDevices.map((showcaseDevice) => {
                 const { device, curatorNote } = showcaseDevice;
                 const thumbnailUrl = pickThumbnail(device.images);
                 const isRare = RARE_RARITIES.includes(device.rarity || '');
@@ -329,9 +329,6 @@ export default async function HomePage() {
                       </div>
                       <span className="text-primary font-black italic text-lg">
                         #{String(device.id).padStart(3, '0')}
-                      </span>
-                      <span className="text-[0.65rem] font-bold uppercase tracking-widest text-outline mr-2">
-                        {t.home.selectionLabel.replace('01', String(idx + 1).padStart(2, '0'))}
                       </span>
                     </div>
                     {description && (

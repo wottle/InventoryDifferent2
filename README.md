@@ -105,6 +105,7 @@ docker compose -f docker-compose.prod.yml up -d
 The compose file routes traffic so:
 - `DOMAIN` → admin web app, and API paths (`/graphql`, `/upload`, `/uploads`, `/import`, `/export`, `/auth`, `/generate-image`)
 - `SHOP_DOMAIN` → public storefront
+- `SHOWCASE_DOMAIN` → public editorial showcase site (only if the `showcase` service is uncommented in `docker-compose.prod.yml`)
 
 **Traefik version:** `docker-compose.prod.yml` uses Traefik v1.7 label syntax (`traefik.frontend.rule`, `traefik.port`). If you're running Traefik v2+, you'll need to update the labels to use the v2 router/service/middleware syntax.
 
@@ -168,7 +169,7 @@ acme:
 
 | Variable | Description |
 |----------|-------------|
-| `LANGUAGE` | Language for the web app and storefront (default: `en`, supported: `de`, `fr`, `es`) |
+| `LANGUAGE` | Language for the web app, storefront, and showcase (default: `en`, supported: `de`, `fr`, `es`) |
 | `OPENAI_API_KEY` | Enables AI product image generation|
 | `ANTHROPIC_API_KEY` | Enables the AI chat assistant |
 | `MCP_TOKEN` | Optional token for the MCP server (token required for auth MCP server from AI agent) |
@@ -180,16 +181,18 @@ acme:
 |----------|---------|-------------|
 | `DOMAIN` | — | Domain for the admin web app (e.g., `inventory.example.com`) |
 | `SHOP_DOMAIN` | — | Domain for the public storefront (e.g., `shop.example.com`) |
+| `SHOWCASE_DOMAIN` | — | Domain for the public showcase site (e.g., `showcase.example.com`) — only needed if the `showcase` service is enabled |
 
 ### Analytics (optional)
 
-Set these directly on the web or storefront containers in Portainer (not in `.env`):
+Set these directly on the web, storefront, or showcase containers in Portainer (not in `.env`):
 
 | Variable | Description |
 |----------|-------------|
 | `UMAMI_URL` | URL of your Umami analytics instance |
 | `UMAMI_WEBSITE_ID` | Website ID from your Umami dashboard (for web app) |
 | `UMAMI_STOREFRONT_WEBSITE_ID` | Website ID from your Umami dashboard (for storefront) |
+| `UMAMI_SHOWCASE_WEBSITE_ID` | Website ID from your Umami dashboard (for showcase) |
 
 ---
 
@@ -197,17 +200,23 @@ Set these directly on the web or storefront containers in Portainer (not in `.en
 
 The application supports **English**, **German (Deutsch)**, **French (Français)**, and **Spanish (Español)** across all platforms.
 
-### Web App
+### Web App, Storefront, and Showcase
 
-The web app automatically detects your browser's language preference. To change the language:
+Language for the web app, storefront, and showcase is controlled by the `LANGUAGE` environment variable on their respective containers. Supported values: `en` (default), `de`, `fr`, `es`.
 
-1. Set your browser's preferred language to English (`en`), German (`de`), French (`fr`), or Spanish (`es`)
-2. Refresh the page
+Set it in your `.env` file (applies to all three services via docker-compose):
 
-**How to change browser language:**
-- **Chrome/Edge**: Settings → Languages → Add/reorder languages
-- **Firefox**: Settings → Language → Choose your preferred language  
-- **Safari**: System Preferences → Language & Region → Preferred Languages
+```env
+LANGUAGE=de
+```
+
+Then restart the containers for the change to take effect:
+
+```bash
+docker compose -f docker-compose.simple.yml up -d
+```
+
+The language is applied at runtime — no rebuild required.
 
 ### iOS App
 
