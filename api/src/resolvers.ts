@@ -806,7 +806,7 @@ export const resolvers = {
         showcaseJourneys: async (_parent: any, _args: any, context: Context) => {
             const journeys = await (context.prisma as any).showcaseJourney.findMany({
                 where: { published: true },
-                orderBy: { sortOrder: 'asc' },
+                orderBy: [{ publishedAt: { sort: 'desc', nulls: 'last' } }, { sortOrder: 'asc' }],
                 include: { chapters: { orderBy: { sortOrder: 'asc' }, include: { devices: { orderBy: { sortOrder: 'asc' }, include: { device: { include: DEVICE_INCLUDE } } } } } },
             });
             return journeys.map((j: any) => ({

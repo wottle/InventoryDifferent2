@@ -1525,7 +1525,53 @@ RESTART IDENTITY CASCADE;
                 console.log(`[${ts()}] [generate-image] Thumbnail path:`, thumbnailPath);
 
                 if (assignAsThumbnail) {
-                    await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isThumbnail: true }, data: { isThumbnail: false } });
+                    // Thumbnail exclusivity — mirrors updateImage resolver.
+                    // Valid end states per device: none, one BOTH, or one LIGHT + one DARK.
+                    const newMode = (thumbnailMode as any) || 'BOTH';
+                    const existingThumbs = await (prisma as any).image.findMany({
+                        where: { deviceId: Number(deviceId), isThumbnail: true },
+                    });
+                    const bothThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'BOTH');
+                    const lightThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'LIGHT');
+                    const darkThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'DARK');
+
+                    if (newMode === 'BOTH') {
+                        // Replace: unset all existing thumbnails.
+                        await prisma.image.updateMany({
+                            where: { deviceId: Number(deviceId), isThumbnail: true },
+                            data: { isThumbnail: false },
+                        });
+                    } else if (newMode === 'LIGHT') {
+                        if (bothThumb) {
+                            // Promote BOTH → DARK so it pairs with the new LIGHT.
+                            await (prisma as any).image.update({
+                                where: { id: bothThumb.id },
+                                data: { thumbnailMode: 'DARK' },
+                            });
+                        } else if (lightThumb) {
+                            // Replace existing LIGHT.
+                            await prisma.image.update({
+                                where: { id: lightThumb.id },
+                                data: { isThumbnail: false },
+                            });
+                        }
+                        // Existing DARK (without BOTH) is left alone — it pairs with the new LIGHT.
+                    } else if (newMode === 'DARK') {
+                        if (bothThumb) {
+                            // Promote BOTH → LIGHT so it pairs with the new DARK.
+                            await (prisma as any).image.update({
+                                where: { id: bothThumb.id },
+                                data: { thumbnailMode: 'LIGHT' },
+                            });
+                        } else if (darkThumb) {
+                            // Replace existing DARK.
+                            await prisma.image.update({
+                                where: { id: darkThumb.id },
+                                data: { isThumbnail: false },
+                            });
+                        }
+                        // Existing LIGHT (without BOTH) is left alone — it pairs with the new DARK.
+                    }
                 }
                 if (assignAsShopImage) {
                     await prisma.image.updateMany({ where: { deviceId: Number(deviceId), isShopImage: true }, data: { isShopImage: false } });

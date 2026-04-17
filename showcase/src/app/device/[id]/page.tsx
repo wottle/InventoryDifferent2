@@ -252,15 +252,15 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
         </section>
       )}
 
-      {/* Section 4: Gallery */}
-      {device.images.length > 0 && (
+      {/* Section 4: Gallery (excludes thumbnail-flagged images) */}
+      {device.images.some((img) => !img.isThumbnail) && (
         <section className="py-32 bg-surface-container-low">
           <div className="px-12 md:px-24 mb-16">
             <p className="text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Gallery</p>
             <h2 className="text-5xl font-black tracking-tighter">Detailed Observations</h2>
           </div>
           <div className="flex overflow-x-auto pb-12 px-12 md:px-24 gap-8">
-            {device.images.map((image) => (
+            {device.images.filter((img) => !img.isThumbnail).map((image) => (
               <div key={image.id} className="flex-none w-80 md:w-[30rem]">
                 <div className="aspect-[4/5] bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500">
                   <img
