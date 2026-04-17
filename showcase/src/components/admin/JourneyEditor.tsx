@@ -56,6 +56,8 @@ export interface JourneyData {
   published: boolean;
   publishedAt: string | null;
   sortOrder: number;
+  volumeNumber: number | null;
+  effectiveVolumeNumber?: number;
   coverImagePath: string | null;
   chapters: Chapter[];
 }
@@ -94,6 +96,13 @@ function pickAdminThumbnail(images: DeviceImage[]): string | null {
     candidates.find((i) => i.thumbnailMode === 'BOTH') ??
     candidates[0];
   return pick?.thumbnailPath ?? null;
+}
+
+// Convert number to Roman numeral (1-20)
+function toRoman(num: number): string {
+  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
+    'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'];
+  return numerals[num - 1] || String(num);
 }
 
 // ─── Device Search Modal ──────────────────────────────────────────────────────
@@ -611,6 +620,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
   const [description, setDescription] = useState(journey?.description ?? '');
   const [coverImagePath, setCoverImagePath] = useState<string | null>(journey?.coverImagePath ?? null);
   const [published, setPublished] = useState(journey?.published ?? false);
+  const [volumeNumber, setVolumeNumber] = useState<number | ''>(journey?.volumeNumber ?? '');
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!isNew);
@@ -692,6 +702,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               coverImagePath: coverImagePath || null,
               published,
               sortOrder: 0,
+              volumeNumber: volumeNumber === '' ? null : volumeNumber,
             },
           },
         });
@@ -709,6 +720,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               coverImagePath: coverImagePath || null,
               published,
               sortOrder: journey!.sortOrder,
+              volumeNumber: volumeNumber === '' ? null : volumeNumber,
             },
           },
         });
@@ -1040,6 +1052,33 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
                   <p className="text-xs text-outline mt-1">{t.adminJourneyEditor.uploading}</p>
                 )}
               </div>
+
+              {!isNew && (
+                <div>
+                  <label className="block text-xs font-medium text-outline mb-1">
+                    {t.adminJourneyEditor.volumeNumberLabel ?? 'Volume Number'}
+                  </label>
+                  <p className="text-[0.65rem] text-outline/70 mb-1">
+                    {t.adminJourneyEditor.volumeNumberHint ?? 'Leave blank to auto-assign based on publish date'}
+                  </p>
+                  <input
+                    type="number"
+                    min={1}
+                    value={volumeNumber}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setVolumeNumber(val === '' ? '' : parseInt(val, 10));
+                    }}
+                    placeholder={String(journey?.effectiveVolumeNumber ?? '')}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-outline-variant/40 bg-surface-container-low text-xs text-on-surface focus:outline-none focus:border-primary"
+                  />
+                  {volumeNumber === '' && journey?.effectiveVolumeNumber && (
+                    <p className="text-[0.65rem] text-primary mt-1">
+                      {t.adminJourneyEditor.autoVolumePreview ?? 'Will show as'}: {t.journeys.volume} {toRoman(journey.effectiveVolumeNumber)}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {isNew && (
                 <div className="flex items-center gap-2">

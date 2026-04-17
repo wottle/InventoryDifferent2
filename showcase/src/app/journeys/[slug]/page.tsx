@@ -34,7 +34,7 @@ interface JourneyDetail {
   slug: string;
   description: string;
   coverImagePath: string | null;
-  sortOrder: number;
+  effectiveVolumeNumber: number;
   published: boolean;
   chapters: ChapterDetail[];
 }
@@ -47,10 +47,10 @@ function rarityLabel(rarity: string | null, t: any): string | null {
   return t.rarity[key] ?? null;
 }
 
-function getVolumeLabel(sortOrder: number, t: any): string {
+function getVolumeLabel(effectiveVolumeNumber: number, t: any): string {
   const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
     'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'];
-  return `${t.journeys.volume} ${numerals[sortOrder - 1] || sortOrder}`;
+  return `${t.journeys.volume} ${numerals[effectiveVolumeNumber - 1] || effectiveVolumeNumber}`;
 }
 
 function DeviceCard({ item, t }: { item: ShowcaseDeviceItem; t: any }) {
@@ -199,7 +199,7 @@ export default async function JourneyDetailPage({ params }: { params: { slug: st
         )}
         <div className="relative z-10 text-center px-6 max-w-5xl">
           <p className="text-xs font-medium tracking-widest uppercase mb-4 text-primary">
-            {getVolumeLabel(journey.sortOrder, t)}
+            {getVolumeLabel(journey.effectiveVolumeNumber, t)}
           </p>
           <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-on-surface mb-6 leading-[0.9]">
             {journey.title}

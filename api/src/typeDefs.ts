@@ -403,6 +403,11 @@ export const typeDefs = gql`
     description: String!
     coverImagePath: String
     sortOrder: Int!
+    # Explicit editorial volume. Null means "auto".
+    volumeNumber: Int
+    # Effective volume shown to the public: volumeNumber when set, otherwise
+    # rank among published journeys ordered by publishedAt ascending.
+    effectiveVolumeNumber: Int
     published: Boolean!
     publishedAt: String
     chapters: [ShowcaseChapter!]!
@@ -468,6 +473,8 @@ export const typeDefs = gql`
     description: String!
     coverImagePath: String
     sortOrder: Int
+    # Explicit editorial volume; pass null to clear and fall back to auto.
+    volumeNumber: Int
     published: Boolean
   }
 

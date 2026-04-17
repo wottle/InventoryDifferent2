@@ -21,7 +21,7 @@ export default async function JourneysPage() {
 
   function formatPublishedDate(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleDateString(process.env.LANGUAGE ?? 'en', { year: 'numeric', month: 'long' });
+    return date.toLocaleDateString(process.env.LANGUAGE ?? 'en', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   let journeys: JourneyListItem[] = [];

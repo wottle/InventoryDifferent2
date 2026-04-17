@@ -89,7 +89,7 @@ export const GET_SHOWCASE_JOURNEY_BY_SLUG = gql`
       description
       coverImagePath
       published
-      sortOrder
+      effectiveVolumeNumber
       chapters {
         id
         title
@@ -187,7 +187,7 @@ export const GET_ALL_SHOWCASE_QUOTES = gql`
 export const GET_ALL_SHOWCASE_JOURNEYS_ADMIN = gql`
   query GetAllShowcaseJourneysAdmin {
     showcaseAllJourneys {
-      id title slug description coverImagePath sortOrder published publishedAt
+      id title slug description coverImagePath sortOrder volumeNumber effectiveVolumeNumber published publishedAt
       chapters {
         id title
         devices { id }
@@ -205,7 +205,7 @@ export const DELETE_JOURNEY = gql`
 export const GET_ALL_JOURNEYS_FOR_EDIT = gql`
   query GetAllJourneysForEdit {
     showcaseAllJourneys {
-      id title slug description coverImagePath sortOrder published publishedAt
+      id title slug description coverImagePath sortOrder volumeNumber effectiveVolumeNumber published publishedAt
       chapters {
         id title description sortOrder
         devices {
@@ -228,7 +228,7 @@ export const CREATE_JOURNEY = gql`
 export const UPDATE_JOURNEY = gql`
   mutation UpdateJourney($id: ID!, $input: JourneyInput!) {
     updateJourney(id: $id, input: $input) {
-      id title slug description coverImagePath sortOrder published
+      id title slug description coverImagePath sortOrder volumeNumber effectiveVolumeNumber published
     }
   }
 `;

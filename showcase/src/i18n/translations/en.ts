@@ -232,6 +232,9 @@ export type Translations = {
     unfeature: string;
     uploading: string;
     titleSlugRequired: string;
+    volumeNumberLabel: string;
+    volumeNumberHint: string;
+    autoVolumePreview: string;
   };
 };
 
@@ -469,5 +472,8 @@ export const en: Translations = {
     unfeature: 'Unfeature',
     uploading: 'Uploading\u2026',
     titleSlugRequired: 'Title and slug are required.',
+    volumeNumberLabel: 'Volume Number',
+    volumeNumberHint: 'Leave blank to auto-assign based on publish date',
+    autoVolumePreview: 'Will show as',
   },
 };

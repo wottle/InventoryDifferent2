@@ -316,6 +316,10 @@ model ShowcaseJourney {
   description    String
   coverImagePath String?
   sortOrder      Int               @default(0)
+  // Explicit editorial volume number shown on the detail page. When null,
+  // the resolver computes an effective volume by ranking published journeys
+  // by publishedAt ascending.
+  volumeNumber   Int?
   published      Boolean           @default(false)
   publishedAt    DateTime?
   chapters       ShowcaseChapter[]

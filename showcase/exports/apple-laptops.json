@@ -1,0 +1,149 @@
+{
+  "exportDate": "2026-04-16T00:00:00.000Z",
+  "exportVersion": "1.0",
+  "journeys": [
+    {
+      "title": "The Apple Laptop",
+      "slug": "apple-laptops",
+      "description": "From the luggable crouch-computing of the Apple IIc to the featherweight metal of the MacBook Air — four decades of Apple portability, traced through the machines that carried them from the desktop to the airport lounge and everywhere in between.",
+      "coverImagePath": null,
+      "sortOrder": 99,
+      "published": false,
+      "publishedAt": null,
+      "chapters": [
+        {
+          "title": "Before the Laptop",
+          "description": "In 1984 Apple had no laptop. What it had was the IIc — a computer small enough to carry, light enough to set on a kitchen table, and beautiful enough that people did. Steve Jobs called it 'crouch computing.' You didn't quite travel with it; you relocated with it. But the idea — an Apple you could pick up and move — starts right here.",
+          "sortOrder": 1,
+          "devices": [
+            {
+              "deviceId": 113,
+              "curatorNote": "Apple's first real attempt at a portable computer. The handle on the back wasn't a gimmick — it genuinely invited you to pick it up. A 5.25\" drive, 128K of RAM, and Frog Design's snow-white wedge defined the form language Apple would chase for the next decade.",
+              "sortOrder": 0,
+              "isFeatured": true
+            },
+            {
+              "deviceId": 117,
+              "curatorNote": "The refinement. An internal 3.5\" drive replaced the external floppy, the 65C02 ran at 4 MHz, and the whole machine felt tighter. It was also, quietly, the last Apple II ever produced.",
+              "sortOrder": 1,
+              "isFeatured": false
+            }
+          ]
+        },
+        {
+          "title": "The First True Laptop",
+          "description": "The Macintosh Portable arrived in 1989 as Apple's first battery-powered Mac — and its first genuine failure of proportion. Sixteen pounds, seven thousand dollars, and a lead-acid battery that made it feel like a small suitcase. But inside that brick was a real Mac. The PowerBook line that followed three years later is what the Portable should have been: smaller, lighter, cheaper, and built around the radical idea of palm rests and a centered trackball.",
+          "sortOrder": 2,
+          "devices": [
+            {
+              "deviceId": 185,
+              "curatorNote": "The one that started it all — and nearly ended it. An active-matrix display, a full-travel keyboard, and a price tag of $7,300. Too expensive, too heavy, and too soon. But every laptop Apple ever shipped owes something to this machine. This unit has had its backlight upgraded so the screen finally looks the way the engineers wanted.",
+              "sortOrder": 0,
+              "isFeatured": true
+            },
+            {
+              "deviceId": 269,
+              "curatorNote": "The working-class PowerBook. 33 MHz 68030, passive-matrix grayscale screen, and the kind of hard-wearing plastics that still feel tight thirty years later. Apple sold these by the truckload to writers, students, and anyone who needed a Mac on a plane. Found at Goodwill — exactly where so many of these ended their careers.",
+              "sortOrder": 1,
+              "isFeatured": false
+            }
+          ]
+        },
+        {
+          "title": "Blackbird and the Mid-90s Lineup",
+          "description": "The PowerBook 500 series was the first laptop that felt designed instead of assembled. Codenamed 'Blackbird,' it introduced the trackpad — still the dominant pointing device on laptops today — along with stereo speakers, expansion bays, and a silhouette so confident it would echo through the Titanium PowerBook seven years later. Its descendants — the budget 190 and the consumer 1400 — carried the template into the PowerPC era, ending the 68k line and introducing the first PowerBook you could play a CD in.",
+          "sortOrder": 3,
+          "devices": [
+            {
+              "deviceId": 257,
+              "curatorNote": "The 520c brought color to the midrange. A 25 MHz 68LC040 drove a 9.5\" dual-scan color display — modest specs on paper, but the first time a PowerBook in this price class looked genuinely modern.",
+              "sortOrder": 0,
+              "isFeatured": false
+            },
+            {
+              "deviceId": 58,
+              "curatorNote": "The flagship. 33 MHz 68040, active-matrix color, and — in this specimen — the rare PowerPC upgrade card that let Blackbird live a second life in the RISC era. Tunnel vision and all, this is the PowerBook that set the template.",
+              "sortOrder": 1,
+              "isFeatured": true
+            },
+            {
+              "deviceId": 59,
+              "curatorNote": "The last 68k PowerBook. A 33 MHz 68LC040, a dual-scan color screen, and the same case language as the 5300 — which shared a factory and a catalog page. The 190 quietly closed out the Motorola 68000 line at Apple in 1995.",
+              "sortOrder": 2,
+              "isFeatured": false
+            },
+            {
+              "deviceId": 60,
+              "curatorNote": "The first consumer PowerPC PowerBook, and the first PowerBook with a built-in CD-ROM. A 603e at 117–166 MHz under a customizable 'BookCover' lid — you could slide artwork behind a transparent panel on the outside. The 1400 was where the mainstream laptop finally caught up to everything else on your desk.",
+              "sortOrder": 3,
+              "isFeatured": false
+            }
+          ]
+        },
+        {
+          "title": "Color Returns",
+          "description": "By 1999 Apple was back. The iBook G3 clamshell was Jony Ive's laptop answer to the iMac — a translucent, toy-like object that ignored every laptop convention of the 1990s and sold by the millions to students, teachers, and anyone tired of beige. A few years later the white iBook G4 sanded off the edges and became the quietly perfect consumer Mac.",
+          "sortOrder": 4,
+          "devices": [
+            {
+              "deviceId": 62,
+              "curatorNote": "Tangerine. A 300 MHz G3, a handle built into the hinge, and polycarbonate shells in flavors Apple was still willing to name after fruit. The clamshell was deliberately unlaptop-looking — and that was the point.",
+              "sortOrder": 0,
+              "isFeatured": true
+            },
+            {
+              "deviceId": 70,
+              "curatorNote": "Lime Special Edition. The iBook's second generation bumped the G3 to 466 MHz and added FireWire. The color palette went deeper and more saturated — Graphite, Indigo, Key Lime — closing out the clamshell era in style.",
+              "sortOrder": 1,
+              "isFeatured": false
+            },
+            {
+              "deviceId": 73,
+              "curatorNote": "The white iBook G4. All the clamshell's DNA, none of the clamshell's shape. A sober white rectangle that quietly defined the Apple consumer laptop until the MacBook took over in 2006.",
+              "sortOrder": 2,
+              "isFeatured": false
+            }
+          ]
+        },
+        {
+          "title": "From Titanium to Aluminum",
+          "description": "In 2001 Apple traded plastic for metal and never looked back. The Titanium PowerBook G4 was the first Apple laptop that felt like a piece of industrial equipment — 1\" thin, a 15\" widescreen display, and a paint-over-titanium shell that scratched if you looked at it wrong. The Aluminum PowerBooks that followed solved the paint problem, expanded the lineup to 12/15/17, and set the material language that still defines the MacBook Pro today.",
+          "sortOrder": 5,
+          "devices": [
+            {
+              "deviceId": 71,
+              "curatorNote": "Titanium, DVI revision. 15.2\" widescreen at 1152×768, a G4 at 667 MHz or faster, and a palm rest that's still shockingly thin. Notorious for flaking paint and bent lids — but when it came out, nothing else in the industry looked like it.",
+              "sortOrder": 0,
+              "isFeatured": true
+            },
+            {
+              "deviceId": 74,
+              "curatorNote": "Aluminum, 12\" — the subnotebook that Apple never officially called a subnotebook. 1.5 GHz G4, backlit keyboard, and the densest packaging Apple had ever attempted. The template that the 11\" MacBook Air would pick up five years later.",
+              "sortOrder": 1,
+              "isFeatured": false
+            }
+          ]
+        },
+        {
+          "title": "The Unibody Era",
+          "description": "In 2008 Apple showed a block of aluminum on stage and then the laptop it had been machined from. The unibody MacBook wasn't just a chassis change — it was a manufacturing declaration. One part, no fasteners, no flex. Every MacBook shipped since is a direct descendant. And then the MacBook Air arrived to show what you could do once the laptop had nothing left to remove.",
+          "sortOrder": 6,
+          "devices": [
+            {
+              "deviceId": 78,
+              "curatorNote": "Late-2008 unibody MacBook. The first consumer laptop milled from a single block of 6000-series aluminum. Glass trackpad, LED backlight, and a rigidity that made every plastic laptop that came before feel like a rental car.",
+              "sortOrder": 0,
+              "isFeatured": true
+            },
+            {
+              "deviceId": 89,
+              "curatorNote": "MacBook Air, Mid-2012. The design that settled the argument — wedge profile, all-flash storage, all-day battery. The blueprint that the industry has been chasing ever since, and that Apple itself would keep shipping, largely unchanged, for seven more years.",
+              "sortOrder": 1,
+              "isFeatured": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
