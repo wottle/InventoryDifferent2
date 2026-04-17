@@ -4,6 +4,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- Web Backup page: new **Export to CSV** section. Pick fields, drag to reorder columns, optional preview of the first 5 rows, and download. Images are not included. One-to-many relationships (notes, maintenance tasks, accessories, links, tags, custom fields) are joined into a single cell per device using `" | "` as the separator, so every device remains one row.
+- Web Backup page: new **Device Selection** section header clarifies that the device table feeds both Export Devices (ZIP) and Export CSV. The Filter button now lives here next to the list it controls, instead of the page header.
+
+### Changed
+- Web Backup page: all four import/export sections (Import Devices, Import CSV, Export Devices, Export CSV) are now collapsible and collapsed by default.
+
 ---
 
 ## [2.4.0] - 2026-04-16

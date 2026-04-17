@@ -530,6 +530,47 @@ export type Translations = {
         isPramBatteryRemoved: string;
         lastPowerOnDate: string;
       };
+      deviceSelectionTitle?: string;
+      deviceSelectionDesc?: string;
+      csvExport?: {
+        title: string;
+        toggleShow: string;
+        toggleHide: string;
+        desc: string;
+        scopeLabel: string;
+        scopeSuffix: string;
+        selectAll: string;
+        selectNone: string;
+        resetDefaults: string;
+        fieldsSelectedSuffix: string;
+        showPreview: string;
+        hidePreview: string;
+        downloadBtn: string;
+        pickFieldsHint: string;
+        groups: {
+          basics: string;
+          classification: string;
+          financial: string;
+          location: string;
+          specs: string;
+          text: string;
+          relations: string;
+        };
+        fieldLabels: {
+          id: string;
+          location: string;
+          hasOriginalBox: string;
+          historicalNotes: string;
+          externalUrl: string;
+          notes: string;
+          maintenanceTasks: string;
+          accessories: string;
+          links: string;
+          tags: string;
+          customFields: string;
+          imageCount: string;
+        };
+      };
     };
     print: {
       title: string;
@@ -1203,6 +1244,47 @@ export const en: Translations = {
         isWifiEnabled: "WiFi Enabled",
         isPramBatteryRemoved: "PRAM Battery Removed",
         lastPowerOnDate: "Last Power On Date",
+      },
+      deviceSelectionTitle: "Device Selection",
+      deviceSelectionDesc: "Used by Export Devices (ZIP) and Export CSV. Filter to narrow the list, then optionally select specific devices \u2014 or leave all selected.",
+      csvExport: {
+        title: "Export to CSV",
+        toggleShow: "Show",
+        toggleHide: "Hide",
+        desc: "Export device metadata as a CSV. Pick fields, drag to reorder, and download. Images are not included. Relationships (notes, maintenance logs, accessories, links, tags, custom fields) are joined into a single cell per device using \" | \" as the separator.",
+        scopeLabel: "Exporting",
+        scopeSuffix: "devices (current filter + selection).",
+        selectAll: "Select all fields",
+        selectNone: "Select none",
+        resetDefaults: "Reset to defaults",
+        fieldsSelectedSuffix: "fields selected",
+        showPreview: "Show preview (first 5 rows)",
+        hidePreview: "Hide preview",
+        downloadBtn: "Download CSV",
+        pickFieldsHint: "Pick at least one field.",
+        groups: {
+          basics: "Basics",
+          classification: "Classification",
+          financial: "Acquisition & Sale",
+          location: "Location & Flags",
+          specs: "Specifications",
+          text: "Text & Links",
+          relations: "Related Items (joined)",
+        },
+        fieldLabels: {
+          id: "ID",
+          location: "Location",
+          hasOriginalBox: "Has Original Box",
+          historicalNotes: "Historical Notes",
+          externalUrl: "External URL",
+          notes: "Notes",
+          maintenanceTasks: "Maintenance Tasks",
+          accessories: "Accessories",
+          links: "Links",
+          tags: "Tags",
+          customFields: "Custom Fields",
+          imageCount: "Image Count",
+        },
       },
     },
     print: {

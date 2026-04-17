@@ -11,6 +11,7 @@ import { LoadingPanel } from "../../components/LoadingPanel";
 import { useT } from "../../i18n/context";
 import { useAuth } from "../../lib/auth-context";
 import CsvImport from "../../components/CsvImport";
+import CsvExport from "../../components/CsvExport";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {
@@ -73,11 +74,32 @@ const GET_DEVICES = gql`
         label
         dateCompleted
         notes
+        cost
       }
       tags {
         id
         name
       }
+      accessories {
+        id
+        name
+      }
+      links {
+        id
+        label
+        url
+      }
+      customFieldValues {
+        id
+        value
+        customField {
+          id
+          name
+        }
+      }
+      historicalNotes
+      condition
+      rarity
     }
   }
 `;
@@ -126,6 +148,7 @@ export default function BackupPage() {
   const [importProgress, setImportProgress] = useState("");
   const [importResults, setImportResults] = useState<any>(null);
   const [showImportSection, setShowImportSection] = useState(false);
+  const [showExportSection, setShowExportSection] = useState(false);
 
   const { data, loading, refetch } = useQuery(GET_DEVICES, {
     variables: { where: { deleted: { equals: false } } },
@@ -462,15 +485,6 @@ export default function BackupPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsFilterPanelOpen(true)}
-              className="btn-retro inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--foreground)]"
-            >
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              {t.pages.backup.filterBtn}
-            </button>
             <Link href="/" className="btn-retro text-sm px-3 py-1.5">
               {t.common.back}
             </Link>
@@ -593,10 +607,20 @@ export default function BackupPage() {
             {/* CSV Import */}
             <CsvImport categories={categories} onImportComplete={refetch} />
 
-            {/* Export Options */}
+            {/* Export ZIP (collapsible) */}
             <div className="mb-4 p-4 bg-[var(--card)] rounded border border-[var(--border)] card-retro">
-              <h2 className="text-lg font-medium mb-3">{t.pages.backup.exportSectionTitle}</h2>
-              
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-medium">{t.pages.backup.exportSectionTitle}</h2>
+                <button
+                  onClick={() => setShowExportSection(!showExportSection)}
+                  className="text-sm text-[var(--apple-blue)] hover:underline"
+                >
+                  {showExportSection ? t.pages.backup.importToggleHide : t.pages.backup.importToggleShow}
+                </button>
+              </div>
+
+              {showExportSection && (
+                <>
               <div className="flex flex-wrap items-center gap-4 mb-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -713,10 +737,50 @@ export default function BackupPage() {
                   </button>
                 </div>
               )}
+                </>
+              )}
             </div>
+
+            {/* CSV Export */}
+            <CsvExport devices={devicesToExport} />
 
             {/* Device selection table */}
             <div className="bg-[var(--card)] rounded border border-[var(--border)] overflow-hidden card-retro">
+              <div className="p-4 border-b border-[var(--border)]">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-medium">{(t.pages.backup as any).deviceSelectionTitle ?? 'Device Selection'}</h2>
+                    <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                      {(t.pages.backup as any).deviceSelectionDesc ?? 'Used by Export Devices (ZIP) and Export CSV. Filter to narrow the list, then optionally select specific devices \u2014 or leave all selected.'}
+                    </p>
+                    <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                      {selectedDeviceIds.size > 0 ? (
+                        <><strong>{selectedDeviceIds.size}</strong> {t.pages.backup.devicesSelectedSuffix}</>
+                      ) : (
+                        <>{t.pages.backup.allFilteredPrefix} <strong>{filteredDevices.length}</strong> {t.pages.backup.allFilteredSuffix}</>
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      onClick={() => setIsFilterPanelOpen(true)}
+                      className="btn-retro inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--foreground)]"
+                    >
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                      </svg>
+                      {t.pages.backup.filterBtn}
+                    </button>
+                    <button onClick={selectAll} className="text-sm text-[var(--apple-blue)] hover:underline px-2">
+                      {t.pages.backup.selectAll}
+                    </button>
+                    <span className="text-[var(--muted-foreground)]">|</span>
+                    <button onClick={selectNone} className="text-sm text-[var(--apple-blue)] hover:underline px-2">
+                      {t.pages.backup.selectNone}
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-[var(--muted)]">
