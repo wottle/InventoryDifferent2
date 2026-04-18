@@ -127,7 +127,7 @@ const FIELDS: FieldDef[] = [
     key: 'customFields',
     group: 'relations',
     format: (d) => (d.customFieldValues ?? [])
-      .map((cfv: any) => `${sanitize(cfv.customField?.name)}: ${sanitize(cfv.value)}`)
+      .map((cfv: any) => `${sanitize(cfv.customFieldName)}: ${sanitize(cfv.value)}`)
       .join(' | '),
   },
   {

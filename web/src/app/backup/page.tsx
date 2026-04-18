@@ -92,10 +92,8 @@ const GET_DEVICES = gql`
       customFieldValues {
         id
         value
-        customField {
-          id
-          name
-        }
+        customFieldId
+        customFieldName
       }
       historicalNotes
       condition
