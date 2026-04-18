@@ -184,6 +184,8 @@ export type Translations = {
     quoteSingular: string;
     quotePlural: string;
     devicesSkippedNote: string;
+    missingImagesSingular: string;
+    missingImagesPlural: string;
   };
   adminJourneyEditor: {
     allJourneys: string;
@@ -404,11 +406,11 @@ export const en: Translations = {
     title: 'Showcase Data',
     subtitle: 'Export and import your showcase configuration \u2014 appearance settings, quotes, and journeys.',
     exportSection: 'Export',
-    exportDesc: 'Downloads a JSON file containing all appearance settings, quotes, and journeys (including chapter and device assignments).',
+    exportDesc: 'Downloads a ZIP file containing all appearance settings, quotes, and journeys — plus any uploaded images (hero image and journey covers).',
     exporting: 'Exporting\u2026',
     exportBtn: 'Export Showcase Data',
     importSection: 'Import',
-    importDesc: 'Imports appearance, quotes, and journeys from a previously exported JSON file. Journeys are matched by slug \u2014 existing journeys with the same slug are updated, new slugs are created. Devices not found in this system are silently dropped from chapters.',
+    importDesc: 'Imports appearance, quotes, and journeys from a previously exported ZIP or JSON file. Journeys are matched by slug \u2014 existing journeys with the same slug are updated, new slugs are created. Devices not found in this system are silently dropped from chapters.',
     importing: 'Importing\u2026',
     importBtn: 'Import Showcase Data',
     importComplete: 'Import complete',
@@ -424,6 +426,8 @@ export const en: Translations = {
     quoteSingular: 'quote',
     quotePlural: 'quotes',
     devicesSkippedNote: 'skipped (not found in this system)',
+    missingImagesSingular: 'image was not found in the export and has been cleared — re-upload it from the Appearance page.',
+    missingImagesPlural: 'images were not found in the export and have been cleared — re-upload them from the Appearance page.',
   },
   adminJourneyEditor: {
     allJourneys: '\u2190 All Journeys',
