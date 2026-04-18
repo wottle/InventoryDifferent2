@@ -1312,6 +1312,13 @@ RESTART IDENTITY CASCADE;
             const archiver = require('archiver');
             const archive = archiver('zip', { zlib: { level: 5 } });
 
+            archive.on('error', (err: Error) => {
+                console.error('Showcase export archive error:', err);
+                if (!res.headersSent) {
+                    res.status(500).json({ error: 'Export failed' });
+                }
+            });
+
             res.setHeader('Content-Type', 'application/zip');
             res.setHeader('Content-Disposition', 'attachment; filename="showcase-export.zip"');
             archive.pipe(res);
