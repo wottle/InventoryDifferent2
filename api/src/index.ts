@@ -1400,22 +1400,8 @@ RESTART IDENTITY CASCADE;
                 const imagesDir = path.join(extractDir, 'images');
                 const uploadsDir = '/app/uploads';
 
-                const copyDirRecursive = async (src: string, dest: string): Promise<void> => {
-                    await fs.promises.mkdir(dest, { recursive: true });
-                    const entries = await fs.promises.readdir(src, { withFileTypes: true });
-                    for (const entry of entries) {
-                        const srcPath = path.join(src, entry.name);
-                        const destPath = path.join(dest, entry.name);
-                        if (entry.isDirectory()) {
-                            await copyDirRecursive(srcPath, destPath);
-                        } else {
-                            await fs.promises.copyFile(srcPath, destPath);
-                        }
-                    }
-                };
-
                 if (fs.existsSync(imagesDir)) {
-                    await copyDirRecursive(imagesDir, uploadsDir);
+                    await fs.promises.cp(imagesDir, uploadsDir, { recursive: true });
                 }
 
                 // Null out any image references that were not in the ZIP
