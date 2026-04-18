@@ -74,7 +74,7 @@ export default function AdminDataPage() {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
-      const result = await response.json();
+      const result = await response.json().catch(() => ({})) as any;
       if (!response.ok) {
         throw new Error(result.error || `Server error ${response.status}`);
       }
@@ -176,7 +176,7 @@ export default function AdminDataPage() {
               <li>{importSummary.quotesImported} {importSummary.quotesImported !== 1 ? t.adminData.quotePlural : t.adminData.quoteSingular} imported</li>
             </ul>
             {importSummary.missingImages.length > 0 && (
-              <p className="text-sm text-amber-700 mt-2">
+              <p className="text-sm text-error mt-2">
                 {importSummary.missingImages.length}{' '}
                 {importSummary.missingImages.length !== 1
                   ? t.adminData.missingImagesPlural
