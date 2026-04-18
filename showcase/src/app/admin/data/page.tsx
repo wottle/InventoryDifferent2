@@ -11,6 +11,7 @@ interface ImportSummary {
   devicesLinked: number;
   devicesSkipped: number;
   quotesImported: number;
+  missingImages: string[];
 }
 
 export default function AdminDataPage() {
@@ -42,7 +43,7 @@ export default function AdminDataPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'showcase-export.json';
+      a.download = 'showcase-export.zip';
       a.click();
       URL.revokeObjectURL(url);
     } catch (err: any) {
@@ -65,27 +66,19 @@ export default function AdminDataPage() {
     setImportError('');
     setImportSummary(null);
     try {
-      const text = await selectedFile.text();
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(text);
-      } catch {
-        throw new Error(t.adminData.errorInvalidJson);
-      }
       const token = getAccessToken();
+      const formData = new FormData();
+      formData.append('file', selectedFile);
       const response = await fetch(`${API_BASE_URL}/showcase/import`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(parsed),
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
       });
       const result = await response.json();
       if (!response.ok) {
         throw new Error(result.error || `Server error ${response.status}`);
       }
-      setImportSummary(result);
+      setImportSummary({ ...result, missingImages: result.missingImages ?? [] });
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err: any) {
@@ -144,7 +137,7 @@ export default function AdminDataPage() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".json,application/json"
+            accept=".zip,.json,application/zip,application/json"
             onChange={handleFileChange}
             className="block text-sm text-on-surface-variant file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-surface-container-high file:text-on-surface file:text-sm file:cursor-pointer hover:file:bg-surface-container-highest"
           />
@@ -182,6 +175,14 @@ export default function AdminDataPage() {
               )}
               <li>{importSummary.quotesImported} {importSummary.quotesImported !== 1 ? t.adminData.quotePlural : t.adminData.quoteSingular} imported</li>
             </ul>
+            {importSummary.missingImages.length > 0 && (
+              <p className="text-sm text-amber-700 mt-2">
+                {importSummary.missingImages.length}{' '}
+                {importSummary.missingImages.length !== 1
+                  ? t.adminData.missingImagesPlural
+                  : t.adminData.missingImagesSingular}
+              </p>
+            )}
           </div>
         )}
       </section>
