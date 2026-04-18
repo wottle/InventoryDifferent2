@@ -21,7 +21,9 @@ export const releaseNotes: ReleaseEntry[] = [
       'Web Backup page: all four import/export sections (Import Devices, Import CSV, Export Devices, Export CSV) are now collapsible and collapsed by default.',
       'Showcase Journeys page: published dates now include the day of the month.',
     ],
-    fixed: [],
+    fixed: [
+      'Showcase mobile: homepage featured journey and quotes now stack vertically; nav gains a hamburger menu; timeline era filter and category deselect now respond correctly to touch',
+    ],
   },
   {
     version: '2.4.0',
