@@ -1389,6 +1389,9 @@ RESTART IDENTITY CASCADE;
                 });
 
                 const dataJsonPath = path.join(extractDir, 'data.json');
+                if (!fs.existsSync(dataJsonPath)) {
+                    return res.status(400).json({ error: 'ZIP does not contain data.json' });
+                }
                 const dataJsonText = await fs.promises.readFile(dataJsonPath, 'utf-8');
                 data = JSON.parse(dataJsonText);
 
