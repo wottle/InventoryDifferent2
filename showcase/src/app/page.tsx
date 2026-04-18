@@ -190,12 +190,12 @@ export default async function HomePage() {
       {/* Gallery / Highlights Section */}
       <section className="py-20 bg-surface-container-low overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-8">
-          <div className="grid grid-cols-12 gap-6 h-[800px]">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[800px]">
             {/* Featured Journey tile */}
             {featuredJourney ? (
               <Link
                 href={`/journeys/${featuredJourney.slug}`}
-                className="col-span-8 h-full rounded-xl overflow-hidden relative group bg-surface-container-high block"
+                className="col-span-12 md:col-span-8 h-72 md:h-full rounded-xl overflow-hidden relative group bg-surface-container-high block"
               >
                 {featuredJourney.coverImagePath ? (
                   <img
@@ -224,7 +224,7 @@ export default async function HomePage() {
                 </div>
               </Link>
             ) : (
-              <div className="col-span-8 h-full rounded-xl overflow-hidden relative bg-surface-container-high">
+              <div className="col-span-12 md:col-span-8 h-72 md:h-full rounded-xl overflow-hidden relative bg-surface-container-high">
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-8 left-8 text-white z-10">
@@ -235,10 +235,10 @@ export default async function HomePage() {
             )}
 
             {/* Right column */}
-            <div className="col-span-4 flex flex-col gap-6 h-full">
+            <div className="col-span-12 md:col-span-4 flex flex-col gap-6 h-auto md:h-full">
               {/* Second quote card (inverted) */}
               {quote2 ? (
-                <div className="h-1/2 rounded-xl overflow-hidden bg-surface-container-high p-10 flex flex-col justify-center">
+                <div className="h-64 md:h-1/2 rounded-xl overflow-hidden bg-surface-container-high p-10 flex flex-col justify-center">
                   <svg
                     className="w-12 h-12 mb-6 text-primary opacity-60"
                     fill="currentColor"
@@ -252,12 +252,12 @@ export default async function HomePage() {
                   <span className="mt-4 text-on-surface-variant text-sm">— {quote2.author}{quote2.source ? `, ${quote2.source}` : ''}</span>
                 </div>
               ) : (
-                <div className="h-1/2 rounded-xl overflow-hidden bg-surface-container-high" />
+                <div className="h-64 md:h-1/2 rounded-xl overflow-hidden bg-surface-container-high" />
               )}
 
               {/* Quote card */}
               {quote && (
-                <div className="h-1/2 rounded-xl overflow-hidden bg-primary p-10 flex flex-col justify-center text-on-primary">
+                <div className="h-64 md:h-1/2 rounded-xl overflow-hidden bg-primary p-10 flex flex-col justify-center text-on-primary">
                   <svg
                     className="w-12 h-12 mb-6 opacity-80"
                     fill="currentColor"
