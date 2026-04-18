@@ -452,6 +452,7 @@ RESTART IDENTITY CASCADE;
             await (prisma as any).deviceAccessory.deleteMany({ where: { deviceId: desiredDeviceId } });
             await (prisma as any).deviceLink.deleteMany({ where: { deviceId: desiredDeviceId } });
             await (prisma as any).customFieldValue.deleteMany({ where: { deviceId: desiredDeviceId } });
+            await (prisma as any).deviceRelationship.deleteMany({ where: { fromDeviceId: desiredDeviceId } });
             await prisma.device.update({
                 where: { id: desiredDeviceId },
                 data: {
@@ -711,6 +712,24 @@ RESTART IDENTITY CASCADE;
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
 
+                // Restore device relationships after all devices have been imported
+                if (exportData.relationships && Array.isArray(exportData.relationships)) {
+                    for (const rel of exportData.relationships) {
+                        const fromId = idMapping[rel.fromDeviceId];
+                        const toId = idMapping[rel.toDeviceId];
+                        if (fromId == null || toId == null) continue;
+                        try {
+                            await (prisma as any).deviceRelationship.upsert({
+                                where: { fromDeviceId_toDeviceId_type: { fromDeviceId: fromId, toDeviceId: toId, type: rel.type } },
+                                update: {},
+                                create: { fromDeviceId: fromId, toDeviceId: toId, type: rel.type },
+                            });
+                        } catch (relErr) {
+                            console.error('Error restoring relationship:', relErr);
+                        }
+                    }
+                }
+
                 job.status = 'complete';
                 job.currentDevice = '';
 
@@ -893,8 +912,20 @@ RESTART IDENTITY CASCADE;
                         accessories: true,
                         links: true,
                         customFieldValues: { include: { customField: true } },
+                        relationsFrom: { include: { toDevice: { select: { id: true } } } },
                     }
                 });
+
+                // Collect relationships where both sides are in the export set
+                const exportedIdSet = new Set(deviceIds);
+                const exportedRelationships: { fromDeviceId: number; toDeviceId: number; type: string }[] = [];
+                for (const device of allDevices) {
+                    for (const rel of (device as any).relationsFrom ?? []) {
+                        if (exportedIdSet.has(rel.toDeviceId)) {
+                            exportedRelationships.push({ fromDeviceId: device.id, toDeviceId: rel.toDeviceId, type: rel.type });
+                        }
+                    }
+                }
 
                 const exportData: any = {
                     exportDate: new Date().toISOString(),
@@ -902,6 +933,7 @@ RESTART IDENTITY CASCADE;
                     deviceCount: allDevices.length,
                     includesImages: includeImages,
                     compressedImages: compressImages,
+                    relationships: exportedRelationships,
                     devices: [],
                 };
 

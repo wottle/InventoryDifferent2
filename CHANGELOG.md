@@ -6,6 +6,19 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [2.5.1] - 2026-04-18
+
+### Added
+- Device relationships: link devices to each other with typed relationships (accessory, software, manual, installed inside, etc.) visible from both devices
+- iOS: adding a new device now automatically opens its detail view
+- iOS: "Powered On Today" button restored to the Lifecycle Actions card for devices in Collection or In Repair status
+
+### Fixed
+- iOS: thumbnails in the device list no longer go blank when returning from the background
+- iOS: saving a new device no longer fails with an encoding error when condition or rarity are unset
+
+---
+
 ## [2.5.0] - 2026-04-18
 
 ### Added

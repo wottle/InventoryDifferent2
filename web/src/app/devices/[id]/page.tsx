@@ -108,6 +108,28 @@ const GET_DEVICE = gql`
         label
         url
       }
+      relationsFrom {
+        id
+        type
+        toDeviceId
+        toDevice {
+          id
+          name
+          manufacturer
+          images { id thumbnailPath isThumbnail }
+        }
+      }
+      relationsTo {
+        id
+        type
+        fromDeviceId
+        fromDevice {
+          id
+          name
+          manufacturer
+          images { id thumbnailPath isThumbnail }
+        }
+      }
     }
   }
 `;
@@ -257,6 +279,42 @@ const ADD_DEVICE_LINK = gql`
 const REMOVE_DEVICE_LINK = gql`
   mutation RemoveDeviceLink($id: Int!) {
     removeDeviceLink(id: $id)
+  }
+`;
+
+const GET_ALL_DEVICES_SIMPLE = gql`
+  query GetAllDevicesSimple {
+    devices(where: { deleted: { equals: false } }) {
+      id
+      name
+      manufacturer
+    }
+  }
+`;
+
+const ADD_DEVICE_RELATIONSHIP = gql`
+  mutation AddDeviceRelationship($fromDeviceId: Int!, $toDeviceId: Int!, $type: String!) {
+    addDeviceRelationship(fromDeviceId: $fromDeviceId, toDeviceId: $toDeviceId, type: $type) {
+      id
+      relationsFrom {
+        id
+        type
+        toDeviceId
+        toDevice { id name manufacturer images { id thumbnailPath isThumbnail } }
+      }
+      relationsTo {
+        id
+        type
+        fromDeviceId
+        fromDevice { id name manufacturer images { id thumbnailPath isThumbnail } }
+      }
+    }
+  }
+`;
+
+const REMOVE_DEVICE_RELATIONSHIP = gql`
+  mutation RemoveDeviceRelationship($id: Int!) {
+    removeDeviceRelationship(id: $id)
   }
 `;
 
@@ -466,6 +524,10 @@ export default function DeviceDetail() {
     const [tagToRemoveId, setTagToRemoveId] = useState<number | null>(null);
     const [accessoryToRemoveId, setAccessoryToRemoveId] = useState<number | null>(null);
     const [linkToRemoveId, setLinkToRemoveId] = useState<number | null>(null);
+    const [showRelationForm, setShowRelationForm] = useState(false);
+    const [relationDeviceName, setRelationDeviceName] = useState('');
+    const [relationType, setRelationType] = useState('');
+    const [relationToRemoveId, setRelationToRemoveId] = useState<number | null>(null);
 
     const { loading, error, data, refetch } = useQuery(GET_DEVICE, {
         variables: { where: { id: parseInt(id as string), deleted: { equals: false } } },
@@ -475,6 +537,7 @@ export default function DeviceDetail() {
 
     const { data: tagsData } = useQuery(GET_TAGS);
     const { data: taskLabelsData } = useQuery(GET_MAINTENANCE_TASK_LABELS);
+    const { data: allDevicesData } = useQuery(GET_ALL_DEVICES_SIMPLE);
     const { data: valueHistoryData } = useQuery(GET_VALUE_HISTORY, {
         variables: { deviceId: parseInt(id as string) },
         skip: !id || !isAuthenticated,
@@ -604,6 +667,8 @@ export default function DeviceDetail() {
     const [removeDeviceAccessory] = useMutation(REMOVE_DEVICE_ACCESSORY);
     const [addDeviceLink, { loading: addingLink }] = useMutation(ADD_DEVICE_LINK);
     const [removeDeviceLink] = useMutation(REMOVE_DEVICE_LINK);
+    const [addDeviceRelationship, { loading: addingRelationship }] = useMutation(ADD_DEVICE_RELATIONSHIP);
+    const [removeDeviceRelationship] = useMutation(REMOVE_DEVICE_RELATIONSHIP);
 
     const handleAddTag = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -683,6 +748,36 @@ export default function DeviceDetail() {
             refetch();
         } catch (err) {
             console.error('Error removing link:', err);
+        }
+    };
+
+    const handleAddRelationship = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const type = relationType.trim();
+        if (!type) return;
+        const allDevices: any[] = allDevicesData?.devices ?? [];
+        const matched = allDevices.find((d: any) => `${d.name}${d.manufacturer ? ` (${d.manufacturer})` : ''}` === relationDeviceName || String(d.id) === relationDeviceName);
+        if (!matched) return;
+        try {
+            await addDeviceRelationship({
+                variables: { fromDeviceId: device.id, toDeviceId: matched.id, type },
+            });
+            setRelationDeviceName('');
+            setRelationType('');
+            setShowRelationForm(false);
+            refetch();
+        } catch (err) {
+            console.error('Error adding relationship:', err);
+        }
+    };
+
+    const handleRemoveRelationship = async (id: number) => {
+        try {
+            await removeDeviceRelationship({ variables: { id } });
+            setRelationToRemoveId(null);
+            refetch();
+        } catch (err) {
+            console.error('Error removing relationship:', err);
         }
     };
 
@@ -1926,6 +2021,169 @@ export default function DeviceDetail() {
                                 </div>
                             </form>
                         )}
+                    </div>
+                    )}
+
+                    {/* Related Devices */}
+                    {(isAuthenticated || (device.relationsFrom ?? []).length > 0 || (device.relationsTo ?? []).length > 0) && (
+                    <div>
+                        <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
+                                {t.detail.relatedDevices}
+                            </h2>
+                            {isAuthenticated && !showRelationForm && (
+                                <button
+                                    onClick={() => setShowRelationForm(true)}
+                                    className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc]"
+                                >
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    {t.detail.addRelationship}
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Outgoing relationships (this device "has" the other) */}
+                        {(device.relationsFrom ?? []).length > 0 && (
+                            <div className="space-y-2 mb-3">
+                                {(device.relationsFrom as any[]).map((rel: any) => {
+                                    const thumb = (rel.toDevice.images ?? []).find((img: any) => img.isThumbnail) ?? (rel.toDevice.images ?? [])[0];
+                                    return (
+                                        <div key={rel.id} className="relative flex items-center gap-2 group">
+                                            {thumb?.thumbnailPath ? (
+                                                <img src={thumb.thumbnailPath} alt="" className="w-8 h-8 rounded object-cover shrink-0 border border-[var(--border)]" />
+                                            ) : (
+                                                <div className="w-8 h-8 rounded shrink-0 bg-[var(--muted)] border border-[var(--border)] flex items-center justify-center">
+                                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-[var(--muted-foreground)]">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                    </svg>
+                                                </div>
+                                            )}
+                                            <div className="flex-1 min-w-0">
+                                                <Link href={`/devices/${rel.toDevice.id}`} className="text-sm font-medium text-[var(--apple-blue)] hover:underline truncate block">
+                                                    {rel.toDevice.name}
+                                                </Link>
+                                                <p className="text-xs text-[var(--muted-foreground)] capitalize">{rel.type}</p>
+                                            </div>
+                                            {isAuthenticated && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setRelationToRemoveId(rel.id)}
+                                                    className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all shrink-0"
+                                                    title="Remove relationship"
+                                                >
+                                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            )}
+                                            {relationToRemoveId === rel.id && (
+                                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center gap-2 rounded">
+                                                    <span className="text-white text-xs">{t.detail.removeRelationshipConfirm}</span>
+                                                    <button onClick={() => handleRemoveRelationship(rel.id)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">{t.common.remove}</button>
+                                                    <button onClick={() => setRelationToRemoveId(null)} className="px-2 py-1 bg-white text-gray-700 text-xs rounded hover:bg-gray-100">{t.common.cancel}</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* Incoming relationships (other devices reference this one) */}
+                        {(device.relationsTo ?? []).length > 0 && (
+                            <div className="space-y-2 mb-3">
+                                {(device.relationsTo as any[]).map((rel: any) => {
+                                    const thumb = (rel.fromDevice.images ?? []).find((img: any) => img.isThumbnail) ?? (rel.fromDevice.images ?? [])[0];
+                                    const inverseLabel = (t.detail.inverseRelationLabels as Record<string, string>)[rel.type] ?? t.detail.relatedDevices;
+                                    return (
+                                        <div key={rel.id} className="flex items-center gap-2">
+                                            {thumb?.thumbnailPath ? (
+                                                <img src={thumb.thumbnailPath} alt="" className="w-8 h-8 rounded object-cover shrink-0 border border-[var(--border)]" />
+                                            ) : (
+                                                <div className="w-8 h-8 rounded shrink-0 bg-[var(--muted)] border border-[var(--border)] flex items-center justify-center">
+                                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-[var(--muted-foreground)]">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                    </svg>
+                                                </div>
+                                            )}
+                                            <div className="flex-1 min-w-0">
+                                                <Link href={`/devices/${rel.fromDevice.id}`} className="text-sm font-medium text-[var(--apple-blue)] hover:underline truncate block">
+                                                    {rel.fromDevice.name}
+                                                </Link>
+                                                <p className="text-xs text-[var(--muted-foreground)] capitalize">{inverseLabel}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {(device.relationsFrom ?? []).length === 0 && (device.relationsTo ?? []).length === 0 && !showRelationForm && (
+                            <span className="text-sm text-[var(--muted-foreground)]">{t.detail.noRelatedDevices}</span>
+                        )}
+
+                        {isAuthenticated && showRelationForm && (() => {
+                            const allDevices: any[] = allDevicesData?.devices ?? [];
+                            const existingToIds = new Set([
+                                ...(device.relationsFrom ?? []).map((r: any) => r.toDeviceId),
+                                device.id,
+                            ]);
+                            const deviceOptions = allDevices.filter((d: any) => !existingToIds.has(d.id));
+                            return (
+                                <form onSubmit={handleAddRelationship} className="space-y-2 mt-2">
+                                    <div>
+                                        <label className="text-xs text-[var(--muted-foreground)] mb-1 block">{t.detail.relationshipDevice}</label>
+                                        <input
+                                            type="text"
+                                            value={relationDeviceName}
+                                            onChange={(e) => setRelationDeviceName(e.target.value)}
+                                            list="relation-device-suggestions"
+                                            placeholder="Search devices…"
+                                            className="input-retro w-full px-3 py-2 text-[var(--foreground)]"
+                                            required
+                                        />
+                                        <datalist id="relation-device-suggestions">
+                                            {deviceOptions.map((d: any) => (
+                                                <option key={d.id} value={`${d.name}${d.manufacturer ? ` (${d.manufacturer})` : ''}`} />
+                                            ))}
+                                        </datalist>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-[var(--muted-foreground)] mb-1 block">{t.detail.relationshipType}</label>
+                                        <input
+                                            type="text"
+                                            value={relationType}
+                                            onChange={(e) => setRelationType(e.target.value)}
+                                            list="relation-type-suggestions"
+                                            placeholder="e.g. accessory"
+                                            className="input-retro w-full px-3 py-2 text-[var(--foreground)]"
+                                            required
+                                        />
+                                        <datalist id="relation-type-suggestions">
+                                            {(t.detail.relationshipTypeSuggestions as string[]).map((s) => (
+                                                <option key={s} value={s} />
+                                            ))}
+                                        </datalist>
+                                    </div>
+                                    <div className="flex gap-2 justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => { setShowRelationForm(false); setRelationDeviceName(''); setRelationType(''); }}
+                                            className="btn-retro px-3 py-1.5 text-sm font-medium"
+                                        >{t.common.cancel}</button>
+                                        <button
+                                            type="submit"
+                                            disabled={addingRelationship}
+                                            className="px-3 py-1.5 text-sm font-medium text-white bg-[var(--apple-blue)] hover:brightness-110 rounded border border-[#007acc] disabled:opacity-50"
+                                        >
+                                            {addingRelationship ? t.common.addingEllipsis : t.detail.addRelationship}
+                                        </button>
+                                    </div>
+                                </form>
+                            );
+                        })()}
                     </div>
                     )}
 

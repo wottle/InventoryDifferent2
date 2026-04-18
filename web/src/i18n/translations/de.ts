@@ -224,6 +224,21 @@ export const de: Translations = {
     customAccessoryPlaceholder: "Eigenes Zubehör…",
     accessorySuggestionsComputer: ['Originalverpackung', 'Tastatur', 'Maus', 'Netzkabel/Adapter', 'Netzteil', 'Handbuch/Dokumentation', 'Software-Disketten', 'Monitor'],
     accessorySuggestionsOther: ['Originalverpackung', 'Netzkabel', 'Kabel/Adapter', 'Handbuch'],
+    relatedDevices: "Verwandte Geräte",
+    addRelationship: "Beziehung hinzufügen",
+    relationshipDevice: "Gerät",
+    relationshipType: "Beziehungstyp",
+    noRelatedDevices: "Keine verwandten Geräte",
+    removeRelationshipConfirm: "Diese Beziehung entfernen?",
+    relationshipTypeSuggestions: ['Zubehör', 'Software', 'Handbuch / Dokumentation', 'Eingebaut in', 'Zusammen gekauft', 'Im Lieferumfang enthalten'],
+    inverseRelationLabels: {
+      'Zubehör': 'Zubehör von',
+      'Software': 'Software für',
+      'Handbuch / Dokumentation': 'Handbuch für',
+      'Eingebaut in': 'Enthält',
+      'Zusammen gekauft': 'Zusammen gekauft',
+      'Im Lieferumfang enthalten': 'Im Lieferumfang enthalten',
+    },
   },
   pages: {
     timeline: {

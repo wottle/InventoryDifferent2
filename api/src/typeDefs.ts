@@ -110,6 +110,18 @@ export const typeDefs = gql`
     customFieldValues: [CustomFieldValue!]!
     accessories: [DeviceAccessory!]!
     links: [DeviceLink!]!
+    relationsFrom: [DeviceRelationship!]!
+    relationsTo: [DeviceRelationship!]!
+  }
+
+  type DeviceRelationship {
+    id: Int!
+    fromDeviceId: Int!
+    fromDevice: Device!
+    toDeviceId: Int!
+    toDevice: Device!
+    type: String!
+    createdAt: String!
   }
 
   type DeviceAccessory {
@@ -786,6 +798,8 @@ export const typeDefs = gql`
     removeDeviceAccessory(id: Int!): Boolean!
     addDeviceLink(deviceId: Int!, label: String!, url: String!): DeviceLink!
     removeDeviceLink(id: Int!): Boolean!
+    addDeviceRelationship(fromDeviceId: Int!, toDeviceId: Int!, type: String!): Device!
+    removeDeviceRelationship(id: Int!): Boolean!
     setSystemSetting(key: String!, value: String!): Boolean!
     upsertShowcaseConfig(input: ShowcaseConfigInput!): ShowcaseConfig!
     createJourney(input: JourneyInput!): ShowcaseJourney!

@@ -224,6 +224,21 @@ export const es: Translations = {
     customAccessoryPlaceholder: "Accesorio personalizado…",
     accessorySuggestionsComputer: ['Caja original', 'Teclado', 'Ratón', 'Cable/Adaptador de alimentación', 'Fuente de alimentación', 'Manual/Documentación', 'Disquetes de software', 'Monitor'],
     accessorySuggestionsOther: ['Caja original', 'Cable de alimentación', 'Cables/Adaptadores', 'Manual'],
+    relatedDevices: "Dispositivos relacionados",
+    addRelationship: "Añadir relación",
+    relationshipDevice: "Dispositivo",
+    relationshipType: "Tipo de relación",
+    noRelatedDevices: "Sin dispositivos relacionados",
+    removeRelationshipConfirm: "¿Eliminar esta relación?",
+    relationshipTypeSuggestions: ['accesorio', 'software', 'manual / documentación', 'instalado dentro', 'comprado con', 'incluido con'],
+    inverseRelationLabels: {
+      'accesorio': 'Accesorio de',
+      'software': 'Software para',
+      'manual / documentación': 'Manual para',
+      'instalado dentro': 'Contiene',
+      'comprado con': 'Comprado con',
+      'incluido con': 'Incluido con',
+    },
   },
   pages: {
     timeline: {

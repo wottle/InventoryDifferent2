@@ -74,6 +74,8 @@ const DEVICE_INCLUDE = {
     customFieldValues: { include: { customField: true } },
     accessories: true,
     links: true,
+    relationsFrom: { include: { toDevice: { include: { images: true } } } },
+    relationsTo:   { include: { fromDevice: { include: { images: true } } } },
 };
 
 function mapCustomFieldValues(device: any): any {
@@ -1521,6 +1523,35 @@ export const resolvers = {
             await context.prisma.deviceLink.delete({ where: { id: args.id } });
             return true;
         },
+
+        addDeviceRelationship: async (_parent: any, args: { fromDeviceId: number; toDeviceId: number; type: string }, context: Context) => {
+            requireAuth(context);
+            if (args.fromDeviceId === args.toDeviceId) {
+                throw new Error('A device cannot be related to itself');
+            }
+            await (context.prisma as any).deviceRelationship.upsert({
+                where: {
+                    fromDeviceId_toDeviceId_type: {
+                        fromDeviceId: args.fromDeviceId,
+                        toDeviceId: args.toDeviceId,
+                        type: args.type,
+                    },
+                },
+                update: {},
+                create: { fromDeviceId: args.fromDeviceId, toDeviceId: args.toDeviceId, type: args.type },
+            });
+            return context.prisma.device.findUnique({
+                where: { id: args.fromDeviceId },
+                include: DEVICE_INCLUDE,
+            });
+        },
+
+        removeDeviceRelationship: async (_parent: any, args: { id: number }, context: Context) => {
+            requireAuth(context);
+            await (context.prisma as any).deviceRelationship.delete({ where: { id: args.id } });
+            return true;
+        },
+
         setSystemSetting: async (_parent: any, args: { key: string; value: string }, context: Context) => {
             requireAuth(context);
             await (context.prisma as any).systemSetting.upsert({
@@ -1727,6 +1758,18 @@ export const resolvers = {
                 include: DEVICE_INCLUDE,
             });
             return device ? mapCustomFieldValues(device) : null;
+        },
+    },
+
+    DeviceRelationship: {
+        fromDevice: (parent: any) => {
+            return parent.fromDevice ? mapCustomFieldValues(parent.fromDevice) : null;
+        },
+        toDevice: (parent: any) => {
+            return parent.toDevice ? mapCustomFieldValues(parent.toDevice) : null;
+        },
+        createdAt: (parent: any) => {
+            return parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt;
         },
     },
 };

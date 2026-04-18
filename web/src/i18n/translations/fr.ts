@@ -224,6 +224,21 @@ export const fr: Translations = {
     customAccessoryPlaceholder: "Accessoire personnalisé…",
     accessorySuggestionsComputer: ['Boîte d\'origine', 'Clavier', 'Souris', 'Câble/Adaptateur d\'alimentation', 'Bloc d\'alimentation', 'Manuel/Documentation', 'Disquettes logicielles', 'Moniteur'],
     accessorySuggestionsOther: ['Boîte d\'origine', 'Câble d\'alimentation', 'Câbles/Adaptateurs', 'Manuel'],
+    relatedDevices: "Appareils associés",
+    addRelationship: "Ajouter une relation",
+    relationshipDevice: "Appareil",
+    relationshipType: "Type de relation",
+    noRelatedDevices: "Aucun appareil associé",
+    removeRelationshipConfirm: "Supprimer cette relation ?",
+    relationshipTypeSuggestions: ['accessoire', 'logiciel', 'manuel / documentation', 'installé dans', 'acheté avec', 'fourni avec'],
+    inverseRelationLabels: {
+      'accessoire': 'Accessoire de',
+      'logiciel': 'Logiciel pour',
+      'manuel / documentation': 'Manuel pour',
+      'installé dans': 'Contient',
+      'acheté avec': 'Acheté avec',
+      'fourni avec': 'Fourni avec',
+    },
   },
   pages: {
     timeline: {

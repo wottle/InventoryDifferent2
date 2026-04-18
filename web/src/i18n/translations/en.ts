@@ -222,6 +222,14 @@ export type Translations = {
     customAccessoryPlaceholder: string;
     accessorySuggestionsComputer: string[];
     accessorySuggestionsOther: string[];
+    relatedDevices: string;
+    addRelationship: string;
+    relationshipDevice: string;
+    relationshipType: string;
+    noRelatedDevices: string;
+    removeRelationshipConfirm: string;
+    relationshipTypeSuggestions: string[];
+    inverseRelationLabels: Record<string, string>;
   };
   pages: {
     timeline: {
@@ -937,6 +945,21 @@ export const en: Translations = {
     customAccessoryPlaceholder: "Custom accessory…",
     accessorySuggestionsComputer: ['Original Box', 'Keyboard', 'Mouse', 'Power Cable/Adapter', 'Power Supply', 'Manual/Documentation', 'Software Disks', 'Monitor'],
     accessorySuggestionsOther: ['Original Box', 'Power Cable', 'Cables/Adapters', 'Manual'],
+    relatedDevices: "Related Devices",
+    addRelationship: "Add Relationship",
+    relationshipDevice: "Device",
+    relationshipType: "Relationship type",
+    noRelatedDevices: "No related devices",
+    removeRelationshipConfirm: "Remove this relationship?",
+    relationshipTypeSuggestions: ['accessory', 'software', 'manual / documentation', 'installed inside', 'purchased with', 'came bundled with'],
+    inverseRelationLabels: {
+      'accessory': 'Accessory of',
+      'software': 'Software for',
+      'manual / documentation': 'Manual for',
+      'installed inside': 'Contains',
+      'purchased with': 'Purchased with',
+      'came bundled with': 'Came bundled with',
+    },
   },
   pages: {
     timeline: {

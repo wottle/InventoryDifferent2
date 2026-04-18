@@ -78,6 +78,20 @@ model Device {
   accessories         DeviceAccessory[]
   links               DeviceLink[]
   showcaseDevices     ShowcaseDevice[]
+  relationsFrom       DeviceRelationship[] @relation("RelationFrom")
+  relationsTo         DeviceRelationship[] @relation("RelationTo")
+}
+
+model DeviceRelationship {
+  id            Int      @id @default(autoincrement())
+  fromDeviceId  Int
+  fromDevice    Device   @relation("RelationFrom", fields: [fromDeviceId], references: [id], onDelete: Cascade)
+  toDeviceId    Int
+  toDevice      Device   @relation("RelationTo", fields: [toDeviceId], references: [id], onDelete: Cascade)
+  type          String
+  createdAt     DateTime @default(now())
+
+  @@unique([fromDeviceId, toDeviceId, type])
 }
 
 model DeviceAccessory {
