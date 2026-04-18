@@ -1279,7 +1279,7 @@ RESTART IDENTITY CASCADE;
 
             const exportData = {
                 exportDate: new Date().toISOString(),
-                exportVersion: '1.0',
+                exportVersion: '1.1',
                 config: config ? {
                     siteTitle: config.siteTitle,
                     tagline: config.tagline,
@@ -1301,12 +1301,38 @@ RESTART IDENTITY CASCADE;
                 journeys: journeysWithNames,
             };
 
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Content-Disposition', 'attachment; filename="showcase-export.json"');
-            return res.json(exportData);
+            // Collect all image paths referenced in config/journeys
+            const imagePaths: string[] = [];
+            if (config?.heroImagePath) imagePaths.push(config.heroImagePath);
+            for (const j of journeys) {
+                if (j.coverImagePath) imagePaths.push(j.coverImagePath);
+            }
+
+            const uploadsDir = '/app/uploads';
+            const archiver = require('archiver');
+            const archive = archiver('zip', { zlib: { level: 5 } });
+
+            res.setHeader('Content-Type', 'application/zip');
+            res.setHeader('Content-Disposition', 'attachment; filename="showcase-export.zip"');
+            archive.pipe(res);
+
+            // Add data.json
+            archive.append(JSON.stringify(exportData, null, 2), { name: 'data.json' });
+
+            // Add images that exist on disk
+            for (const imgPath of imagePaths) {
+                const fullPath = path.join(uploadsDir, imgPath);
+                if (fs.existsSync(fullPath)) {
+                    archive.file(fullPath, { name: `images/${imgPath}` });
+                }
+            }
+
+            await archive.finalize();
         } catch (err) {
             console.error('Showcase export error:', err);
-            return res.status(500).json({ error: 'Export failed' });
+            if (!res.headersSent) {
+                return res.status(500).json({ error: 'Export failed' });
+            }
         }
     });
 
