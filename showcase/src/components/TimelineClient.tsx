@@ -132,7 +132,7 @@ export default function TimelineClient({
             <h3 className="text-[11px] uppercase tracking-[0.2em] font-bold text-outline mb-6">
               {t.timeline.historicalEras}
             </h3>
-            <ul className="space-y-4">
+            <div className="space-y-4">
               {ERAS.map((era) => {
                 const count = devices.filter((d) => {
                   const y = d.releaseYear;
@@ -143,9 +143,9 @@ export default function TimelineClient({
                   selectedEra[0] === era.range[0] &&
                   selectedEra[1] === era.range[1];
                 return (
-                  <li
+                  <button
                     key={era.label}
-                    className="flex items-center justify-between group cursor-pointer"
+                    className="flex items-center justify-between w-full group touch-manipulation"
                     onClick={() => handleEra(era.range)}
                   >
                     <span
@@ -166,10 +166,10 @@ export default function TimelineClient({
                     >
                       {String(count).padStart(2, '0')}
                     </span>
-                  </li>
+                  </button>
                 );
               })}
-            </ul>
+            </div>
           </div>
 
           {/* Category Filter */}
@@ -185,7 +185,7 @@ export default function TimelineClient({
                     <button
                       key={name}
                       onClick={() => handleCategory(name)}
-                      className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all border ${
+                      className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all border touch-manipulation ${
                         isActive
                           ? 'border-primary text-primary bg-surface-container-lowest'
                           : 'border-outline-variant/15 text-on-surface-variant bg-surface-container-lowest hover:border-primary'
