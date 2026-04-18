@@ -1223,6 +1223,22 @@ RESTART IDENTITY CASCADE;
         res.download(zipPath, `inventory-export-${timestamp}${partSuffix}.zip`);
     });
 
+    const showcaseImportStorage = multer.diskStorage({
+        destination: (_req, _file, cb) => {
+            const tempDir = '/tmp/showcase-imports';
+            fs.mkdirSync(tempDir, { recursive: true });
+            cb(null, tempDir);
+        },
+        filename: (_req, file, cb) => {
+            cb(null, `showcase-import-${uuidv4()}${path.extname(file.originalname).toLowerCase()}`);
+        },
+    });
+
+    const showcaseImportUpload = multer({
+        storage: showcaseImportStorage,
+        limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
+    });
+
     // ============== SHOWCASE EXPORT / IMPORT ==============
 
     app.get('/showcase/export', requireAuth, async (_req, res) => {
@@ -1343,12 +1359,16 @@ RESTART IDENTITY CASCADE;
         }
     });
 
-    app.post('/showcase/import', requireAuth, express.json({ limit: '10mb' }), async (req, res) => {
-        const data = req.body;
-
-        if (!data || data.exportVersion !== '1.0') {
-            return res.status(400).json({ error: 'Invalid or unsupported showcase export file' });
+    app.post('/showcase/import', requireAuth, showcaseImportUpload.single('file'), async (req, res) => {
+        const uploadedFile = req.file;
+        if (!uploadedFile) {
+            return res.status(400).json({ error: 'No file uploaded' });
         }
+
+        const ext = path.extname(uploadedFile.originalname).toLowerCase();
+        let data: any;
+        let extractDir: string | null = null;
+        const missingImages: string[] = [];
 
         let journeysImported = 0;
         let chaptersImported = 0;
@@ -1357,6 +1377,78 @@ RESTART IDENTITY CASCADE;
         let quotesImported = 0;
 
         try {
+            if (ext === '.zip') {
+                extractDir = `/tmp/showcase-extract-${uuidv4()}`;
+                await fs.promises.mkdir(extractDir, { recursive: true });
+
+                await new Promise<void>((resolve, reject) => {
+                    fs.createReadStream(uploadedFile.path)
+                        .pipe(unzipper.Extract({ path: extractDir! }))
+                        .on('close', resolve)
+                        .on('error', reject);
+                });
+
+                const dataJsonPath = path.join(extractDir, 'data.json');
+                const dataJsonText = await fs.promises.readFile(dataJsonPath, 'utf-8');
+                data = JSON.parse(dataJsonText);
+
+                if (data.exportVersion !== '1.1') {
+                    return res.status(400).json({ error: 'Invalid or unsupported showcase export file (ZIP must be version 1.1)' });
+                }
+
+                // Copy all images from images/ to /app/uploads/, preserving subdirectory structure
+                const imagesDir = path.join(extractDir, 'images');
+                const uploadsDir = '/app/uploads';
+
+                const copyDirRecursive = async (src: string, dest: string): Promise<void> => {
+                    await fs.promises.mkdir(dest, { recursive: true });
+                    const entries = await fs.promises.readdir(src, { withFileTypes: true });
+                    for (const entry of entries) {
+                        const srcPath = path.join(src, entry.name);
+                        const destPath = path.join(dest, entry.name);
+                        if (entry.isDirectory()) {
+                            await copyDirRecursive(srcPath, destPath);
+                        } else {
+                            await fs.promises.copyFile(srcPath, destPath);
+                        }
+                    }
+                };
+
+                if (fs.existsSync(imagesDir)) {
+                    await copyDirRecursive(imagesDir, uploadsDir);
+                }
+
+                // Null out any image references that were not in the ZIP
+                const checkImagePath = (imgPath: string | null): string | null => {
+                    if (!imgPath) return null;
+                    const inZip = path.join(extractDir!, 'images', imgPath);
+                    if (!fs.existsSync(inZip)) {
+                        missingImages.push(imgPath);
+                        return null;
+                    }
+                    return imgPath;
+                };
+
+                if (data.config) {
+                    data.config.heroImagePath = checkImagePath(data.config.heroImagePath);
+                }
+                if (Array.isArray(data.journeys)) {
+                    for (const j of data.journeys) {
+                        j.coverImagePath = checkImagePath(j.coverImagePath ?? null);
+                    }
+                }
+
+            } else if (ext === '.json') {
+                const text = await fs.promises.readFile(uploadedFile.path, 'utf-8');
+                data = JSON.parse(text);
+
+                if (!data || data.exportVersion !== '1.0') {
+                    return res.status(400).json({ error: 'Invalid or unsupported showcase export file' });
+                }
+            } else {
+                return res.status(400).json({ error: 'File must be .zip or .json' });
+            }
+
             // 1. Config
             if (data.config) {
                 await defaultPrisma.showcaseConfig.upsert({
@@ -1447,10 +1539,15 @@ RESTART IDENTITY CASCADE;
                 }
             }
 
-            return res.json({ success: true, journeysImported, chaptersImported, devicesLinked, devicesSkipped, quotesImported });
+            return res.json({ success: true, journeysImported, chaptersImported, devicesLinked, devicesSkipped, quotesImported, missingImages });
         } catch (err) {
             console.error('Showcase import error:', err);
             return res.status(500).json({ error: 'Import failed' });
+        } finally {
+            await fs.promises.unlink(uploadedFile.path).catch(() => {});
+            if (extractDir) {
+                await fs.promises.rm(extractDir, { recursive: true, force: true }).catch(() => {});
+            }
         }
     });
 
