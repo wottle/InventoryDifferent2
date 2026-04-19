@@ -144,6 +144,7 @@ struct Translations {
         let totalSpent, totalReceived, estimatedValueOwned, maintenanceCosts: String
         let realizedProfit: String
         let txSold, txDonated, txMaintenance, txRepairFee, txAcquired: String
+        let cashFlowByPeriod, monthly, yearly: String
     }
 
     // MARK: - Stats

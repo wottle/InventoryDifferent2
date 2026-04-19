@@ -327,7 +327,10 @@ extension Translations {
             txDonated: "Donated",
             txMaintenance: "Maintenance",
             txRepairFee: "Repair Fee",
-            txAcquired: "Acquired"
+            txAcquired: "Acquired",
+            cashFlowByPeriod: "Cash Flow by Period",
+            monthly: "Monthly",
+            yearly: "Yearly"
         ),
         stats: .init(
             title: "Collection Stats",
