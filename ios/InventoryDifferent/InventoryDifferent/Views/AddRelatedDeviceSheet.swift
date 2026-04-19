@@ -12,12 +12,13 @@ struct AddRelatedDeviceSheet: View {
     let deviceId: Int
     let deviceName: String
     let existingToIds: Set<Int>
-    let onAdded: ([DeviceRelationship]) -> Void
+    let onAdded: () -> Void
 
     @State private var allDevices: [RelationshipDevice] = []
     @State private var searchText = ""
     @State private var selectedDevice: RelationshipDevice? = nil
     @State private var relationType = ""
+    @State private var isReversed = false
     @State private var isLoading = true
     @State private var isSubmitting = false
 
@@ -92,10 +93,14 @@ struct AddRelatedDeviceSheet: View {
     private func directionPreviewSection() -> some View {
         let trimmed = relationType.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty, let target = selectedDevice {
+            let fromName = isReversed ? target.displayName : deviceName
+            let toName   = isReversed ? deviceName : target.displayName
+            let shownOnName  = isReversed ? deviceName : target.name
+            let shownOfName  = isReversed ? target.name : deviceName
             Section("Relationship Preview") {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 4) {
-                        Text(deviceName)
+                        Text(fromName)
                             .fontWeight(.medium)
                         Text("→")
                             .foregroundColor(.secondary)
@@ -104,13 +109,20 @@ struct AddRelatedDeviceSheet: View {
                             .fontWeight(.medium)
                         Text("→")
                             .foregroundColor(.secondary)
-                        Text(target.displayName)
+                        Text(toName)
                             .fontWeight(.medium)
                     }
                     .font(.footnote)
-                    Text("On \"\(target.name)\", shown as: \(inverseLabel(for: trimmed)) of \"\(deviceName)\"")
+                    Text("On \"\(shownOnName)\", shown as: \(inverseLabel(for: trimmed)) of \"\(shownOfName)\"")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Button {
+                        isReversed.toggle()
+                    } label: {
+                        Label("Swap direction", systemImage: "arrow.left.arrow.right")
+                            .font(.caption)
+                            .foregroundColor(Color(red: 0, green: 88/255, blue: 188/255))
+                    }
                 }
                 .padding(.vertical, 4)
             }
@@ -243,12 +255,14 @@ struct AddRelatedDeviceSheet: View {
         guard !type.isEmpty else { return }
         isSubmitting = true
         do {
-            let updated = try await DeviceService.shared.addDeviceRelationship(
-                fromDeviceId: deviceId,
-                toDeviceId: target.id,
+            let fromId = isReversed ? target.id : deviceId
+            let toId   = isReversed ? deviceId : target.id
+            _ = try await DeviceService.shared.addDeviceRelationship(
+                fromDeviceId: fromId,
+                toDeviceId: toId,
                 type: type
             )
-            onAdded(updated)
+            onAdded()
             dismiss()
         } catch {
             print("addRelationship error: \(error)")

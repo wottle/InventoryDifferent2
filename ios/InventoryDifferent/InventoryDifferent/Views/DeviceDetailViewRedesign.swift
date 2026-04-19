@@ -391,8 +391,8 @@ struct DeviceDetailRedesignView: View {
                 deviceId: device.id,
                 deviceName: device.displayName,
                 existingToIds: Set(relationsFrom.compactMap { $0.toDeviceId })
-            ) { newRelations in
-                relationsFrom = newRelations
+            ) {
+                Task { await refreshDevice() }
             }
         }
         .alert(lm.t.deviceDetail.removeRelationship, isPresented: $showRemoveRelationshipAlert) {
@@ -1271,12 +1271,12 @@ struct DeviceDetailRedesignView: View {
                 .font(.system(size: 14))
                 .foregroundColor(iconColor)
             VStack(alignment: .leading, spacing: 2) {
-                Text(deviceName)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(.primary)
                 Text(label)
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
+                Text(deviceName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.primary)
             }
             Spacer()
             if authService.isAuthenticated {

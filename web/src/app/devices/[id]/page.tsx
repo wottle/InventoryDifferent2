@@ -527,6 +527,7 @@ export default function DeviceDetail() {
     const [showRelationForm, setShowRelationForm] = useState(false);
     const [relationDeviceName, setRelationDeviceName] = useState('');
     const [relationType, setRelationType] = useState('');
+    const [isRelationReversed, setIsRelationReversed] = useState(false);
     const [relationToRemoveId, setRelationToRemoveId] = useState<number | null>(null);
 
     const { loading, error, data, refetch } = useQuery(GET_DEVICE, {
@@ -759,11 +760,14 @@ export default function DeviceDetail() {
         const matched = allDevices.find((d: any) => `${d.name}${d.manufacturer ? ` (${d.manufacturer})` : ''}` === relationDeviceName || String(d.id) === relationDeviceName);
         if (!matched) return;
         try {
+            const fromDeviceId = isRelationReversed ? matched.id : device.id;
+            const toDeviceId   = isRelationReversed ? device.id : matched.id;
             await addDeviceRelationship({
-                variables: { fromDeviceId: device.id, toDeviceId: matched.id, type },
+                variables: { fromDeviceId, toDeviceId, type },
             });
             setRelationDeviceName('');
             setRelationType('');
+            setIsRelationReversed(false);
             setShowRelationForm(false);
             refetch();
         } catch (err) {
@@ -2061,10 +2065,10 @@ export default function DeviceDetail() {
                                                 </div>
                                             )}
                                             <div className="flex-1 min-w-0">
+                                                <p className="text-xs text-[var(--muted-foreground)] capitalize">{rel.type}</p>
                                                 <Link href={`/devices/${rel.toDevice.id}`} className="text-sm font-medium text-[var(--apple-blue)] hover:underline truncate block">
                                                     {rel.toDevice.name}
                                                 </Link>
-                                                <p className="text-xs text-[var(--muted-foreground)] capitalize">{rel.type}</p>
                                             </div>
                                             {isAuthenticated && (
                                                 <button
@@ -2109,10 +2113,10 @@ export default function DeviceDetail() {
                                                 </div>
                                             )}
                                             <div className="flex-1 min-w-0">
+                                                <p className="text-xs text-[var(--muted-foreground)] capitalize">{inverseLabel}</p>
                                                 <Link href={`/devices/${rel.fromDevice.id}`} className="text-sm font-medium text-[var(--apple-blue)] hover:underline truncate block">
                                                     {rel.fromDevice.name}
                                                 </Link>
-                                                <p className="text-xs text-[var(--muted-foreground)] capitalize">{inverseLabel}</p>
                                             </div>
                                             {isAuthenticated && (
                                                 <button
@@ -2186,10 +2190,36 @@ export default function DeviceDetail() {
                                             ))}
                                         </datalist>
                                     </div>
+                                    <div className="flex items-center gap-2 py-1">
+                                        <div className="flex-1 text-xs text-[var(--muted-foreground)]">
+                                            {isRelationReversed ? (
+                                                <span>
+                                                    <strong>{relationDeviceName || '…'}</strong>
+                                                    {' → '}{relationType || '…'}{' → '}
+                                                    <strong>{device.name}</strong>
+                                                </span>
+                                            ) : (
+                                                <span>
+                                                    <strong>{device.name}</strong>
+                                                    {' → '}{relationType || '…'}{' → '}
+                                                    <strong>{relationDeviceName || '…'}</strong>
+                                                </span>
+                                            )}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsRelationReversed(r => !r)}
+                                            className="inline-flex items-center gap-1 px-2 py-1 text-xs text-[var(--apple-blue)] hover:bg-[var(--muted)] rounded border border-[var(--border)] shrink-0"
+                                            title="Swap direction"
+                                        >
+                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" /></svg>
+                                            Swap
+                                        </button>
+                                    </div>
                                     <div className="flex gap-2 justify-end">
                                         <button
                                             type="button"
-                                            onClick={() => { setShowRelationForm(false); setRelationDeviceName(''); setRelationType(''); }}
+                                            onClick={() => { setShowRelationForm(false); setRelationDeviceName(''); setRelationType(''); setIsRelationReversed(false); }}
                                             className="btn-retro px-3 py-1.5 text-sm font-medium"
                                         >{t.common.cancel}</button>
                                         <button

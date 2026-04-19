@@ -10,6 +10,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Changed
 - Related device rows are now tappable and navigate directly to the linked device (iOS and web)
 - Incoming relationships can now be removed with confirmation, same as outgoing (iOS and web)
+- Relationship direction can now be swapped when adding — shows a live preview of which device is the source and which is the target
 
 ---
 
