@@ -57,6 +57,8 @@ struct FinancialsView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             summarySection(overview: data.financialOverview)
+                            CashFlowByPeriodView(transactions: data.financialTransactions)
+                                .environmentObject(lm)
                             transactionsSection()
                         }
                         .padding()
