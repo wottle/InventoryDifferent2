@@ -4,9 +4,18 @@ import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { LoadingPanel } from "../../components/LoadingPanel";
 import { useT } from "../../i18n/context";
+
+const PeriodicCashFlowChart = dynamic(() => import("../../components/PeriodicCashFlowChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="p-4">
+      <LoadingPanel title="Loading chart…" subtitle="Grouping by period" />
+    </div>
+  ),
+});
 
 const FinancialChart = dynamic(() => import("../../components/FinancialChart"), {
   ssr: false,
@@ -63,11 +72,61 @@ function dateMs(dateString: string | null | undefined) {
   return Number.isNaN(ms) ? null : ms;
 }
 
+interface PeriodBucket {
+  key: string;
+  label: string;
+  received: number;
+  spent: number;
+  net: number;
+}
+
+function aggregateByPeriod(
+  transactions: any[],
+  mode: "monthly" | "yearly"
+): PeriodBucket[] {
+  const buckets = new Map<string, { received: number; spent: number }>();
+
+  for (const tx of transactions) {
+    if (!tx.date || tx.type === "DONATION") continue;
+    const ms = dateMs(tx.date);
+    if (ms === null) continue;
+
+    const d = new Date(tx.date);
+    const key =
+      mode === "monthly"
+        ? `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`
+        : `${d.getUTCFullYear()}`;
+
+    if (!buckets.has(key)) buckets.set(key, { received: 0, spent: 0 });
+    const bucket = buckets.get(key)!;
+    const amount = Number(tx.amount ?? 0) || 0;
+
+    if (tx.type === "SALE" || tx.type === "REPAIR_RETURN") {
+      bucket.received += amount;
+    } else if (tx.type === "ACQUISITION" || tx.type === "MAINTENANCE") {
+      bucket.spent += amount;
+    }
+  }
+
+  return Array.from(buckets.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, { received, spent }]) => {
+      const d = new Date(key + (mode === "monthly" ? "-01T00:00:00Z" : "-01-01T00:00:00Z"));
+      const label =
+        mode === "monthly"
+          ? d.toLocaleDateString("en-US", { timeZone: "UTC", month: "short", year: "2-digit" })
+          : `${d.getUTCFullYear()}`;
+      return { key, label, received, spent, net: received + spent };
+    });
+}
+
 export default function FinancialsPage() {
   const t = useT();
   const { data, loading, error } = useQuery(GET_FINANCIALS, {
     fetchPolicy: "cache-and-network",
   });
+
+  const [periodMode, setPeriodMode] = useState<"monthly" | "yearly">("monthly");
 
   const overview = data?.financialOverview;
   const transactions = data?.financialTransactions ?? [];
@@ -77,7 +136,7 @@ export default function FinancialsPage() {
     return `${t.common.currencySymbol}${Number(value).toFixed(2)}`;
   };
 
-  const { transactionsWithCumulative, chartData } = useMemo(() => {
+  const { transactionsWithCumulative, chartData, periodicChartData } = useMemo(() => {
     const rows = transactions.map((t: any, idx: number) => {
       const ms = dateMs(t.date);
       return {
@@ -131,8 +190,9 @@ export default function FinancialsPage() {
       return b._idx - a._idx;
     });
 
-    return { transactionsWithCumulative: withCum, chartData: chartDataPoints };
-  }, [transactions]);
+    const periodicChartData = aggregateByPeriod(transactions, periodMode);
+    return { transactionsWithCumulative: withCum, chartData: chartDataPoints, periodicChartData };
+  }, [transactions, periodMode]);
 
   return (
     <div className="min-h-screen font-sans">
@@ -216,6 +276,40 @@ export default function FinancialsPage() {
               {t.pages.financials.valueOverTimeDesc}
             </p>
             <FinancialChart data={chartData} />
+          </section>
+
+          <section className="rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
+            <h2 className="mb-1 text-sm font-semibold text-[var(--foreground)]">
+              {t.pages.financials.cashFlowByPeriod}
+            </h2>
+            <p className="mb-4 text-xs text-[var(--muted-foreground)]">
+              {t.pages.financials.cashFlowByPeriodDesc}
+            </p>
+            <div className="mb-4 flex justify-center">
+              <div className="inline-flex rounded-md border border-[var(--border)] overflow-hidden text-xs">
+                <button
+                  onClick={() => setPeriodMode("monthly")}
+                  className={`px-4 py-1.5 transition-colors ${
+                    periodMode === "monthly"
+                      ? "bg-[var(--apple-blue)] text-white"
+                      : "bg-[var(--card)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+                  }`}
+                >
+                  {t.pages.financials.monthly}
+                </button>
+                <button
+                  onClick={() => setPeriodMode("yearly")}
+                  className={`px-4 py-1.5 border-l border-[var(--border)] transition-colors ${
+                    periodMode === "yearly"
+                      ? "bg-[var(--apple-blue)] text-white"
+                      : "bg-[var(--card)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+                  }`}
+                >
+                  {t.pages.financials.yearly}
+                </button>
+              </div>
+            </div>
+            <PeriodicCashFlowChart data={periodicChartData} />
           </section>
 
           <section className="rounded border border-[var(--border)] bg-[var(--card)] overflow-hidden card-retro">
