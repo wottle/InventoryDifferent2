@@ -101,7 +101,7 @@ function DeviceCard({ item, t }: { item: ShowcaseDeviceItem; t: any }) {
 
 function ChapterSection({ chapter, index, t }: { chapter: ChapterDetail; index: number; t: any }) {
   const isOdd = index % 2 === 0; // 0-indexed: 0=Pattern A, 1=Pattern B, etc.
-  const chapterNum = String(chapter.sortOrder).padStart(2, '0');
+  const chapterNum = String(index + 1).padStart(2, '0');
   const sortedDevices = [...chapter.devices].sort((a, b) => a.sortOrder - b.sortOrder);
 
   const deviceGrid = (

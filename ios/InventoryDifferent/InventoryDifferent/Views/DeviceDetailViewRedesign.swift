@@ -2316,13 +2316,14 @@ struct DeviceTasksChildView: View {
                 }
             } else {
                 ScrollView {
-                    VStack(spacing: 12) {
+                    VStack(spacing: 10) {
                         ForEach(tasks.sorted(by: { $0.dateCompleted > $1.dateCompleted })) { task in
-                            TaskRowView(task: task) { Task { await deleteTask(task) } }
+                            EDLogRowView(task: task) { Task { await deleteTask(task) } }
                         }
                     }
-                    .padding()
+                    .padding(16)
                 }
+                .background(Color.edSurface)
             }
         }
         .navigationTitle(t.deviceDetail.tabTasks)
@@ -2371,9 +2372,9 @@ struct DeviceNotesChildView: View {
                 }
             } else {
                 ScrollView {
-                    VStack(spacing: 12) {
+                    VStack(spacing: 10) {
                         ForEach(notes.sorted(by: { $0.date > $1.date })) { note in
-                            NoteRowView(note: note) {
+                            EDNoteRowView(note: note) {
                                 editingNote = note
                                 showEditNoteSheet = true
                             } onDelete: {
@@ -2381,8 +2382,9 @@ struct DeviceNotesChildView: View {
                             }
                         }
                     }
-                    .padding()
+                    .padding(16)
                 }
+                .background(Color.edSurface)
             }
         }
         .navigationTitle(t.deviceDetail.tabNotes)
@@ -2413,5 +2415,192 @@ struct DeviceNotesChildView: View {
             _ = try await DeviceService.shared.deleteNote(id: note.id)
             notes.removeAll { $0.id == note.id }
         } catch { print("deleteNote: \(error)") }
+    }
+}
+
+// MARK: - ED Log Row View
+
+private struct EDLogRowView: View {
+    let task: MaintenanceTask
+    let onDelete: () -> Void
+    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
+    @State private var showDeleteConfirmation = false
+
+    var body: some View {
+        ZStack {
+            HStack(alignment: .top, spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(Color.edSurfaceHigh)
+                        .frame(width: 40, height: 40)
+                    Image(systemName: "wrench.and.screwdriver")
+                        .font(.system(size: 16))
+                        .foregroundColor(.secondary)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 4) {
+                        Text(task.label)
+                            .font(.system(size: 14, weight: .bold))
+                            .lineLimit(2)
+                        Spacer()
+                        if let cost = task.cost, cost > 0 {
+                            Text(lm.t.common.currencySymbol)
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                            Text(cost, format: .number.precision(.fractionLength(2)))
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                        }
+                        if authService.isAuthenticated {
+                            Button { showDeleteConfirmation = true } label: {
+                                Image(systemName: "trash")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.red)
+                                    .padding(6)
+                            }
+                            .opacity(showDeleteConfirmation ? 0 : 1)
+                        }
+                    }
+                    Text(edFormatDate(task.dateCompleted))
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                    if let notes = task.notes, !notes.isEmpty {
+                        Text(notes)
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .lineSpacing(3)
+                            .padding(.top, 2)
+                    }
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.edSurfaceLow)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+
+            if showDeleteConfirmation {
+                Color.black.opacity(0.7)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                VStack(spacing: 12) {
+                    Text(lm.t.deviceDetail.deleteTaskConfirm)
+                        .font(.system(size: 13))
+                        .foregroundColor(.white)
+                    HStack(spacing: 12) {
+                        Button(lm.t.common.cancel) { showDeleteConfirmation = false }
+                            .buttonStyle(.bordered)
+                            .tint(.white)
+                        Button(lm.t.common.delete) { onDelete() }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+
+    private func edFormatDate(_ dateString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let locale = Locale(identifier: LocalizationManager.shared.currentLanguage)
+        if let date = formatter.date(from: dateString) {
+            let df = DateFormatter(); df.dateStyle = .medium; df.locale = locale
+            return df.string(from: date)
+        }
+        formatter.formatOptions = [.withInternetDateTime]
+        if let date = formatter.date(from: dateString) {
+            let df = DateFormatter(); df.dateStyle = .medium; df.locale = locale
+            return df.string(from: date)
+        }
+        return dateString
+    }
+}
+
+// MARK: - ED Note Row View
+
+private struct EDNoteRowView: View {
+    let note: Note
+    let onEdit: () -> Void
+    let onDelete: () -> Void
+    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
+    @State private var showDeleteConfirmation = false
+
+    var body: some View {
+        ZStack {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(Color.edTertiary)
+                        .frame(width: 7, height: 7)
+                    Text(edFormatDateTime(note.date))
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    if authService.isAuthenticated {
+                        Button { onEdit() } label: {
+                            Image(systemName: "pencil")
+                                .font(.system(size: 12))
+                                .foregroundColor(.edPrimary)
+                                .padding(6)
+                        }
+                        .opacity(showDeleteConfirmation ? 0 : 1)
+                        Button { showDeleteConfirmation = true } label: {
+                            Image(systemName: "trash")
+                                .font(.system(size: 12))
+                                .foregroundColor(.red)
+                                .padding(6)
+                        }
+                        .opacity(showDeleteConfirmation ? 0 : 1)
+                    }
+                }
+                Text(note.content)
+                    .font(.system(size: 13))
+                    .italic()
+                    .foregroundColor(.secondary)
+                    .lineSpacing(4)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.edSurfaceLowest)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+
+            if showDeleteConfirmation {
+                Color.black.opacity(0.7)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                VStack(spacing: 12) {
+                    Text(lm.t.deviceDetail.deleteNoteConfirm)
+                        .font(.system(size: 13))
+                        .foregroundColor(.white)
+                    HStack(spacing: 12) {
+                        Button(lm.t.common.cancel) { showDeleteConfirmation = false }
+                            .buttonStyle(.bordered)
+                            .tint(.white)
+                        Button(lm.t.common.delete) { onDelete() }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+
+    private func edFormatDateTime(_ dateString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let locale = Locale(identifier: LocalizationManager.shared.currentLanguage)
+        if let date = formatter.date(from: dateString) {
+            let df = DateFormatter(); df.dateStyle = .medium; df.timeStyle = .short; df.locale = locale
+            return df.string(from: date)
+        }
+        formatter.formatOptions = [.withInternetDateTime]
+        if let date = formatter.date(from: dateString) {
+            let df = DateFormatter(); df.dateStyle = .medium; df.timeStyle = .short; df.locale = locale
+            return df.string(from: date)
+        }
+        return dateString
     }
 }
