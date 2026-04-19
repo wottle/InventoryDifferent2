@@ -8,6 +8,8 @@ import { useMemo, useState } from "react";
 import { LoadingPanel } from "../../components/LoadingPanel";
 import { useT } from "../../i18n/context";
 
+import type { PeriodBucket } from "../../components/PeriodicCashFlowChart";
+
 const PeriodicCashFlowChart = dynamic(() => import("../../components/PeriodicCashFlowChart"), {
   ssr: false,
   loading: () => (
@@ -72,14 +74,6 @@ function dateMs(dateString: string | null | undefined) {
   return Number.isNaN(ms) ? null : ms;
 }
 
-interface PeriodBucket {
-  key: string;
-  label: string;
-  received: number;
-  spent: number;
-  net: number;
-}
-
 function aggregateByPeriod(
   transactions: any[],
   mode: "monthly" | "yearly"
@@ -104,7 +98,7 @@ function aggregateByPeriod(
     if (tx.type === "SALE" || tx.type === "REPAIR_RETURN") {
       bucket.received += amount;
     } else if (tx.type === "ACQUISITION" || tx.type === "MAINTENANCE") {
-      bucket.spent += amount;
+      bucket.spent += amount; // amounts are negative (money out) from the API
     }
   }
 
