@@ -82,17 +82,7 @@ struct BarcodeScannerView: View {
                 }
             }
             .navigationDestination(item: $foundDevice) { device in
-                DeviceDetailView(
-                    device: device,
-                    selectedTab: $selectedTab,
-                    onDeviceChanged: { updatedDevice in
-                        foundDevice = updatedDevice
-                    },
-                    onDeviceDeleted: {
-                        foundDevice = nil
-                        dismiss()
-                    }
-                )
+                DeviceDetailRedesignScreen(deviceId: device.id)
             }
             .navigationDestination(item: $foundLocationId) { locationId in
                 LocationDetailView(locationId: locationId)

@@ -13,6 +13,9 @@ struct AddDeviceView: View {
     @EnvironmentObject var lm: LocalizationManager
     private var t: Translations { lm.t }
 
+    // Called with the new device ID after a successful save; nil = just dismiss
+    var onCreated: ((Int) -> Void)? = nil
+
     // Optional prefill values (from wishlist "Mark as Acquired")
     var prefillName: String?
     var prefillAdditionalName: String?
@@ -103,16 +106,17 @@ struct AddDeviceView: View {
                 accessoriesSection
                 linksSection
 
-                if let error = errorMessage {
-                    Section {
-                        Text(error)
-                            .foregroundColor(.red)
-                            .font(.caption)
-                    }
-                }
             }
             .navigationTitle(t.addEditDevice.addTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .alert(t.common.error, isPresented: Binding(
+                get: { errorMessage != nil },
+                set: { if !$0 { errorMessage = nil } }
+            )) {
+                Button(t.common.ok, role: .cancel) { errorMessage = nil }
+            } message: {
+                Text(errorMessage ?? "")
+            }
             .alert(t.addEditDevice.locationCreateNew, isPresented: $showingNewLocationAlert) {
                 TextField(t.addEditDevice.location, text: $newLocationName)
                 Button(t.common.cancel, role: .cancel) { }
@@ -616,8 +620,8 @@ struct AddDeviceView: View {
 
             input["status"] = status.rawValue
             input["functionalStatus"] = functionalStatus.rawValue
-            input["condition"] = condition?.rawValue as Any
-            input["rarity"] = rarity?.rawValue as Any
+            if let condition { input["condition"] = condition.rawValue }
+            if let rarity { input["rarity"] = rarity.rawValue }
             input["isFavorite"] = isFavorite
             input["isAssetTagged"] = isAssetTagged
             
@@ -675,6 +679,7 @@ struct AddDeviceView: View {
                 Task {
                     await deviceStore.loadDevices()
                 }
+                onCreated?(newDeviceId)
                 dismiss()
             }
         } catch {

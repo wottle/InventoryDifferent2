@@ -22,6 +22,7 @@ struct DeviceListView: View {
     @State private var showingAddDevice = false
     @State private var showingMenu = false
     @State private var showingScanner = false
+    @State private var newlyCreatedDeviceId: Int? = nil
     @AppStorage("deviceViewMode") private var viewMode: ViewMode = .list
 
     private let gridColumns = [GridItem(.adaptive(minimum: 160, maximum: 220))]
@@ -182,9 +183,16 @@ struct DeviceListView: View {
             SortOptionsView()
                 .environmentObject(deviceStore)
         }
-        .sheet(isPresented: $showingAddDevice) {
-            AddDeviceView()
-                .environmentObject(deviceStore)
+        .sheet(isPresented: $showingAddDevice, onDismiss: {
+            if let deviceId = newlyCreatedDeviceId {
+                newlyCreatedDeviceId = nil
+                navigationPath.append(deviceId)
+            }
+        }) {
+            AddDeviceView(onCreated: { deviceId in
+                newlyCreatedDeviceId = deviceId
+            })
+            .environmentObject(deviceStore)
         }
         .fullScreenCover(isPresented: $showingScanner) {
             BarcodeScannerView()
