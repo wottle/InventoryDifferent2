@@ -43,6 +43,18 @@ struct AddRelatedDeviceSheet: View {
         }
     }
 
+    private func forwardLabel(for type: String) -> String {
+        let map: [String: String] = [
+            "accessory": "accessory of",
+            "software": "software for",
+            "manual / documentation": "manual for",
+            "installed inside": "installed inside",
+            "purchased with": "purchased with",
+            "came bundled with": "came bundled with",
+        ]
+        return map[type.lowercased()] ?? type
+    }
+
     private func inverseLabel(for type: String) -> String {
         let map: [String: String] = [
             "accessory": "Accessory of",
@@ -104,7 +116,7 @@ struct AddRelatedDeviceSheet: View {
                             .fontWeight(.medium)
                         Text("→")
                             .foregroundColor(.secondary)
-                        Text(trimmed)
+                        Text(forwardLabel(for: trimmed))
                             .foregroundColor(Color(red: 0, green: 88/255, blue: 188/255))
                             .fontWeight(.medium)
                         Text("→")

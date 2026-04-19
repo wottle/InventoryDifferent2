@@ -953,12 +953,12 @@ export const en: Translations = {
     removeRelationshipConfirm: "Remove this relationship?",
     relationshipTypeSuggestions: ['accessory', 'software', 'manual / documentation', 'installed inside', 'purchased with', 'came bundled with'],
     inverseRelationLabels: {
-      'accessory': 'Accessory of',
-      'software': 'Software for',
-      'manual / documentation': 'Manual for',
-      'installed inside': 'Contains',
-      'purchased with': 'Purchased with',
-      'came bundled with': 'Came bundled with',
+      'Accessory': 'Accessory of',
+      'Software': 'Software for',
+      'Manual / documentation': 'Manual for',
+      'Installed inside': 'Contains',
+      'Purchased with': 'Purchased with',
+      'Came bundled with': 'Came bundled with',
     },
   },
   pages: {

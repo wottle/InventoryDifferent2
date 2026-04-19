@@ -2190,32 +2190,48 @@ export default function DeviceDetail() {
                                             ))}
                                         </datalist>
                                     </div>
-                                    <div className="flex items-center gap-2 py-1">
-                                        <div className="flex-1 text-xs text-[var(--muted-foreground)]">
-                                            {isRelationReversed ? (
-                                                <span>
-                                                    <strong>{relationDeviceName || '…'}</strong>
-                                                    {' → '}{relationType || '…'}{' → '}
-                                                    <strong>{device.name}</strong>
-                                                </span>
-                                            ) : (
-                                                <span>
-                                                    <strong>{device.name}</strong>
-                                                    {' → '}{relationType || '…'}{' → '}
-                                                    <strong>{relationDeviceName || '…'}</strong>
-                                                </span>
-                                            )}
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsRelationReversed(r => !r)}
-                                            className="inline-flex items-center gap-1 px-2 py-1 text-xs text-[var(--apple-blue)] hover:bg-[var(--muted)] rounded border border-[var(--border)] shrink-0"
-                                            title="Swap direction"
-                                        >
-                                            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" /></svg>
-                                            Swap
-                                        </button>
-                                    </div>
+                                    {(() => {
+                                        const forwardLabels: Record<string, string> = {
+                                            'accessory': 'accessory of',
+                                            'software': 'software for',
+                                            'manual / documentation': 'manual for',
+                                            'installed inside': 'installed inside',
+                                            'purchased with': 'purchased with',
+                                            'came bundled with': 'came bundled with',
+                                        };
+                                        const inverseLabels = t.detail.inverseRelationLabels as Record<string, string>;
+                                        const trimmedType = relationType.trim();
+                                        const fwdLabel = forwardLabels[trimmedType.toLowerCase()] ?? trimmedType;
+                                        const invLabel = inverseLabels[trimmedType.toLowerCase()] ?? trimmedType;
+                                        const otherName = relationDeviceName.trim();
+                                        return (
+                                            <div className="rounded border border-[var(--border)] bg-[var(--muted)] p-2 space-y-1.5">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <p className="text-xs text-[var(--muted-foreground)] font-medium">Direction</p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsRelationReversed(r => !r)}
+                                                        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-[var(--apple-blue)] hover:bg-[var(--border)] rounded shrink-0"
+                                                    >
+                                                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" /></svg>
+                                                        Swap
+                                                    </button>
+                                                </div>
+                                                <p className="text-xs">
+                                                    {isRelationReversed ? (
+                                                        <><strong>{otherName || '…'}</strong>{' '}<span className="text-[var(--apple-blue)]">{fwdLabel || '…'}</span>{' '}<strong>{device.name}</strong></>
+                                                    ) : (
+                                                        <><strong>{device.name}</strong>{' '}<span className="text-[var(--apple-blue)]">{fwdLabel || '…'}</span>{' '}<strong>{otherName || '…'}</strong></>
+                                                    )}
+                                                </p>
+                                                {trimmedType && otherName && (
+                                                    <p className="text-xs text-[var(--muted-foreground)]">
+                                                        On &ldquo;{isRelationReversed ? device.name : otherName}&rdquo;, shown as: {invLabel} of &ldquo;{isRelationReversed ? otherName : device.name}&rdquo;
+                                                    </p>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
                                     <div className="flex gap-2 justify-end">
                                         <button
                                             type="button"
