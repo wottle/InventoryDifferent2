@@ -14,6 +14,7 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [
       'iOS: device relationships — link devices to each other with typed relationships (accessory, software, manual, installed inside, etc.) shown in the Related Devices section on both devices',
+      'Add periodic cash flow chart to financials pages (web and iOS) — diverging bars show spending vs. receiving per month or year with a net cash line; toggle between monthly and yearly view; horizontally scrollable',
     ],
     changed: [
       'Related device rows are now tappable and navigate directly to the linked device (iOS and web)',
