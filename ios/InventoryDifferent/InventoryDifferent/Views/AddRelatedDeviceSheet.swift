@@ -257,7 +257,7 @@ struct AddRelatedDeviceSheet: View {
         do {
             let fromId = isReversed ? target.id : deviceId
             let toId   = isReversed ? deviceId : target.id
-            _ = try await DeviceService.shared.addDeviceRelationship(
+            try await DeviceService.shared.addDeviceRelationship(
                 fromDeviceId: fromId,
                 toDeviceId: toId,
                 type: type

@@ -256,11 +256,11 @@ class DeviceService {
                 links { id label url }
                 relationsFrom {
                     id type toDeviceId
-                    toDevice { id name manufacturer }
+                    toDevice { id name additionalName manufacturer status location { id name } }
                 }
                 relationsTo {
                     id type fromDeviceId
-                    fromDevice { id name manufacturer }
+                    fromDevice { id name additionalName manufacturer status location { id name } }
                 }
             }
         }
@@ -1417,29 +1417,24 @@ class DeviceService {
         return response.devices
     }
 
-    func addDeviceRelationship(fromDeviceId: Int, toDeviceId: Int, type relType: String) async throws -> [DeviceRelationship] {
+    func addDeviceRelationship(fromDeviceId: Int, toDeviceId: Int, type relType: String) async throws {
         let safeType = relType.replacingOccurrences(of: "\"", with: "\\\"")
         let mutation = """
         mutation {
             addDeviceRelationship(fromDeviceId: \(fromDeviceId), toDeviceId: \(toDeviceId), type: "\(safeType)") {
                 id
-                relationsFrom {
-                    id type toDeviceId
-                    toDevice { id name manufacturer }
-                }
             }
         }
         """
 
         struct Inner: Decodable {
-            let relationsFrom: [DeviceRelationship]
+            let id: Int
         }
         struct Response: Decodable {
             let addDeviceRelationship: Inner
         }
 
-        let response: Response = try await api.execute(query: mutation)
-        return response.addDeviceRelationship.relationsFrom
+        let _: Response = try await api.execute(query: mutation)
     }
 
     func removeDeviceRelationship(id: Int) async throws {
