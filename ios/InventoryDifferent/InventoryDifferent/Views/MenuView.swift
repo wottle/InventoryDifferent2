@@ -26,10 +26,8 @@ struct MenuView: View {
                     title: t.menu.wishlist,
                     color: .yellow
                 ) {
+                    navigationPath.append(MenuDestination.wishlist)
                     showingMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        navigationPath.append(MenuDestination.wishlist)
-                    }
                 }
 
                 Divider()
@@ -40,10 +38,8 @@ struct MenuView: View {
                     title: t.menu.financials,
                     color: .green
                 ) {
+                    navigationPath.append(MenuDestination.financials)
                     showingMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        navigationPath.append(MenuDestination.financials)
-                    }
                 }
 
                 Divider()
@@ -55,10 +51,8 @@ struct MenuView: View {
                     title: t.menu.stats,
                     color: .purple
                 ) {
+                    navigationPath.append(MenuDestination.stats)
                     showingMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        navigationPath.append(MenuDestination.stats)
-                    }
                 }
 
                 Divider()
@@ -69,10 +63,8 @@ struct MenuView: View {
                     title: t.menu.timeline,
                     color: .teal
                 ) {
+                    navigationPath.append(MenuDestination.timeline)
                     showingMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        navigationPath.append(MenuDestination.timeline)
-                    }
                 }
 
                 Divider()
@@ -83,10 +75,8 @@ struct MenuView: View {
                     title: t.menu.locations,
                     color: .orange
                 ) {
+                    navigationPath.append(MenuDestination.locations)
                     showingMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        navigationPath.append(MenuDestination.locations)
-                    }
                 }
 
                 Divider()
@@ -97,10 +87,8 @@ struct MenuView: View {
                     title: t.menu.chat,
                     color: .blue
                 ) {
+                    navigationPath.append(MenuDestination.chat)
                     showingMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        navigationPath.append(MenuDestination.chat)
-                    }
                 }
 
                 Divider()
