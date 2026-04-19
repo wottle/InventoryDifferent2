@@ -173,10 +173,17 @@ struct CashFlowByPeriodView: View {
                                 AxisMarks(format: .currency(code: "USD"))
                             }
                         }
-                        .frame(width: chartWidth, height: 220)
+                        .chartXAxis {
+                            AxisMarks { _ in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel(orientation: .verticalReversed)
+                            }
+                        }
+                        .frame(width: chartWidth, height: 260)
                     }
                 }
-                .frame(height: 220)
+                .frame(height: 260)
             }
         }
         .padding()
