@@ -2439,7 +2439,9 @@ struct MarkReturnedSheet: View {
                     tags: [Tag(id: 1, name: "vintage"), Tag(id: 2, name: "working")],
                     customFieldValues: [],
                     accessories: [],
-                    links: []
+                    links: [],
+                    relationsFrom: nil,
+                    relationsTo: nil
                 ), selectedTab: $selectedTab)
             }
         }

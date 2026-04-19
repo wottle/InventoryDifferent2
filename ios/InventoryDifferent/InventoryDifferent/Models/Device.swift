@@ -8,6 +8,21 @@
 import Foundation
 import SwiftUI
 
+struct RelationshipDevice: Codable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let manufacturer: String?
+}
+
+struct DeviceRelationship: Codable, Identifiable, Hashable {
+    let id: Int
+    let type: String
+    let fromDeviceId: Int?
+    let toDeviceId: Int?
+    let fromDevice: RelationshipDevice?
+    let toDevice: RelationshipDevice?
+}
+
 struct DeviceAccessory: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
@@ -253,7 +268,9 @@ struct Device: Codable, Identifiable, Hashable {
     let customFieldValues: [CustomFieldValue]
     let accessories: [DeviceAccessory]
     let links: [DeviceLink]
-    
+    let relationsFrom: [DeviceRelationship]?
+    let relationsTo: [DeviceRelationship]?
+
     var displayName: String {
         if let additional = additionalName, !additional.isEmpty {
             return "\(name) (\(additional))"

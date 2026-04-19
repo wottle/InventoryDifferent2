@@ -731,7 +731,9 @@ struct SerialBarcodeCaptureSheet: View {
         tags: [],
         customFieldValues: [],
         accessories: [],
-        links: []
+        links: [],
+        relationsFrom: nil,
+        relationsTo: nil
     )) { device in
         print("Device updated: \(device)")
     }

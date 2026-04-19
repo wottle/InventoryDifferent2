@@ -202,7 +202,14 @@ extension Translations {
             markRepaired: "Mark Repaired",
             markReturned: "Mark Returned",
             backToRepair: "Back to Repair",
-            historicalNotes: "Historical Notes"
+            historicalNotes: "Historical Notes",
+            relatedDevices: "Related Devices",
+            noRelatedDevices: "No related devices",
+            removeRelationship: "Remove Relationship",
+            removeRelationshipFmt: "Remove \"%@\" as %@?",
+            addRelationship: "Add Relationship",
+            relationshipDevice: "Device",
+            relationshipType: "Type"
         ),
         addEditDevice: .init(
             addTitle: "Add Device",

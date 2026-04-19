@@ -201,7 +201,14 @@ extension Translations {
             markRepaired: "Marcar como reparado",
             markReturned: "Marcar como devuelto",
             backToRepair: "Volver a reparación",
-            historicalNotes: "Notas históricas"
+            historicalNotes: "Notas históricas",
+            relatedDevices: "Dispositivos relacionados",
+            noRelatedDevices: "Sin dispositivos relacionados",
+            removeRelationship: "Eliminar relación",
+            removeRelationshipFmt: "¿Eliminar \"%@\" como %@?",
+            addRelationship: "Añadir relación",
+            relationshipDevice: "Dispositivo",
+            relationshipType: "Tipo"
         ),
         addEditDevice: .init(
             addTitle: "Añadir dispositivo",

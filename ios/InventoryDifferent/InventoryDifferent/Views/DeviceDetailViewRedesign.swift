@@ -128,6 +128,11 @@ struct DeviceDetailRedesignView: View {
     @State private var tags: [Tag]
     @State private var accessories: [DeviceAccessory]
     @State private var links: [DeviceLink]
+    @State private var relationsFrom: [DeviceRelationship]
+    @State private var relationsTo: [DeviceRelationship]
+    @State private var showAddRelationshipSheet = false
+    @State private var relationshipToRemove: DeviceRelationship?
+    @State private var showRemoveRelationshipAlert = false
 
     @State private var showAddTaskSheet = false
     @State private var isDeletingTask = false
@@ -184,6 +189,8 @@ struct DeviceDetailRedesignView: View {
         self._tags = State(initialValue: device.tags)
         self._accessories = State(initialValue: device.accessories)
         self._links = State(initialValue: device.links)
+        self._relationsFrom = State(initialValue: device.relationsFrom ?? [])
+        self._relationsTo = State(initialValue: device.relationsTo ?? [])
     }
 
     // MARK: - Body
@@ -210,6 +217,9 @@ struct DeviceDetailRedesignView: View {
                             }
                             if authService.isAuthenticated || !links.isEmpty {
                                 linksSection
+                            }
+                            if authService.isAuthenticated || !relationsFrom.isEmpty || !relationsTo.isEmpty {
+                                relatedDevicesSection
                             }
                             maintenanceLogsSection
                             if !notes.isEmpty {
@@ -375,6 +385,26 @@ struct DeviceDetailRedesignView: View {
         }
         .sheet(isPresented: $showAddLinkSheet) {
             AddLinkSheet(deviceId: device.id) { links.append($0) }
+        }
+        .sheet(isPresented: $showAddRelationshipSheet) {
+            AddRelatedDeviceSheet(
+                deviceId: device.id,
+                existingToIds: Set(relationsFrom.compactMap { $0.toDeviceId })
+            ) { newRelations in
+                relationsFrom = newRelations
+            }
+        }
+        .alert(lm.t.deviceDetail.removeRelationship, isPresented: $showRemoveRelationshipAlert) {
+            Button(lm.t.common.cancel, role: .cancel) { relationshipToRemove = nil }
+            Button(lm.t.common.delete, role: .destructive) {
+                if let rel = relationshipToRemove { Task { await removeRelationship(rel) } }
+            }
+        } message: {
+            if let rel = relationshipToRemove {
+                Text(String(format: lm.t.deviceDetail.removeRelationshipFmt,
+                            rel.toDevice?.name ?? "",
+                            rel.type))
+            }
         }
         .sheet(isPresented: $showAddTaskSheet) {
             AddMaintenanceTaskView(deviceId: device.id) { maintenanceTasks.append($0) }
@@ -1174,6 +1204,109 @@ struct DeviceDetailRedesignView: View {
         }
     }
 
+    // MARK: - Related Devices
+
+    private var relatedDevicesSection: some View {
+        let t = lm.t
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                sectionOverline(t.deviceDetail.relatedDevices)
+                Spacer()
+                if authService.isAuthenticated {
+                    Button { showAddRelationshipSheet = true } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(.edPrimary)
+                    }
+                }
+            }
+
+            if relationsFrom.isEmpty && relationsTo.isEmpty {
+                Text(t.deviceDetail.noRelatedDevices)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.vertical, 4)
+            } else {
+                VStack(spacing: 6) {
+                    // Outgoing: this device "has" the other
+                    ForEach(relationsFrom) { rel in
+                        HStack(spacing: 10) {
+                            Image(systemName: "link")
+                                .font(.system(size: 14))
+                                .foregroundColor(.edPrimary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(rel.toDevice?.name ?? "Device \(rel.toDeviceId ?? 0)")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(.primary)
+                                Text(rel.type)
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            if authService.isAuthenticated {
+                                Button {
+                                    relationshipToRemove = rel
+                                    showRemoveRelationshipAlert = true
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.edSurfaceLowest)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    // Incoming: other devices reference this one (read-only)
+                    ForEach(relationsTo) { rel in
+                        HStack(spacing: 10) {
+                            Image(systemName: "arrow.turn.up.left")
+                                .font(.system(size: 14))
+                                .foregroundColor(.secondary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(rel.fromDevice?.name ?? "Device \(rel.fromDeviceId ?? 0)")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(.primary)
+                                Text(inverseLabel(for: rel.type))
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.edSurfaceLowest)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+            }
+        }
+    }
+
+    private func inverseLabel(for type: String) -> String {
+        let map: [String: String] = [
+            "accessory": "Accessory of",
+            "software": "Software for",
+            "manual / documentation": "Manual for",
+            "installed inside": "Contains",
+            "purchased with": "Purchased with",
+            "came bundled with": "Came bundled with",
+        ]
+        return map[type.lowercased()] ?? type
+    }
+
+    private func removeRelationship(_ rel: DeviceRelationship) async {
+        do {
+            try await DeviceService.shared.removeDeviceRelationship(id: rel.id)
+            relationsFrom.removeAll { $0.id == rel.id }
+            relationshipToRemove = nil
+        } catch {
+            print("removeRelationship error: \(error)")
+        }
+    }
+
     // MARK: - Maintenance Logs
 
     private var maintenanceLogsSection: some View {
@@ -1715,6 +1848,13 @@ struct DeviceDetailRedesignView: View {
                     switch device.status {
                     case .COLLECTION:
                         lifecycleButton(
+                            title: t.deviceDetail.poweredOnToday,
+                            icon: "power.circle",
+                            color: .blue
+                        ) {
+                            Task { await logPowerOn() }
+                        }
+                        lifecycleButton(
                             title: t.deviceDetail.markForSale,
                             icon: "storefront",
                             color: .orange
@@ -1755,6 +1895,13 @@ struct DeviceDetailRedesignView: View {
                         }
 
                     case .IN_REPAIR:
+                        lifecycleButton(
+                            title: t.deviceDetail.poweredOnToday,
+                            icon: "power.circle",
+                            color: .blue
+                        ) {
+                            Task { await logPowerOn() }
+                        }
                         lifecycleButton(
                             title: t.deviceDetail.markRepaired,
                             icon: "checkmark.seal",
@@ -1835,6 +1982,19 @@ struct DeviceDetailRedesignView: View {
             )
             applyUpdate(updated)
         } catch { print("updateDeviceStatus: \(error)") }
+        isUpdatingStatus = false
+    }
+
+    private func logPowerOn() async {
+        isUpdatingStatus = true
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        do {
+            let updated = try await DeviceService.shared.updateDevice(
+                id: deviceId, input: ["lastPowerOnDate": formatter.string(from: Date())]
+            )
+            applyUpdate(updated)
+        } catch { print("logPowerOn: \(error)") }
         isUpdatingStatus = false
     }
 
@@ -1969,6 +2129,8 @@ struct DeviceDetailRedesignView: View {
         tags = updated.tags
         accessories = updated.accessories
         links = updated.links
+        relationsFrom = updated.relationsFrom ?? []
+        relationsTo = updated.relationsTo ?? []
         onDeviceChanged?(updated)
     }
 

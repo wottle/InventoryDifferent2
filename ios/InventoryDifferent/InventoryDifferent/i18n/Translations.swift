@@ -93,6 +93,9 @@ struct Translations {
         let markReturned: String
         let backToRepair: String
         let historicalNotes: String
+        let relatedDevices, noRelatedDevices: String
+        let removeRelationship, removeRelationshipFmt: String
+        let addRelationship, relationshipDevice, relationshipType: String
     }
 
     // MARK: - Add / Edit Device

@@ -386,6 +386,8 @@ struct ShareView: View {
         tags: [],
         customFieldValues: [],
         accessories: [],
-        links: []
+        links: [],
+        relationsFrom: nil,
+        relationsTo: nil
     ))
 }

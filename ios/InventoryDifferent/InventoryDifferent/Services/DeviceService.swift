@@ -254,10 +254,18 @@ class DeviceService {
                 }
                 accessories { id name }
                 links { id label url }
+                relationsFrom {
+                    id type toDeviceId
+                    toDevice { id name manufacturer }
+                }
+                relationsTo {
+                    id type fromDeviceId
+                    fromDevice { id name manufacturer }
+                }
             }
         }
         """
-        
+
         struct Response: Decodable {
             let device: Device?
         }
@@ -1383,5 +1391,65 @@ class DeviceService {
 
         let response: Response = try await api.execute(query: mutation, variables: variables)
         return response.deleteWishlistItem
+    }
+
+    // MARK: - Device Relationships
+
+    func fetchAllDevicesSimple() async throws -> [RelationshipDevice] {
+        let query = """
+        {
+            devices(where: { deleted: { equals: false } }) {
+                id
+                name
+                manufacturer
+            }
+        }
+        """
+
+        struct Response: Decodable {
+            let devices: [RelationshipDevice]
+        }
+
+        let response: Response = try await api.execute(query: query)
+        return response.devices
+    }
+
+    func addDeviceRelationship(fromDeviceId: Int, toDeviceId: Int, type relType: String) async throws -> [DeviceRelationship] {
+        let safeType = relType.replacingOccurrences(of: "\"", with: "\\\"")
+        let mutation = """
+        mutation {
+            addDeviceRelationship(fromDeviceId: \(fromDeviceId), toDeviceId: \(toDeviceId), type: "\(safeType)") {
+                id
+                relationsFrom {
+                    id type toDeviceId
+                    toDevice { id name manufacturer }
+                }
+            }
+        }
+        """
+
+        struct Inner: Decodable {
+            let relationsFrom: [DeviceRelationship]
+        }
+        struct Response: Decodable {
+            let addDeviceRelationship: Inner
+        }
+
+        let response: Response = try await api.execute(query: mutation)
+        return response.addDeviceRelationship.relationsFrom
+    }
+
+    func removeDeviceRelationship(id: Int) async throws {
+        let mutation = """
+        mutation {
+            removeDeviceRelationship(id: \(id))
+        }
+        """
+
+        struct Response: Decodable {
+            let removeDeviceRelationship: Bool
+        }
+
+        let _: Response = try await api.execute(query: mutation)
     }
 }
