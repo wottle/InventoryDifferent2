@@ -37,6 +37,14 @@ private extension Color {
     static let edSurfaceHigh = Color(.tertiarySystemBackground)
 }
 
+// MARK: - Child Navigation Destinations
+
+enum DeviceDetailDestination: Hashable {
+    case photos
+    case tasks
+    case notes
+}
+
 // MARK: - Screen wrapper
 
 struct DeviceDetailRedesignScreen: View {
@@ -48,7 +56,6 @@ struct DeviceDetailRedesignScreen: View {
     @State private var device: Device?
     @State private var isLoading = true
     @State private var error: String?
-    @State private var selectedTab = 0
 
     var body: some View {
         let t = lm.t
@@ -73,7 +80,6 @@ struct DeviceDetailRedesignScreen: View {
             } else if let device {
                 DeviceDetailRedesignView(
                     device: device,
-                    selectedTab: $selectedTab,
                     onDeviceChanged: { updated in
                         self.device = updated
                         Task { await deviceStore.loadDevices() }
@@ -112,7 +118,6 @@ struct DeviceDetailRedesignScreen: View {
 
 struct DeviceDetailRedesignView: View {
     let deviceId: Int
-    @Binding var selectedTab: Int
     let onDeviceChanged: ((Device) -> Void)?
     let onDeviceDeleted: (() -> Void)?
 
@@ -174,13 +179,11 @@ struct DeviceDetailRedesignView: View {
 
     init(
         device: Device,
-        selectedTab: Binding<Int>,
         onDeviceChanged: ((Device) -> Void)? = nil,
         onDeviceDeleted: (() -> Void)? = nil
     ) {
         self.deviceId = device.id
         self._device = State(initialValue: device)
-        self._selectedTab = selectedTab
         self.onDeviceChanged = onDeviceChanged
         self.onDeviceDeleted = onDeviceDeleted
         self._maintenanceTasks = State(initialValue: device.maintenanceTasks)
@@ -196,125 +199,58 @@ struct DeviceDetailRedesignView: View {
     // MARK: - Body
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            Color.edSurface.ignoresSafeArea()
-
-            Group {
-                switch selectedTab {
-                case 0:
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            heroSection
-                            quickOverviewCard
-                            indicatorGrid
-                            if authService.isAuthenticated {
-                                lifecycleActionsCard
-                                valuationCards
-                            }
-                            mediaAssetsSection
-                            if authService.isAuthenticated || !accessories.isEmpty {
-                                accessoriesSection
-                            }
-                            if authService.isAuthenticated || !links.isEmpty {
-                                linksSection
-                            }
-                            if authService.isAuthenticated || !relationsFrom.isEmpty || !relationsTo.isEmpty {
-                                relatedDevicesSection
-                            }
-                            maintenanceLogsSection
-                            if !notes.isEmpty {
-                                archiveNotesSection
-                            }
-                            techSpecsSection
-                            historicalNotesSection
-                            if authService.isAuthenticated {
-                                deleteButton
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 100)
-                    }
-                    .ignoresSafeArea(edges: .top)
-
-                case 1:
-                    ScrollView {
-                        photosSection
-                            .padding()
-                            .padding(.bottom, 80)
-                    }
-
-                case 2:
-                    ScrollView {
-                        tasksSection
-                            .padding()
-                            .padding(.bottom, 80)
-                    }
-
-                case 3:
-                    ScrollView {
-                        notesSection
-                            .padding()
-                            .padding(.bottom, 80)
-                    }
-
-                default:
-                    EmptyView()
-                }
-            }
-
-            // Floating tab picker
-            let t = lm.t
-            Picker("Section", selection: $selectedTab) {
-                Text(t.deviceDetail.tabDetails).tag(0)
-                Text("\(t.deviceDetail.tabPhotos) (\(images.count))").tag(1)
-                Text("\(t.deviceDetail.tabTasks) (\(maintenanceTasks.count))").tag(2)
+        ScrollView {
+            VStack(spacing: 16) {
+                heroSection
+                quickOverviewCard
+                indicatorGrid
                 if authService.isAuthenticated {
-                    Text("\(t.deviceDetail.tabNotes) (\(notes.count))").tag(3)
+                    lifecycleActionsCard
+                    valuationCards
+                }
+                mediaAssetsSection
+                if authService.isAuthenticated || !accessories.isEmpty {
+                    accessoriesSection
+                }
+                if authService.isAuthenticated || !links.isEmpty {
+                    linksSection
+                }
+                if authService.isAuthenticated || !relationsFrom.isEmpty || !relationsTo.isEmpty {
+                    relatedDevicesSection
+                }
+                maintenanceLogsSection
+                archiveNotesSection
+                techSpecsSection
+                historicalNotesSection
+                if authService.isAuthenticated {
+                    deleteButton
                 }
             }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 6)
-            .background(.ultraThinMaterial)
-            .clipShape(Capsule())
             .padding(.horizontal, 16)
-            .padding(.bottom, 8)
+            .padding(.bottom, 40)
+        }
+        .ignoresSafeArea(edges: .top)
+        .navigationDestination(for: DeviceDetailDestination.self) { destination in
+            switch destination {
+            case .photos:
+                DevicePhotosChildView(deviceId: deviceId, images: $images)
+            case .tasks:
+                DeviceTasksChildView(deviceId: deviceId, tasks: $maintenanceTasks)
+            case .notes:
+                DeviceNotesChildView(deviceId: deviceId, notes: $notes)
+            }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 12) {
-                    if selectedTab == 0 {
-                        Button { showShareSheet = true } label: {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        if authService.isAuthenticated {
-                            Button { showEditDeviceSheet = true } label: {
-                                Text(lm.t.common.edit)
-                            }
-                        }
-                    } else if selectedTab == 1 && authService.isAuthenticated {
-                        if openaiEnabled {
-                            Button { showGenerateImageSheet = true } label: {
-                                Image(systemName: "sparkles")
-                            }
-                        }
-                        Button {
-                            isImageManagementMode.toggle()
-                        } label: {
-                            Text(isImageManagementMode ? lm.t.deviceDetail.done : lm.t.deviceDetail.manage)
-                        }
-                        Button { showImagePicker = true } label: {
-                            Image(systemName: "plus")
-                        }
-                    } else if selectedTab == 2 && authService.isAuthenticated {
-                        Button { showAddTaskSheet = true } label: {
-                            Image(systemName: "plus")
-                        }
-                    } else if selectedTab == 3 && authService.isAuthenticated {
-                        Button { showAddNoteSheet = true } label: {
-                            Image(systemName: "plus")
+                    Button { showShareSheet = true } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    if authService.isAuthenticated {
+                        Button { showEditDeviceSheet = true } label: {
+                            Text(lm.t.common.edit)
                         }
                     }
                 }
@@ -1078,6 +1014,23 @@ struct DeviceDetailRedesignView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 8)
             }
+
+            if !images.isEmpty {
+                NavigationLink(value: DeviceDetailDestination.photos) {
+                    HStack {
+                        Text(t.deviceDetail.allPhotos)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.edPrimary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.edPrimary)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 
@@ -1365,9 +1318,22 @@ struct DeviceDetailRedesignView: View {
                                     .foregroundColor(.secondary)
                             }
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(task.label)
-                                    .font(.system(size: 14, weight: .bold))
-                                    .lineLimit(1)
+                                HStack(spacing: 4) {
+                                    Text(task.label)
+                                        .font(.system(size: 14, weight: .bold))
+                                        .lineLimit(1)
+                                    Spacer()
+                                    
+                                    if let cost = task.cost {
+                                        Text( t.common.currencySymbol )
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.secondary)
+                                        Text( cost, format: .number.precision(.fractionLength(2)) )
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                }
                                 HStack(spacing: 4) {
                                     Text(formatDate(task.dateCompleted) ?? task.dateCompleted)
                                         .font(.system(size: 12))
@@ -1390,22 +1356,20 @@ struct DeviceDetailRedesignView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
 
-                    if maintenanceTasks.count > 3 {
-                        Button { selectedTab = 2 } label: {
-                            HStack {
-                                Text(String(format: lm.t.deviceDetail.moreItemsFmt, maintenanceTasks.count - 3))
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundColor(.edPrimary)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.edPrimary)
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
+                    NavigationLink(value: DeviceDetailDestination.tasks) {
+                        HStack {
+                            Text(lm.t.deviceDetail.allLogs)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(.edPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.edPrimary)
                         }
-                        .buttonStyle(.plain)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -1539,22 +1503,20 @@ struct DeviceDetailRedesignView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
 
-                    if notes.count > 5 {
-                        Button { selectedTab = 3 } label: {
-                            HStack {
-                                Text(String(format: lm.t.deviceDetail.moreItemsFmt, notes.count - 5))
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundColor(.edPrimary)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.edPrimary)
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
+                    NavigationLink(value: DeviceDetailDestination.notes) {
+                        HStack {
+                            Text(lm.t.deviceDetail.allNotes)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(.edPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.edPrimary)
                         }
-                        .buttonStyle(.plain)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         )
@@ -1621,191 +1583,6 @@ struct DeviceDetailRedesignView: View {
             .textCase(.uppercase)
             .tracking(1.5)
             .foregroundColor(.secondary)
-    }
-
-    // MARK: - Photos Tab
-
-    private var photosSection: some View {
-        Group {
-            if images.isEmpty {
-                ContentUnavailableView {
-                    Label(lm.t.deviceDetail.noPhotos, systemImage: "photo.on.rectangle")
-                } description: {
-                    Text(lm.t.deviceDetail.noPhotosMessage)
-                }
-            } else {
-                LazyVGrid(columns: [
-                    GridItem(.flexible(), spacing: 4),
-                    GridItem(.flexible(), spacing: 4),
-                    GridItem(.flexible(), spacing: 4)
-                ], spacing: 4) {
-                    ForEach(Array(images.sorted(by: { $0.id > $1.id }).enumerated()), id: \.element.id) { index, image in
-                        ZStack {
-                            GeometryReader { geo in
-                                AsyncImage(url: APIService.shared.imageURL(for: image.thumbnailPath ?? image.path)) { phase in
-                                    switch phase {
-                                    case .success(let img):
-                                        img.resizable().scaledToFill()
-                                            .frame(width: geo.size.width, height: geo.size.height)
-                                            .clipped()
-                                    case .empty:
-                                        Rectangle().fill(Color.gray.opacity(0.2))
-                                            .overlay { ProgressView() }
-                                    default:
-                                        Rectangle().fill(Color.gray.opacity(0.2))
-                                            .overlay { Image(systemName: "photo").foregroundColor(.gray) }
-                                    }
-                                }
-                            }
-
-                            if isImageManagementMode {
-                                VStack(spacing: 0) {
-                                    HStack(spacing: 0) {
-                                        Button {
-                                            if !image.isThumbnail {
-                                                if images.contains(where: { $0.isThumbnail }) {
-                                                    imageForThumbnailChoice = image
-                                                    showThumbnailChoiceSheet = true
-                                                } else {
-                                                    Task { await setThumbnail(image, mode: "BOTH") }
-                                                }
-                                            }
-                                        } label: {
-                                            Color.clear.overlay(alignment: .topLeading) {
-                                                Image(systemName: "photo.fill")
-                                                    .font(.system(size: 16)).foregroundColor(.white)
-                                                    .padding(6)
-                                                    .background(image.isThumbnail ? Color.blue : Color.gray.opacity(0.6))
-                                                    .clipShape(Circle()).padding(8)
-                                            }
-                                        }
-                                        Button {
-                                            imageToDelete = image
-                                            showDeleteImageAlert = true
-                                        } label: {
-                                            Color.clear.overlay(alignment: .topTrailing) {
-                                                Image(systemName: "trash.fill")
-                                                    .font(.system(size: 16)).foregroundColor(.white)
-                                                    .padding(6)
-                                                    .background(Color.red.opacity(0.8))
-                                                    .clipShape(Circle()).padding(8)
-                                            }
-                                        }
-                                    }
-                                    HStack(spacing: 0) {
-                                        Button { Task { await setListingImage(image) } } label: {
-                                            Color.clear.overlay(alignment: .bottomLeading) {
-                                                Image(systemName: "storefront.fill")
-                                                    .font(.system(size: 16)).foregroundColor(.white)
-                                                    .padding(6)
-                                                    .background(image.isListingImage ? Color.orange : Color.gray.opacity(0.6))
-                                                    .clipShape(Circle()).padding(8)
-                                            }
-                                        }
-                                        Button { Task { await toggleShopImage(image) } } label: {
-                                            Color.clear.overlay(alignment: .bottomTrailing) {
-                                                Image(systemName: "bag.fill")
-                                                    .font(.system(size: 16)).foregroundColor(.white)
-                                                    .padding(6)
-                                                    .background(image.isShopImage ? Color.green : Color.gray.opacity(0.6))
-                                                    .clipShape(Circle()).padding(8)
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                VStack {
-                                    HStack {
-                                        if image.isThumbnail {
-                                            Image(systemName: "photo.fill").font(.system(size: 14)).foregroundColor(.white)
-                                                .padding(4).background(Color.blue).clipShape(Circle())
-                                        }
-                                        Spacer()
-                                    }
-                                    Spacer()
-                                    HStack {
-                                        if image.isListingImage {
-                                            Image(systemName: "storefront.fill").font(.system(size: 14)).foregroundColor(.white)
-                                                .padding(4).background(Color.orange).clipShape(Circle())
-                                        }
-                                        Spacer()
-                                        if image.isShopImage {
-                                            Image(systemName: "bag.fill").font(.system(size: 14)).foregroundColor(.white)
-                                                .padding(4).background(Color.green).clipShape(Circle())
-                                        }
-                                    }
-                                }
-                                .padding(4)
-                            }
-                        }
-                        .frame(height: 100)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .onTapGesture {
-                            if !isImageManagementMode { selectedImageIndex = ImageIndex(value: index) }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Tasks Tab
-
-    private var tasksSection: some View {
-        let t = lm.t
-        return VStack(spacing: 12) {
-            Text(t.deviceDetail.maintenanceTasks)
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, 4)
-
-            if maintenanceTasks.isEmpty {
-                ContentUnavailableView {
-                    Label(t.deviceDetail.noTasks, systemImage: "wrench.and.screwdriver")
-                } description: {
-                    Text(t.deviceDetail.noTasksMessage)
-                }
-                .frame(maxWidth: .infinity, minHeight: 200)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(maintenanceTasks.sorted(by: { $0.dateCompleted > $1.dateCompleted })) { task in
-                        TaskRowView(task: task) { Task { await deleteTask(task) } }
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Notes Tab
-
-    private var notesSection: some View {
-        let t = lm.t
-        return VStack(spacing: 12) {
-            Text(t.deviceDetail.notes)
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, 4)
-
-            if notes.isEmpty {
-                ContentUnavailableView {
-                    Label(t.deviceDetail.noNotes, systemImage: "note.text")
-                } description: {
-                    Text(t.deviceDetail.noNotesMessage)
-                }
-                .frame(maxWidth: .infinity, minHeight: 200)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(notes.sorted(by: { $0.date > $1.date })) { note in
-                        NoteRowView(note: note) {
-                            editingNote = note
-                            showEditNoteSheet = true
-                        } onDelete: {
-                            Task { await deleteNote(note) }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     // MARK: - Actions
@@ -2259,5 +2036,382 @@ private struct MarkReturnedSheetR: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Child Views
+
+struct DevicePhotosChildView: View {
+    let deviceId: Int
+    @Binding var images: [DeviceImage]
+
+    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
+
+    @State private var isImageManagementMode = false
+    @State private var selectedImageIndex: ImageIndex?
+    @State private var imageToDelete: DeviceImage?
+    @State private var showDeleteImageAlert = false
+    @State private var imageForThumbnailChoice: DeviceImage?
+    @State private var showThumbnailChoiceSheet = false
+    @State private var showImagePicker = false
+    @State private var showGenerateImageSheet = false
+    @State private var openaiEnabled = false
+
+    var body: some View {
+        let t = lm.t
+        Group {
+            if images.isEmpty {
+                ContentUnavailableView {
+                    Label(t.deviceDetail.noPhotos, systemImage: "photo.on.rectangle")
+                } description: {
+                    Text(t.deviceDetail.noPhotosMessage)
+                }
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: [
+                        GridItem(.flexible(), spacing: 4),
+                        GridItem(.flexible(), spacing: 4),
+                        GridItem(.flexible(), spacing: 4)
+                    ], spacing: 4) {
+                        ForEach(Array(images.sorted(by: { $0.id > $1.id }).enumerated()), id: \.element.id) { index, image in
+                            imageCell(image: image, index: index)
+                        }
+                    }
+                    .padding(4)
+                }
+            }
+        }
+        .navigationTitle(t.deviceDetail.tabPhotos)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if authService.isAuthenticated {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack(spacing: 12) {
+                        if openaiEnabled {
+                            Button { showGenerateImageSheet = true } label: {
+                                Image(systemName: "sparkles")
+                            }
+                        }
+                        Button {
+                            isImageManagementMode.toggle()
+                        } label: {
+                            Text(isImageManagementMode ? t.deviceDetail.done : t.deviceDetail.manage)
+                        }
+                        Button { showImagePicker = true } label: {
+                            Image(systemName: "plus")
+                        }
+                    }
+                }
+            }
+        }
+        .fullScreenCover(item: $selectedImageIndex) { idx in
+            ImageViewerView(images: images.sorted(by: { $0.id > $1.id }), initialIndex: idx.value)
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImageUploadView(deviceId: deviceId) { newImages in
+                images.append(contentsOf: newImages)
+            }
+        }
+        .sheet(isPresented: $showGenerateImageSheet) {
+            GenerateImageView(deviceId: deviceId, images: images) { newImage in
+                images.append(newImage)
+                if newImage.isThumbnail {
+                    images = images.map { img in
+                        img.id == newImage.id ? img : DeviceImage(
+                            id: img.id, path: img.path, thumbnailPath: img.thumbnailPath,
+                            dateTaken: img.dateTaken, caption: img.caption,
+                            isShopImage: img.isShopImage, isThumbnail: false,
+                            thumbnailMode: img.thumbnailMode, isListingImage: img.isListingImage
+                        )
+                    }
+                }
+            }
+        }
+        .alert(lm.t.deviceDetail.deleteImage, isPresented: $showDeleteImageAlert) {
+            Button(lm.t.common.cancel, role: .cancel) { imageToDelete = nil }
+            Button(lm.t.common.delete, role: .destructive) {
+                if let img = imageToDelete { Task { await deleteImage(img); imageToDelete = nil } }
+            }
+        } message: { Text(lm.t.deviceDetail.deleteImageMessage) }
+        .confirmationDialog(lm.t.deviceDetail.setThumbnail, isPresented: $showThumbnailChoiceSheet, titleVisibility: .visible) {
+            Button(lm.t.deviceDetail.replaceBothModes) {
+                if let img = imageForThumbnailChoice { Task { await setThumbnail(img, mode: "BOTH") } }
+            }
+            Button(lm.t.deviceDetail.setLightMode) {
+                if let img = imageForThumbnailChoice { Task { await setThumbnail(img, mode: "LIGHT") } }
+            }
+            Button(lm.t.deviceDetail.setDarkMode) {
+                if let img = imageForThumbnailChoice { Task { await setThumbnail(img, mode: "DARK") } }
+            }
+            Button(lm.t.common.cancel, role: .cancel) { imageForThumbnailChoice = nil }
+        } message: { Text(lm.t.deviceDetail.chooseThumbnailMessage) }
+        .task {
+            openaiEnabled = await DeviceService.shared.checkOpenAIEnabled()
+        }
+    }
+
+    @ViewBuilder
+    private func imageCell(image: DeviceImage, index: Int) -> some View {
+        ZStack {
+            GeometryReader { geo in
+                AsyncImage(url: APIService.shared.imageURL(for: image.thumbnailPath ?? image.path)) { phase in
+                    switch phase {
+                    case .success(let img):
+                        img.resizable().scaledToFill()
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .clipped()
+                    case .empty:
+                        Rectangle().fill(Color.gray.opacity(0.2))
+                            .overlay { ProgressView() }
+                    default:
+                        Rectangle().fill(Color.gray.opacity(0.2))
+                            .overlay { Image(systemName: "photo").foregroundColor(.gray) }
+                    }
+                }
+            }
+
+            if isImageManagementMode {
+                VStack(spacing: 0) {
+                    HStack(spacing: 0) {
+                        Button {
+                            if !image.isThumbnail {
+                                if images.contains(where: { $0.isThumbnail }) {
+                                    imageForThumbnailChoice = image
+                                    showThumbnailChoiceSheet = true
+                                } else {
+                                    Task { await setThumbnail(image, mode: "BOTH") }
+                                }
+                            }
+                        } label: {
+                            Color.clear.overlay(alignment: .topLeading) {
+                                Image(systemName: "photo.fill")
+                                    .font(.system(size: 16)).foregroundColor(.white)
+                                    .padding(6)
+                                    .background(image.isThumbnail ? Color.blue : Color.gray.opacity(0.6))
+                                    .clipShape(Circle()).padding(8)
+                            }
+                        }
+                        Button {
+                            imageToDelete = image
+                            showDeleteImageAlert = true
+                        } label: {
+                            Color.clear.overlay(alignment: .topTrailing) {
+                                Image(systemName: "trash.fill")
+                                    .font(.system(size: 16)).foregroundColor(.white)
+                                    .padding(6)
+                                    .background(Color.red.opacity(0.8))
+                                    .clipShape(Circle()).padding(8)
+                            }
+                        }
+                    }
+                    HStack(spacing: 0) {
+                        Button { Task { await setListingImage(image) } } label: {
+                            Color.clear.overlay(alignment: .bottomLeading) {
+                                Image(systemName: "storefront.fill")
+                                    .font(.system(size: 16)).foregroundColor(.white)
+                                    .padding(6)
+                                    .background(image.isListingImage ? Color.orange : Color.gray.opacity(0.6))
+                                    .clipShape(Circle()).padding(8)
+                            }
+                        }
+                        Button { Task { await toggleShopImage(image) } } label: {
+                            Color.clear.overlay(alignment: .bottomTrailing) {
+                                Image(systemName: "bag.fill")
+                                    .font(.system(size: 16)).foregroundColor(.white)
+                                    .padding(6)
+                                    .background(image.isShopImage ? Color.green : Color.gray.opacity(0.6))
+                                    .clipShape(Circle()).padding(8)
+                            }
+                        }
+                    }
+                }
+            } else {
+                VStack {
+                    HStack {
+                        if image.isThumbnail {
+                            Image(systemName: "photo.fill").font(.system(size: 14)).foregroundColor(.white)
+                                .padding(4).background(Color.blue).clipShape(Circle())
+                        }
+                        Spacer()
+                    }
+                    Spacer()
+                    HStack {
+                        if image.isListingImage {
+                            Image(systemName: "storefront.fill").font(.system(size: 14)).foregroundColor(.white)
+                                .padding(4).background(Color.orange).clipShape(Circle())
+                        }
+                        Spacer()
+                        if image.isShopImage {
+                            Image(systemName: "bag.fill").font(.system(size: 14)).foregroundColor(.white)
+                                .padding(4).background(Color.green).clipShape(Circle())
+                        }
+                    }
+                }
+                .padding(4)
+            }
+        }
+        .frame(height: 120)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .onTapGesture {
+            if !isImageManagementMode { selectedImageIndex = ImageIndex(value: index) }
+        }
+    }
+
+    private func setThumbnail(_ image: DeviceImage, mode: String) async {
+        do {
+            let existingURLs: [URL] = images
+                .filter { $0.isThumbnail && $0.id != image.id }
+                .compactMap { APIService.shared.imageURL(for: $0.thumbnailPath ?? $0.path) }
+            _ = try await DeviceService.shared.updateImage(id: image.id, isThumbnail: true, thumbnailMode: mode)
+            for url in existingURLs { await ImageCacheService.shared.removeImage(for: url) }
+            if let updated = try? await DeviceService.shared.fetchDevice(id: deviceId) {
+                images = updated.images
+            }
+        } catch { print("setThumbnail: \(error)") }
+    }
+
+    private func setListingImage(_ image: DeviceImage) async {
+        do {
+            if let current = images.first(where: { $0.isListingImage && $0.id != image.id }) {
+                _ = try await DeviceService.shared.updateImage(id: current.id, isThumbnail: nil, isShopImage: nil, isListingImage: false)
+            }
+            let updated = try await DeviceService.shared.updateImage(id: image.id, isThumbnail: nil, isShopImage: nil, isListingImage: !image.isListingImage)
+            if let i = images.firstIndex(where: { $0.id == image.id }) { images[i] = updated }
+        } catch { print("setListingImage: \(error)") }
+    }
+
+    private func toggleShopImage(_ image: DeviceImage) async {
+        do {
+            let updated = try await DeviceService.shared.updateImage(id: image.id, isThumbnail: nil, isShopImage: !image.isShopImage, isListingImage: nil)
+            if let i = images.firstIndex(where: { $0.id == image.id }) { images[i] = updated }
+        } catch { print("toggleShopImage: \(error)") }
+    }
+
+    private func deleteImage(_ image: DeviceImage) async {
+        do {
+            _ = try await DeviceService.shared.deleteImage(id: image.id)
+            images.removeAll { $0.id == image.id }
+        } catch { print("deleteImage: \(error)") }
+    }
+}
+
+struct DeviceTasksChildView: View {
+    let deviceId: Int
+    @Binding var tasks: [MaintenanceTask]
+
+    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
+
+    @State private var showAddTaskSheet = false
+
+    var body: some View {
+        let t = lm.t
+        Group {
+            if tasks.isEmpty {
+                ContentUnavailableView {
+                    Label(t.deviceDetail.noTasks, systemImage: "wrench.and.screwdriver")
+                } description: {
+                    Text(t.deviceDetail.noTasksMessage)
+                }
+            } else {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(tasks.sorted(by: { $0.dateCompleted > $1.dateCompleted })) { task in
+                            TaskRowView(task: task) { Task { await deleteTask(task) } }
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+        .navigationTitle(t.deviceDetail.tabTasks)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if authService.isAuthenticated {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showAddTaskSheet = true } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showAddTaskSheet) {
+            AddMaintenanceTaskView(deviceId: deviceId) { tasks.append($0) }
+        }
+    }
+
+    private func deleteTask(_ task: MaintenanceTask) async {
+        do {
+            _ = try await DeviceService.shared.deleteMaintenanceTask(id: task.id)
+            tasks.removeAll { $0.id == task.id }
+        } catch { print("deleteTask: \(error)") }
+    }
+}
+
+struct DeviceNotesChildView: View {
+    let deviceId: Int
+    @Binding var notes: [Note]
+
+    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var lm: LocalizationManager
+
+    @State private var showAddNoteSheet = false
+    @State private var editingNote: Note?
+    @State private var showEditNoteSheet = false
+
+    var body: some View {
+        let t = lm.t
+        Group {
+            if notes.isEmpty {
+                ContentUnavailableView {
+                    Label(t.deviceDetail.noNotes, systemImage: "note.text")
+                } description: {
+                    Text(t.deviceDetail.noNotesMessage)
+                }
+            } else {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(notes.sorted(by: { $0.date > $1.date })) { note in
+                            NoteRowView(note: note) {
+                                editingNote = note
+                                showEditNoteSheet = true
+                            } onDelete: {
+                                Task { await deleteNote(note) }
+                            }
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+        .navigationTitle(t.deviceDetail.tabNotes)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if authService.isAuthenticated {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showAddNoteSheet = true } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showAddNoteSheet) {
+            AddNoteView(deviceId: deviceId) { notes.append($0) }
+        }
+        .sheet(isPresented: $showEditNoteSheet) {
+            if let n = editingNote {
+                EditNoteView(note: n) { updated in
+                    if let i = notes.firstIndex(where: { $0.id == updated.id }) { notes[i] = updated }
+                }
+            }
+        }
+    }
+
+    private func deleteNote(_ note: Note) async {
+        do {
+            _ = try await DeviceService.shared.deleteNote(id: note.id)
+            notes.removeAll { $0.id == note.id }
+        } catch { print("deleteNote: \(error)") }
     }
 }

@@ -86,6 +86,10 @@ struct Translations {
         let appreciation, depreciation: String
         let indicatorTagged, indicatorBoxed, indicatorNoPram, indicatorPramOk, indicatorPramInstalled, indicatorFavorite: String
         let moreItemsFmt: String  // "More (%d more)" — %d is the overflow count
+        let viewMore: String
+        let allPhotos: String
+        let allLogs: String
+        let allNotes: String
         let removeAccessoryTitle, removeAccessoryFmt: String
         let removeLinkTitle, removeLinkFmt: String
         let lifecycleActions: String

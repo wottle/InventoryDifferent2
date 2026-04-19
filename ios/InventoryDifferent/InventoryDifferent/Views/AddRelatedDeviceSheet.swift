@@ -57,12 +57,12 @@ struct AddRelatedDeviceSheet: View {
 
     private func inverseLabel(for type: String) -> String {
         let map: [String: String] = [
-            "accessory": "Accessory of",
-            "software": "Software for",
-            "manual / documentation": "Manual for",
-            "installed inside": "Contains",
-            "purchased with": "Purchased with",
-            "came bundled with": "Came bundled with",
+            "accessory": "accessory of",
+            "software": "software for",
+            "manual / documentation": "manual for",
+            "installed inside": "contains",
+            "purchased with": "purchased with",
+            "came bundled with": "came bundled with",
         ]
         return map[type.lowercased()] ?? type
     }
@@ -105,10 +105,10 @@ struct AddRelatedDeviceSheet: View {
     private func directionPreviewSection() -> some View {
         let trimmed = relationType.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty, let target = selectedDevice {
-            let fromName = isReversed ? target.displayName : deviceName
-            let toName   = isReversed ? deviceName : target.displayName
-            let shownOnName  = isReversed ? deviceName : target.name
-            let shownOfName  = isReversed ? target.name : deviceName
+            let fromName = !isReversed ? target.displayName : deviceName
+            let toName   = !isReversed ? deviceName : target.displayName
+            let shownOnName  = !isReversed ? deviceName : target.name
+            let shownOfName  = !isReversed ? target.name : deviceName
             Section("Relationship Preview") {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 4) {
@@ -125,7 +125,7 @@ struct AddRelatedDeviceSheet: View {
                             .fontWeight(.medium)
                     }
                     .font(.footnote)
-                    Text("On \"\(shownOnName)\", shown as: \(inverseLabel(for: trimmed)) of \"\(shownOfName)\"")
+                    Text("On \"\(shownOnName)\", shown as: \(inverseLabel(for: trimmed)) \"\(shownOfName)\". On \"\(shownOfName)\", shown as: \(forwardLabel(for: trimmed)) \"\(shownOnName)\". ")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Button {

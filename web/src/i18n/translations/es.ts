@@ -232,12 +232,12 @@ export const es: Translations = {
     removeRelationshipConfirm: "¿Eliminar esta relación?",
     relationshipTypeSuggestions: ['accesorio', 'software', 'manual / documentación', 'instalado dentro', 'comprado con', 'incluido con'],
     inverseRelationLabels: {
-      'accesorio': 'Accesorio de',
-      'software': 'Software para',
-      'manual / documentación': 'Manual para',
-      'instalado dentro': 'Contiene',
-      'comprado con': 'Comprado con',
-      'incluido con': 'Incluido con',
+      'accesorio': 'accesorio de',
+      'software': 'software para',
+      'manual / documentación': 'manual para',
+      'instalado dentro': 'contiene',
+      'comprado con': 'comprado con',
+      'incluido con': 'incluido con',
     },
   },
   pages: {
