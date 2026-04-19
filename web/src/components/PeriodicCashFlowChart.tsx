@@ -35,8 +35,9 @@ export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartPro
 
   const formatCurrencyShort = (value: number) => {
     const abs = Math.abs(value);
-    if (abs >= 1000) return `${value < 0 ? "-" : ""}${sym}${(abs / 1000).toFixed(1)}k`;
-    return `${sym}${value.toFixed(0)}`;
+    const sign = value < 0 ? "-" : "";
+    if (abs >= 1000) return `${sign}${sym}${(abs / 1000).toFixed(1)}k`;
+    return `${sign}${sym}${abs.toFixed(0)}`;
   };
 
   const formatCurrencyFull = (value: number) => `${sym}${value.toFixed(2)}`;
@@ -54,7 +55,7 @@ export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartPro
 
   return (
     <div className="relative overflow-hidden">
-      <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
+      <div className="overflow-x-auto">
         <div style={{ width: chartWidth, height: MIN_CHART_HEIGHT }}>
           <ComposedChart
             width={chartWidth}
@@ -83,7 +84,7 @@ export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartPro
                     ? t.pages.financials.periodReceived
                     : name === "spent"
                     ? t.pages.financials.periodSpent
-                    : t.pages.financials.netPositionLine;
+                    : name === "net" ? t.pages.financials.netPositionLine : name;
                 return [formatCurrencyFull(value), label];
               }}
               contentStyle={{
@@ -100,7 +101,7 @@ export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartPro
                   ? t.pages.financials.periodReceived
                   : value === "spent"
                   ? t.pages.financials.periodSpent
-                  : t.pages.financials.netPositionLine
+                  : value === "net" ? t.pages.financials.netPositionLine : value
               }
               wrapperStyle={{ fontSize: 12 }}
             />
