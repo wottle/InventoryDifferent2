@@ -762,7 +762,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
         tempId: makeTempId(),
         title: '',
         description: '',
-        sortOrder: prev.length,
+        sortOrder: prev.length + 1,
         devices: [],
         isSaving: false,
       },
@@ -821,15 +821,15 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
     tempId: string,
     direction: 'up' | 'down'
   ) => {
-    // Normalise sort orders to 0-based indices to handle ties
+    // Normalise sort orders to 1-based indices to handle ties
     const sorted = [...chapters].sort((a, b) => a.sortOrder - b.sortOrder);
-    const withIndex = sorted.map((c, i) => ({ ...c, sortOrder: i }));
+    const withIndex = sorted.map((c, i) => ({ ...c, sortOrder: i + 1 }));
 
     const idx = withIndex.findIndex((c) => c.tempId === tempId);
     const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
     if (swapIdx < 0 || swapIdx >= withIndex.length) return;
 
-    [withIndex[idx].sortOrder, withIndex[swapIdx].sortOrder] = [swapIdx, idx];
+    [withIndex[idx].sortOrder, withIndex[swapIdx].sortOrder] = [swapIdx + 1, idx + 1];
 
     const a = withIndex[idx];
     const b = withIndex[swapIdx];
