@@ -784,7 +784,7 @@ struct DeviceDetailRedesignView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, minHeight: 72)
         .padding(.vertical, 12)
         .background(Color.edSurfaceLow)
         .clipShape(RoundedRectangle(cornerRadius: 12))
