@@ -402,8 +402,11 @@ struct DeviceDetailRedesignView: View {
             }
         } message: {
             if let rel = relationshipToRemove {
+                let otherName = rel.fromDeviceId == device.id
+                    ? (rel.toDevice?.name ?? "")
+                    : (rel.fromDevice?.name ?? "")
                 Text(String(format: lm.t.deviceDetail.removeRelationshipFmt,
-                            rel.toDevice?.name ?? "",
+                            otherName,
                             rel.type))
             }
         }
@@ -1231,58 +1234,74 @@ struct DeviceDetailRedesignView: View {
                 VStack(spacing: 6) {
                     // Outgoing: this device "has" the other
                     ForEach(relationsFrom) { rel in
-                        HStack(spacing: 10) {
-                            Image(systemName: "link")
-                                .font(.system(size: 14))
-                                .foregroundColor(.edPrimary)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(rel.toDevice?.name ?? "Device \(rel.toDeviceId ?? 0)")
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundColor(.primary)
-                                Text(rel.type)
-                                    .font(.system(size: 11))
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            if authService.isAuthenticated {
-                                Button {
-                                    relationshipToRemove = rel
-                                    showRemoveRelationshipAlert = true
-                                } label: {
-                                    Image(systemName: "xmark")
-                                        .font(.system(size: 11, weight: .bold))
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.edSurfaceLowest)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        relationshipRow(
+                            icon: "link", iconColor: .edPrimary,
+                            deviceName: rel.toDevice?.name ?? "Device \(rel.toDeviceId ?? 0)",
+                            label: rel.type,
+                            navigateTo: rel.toDevice?.id,
+                            rel: rel
+                        )
                     }
-                    // Incoming: other devices reference this one (read-only)
+                    // Incoming: other devices reference this one
                     ForEach(relationsTo) { rel in
-                        HStack(spacing: 10) {
-                            Image(systemName: "arrow.turn.up.left")
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(rel.fromDevice?.name ?? "Device \(rel.fromDeviceId ?? 0)")
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundColor(.primary)
-                                Text(inverseLabel(for: rel.type))
-                                    .font(.system(size: 11))
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.edSurfaceLowest)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        relationshipRow(
+                            icon: "arrow.turn.up.left", iconColor: Color.secondary,
+                            deviceName: rel.fromDevice?.name ?? "Device \(rel.fromDeviceId ?? 0)",
+                            label: inverseLabel(for: rel.type),
+                            navigateTo: rel.fromDevice?.id,
+                            rel: rel
+                        )
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private func relationshipRow(
+        icon: String,
+        iconColor: Color,
+        deviceName: String,
+        label: String,
+        navigateTo deviceId: Int?,
+        rel: DeviceRelationship
+    ) -> some View {
+        let rowContent = HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(iconColor)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(deviceName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.primary)
+                Text(label)
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            if authService.isAuthenticated {
+                Button {
+                    relationshipToRemove = rel
+                    showRemoveRelationshipAlert = true
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.edSurfaceLowest)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+
+        if let targetId = deviceId {
+            NavigationLink(value: targetId) {
+                rowContent
+            }
+            .buttonStyle(.plain)
+        } else {
+            rowContent
         }
     }
 
@@ -1302,6 +1321,7 @@ struct DeviceDetailRedesignView: View {
         do {
             try await DeviceService.shared.removeDeviceRelationship(id: rel.id)
             relationsFrom.removeAll { $0.id == rel.id }
+            relationsTo.removeAll { $0.id == rel.id }
             relationshipToRemove = nil
         } catch {
             print("removeRelationship error: \(error)")

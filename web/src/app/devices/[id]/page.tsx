@@ -2098,7 +2098,7 @@ export default function DeviceDetail() {
                                     const thumb = (rel.fromDevice.images ?? []).find((img: any) => img.isThumbnail) ?? (rel.fromDevice.images ?? [])[0];
                                     const inverseLabel = (t.detail.inverseRelationLabels as Record<string, string>)[rel.type] ?? t.detail.relatedDevices;
                                     return (
-                                        <div key={rel.id} className="flex items-center gap-2">
+                                        <div key={rel.id} className="relative flex items-center gap-2 group">
                                             {thumb?.thumbnailPath ? (
                                                 <img src={thumb.thumbnailPath} alt="" className="w-8 h-8 rounded object-cover shrink-0 border border-[var(--border)]" />
                                             ) : (
@@ -2114,6 +2114,25 @@ export default function DeviceDetail() {
                                                 </Link>
                                                 <p className="text-xs text-[var(--muted-foreground)] capitalize">{inverseLabel}</p>
                                             </div>
+                                            {isAuthenticated && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setRelationToRemoveId(rel.id)}
+                                                    className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all shrink-0"
+                                                    title="Remove relationship"
+                                                >
+                                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            )}
+                                            {relationToRemoveId === rel.id && (
+                                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center gap-2 rounded">
+                                                    <span className="text-white text-xs">{t.detail.removeRelationshipConfirm}</span>
+                                                    <button onClick={() => handleRemoveRelationship(rel.id)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">{t.common.remove}</button>
+                                                    <button onClick={() => setRelationToRemoveId(null)} className="px-2 py-1 bg-white text-gray-700 text-xs rounded hover:bg-gray-100">{t.common.cancel}</button>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })}

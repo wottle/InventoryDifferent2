@@ -15,6 +15,10 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [
       'iOS: device relationships — link devices to each other with typed relationships (accessory, software, manual, installed inside, etc.) shown in the Related Devices section on both devices',
     ],
+    changed: [
+      'Related device rows are now tappable and navigate directly to the linked device (iOS and web)',
+      'Incoming relationships can now be removed with confirmation, same as outgoing (iOS and web)',
+    ],
     changed: [],
     fixed: [],
   },
