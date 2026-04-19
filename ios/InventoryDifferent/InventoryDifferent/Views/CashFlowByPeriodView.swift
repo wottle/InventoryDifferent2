@@ -21,25 +21,33 @@ struct CashFlowByPeriodView: View {
 
     enum PeriodMode { case monthly, yearly }
 
+    // MARK: - Static formatters (expensive to construct — allocate once)
+
+    private static let isoFormatter = ISO8601DateFormatter()
+    private static let isoFractionalFormatter: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+    private static let utcCalendar: Calendar = {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        return cal
+    }()
+
     // MARK: - Aggregation
 
     private var buckets: [CashFlowPeriodBucket] {
         var map: [String: (received: Double, spent: Double)] = [:]
 
-        let isoFormatter = ISO8601DateFormatter()
-        let isoFractionalFormatter = ISO8601DateFormatter()
-        isoFractionalFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
         for tx in transactions {
             guard let dateString = tx.date,
                   tx.type != "DONATION",
-                  let date = isoFormatter.date(from: dateString) ?? isoFractionalFormatter.date(from: dateString)
+                  let date = Self.isoFormatter.date(from: dateString) ?? Self.isoFractionalFormatter.date(from: dateString)
             else { continue }
 
-            var cal = Calendar(identifier: .gregorian)
-            cal.timeZone = TimeZone(identifier: "UTC")!
-            let year = cal.component(.year, from: date)
-            let month = cal.component(.month, from: date)
+            let year = Self.utcCalendar.component(.year, from: date)
+            let month = Self.utcCalendar.component(.month, from: date)
 
             let key = mode == .monthly
                 ? String(format: "%04d-%02d", year, month)
@@ -63,7 +71,7 @@ struct CashFlowByPeriodView: View {
             guard let counts = map[key] else { return nil }
             let dateSuffix = mode == .monthly ? "-01" : "-01-01"
             let isoKey = key + dateSuffix + "T00:00:00Z"
-            guard let date = isoFormatter.date(from: isoKey) else { return nil }
+            guard let date = Self.isoFormatter.date(from: isoKey) else { return nil }
 
             let label: String
             if mode == .monthly {
@@ -118,56 +126,57 @@ struct CashFlowByPeriodView: View {
                     .padding(.vertical, 32)
             } else {
                 let barWidth: CGFloat = 44
-                let chartWidth = max(UIScreen.main.bounds.width - 64, CGFloat(data.count) * barWidth + 60)
+                GeometryReader { geo in
+                    let chartWidth = max(geo.size.width, CGFloat(data.count) * barWidth + 60)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        Chart {
+                            // Zero rule
+                            RuleMark(y: .value(t.financials.zero, 0))
+                                .lineStyle(StrokeStyle(lineWidth: 1.5))
+                                .foregroundStyle(Color.gray.opacity(0.4))
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    Chart {
-                        // Zero rule
-                        RuleMark(y: .value(t.financials.zero, 0))
-                            .lineStyle(StrokeStyle(lineWidth: 1.5, dash: []))
-                            .foregroundStyle(Color.gray.opacity(0.4))
+                            ForEach(data) { bucket in
+                                // Received bar (positive — grows up)
+                                BarMark(
+                                    x: .value("Period", bucket.label),
+                                    y: .value(t.financials.received, bucket.received)
+                                )
+                                .foregroundStyle(Color.green.opacity(0.85))
+                                .cornerRadius(2)
 
-                        ForEach(data) { bucket in
-                            // Received bar (positive — grows up)
-                            BarMark(
-                                x: .value("Period", bucket.label),
-                                y: .value(t.financials.received, bucket.received)
-                            )
-                            .foregroundStyle(Color.green.opacity(0.85))
-                            .cornerRadius(2)
+                                // Spent bar (negative — grows down)
+                                BarMark(
+                                    x: .value("Period", bucket.label),
+                                    y: .value(t.financials.spent, bucket.spent)
+                                )
+                                .foregroundStyle(Color.red.opacity(0.85))
+                                .cornerRadius(2)
 
-                            // Spent bar (negative — grows down)
-                            BarMark(
-                                x: .value("Period", bucket.label),
-                                y: .value(t.financials.spent, bucket.spent)
-                            )
-                            .foregroundStyle(Color.red.opacity(0.85))
-                            .cornerRadius(2)
-
-                            // Net cash line
-                            LineMark(
-                                x: .value("Period", bucket.label),
-                                y: .value(t.financials.netPositionLine, bucket.net)
-                            )
-                            .foregroundStyle(Color.blue)
-                            .lineStyle(StrokeStyle(lineWidth: 2))
-                            .symbol(Circle().strokeBorder(lineWidth: 1))
-                            .symbolSize(24)
-                            .interpolationMethod(.catmullRom)
+                                // Net cash line
+                                LineMark(
+                                    x: .value("Period", bucket.label),
+                                    y: .value(t.financials.netPositionLine, bucket.net)
+                                )
+                                .foregroundStyle(Color.blue)
+                                .lineStyle(StrokeStyle(lineWidth: 2))
+                                .symbol(Circle().strokeBorder(lineWidth: 1))
+                                .symbolSize(24)
+                                .interpolationMethod(.catmullRom)
+                            }
                         }
-                    }
-                    .chartYAxis {
-                        let sym = lm.t.common.currencySymbol
-                        if sym == "$" {
-                            AxisMarks(format: .currency(code: "USD"))
-                        } else if sym == "€" {
-                            AxisMarks(format: .currency(code: "EUR"))
-                        } else {
-                            AxisMarks(format: .currency(code: "USD"))
+                        .chartYAxis {
+                            // Currency code derived from symbol; USD fallback for unsupported symbols
+                            let sym = lm.t.common.currencySymbol
+                            if sym == "€" {
+                                AxisMarks(format: .currency(code: "EUR"))
+                            } else {
+                                AxisMarks(format: .currency(code: "USD"))
+                            }
                         }
+                        .frame(width: chartWidth, height: 220)
                     }
-                    .frame(width: chartWidth, height: 220)
                 }
+                .frame(height: 220)
             }
         }
         .padding()
