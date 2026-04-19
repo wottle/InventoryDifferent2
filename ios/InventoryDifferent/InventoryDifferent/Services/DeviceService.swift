@@ -1401,7 +1401,10 @@ class DeviceService {
             devices(where: { deleted: { equals: false } }) {
                 id
                 name
+                additionalName
                 manufacturer
+                status
+                location { id name }
             }
         }
         """

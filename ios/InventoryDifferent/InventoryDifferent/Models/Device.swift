@@ -11,7 +11,17 @@ import SwiftUI
 struct RelationshipDevice: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
+    let additionalName: String?
     let manufacturer: String?
+    let status: Status
+    let location: LocationRef?
+
+    var displayName: String {
+        if let additional = additionalName, !additional.isEmpty {
+            return "\(name) (\(additional))"
+        }
+        return name
+    }
 }
 
 struct DeviceRelationship: Codable, Identifiable, Hashable {

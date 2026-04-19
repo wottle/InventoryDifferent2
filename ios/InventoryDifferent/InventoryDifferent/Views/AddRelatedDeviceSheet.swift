@@ -10,6 +10,7 @@ struct AddRelatedDeviceSheet: View {
     @EnvironmentObject var lm: LocalizationManager
 
     let deviceId: Int
+    let deviceName: String
     let existingToIds: Set<Int>
     let onAdded: ([DeviceRelationship]) -> Void
 
@@ -20,9 +21,13 @@ struct AddRelatedDeviceSheet: View {
     @State private var isLoading = true
     @State private var isSubmitting = false
 
-    private let typeSuggestions = [
-        "accessory", "software", "manual / documentation",
-        "installed inside", "purchased with", "came bundled with"
+    private let typeSuggestions: [(display: String, value: String)] = [
+        ("accessory of →", "accessory"),
+        ("software for →", "software"),
+        ("manual for →", "manual / documentation"),
+        ("installed inside →", "installed inside"),
+        ("purchased with →", "purchased with"),
+        ("came bundled with →", "came bundled with"),
     ]
 
     private var filteredDevices: [RelationshipDevice] {
@@ -31,8 +36,22 @@ struct AddRelatedDeviceSheet: View {
         let lower = searchText.lowercased()
         return candidates.filter {
             $0.name.lowercased().contains(lower) ||
-            ($0.manufacturer?.lowercased().contains(lower) ?? false)
+            ($0.additionalName?.lowercased().contains(lower) ?? false) ||
+            ($0.manufacturer?.lowercased().contains(lower) ?? false) ||
+            ($0.location?.name.lowercased().contains(lower) ?? false)
         }
+    }
+
+    private func inverseLabel(for type: String) -> String {
+        let map: [String: String] = [
+            "accessory": "Accessory of",
+            "software": "Software for",
+            "manual / documentation": "Manual for",
+            "installed inside": "Contains",
+            "purchased with": "Purchased with",
+            "came bundled with": "Came bundled with",
+        ]
+        return map[type.lowercased()] ?? type
     }
 
     var body: some View {
@@ -41,6 +60,7 @@ struct AddRelatedDeviceSheet: View {
             Form {
                 devicePickerSection(t: t)
                 typeSection(t: t)
+                directionPreviewSection()
             }
             .navigationTitle(t.deviceDetail.addRelationship)
             .navigationBarTitleDisplayMode(.inline)
@@ -64,6 +84,35 @@ struct AddRelatedDeviceSheet: View {
                     allDevices = devices.sorted { $0.name < $1.name }
                 }
                 isLoading = false
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func directionPreviewSection() -> some View {
+        let trimmed = relationType.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty, let target = selectedDevice {
+            Section("Relationship Preview") {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 4) {
+                        Text(deviceName)
+                            .fontWeight(.medium)
+                        Text("→")
+                            .foregroundColor(.secondary)
+                        Text(trimmed)
+                            .foregroundColor(Color(red: 0, green: 88/255, blue: 188/255))
+                            .fontWeight(.medium)
+                        Text("→")
+                            .foregroundColor(.secondary)
+                        Text(target.displayName)
+                            .fontWeight(.medium)
+                    }
+                    .font(.footnote)
+                    Text("On \"\(target.name)\", shown as: \(inverseLabel(for: trimmed)) of \"\(deviceName)\"")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.vertical, 4)
             }
         }
     }
@@ -100,13 +149,24 @@ struct AddRelatedDeviceSheet: View {
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(dev.name)
+                    Text(dev.displayName)
                         .foregroundColor(.primary)
                         .font(.system(size: 14, weight: .medium))
-                    if let mfr = dev.manufacturer, !mfr.isEmpty {
-                        Text(mfr)
+                    HStack(spacing: 6) {
+                        if let mfr = dev.manufacturer, !mfr.isEmpty {
+                            Text(mfr)
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                        statusChip(dev.status)
+                        if let loc = dev.location {
+                            HStack(spacing: 2) {
+                                Image(systemName: "mappin")
+                                Text(loc.name)
+                            }
                             .foregroundColor(.secondary)
                             .font(.caption)
+                        }
                     }
                 }
                 Spacer()
@@ -120,6 +180,29 @@ struct AddRelatedDeviceSheet: View {
     }
 
     @ViewBuilder
+    private func statusChip(_ status: Status) -> some View {
+        let color: Color = {
+            switch status {
+            case .COLLECTION: return .green
+            case .FOR_SALE: return .blue
+            case .PENDING_SALE: return .orange
+            case .SOLD, .RETURNED: return .gray
+            case .DONATED: return .purple
+            case .IN_REPAIR: return .teal
+            case .REPAIRED: return .mint
+            }
+        }()
+        Text(status.displayName)
+            .font(.caption2)
+            .fontWeight(.medium)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(color.opacity(0.15))
+            .foregroundColor(color)
+            .clipShape(Capsule())
+    }
+
+    @ViewBuilder
     private func typeSection(t: Translations) -> some View {
         Section(t.deviceDetail.relationshipType) {
             TextField("e.g. accessory", text: $relationType)
@@ -127,7 +210,7 @@ struct AddRelatedDeviceSheet: View {
                 .textInputAutocapitalization(.never)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(typeSuggestions, id: \.self) { suggestion in
+                    ForEach(typeSuggestions, id: \.value) { suggestion in
                         typeSuggestionChip(suggestion)
                     }
                 }
@@ -138,12 +221,12 @@ struct AddRelatedDeviceSheet: View {
     }
 
     @ViewBuilder
-    private func typeSuggestionChip(_ suggestion: String) -> some View {
-        let isSelected = relationType == suggestion
+    private func typeSuggestionChip(_ suggestion: (display: String, value: String)) -> some View {
+        let isSelected = relationType == suggestion.value
         Button {
-            relationType = suggestion
+            relationType = suggestion.value
         } label: {
-            Text(suggestion)
+            Text(suggestion.display)
                 .font(.caption)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)

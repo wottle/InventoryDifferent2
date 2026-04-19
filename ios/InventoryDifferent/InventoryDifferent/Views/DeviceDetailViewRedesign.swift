@@ -389,6 +389,7 @@ struct DeviceDetailRedesignView: View {
         .sheet(isPresented: $showAddRelationshipSheet) {
             AddRelatedDeviceSheet(
                 deviceId: device.id,
+                deviceName: device.displayName,
                 existingToIds: Set(relationsFrom.compactMap { $0.toDeviceId })
             ) { newRelations in
                 relationsFrom = newRelations
