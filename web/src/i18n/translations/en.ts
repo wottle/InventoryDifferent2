@@ -362,6 +362,13 @@ export type Translations = {
       cumulativeValue: string;
       netPositionLine: string;
       noChartData: string;
+      cashFlowByPeriod: string;
+      cashFlowByPeriodDesc: string;
+      monthly: string;
+      yearly: string;
+      periodReceived: string;
+      periodSpent: string;
+      noPeriodicChartData: string;
     };
     wishlist: {
       title: string;
@@ -1092,6 +1099,13 @@ export const en: Translations = {
       cumulativeValue: "Cumulative Value",
       netPositionLine: "Net Position",
       noChartData: "No dated transactions to chart.",
+      cashFlowByPeriod: "Cash Flow by Period",
+      cashFlowByPeriodDesc: "Spending and income per month or year. Scroll to see more.",
+      monthly: "Monthly",
+      yearly: "Yearly",
+      periodReceived: "Received",
+      periodSpent: "Spent",
+      noPeriodicChartData: "No dated transactions to chart.",
     },
     wishlist: {
       title: "Wishlist",

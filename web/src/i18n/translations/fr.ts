@@ -371,6 +371,13 @@ export const fr: Translations = {
       cumulativeValue: "Valeur cumulée",
       netPositionLine: "Position nette",
       noChartData: "Pas de transactions datées pour le graphique.",
+      cashFlowByPeriod: "Flux de trésorerie par période",
+      cashFlowByPeriodDesc: "Dépenses et revenus par mois ou par an. Faites défiler pour voir plus.",
+      monthly: "Mensuel",
+      yearly: "Annuel",
+      periodReceived: "Reçu",
+      periodSpent: "Dépensé",
+      noPeriodicChartData: "Pas de transactions datées pour le graphique.",
     },
     wishlist: {
       title: "Liste de souhaits",
