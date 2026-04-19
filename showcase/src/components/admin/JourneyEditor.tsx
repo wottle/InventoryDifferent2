@@ -995,7 +995,8 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
       </div>
 
       {/* Content area */}
-      <div className="flex gap-6 p-6 items-start">
+      {/* pt-14 compensates for the -m-8 offset (32px) so content clears the sticky bar */}
+      <div className="flex gap-6 px-6 pb-6 pt-14 items-start">
         {/* Left: Meta panel */}
         <div className="w-64 flex-shrink-0 flex flex-col gap-4 sticky top-20">
           {/* Journey details */}
