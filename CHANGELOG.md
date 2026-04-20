@@ -7,6 +7,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Added
 - iOS: device relationships — link devices to each other with typed relationships (accessory, software, manual, installed inside, etc.) shown in the Related Devices section on both devices
 - Add periodic cash flow chart to financials pages (web and iOS) — diverging bars show spending vs. receiving per month or year with a net cash line; toggle between monthly and yearly view; horizontally scrollable
+- Add floating share button to showcase journey and device detail pages — share to Twitter/X, Facebook, or copy the page link
 
 ### Changed
 - Related device rows are now tappable and navigate directly to the linked device (iOS and web)
