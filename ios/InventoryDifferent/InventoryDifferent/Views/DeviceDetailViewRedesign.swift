@@ -1497,7 +1497,9 @@ struct DeviceDetailRedesignView: View {
                                 .lineSpacing(4)
                                 .lineLimit(5)
                         }
-                        .padding(16)
+                        .padding(.top, 16)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, index == recentNotes.count - 1 ? 8 : 16)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.edSurfaceLowest)
                         .clipShape(RoundedRectangle(cornerRadius: 16))

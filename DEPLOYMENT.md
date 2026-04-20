@@ -58,9 +58,6 @@ POSTGRES_DB=inventory
 # Traefik network name (check your Traefik config)
 TRAEFIK_NETWORK=traefik
 
-# Certificate resolver name from your Traefik config
-CERT_RESOLVER=letsencrypt
-
 # Path for uploaded images (use absolute path on host)
 UPLOADS_PATH=/path/to/inventory/uploads
 
