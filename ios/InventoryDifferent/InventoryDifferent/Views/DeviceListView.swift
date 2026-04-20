@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+private extension Color {
+    // International Blue — matches edPrimary in DeviceDetailViewRedesign
+    static let edPrimary = Color(red: 0, green: 88 / 255, blue: 188 / 255)
+}
+
 private enum ViewMode: String {
     case list, grid
 }
@@ -289,45 +294,39 @@ struct DeviceRowView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(alignment: .leading, spacing: 3) {
+                // Overline: Category · Year
+                Text(overlineText)
+                    .font(.system(size: 10, weight: .bold))
+                    .textCase(.uppercase)
+                    .tracking(1.5)
+                    .foregroundColor(.edPrimary)
+                    .lineLimit(1)
+
                 // Name
                 Text(device.name)
-                    .font(.headline)
+                    .font(.system(size: 16, weight: .bold))
+                    .tracking(-0.3)
                     .lineLimit(1)
-                
+
                 // Additional name
                 if let additionalName = device.additionalName, !additionalName.isEmpty {
                     Text(additionalName)
-                        .font(.subheadline)
+                        .font(.system(size: 13, weight: .semibold))
+                        .tracking(-0.1)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
-                
-                // Category, release year, and status badge
+
+                // Status indicator icons + badge right-aligned
                 HStack(spacing: 6) {
-                    Text(device.category.name)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    if let year = device.releaseYear {
-                        Text("•")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text(String(year))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
+                    StatusIndicatorsRow(device: device)
+                    Spacer()
                     StatusBadge(status: device.status)
                 }
-                
-                // Status indicator icons row
-                StatusIndicatorsRow(device: device)
-                
+
                 // Value/Sale info
                 ValueSaleInfo(device: device)
             }
-            
-            Spacer()
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
@@ -337,6 +336,12 @@ struct DeviceRowView: View {
         guard let thumbnail = device.thumbnailImage(for: colorScheme) else { return nil }
         let path = thumbnail.thumbnailPath ?? thumbnail.path
         return APIService.shared.imageURL(for: path)
+    }
+
+    private var overlineText: String {
+        var parts = [device.category.name]
+        if let year = device.releaseYear { parts.append(String(year)) }
+        return parts.joined(separator: " · ")
     }
 }
 
@@ -424,41 +429,41 @@ struct ValueSaleInfo: View {
             case .COLLECTION:
                 if let value = device.estimatedValue {
                     Text("\(t.deviceList.estValue)\(formatPrice(value))")
-                        .font(.caption)
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.green)
                 }
             case .FOR_SALE:
                 Text("\(t.deviceList.forSale)\(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
-                    .font(.caption)
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.orange)
             case .PENDING_SALE:
                 Text("\(t.deviceList.pending)\(device.listPrice.map { formatPrice($0) } ?? t.deviceList.tbd)")
-                    .font(.caption)
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.yellow)
             case .SOLD:
                 Text("\(t.deviceList.sold)\(device.soldPrice.map { formatPrice($0) } ?? t.deviceList.na)")
-                    .font(.caption)
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.red)
             case .DONATED:
                 Text(t.deviceList.donated)
-                    .font(.caption)
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.purple)
             case .IN_REPAIR:
                 Text(t.deviceList.inRepair)
-                    .font(.caption)
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.teal)
             case .REPAIRED:
                 Text(t.deviceList.inRepair)
-                    .font(.caption)
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.mint)
             case .RETURNED:
                 if let fee = device.soldPrice, fee > 0 {
                     Text("\(t.deviceList.returnedFee)\(formatPrice(fee))")
-                        .font(.caption)
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.red)
                 } else {
                     Text(t.deviceList.returned)
-                        .font(.caption)
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.red)
                 }
             }
@@ -475,13 +480,14 @@ struct StatusBadge: View {
     
     var body: some View {
         Text(status.displayName)
-            .font(.caption2)
-            .fontWeight(.medium)
+            .font(.system(size: 10, weight: .bold))
+            .textCase(.uppercase)
+            .tracking(0.5)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(backgroundColor)
             .foregroundColor(textColor)
-            .clipShape(Capsule())
+            .clipShape(RoundedRectangle(cornerRadius: 4))
     }
     
     private var textColor: Color {

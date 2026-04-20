@@ -13,7 +13,9 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'Refined list and card view typography to match the device detail editorial style',
+    ],
     fixed: [],
   },
   {
