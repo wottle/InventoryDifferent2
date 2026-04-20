@@ -17,7 +17,7 @@ export default function Footer({ siteTitle }: FooterProps) {
           {siteTitle}
         </div>
         <div className="font-sans text-xs font-light tracking-wide text-on-surface-variant">
-          {t.footer.poweredBy}
+          {t.footer.poweredBy} <a href="https://github.com/wottle/InventoryDifferent2" target="_blank" className="text-primary hover:underline">InventoryDifferent</a>
         </div>
         <div className="font-sans text-xs font-light tracking-wide text-on-surface-variant">
           © {year} {siteTitle}

@@ -255,7 +255,7 @@ export const en: Translations = {
     explore: 'Explore',
   },
   footer: {
-    poweredBy: 'Powered by InventoryDifferent',
+    poweredBy: 'Powered by ',
   },
   rarity: {
     COMMON: 'Common',

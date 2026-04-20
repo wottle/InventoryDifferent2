@@ -8,7 +8,7 @@ export const es: Translations = {
     explore: 'Explorar',
   },
   footer: {
-    poweredBy: 'Desarrollado por InventoryDifferent',
+    poweredBy: 'Desarrollado por ',
   },
   rarity: {
     COMMON: 'Común',
