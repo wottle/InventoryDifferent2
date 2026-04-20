@@ -306,6 +306,29 @@ export const UPSERT_SHOWCASE_CONFIG = gql`
   }
 `;
 
+export const GET_JOURNEY_METADATA = gql`
+  query GetJourneyMetadata($slug: String!) {
+    showcaseJourney(slug: $slug) {
+      title
+      description
+      coverImagePath
+    }
+  }
+`;
+
+export const GET_DEVICE_METADATA = gql`
+  query GetDeviceMetadata($id: Int!) {
+    device(where: { id: $id }) {
+      id
+      name
+      manufacturer
+      releaseYear
+      info
+      images { path isThumbnail thumbnailMode }
+    }
+  }
+`;
+
 export const GET_SHOWCASE_DEVICE = gql`
   query GetShowcaseDevice($id: Int!) {
     device(where: { id: $id }) {

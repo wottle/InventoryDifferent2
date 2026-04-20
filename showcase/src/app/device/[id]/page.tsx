@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { getClient } from '@/lib/apollo-rsc';
-import { GET_SHOWCASE_DEVICE } from '@/lib/queries';
+import { GET_SHOWCASE_DEVICE, GET_DEVICE_METADATA } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
 import ShareButton from '@/components/ShareButton';
 
@@ -86,6 +88,63 @@ function taskYear(dateCompleted: string | null): string {
   const d = new Date(dateCompleted);
   if (isNaN(d.getTime())) return '—';
   return String(d.getFullYear());
+}
+
+// --- Metadata ---
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const deviceId = parseInt(params.id, 10);
+  if (isNaN(deviceId)) return {};
+
+  const headersList = headers();
+  const host = headersList.get('host') ?? 'localhost';
+  const proto = headersList.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
+  const baseUrl = `${proto}://${host}`;
+
+  interface DeviceMeta {
+    name: string;
+    manufacturer: string | null;
+    releaseYear: number | null;
+    info: string | null;
+    images: Array<{ path: string; isThumbnail: boolean; thumbnailMode: string | null }>;
+  }
+
+  let device: DeviceMeta | null = null;
+
+  try {
+    const { data } = await getClient().query<{ device: DeviceMeta | null }>({
+      query: GET_DEVICE_METADATA,
+      variables: { id: deviceId },
+    });
+    device = data?.device ?? null;
+  } catch {
+    // fall through to empty metadata
+  }
+
+  if (!device) return {};
+
+  const title = [device.name, device.releaseYear].filter(Boolean).join(' · ');
+  const description = device.info?.slice(0, 200)
+    ?? [device.manufacturer, device.releaseYear].filter(Boolean).join(' · ')
+    ?? device.name;
+  const heroImagePath = pickThumbnail(device.images);
+  const ogImages = heroImagePath ? [{ url: `${baseUrl}${heroImagePath}` }] : [];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: ogImages,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ogImages.map((i) => i.url),
+    },
+  };
 }
 
 // --- Page Component ---

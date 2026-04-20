@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { getClient } from '@/lib/apollo-rsc';
 import { getTranslations } from '@/i18n';
-import { GET_SHOWCASE_JOURNEY_BY_SLUG } from '@/lib/queries';
+import { GET_SHOWCASE_JOURNEY_BY_SLUG, GET_JOURNEY_METADATA } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
 import ShareButton from '@/components/ShareButton';
 
@@ -159,6 +161,47 @@ function ChapterSection({ chapter, index, t }: { chapter: ChapterDetail; index: 
       </div>
     </section>
   );
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const headersList = headers();
+  const host = headersList.get('host') ?? 'localhost';
+  const proto = headersList.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
+  const baseUrl = `${proto}://${host}`;
+
+  interface JourneyMeta { title: string; description: string; coverImagePath: string | null }
+  let journey: JourneyMeta | null = null;
+  try {
+    const { data } = await getClient().query<{ showcaseJourney: JourneyMeta | null }>({
+      query: GET_JOURNEY_METADATA,
+      variables: { slug: params.slug },
+    });
+    journey = data?.showcaseJourney ?? null;
+  } catch {
+    // fall through to empty metadata
+  }
+
+  if (!journey) return {};
+
+  const ogImages = journey.coverImagePath
+    ? [{ url: `${baseUrl}/uploads/${journey.coverImagePath}` }]
+    : [];
+
+  return {
+    title: journey.title,
+    description: journey.description,
+    openGraph: {
+      title: journey.title,
+      description: journey.description,
+      images: ogImages,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: journey.title,
+      description: journey.description,
+      images: ogImages.map((i) => i.url),
+    },
+  };
 }
 
 export default async function JourneyDetailPage({ params }: { params: { slug: string } }) {
