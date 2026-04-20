@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.5.1';
+export const APP_VERSION = '2.5.2';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '2.5.2',
+    date: '2026-04-19',
     added: [
       'iOS: device relationships — link devices to each other with typed relationships (accessory, software, manual, installed inside, etc.) shown in the Related Devices section on both devices',
       'Add periodic cash flow chart to financials pages (web and iOS) — diverging bars show spending vs. receiving per month or year with a net cash line; toggle between monthly and yearly view; horizontally scrollable',
