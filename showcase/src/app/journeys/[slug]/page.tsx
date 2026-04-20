@@ -3,6 +3,7 @@ import { getClient } from '@/lib/apollo-rsc';
 import { getTranslations } from '@/i18n';
 import { GET_SHOWCASE_JOURNEY_BY_SLUG } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
+import ShareButton from '@/components/ShareButton';
 
 interface ShowcaseDeviceItem {
   id: string;
@@ -250,6 +251,8 @@ export default async function JourneyDetailPage({ params }: { params: { slug: st
           </div>
         </div>
       </section>
+
+      <ShareButton title={journey.title} />
     </main>
   );
 }
