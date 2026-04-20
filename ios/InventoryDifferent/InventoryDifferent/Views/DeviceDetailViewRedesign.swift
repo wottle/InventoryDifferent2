@@ -142,7 +142,6 @@ struct DeviceDetailRedesignView: View {
     @State private var showAddTaskSheet = false
     @State private var isDeletingTask = false
     @State private var showAddNoteSheet = false
-    @State private var showEditNoteSheet = false
     @State private var editingNote: Note?
     @State private var isDeletingNote = false
     @State private var showAddTagSheet = false
@@ -352,11 +351,9 @@ struct DeviceDetailRedesignView: View {
         .sheet(isPresented: $showAddNoteSheet) {
             AddNoteView(deviceId: device.id) { notes.append($0) }
         }
-        .sheet(isPresented: $showEditNoteSheet) {
-            if let n = editingNote {
-                EditNoteView(note: n) { updated in
-                    if let i = notes.firstIndex(where: { $0.id == updated.id }) { notes[i] = updated }
-                }
+        .sheet(item: $editingNote) { note in
+            EditNoteView(note: note) { updated in
+                if let i = notes.firstIndex(where: { $0.id == updated.id }) { notes[i] = updated }
             }
         }
         // MARK: Alerts
@@ -2363,7 +2360,6 @@ struct DeviceNotesChildView: View {
 
     @State private var showAddNoteSheet = false
     @State private var editingNote: Note?
-    @State private var showEditNoteSheet = false
 
     var body: some View {
         let t = lm.t
@@ -2380,7 +2376,6 @@ struct DeviceNotesChildView: View {
                         ForEach(notes.sorted(by: { $0.date > $1.date })) { note in
                             EDNoteRowView(note: note) {
                                 editingNote = note
-                                showEditNoteSheet = true
                             } onDelete: {
                                 Task { await deleteNote(note) }
                             }
@@ -2405,11 +2400,9 @@ struct DeviceNotesChildView: View {
         .sheet(isPresented: $showAddNoteSheet) {
             AddNoteView(deviceId: deviceId) { notes.append($0) }
         }
-        .sheet(isPresented: $showEditNoteSheet) {
-            if let n = editingNote {
-                EditNoteView(note: n) { updated in
-                    if let i = notes.firstIndex(where: { $0.id == updated.id }) { notes[i] = updated }
-                }
+        .sheet(item: $editingNote) { note in
+            EditNoteView(note: note) { updated in
+                if let i = notes.firstIndex(where: { $0.id == updated.id }) { notes[i] = updated }
             }
         }
     }

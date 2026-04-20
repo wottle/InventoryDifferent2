@@ -115,7 +115,6 @@ struct DeviceDetailView: View {
     @State private var isDeletingTask = false
     
     @State private var showAddNoteSheet = false
-    @State private var showEditNoteSheet = false
     @State private var editingNote: Note?
     @State private var notes: [Note]
     @State private var isDeletingNote = false
@@ -1550,7 +1549,6 @@ struct DeviceDetailView: View {
                     ForEach(notes.sorted(by: { $0.date > $1.date })) { note in
                         NoteRowView(note: note) {
                             editingNote = note
-                            showEditNoteSheet = true
                         } onDelete: {
                             Task {
                                 await deleteNote(note)
@@ -1568,12 +1566,10 @@ struct DeviceDetailView: View {
                 quickActionSourceTab = nil  // committed — don't snap back
             }
         }
-        .sheet(isPresented: $showEditNoteSheet) {
-            if let editingNote = editingNote {
-                EditNoteView(note: editingNote) { updatedNote in
-                    if let index = notes.firstIndex(where: { $0.id == updatedNote.id }) {
-                        notes[index] = updatedNote
-                    }
+        .sheet(item: $editingNote) { note in
+            EditNoteView(note: note) { updatedNote in
+                if let index = notes.firstIndex(where: { $0.id == updatedNote.id }) {
+                    notes[index] = updatedNote
                 }
             }
         }
