@@ -240,4 +240,11 @@ export const es: Translations = {
     volumeNumberHint: 'Dejar en blanco para asignación automática basada en fecha de publicación',
     autoVolumePreview: 'Se mostrará como',
   },
+  common: {
+    share: 'Compartir',
+    postOnX: 'Publicar en X',
+    shareOnFacebook: 'Compartir en Facebook',
+    copyLink: 'Copiar enlace',
+    copied: '\u00a1Copiado!',
+  },
 };

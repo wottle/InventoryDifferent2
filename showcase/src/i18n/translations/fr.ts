@@ -240,4 +240,11 @@ export const fr: Translations = {
     volumeNumberHint: 'Laissez vide pour attribution automatique basée sur la date de publication',
     autoVolumePreview: 'Sera affiché comme',
   },
+  common: {
+    share: 'Partager',
+    postOnX: 'Publier sur X',
+    shareOnFacebook: 'Partager sur Facebook',
+    copyLink: 'Copier le lien',
+    copied: 'Copié\u00a0!',
+  },
 };

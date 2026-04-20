@@ -238,6 +238,13 @@ export type Translations = {
     volumeNumberHint: string;
     autoVolumePreview: string;
   };
+  common: {
+    share: string;
+    postOnX: string;
+    shareOnFacebook: string;
+    copyLink: string;
+    copied: string;
+  };
 };
 
 export const en: Translations = {
@@ -479,5 +486,12 @@ export const en: Translations = {
     volumeNumberLabel: 'Volume Number',
     volumeNumberHint: 'Leave blank to auto-assign based on publish date',
     autoVolumePreview: 'Will show as',
+  },
+  common: {
+    share: 'Share',
+    postOnX: 'Post on X',
+    shareOnFacebook: 'Share on Facebook',
+    copyLink: 'Copy link',
+    copied: 'Copied!',
   },
 };
