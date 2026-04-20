@@ -17,7 +17,7 @@ const ERA_RANGES: [number, number][] = [
   [1984, 1993],
   [1994, 1997],
   [1998, 2011],
-  [2012, 2030],
+  [2012, 2026],
 ];
 
 const RARE_RARITIES = ['RARE', 'VERY_RARE', 'UNIQUE'];

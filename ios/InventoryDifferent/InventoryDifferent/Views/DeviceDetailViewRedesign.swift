@@ -1502,23 +1502,25 @@ struct DeviceDetailRedesignView: View {
                         .background(Color.edSurfaceLowest)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
-
-                    NavigationLink(value: DeviceDetailDestination.notes) {
-                        HStack {
-                            Text(lm.t.deviceDetail.allNotes)
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundColor(.edPrimary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(.edPrimary)
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                    }
-                    .buttonStyle(.plain)
                 }
+
+                NavigationLink(value: DeviceDetailDestination.notes) {
+                    HStack {
+                        Text(lm.t.deviceDetail.allNotes)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.edPrimary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.edPrimary)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                }
+                .buttonStyle(.plain)
+                .padding(.top, -6)
             }
+            .padding(.bottom, 10)
         )
     }
 
