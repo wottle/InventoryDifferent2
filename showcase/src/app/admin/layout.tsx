@@ -61,9 +61,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Nav */}
         <nav className="flex flex-col gap-1 flex-1">
           {[
+            { label: t.admin.navAppearance, href: '/admin/appearance', icon: '🎨' },
             { label: t.admin.navJourneys, href: '/admin/journeys', icon: '📖' },
             { label: t.admin.navQuotes, href: '/admin/quotes', icon: '💬' },
-            { label: t.admin.navAppearance, href: '/admin/appearance', icon: '🎨' },
             { label: t.admin.navData, href: '/admin/data', icon: '💾' },
           ].map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
