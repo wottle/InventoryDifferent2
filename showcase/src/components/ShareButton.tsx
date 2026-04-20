@@ -63,6 +63,7 @@ export default function ShareButton({ title }: ShareButtonProps) {
         <div className="bg-surface-container-low border border-outline-variant rounded-2xl p-2 flex flex-col gap-1 w-44 shadow-xl">
           <button
             onClick={shareOnX}
+            aria-label={t.common.postOnX}
             className="flex items-center gap-3 px-3 py-2 rounded-xl bg-surface-container text-on-surface text-xs font-semibold hover:bg-surface-container-highest transition-colors text-left w-full"
           >
             {/* X / Twitter logo */}
@@ -73,6 +74,7 @@ export default function ShareButton({ title }: ShareButtonProps) {
           </button>
           <button
             onClick={shareOnFacebook}
+            aria-label={t.common.shareOnFacebook}
             className="flex items-center gap-3 px-3 py-2 rounded-xl text-on-surface text-xs font-semibold hover:bg-surface-container transition-colors text-left w-full"
           >
             {/* Facebook logo */}
@@ -83,6 +85,7 @@ export default function ShareButton({ title }: ShareButtonProps) {
           </button>
           <button
             onClick={copyLink}
+            aria-label={copied ? t.common.copied : t.common.copyLink}
             className="flex items-center gap-3 px-3 py-2 rounded-xl text-on-surface text-xs font-semibold hover:bg-surface-container transition-colors text-left w-full"
           >
             {/* Link icon */}
