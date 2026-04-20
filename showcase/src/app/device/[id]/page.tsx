@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getClient } from '@/lib/apollo-rsc';
 import { GET_SHOWCASE_DEVICE } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
+import ShareButton from '@/components/ShareButton';
 
 // --- Types ---
 
@@ -373,6 +374,8 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
           </div>
         </div>
       </section>
+
+      <ShareButton title={device.name} />
     </main>
   );
 }
