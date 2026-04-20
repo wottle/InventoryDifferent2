@@ -46,11 +46,13 @@ export default function ShareButton({ title }: ShareButtonProps) {
     try {
       await navigator.clipboard.writeText(getUrl());
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => {
+        setCopied(false);
+        setOpen(false);
+      }, 2000);
     } catch {
-      // clipboard API unavailable — silently do nothing
+      setOpen(false);
     }
-    setOpen(false);
   }
 
   return (
