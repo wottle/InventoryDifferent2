@@ -395,9 +395,10 @@ function calcGainPct(acquired: number, estimated: number): string {
 
 function linkifyText(text: string): React.ReactNode {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urlTest = /^https?:\/\/[^\s]+$/;
   const parts = text.split(urlRegex);
   return parts.map((part, i) =>
-    urlRegex.test(part) ? (
+    urlTest.test(part) ? (
       <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
         {part}
       </a>
