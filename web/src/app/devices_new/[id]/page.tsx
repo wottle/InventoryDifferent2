@@ -341,6 +341,8 @@ const ICON_PATHS: Record<string, string> = {
   share: "M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z",
   delete: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z",
   arrow_back: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z",
+  open_in_new: "M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z",
+  device_hub: "M17 16l-4-4V8.82C14.16 8.4 15 7.3 15 6c0-1.66-1.34-3-3-3S9 4.34 9 6c0 1.3.84 2.4 2 2.82V12l-4 4H3v5h5v-3.05l4-4.2 4 4.2V21h5v-5h-4z",
 };
 
 function Icon({ name, className = "w-5 h-5" }: { name: string; className?: string }) {
@@ -1112,6 +1114,163 @@ export default function DeviceDetailNew() {
               </div>
             </section>
           )}
+
+        {/* Accessories */}
+        {((device.accessories ?? []).length > 0 || isAuthenticated) && (
+          <section>
+            <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Accessories</h2>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {(device.accessories ?? []).map((acc: any) => (
+                <span key={acc.id} className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-surface-container text-on-surface rounded-full border border-outline-variant/20">
+                  {acc.name}
+                  {isAuthenticated && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveAccessory(acc.id)}
+                      aria-label={`Remove accessory ${acc.name}`}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >×</button>
+                  )}
+                </span>
+              ))}
+            </div>
+            {isAuthenticated && (
+              <form
+                onSubmit={e => { e.preventDefault(); handleAddAccessory(newAccessoryName); }}
+                className="flex items-center gap-2 mt-2"
+              >
+                <input
+                  type="text"
+                  value={newAccessoryName}
+                  onChange={e => setNewAccessoryName(e.target.value)}
+                  placeholder="Add accessory..."
+                  className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <button
+                  type="submit"
+                  disabled={addingAccessory || !newAccessoryName.trim()}
+                  className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all"
+                >Add</button>
+              </form>
+            )}
+          </section>
+        )}
+
+        {/* Related Devices */}
+        {(() => {
+          const relatedFrom = (device.relationsFrom ?? []).map((r: any) => ({
+            relationId: r.id,
+            type: r.type,
+            device: r.toDevice,
+          }));
+          const relatedTo = (device.relationsTo ?? []).map((r: any) => ({
+            relationId: r.id,
+            type: r.type,
+            device: r.fromDevice,
+          }));
+          const allRelated = [...relatedFrom, ...relatedTo].filter(
+            (r, idx, arr) => arr.findIndex(x => x.device?.id === r.device?.id) === idx
+          );
+          if (allRelated.length === 0) return null;
+          return (
+            <section>
+              <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Related Devices</h2>
+              <div className="space-y-2">
+                {allRelated.map(({ relationId, type, device: rel }) => {
+                  if (!rel) return null;
+                  const thumb = rel.images?.find((i: any) => i.isThumbnail) ?? rel.images?.[0];
+                  return (
+                    <Link
+                      key={rel.id}
+                      href={`/devices_new/${rel.id}`}
+                      className="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        {thumb ? (
+                          <img src={`${API_BASE_URL}${thumb.thumbnailPath || thumb.path}`} alt={rel.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Icon name="device_hub" className="w-5 h-5 text-outline" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-on-surface truncate">{rel.name}</p>
+                        {rel.manufacturer && <p className="text-xs text-on-surface-variant truncate">{rel.manufacturer}</p>}
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-outline bg-surface-container px-2 py-0.5 rounded-full flex-shrink-0">
+                        {type.replace(/_/g, ' ')}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* Links */}
+        {((device.links ?? []).length > 0 || isAuthenticated) && (
+          <section>
+            <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Links</h2>
+            <div className="space-y-2 mb-3">
+              {(device.links ?? []).map((link: any) => (
+                <div key={link.id} className="flex items-center gap-2">
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center gap-2 p-3 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors group min-w-0"
+                  >
+                    <Icon name="open_in_new" className="w-4 h-4 text-primary flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors truncate">{link.label}</p>
+                      <p className="text-[10px] text-outline truncate">{link.url}</p>
+                    </div>
+                  </a>
+                  {isAuthenticated && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveLink(link.id)}
+                      aria-label={`Remove link ${link.label}`}
+                      className="p-2 text-on-surface-variant hover:text-red-500 transition-colors flex-shrink-0"
+                    >
+                      <Icon name="delete" className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {isAuthenticated && !showLinkForm && (
+              <button
+                type="button"
+                onClick={() => setShowLinkForm(true)}
+                className="text-primary text-xs font-semibold hover:underline"
+              >+ Add link</button>
+            )}
+            {isAuthenticated && showLinkForm && (
+              <form onSubmit={handleAddLink} className="space-y-2 mt-2">
+                <input
+                  type="text"
+                  value={newLinkLabel}
+                  onChange={e => setNewLinkLabel(e.target.value)}
+                  placeholder="Label (e.g. Manual PDF)"
+                  className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+                  autoFocus
+                />
+                <input
+                  type="url"
+                  value={newLinkUrl}
+                  onChange={e => setNewLinkUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <div className="flex gap-2">
+                  <button type="submit" disabled={addingLink || !newLinkLabel.trim() || !newLinkUrl.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
+                  <button type="button" onClick={() => { setShowLinkForm(false); setNewLinkLabel(''); setNewLinkUrl(''); }} className="px-4 py-1.5 text-sm font-medium text-on-surface-variant bg-surface-container rounded-full hover:bg-surface-container-high transition-all">Cancel</button>
+                </div>
+              </form>
+            )}
+          </section>
+        )}
 
           {/* Tags */}
           {((device.tags ?? []).length > 0 || isAuthenticated) && (
