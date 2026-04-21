@@ -7,6 +7,9 @@ All notable changes to InventoryDifferent will be documented here.
 ### Added
 - New device detail design preview at /devices_new/[id] — matches iOS and showcase aesthetic
 
+### Changed
+- Refined list and card view typography to match the device detail editorial style
+
 ---
 
 ## [2.5.2] - 2026-04-19
