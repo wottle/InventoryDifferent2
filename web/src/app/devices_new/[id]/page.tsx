@@ -603,6 +603,15 @@ export default function DeviceDetailNew() {
     return () => document.removeEventListener('mousedown', handleOutside);
   }, [showValueHistory]);
 
+  useEffect(() => {
+    if (!showValueHistory) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowValueHistory(false);
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [showValueHistory]);
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
