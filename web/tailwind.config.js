@@ -34,11 +34,28 @@ module.exports = {
                 // System accent colors
                 'system-blue': '#0066CC',
                 'system-highlight': '#3399FF',
+                // Technical Atelier design system
+                'primary': '#0058bc',
+                'primary-container': '#0070eb',
+                'primary-fixed-dim': '#adc6ff',
+                'tertiary': '#6f5d00',
+                'tertiary-container': '#c5aa22',
+                'surface': '#f9f9fe',
+                'surface-container-lowest': '#ffffff',
+                'surface-container-low': '#f3f3f8',
+                'surface-container': '#ededf2',
+                'surface-container-high': '#e8e8ed',
+                'surface-container-highest': '#e2e2e7',
+                'on-surface': '#1a1c1f',
+                'on-surface-variant': '#414755',
+                'outline': '#717786',
+                'outline-variant': '#c1c6d7',
             },
             fontFamily: {
                 // Chicago-inspired system font stack
                 'system': ['"SF Pro Display"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
                 'mono': ['"SF Mono"', 'Monaco', '"Courier New"', 'monospace'],
+                'inter': ['"Inter Variable"', 'Inter', 'sans-serif'],
             },
             boxShadow: {
                 // Classic Mac OS beveled effects
