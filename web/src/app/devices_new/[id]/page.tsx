@@ -1118,7 +1118,7 @@ export default function DeviceDetailNew() {
         {/* Accessories */}
         {((device.accessories ?? []).length > 0 || isAuthenticated) && (
           <section>
-            <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Accessories</h2>
+            <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">{t.detail.accessories}</h2>
             <div className="flex flex-wrap gap-2 mb-3">
               {(device.accessories ?? []).map((acc: any) => (
                 <span key={acc.id} className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-surface-container text-on-surface rounded-full border border-outline-variant/20">
@@ -1143,7 +1143,7 @@ export default function DeviceDetailNew() {
                   type="text"
                   value={newAccessoryName}
                   onChange={e => setNewAccessoryName(e.target.value)}
-                  placeholder="Add accessory..."
+                  placeholder={t.detail.customAccessoryPlaceholder}
                   className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary"
                 />
                 <button
@@ -1174,14 +1174,14 @@ export default function DeviceDetailNew() {
           if (allRelated.length === 0) return null;
           return (
             <section>
-              <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Related Devices</h2>
+              <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">{t.detail.relatedDevices}</h2>
               <div className="space-y-2">
                 {allRelated.map(({ relationId, type, device: rel }) => {
                   if (!rel) return null;
                   const thumb = rel.images?.find((i: any) => i.isThumbnail) ?? rel.images?.[0];
                   return (
                     <Link
-                      key={rel.id}
+                      key={relationId}
                       href={`/devices_new/${rel.id}`}
                       className="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors"
                     >
@@ -1210,7 +1210,7 @@ export default function DeviceDetailNew() {
         {/* Links */}
         {((device.links ?? []).length > 0 || isAuthenticated) && (
           <section>
-            <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Links</h2>
+            <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">{t.detail.referenceLinks}</h2>
             <div className="space-y-2 mb-3">
               {(device.links ?? []).map((link: any) => (
                 <div key={link.id} className="flex items-center gap-2">
@@ -1244,7 +1244,7 @@ export default function DeviceDetailNew() {
                 type="button"
                 onClick={() => setShowLinkForm(true)}
                 className="text-primary text-xs font-semibold hover:underline"
-              >+ Add link</button>
+              >+ {t.detail.addLink}</button>
             )}
             {isAuthenticated && showLinkForm && (
               <form onSubmit={handleAddLink} className="space-y-2 mt-2">
@@ -1252,7 +1252,7 @@ export default function DeviceDetailNew() {
                   type="text"
                   value={newLinkLabel}
                   onChange={e => setNewLinkLabel(e.target.value)}
-                  placeholder="Label (e.g. Manual PDF)"
+                  placeholder={t.form.linkLabelPlaceholder}
                   className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
                   autoFocus
                 />
@@ -1260,7 +1260,7 @@ export default function DeviceDetailNew() {
                   type="url"
                   value={newLinkUrl}
                   onChange={e => setNewLinkUrl(e.target.value)}
-                  placeholder="https://..."
+                  placeholder={t.form.linkUrlPlaceholder}
                   className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
                 />
                 <div className="flex gap-2">
