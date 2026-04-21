@@ -14,6 +14,8 @@ import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
 import { API_BASE_URL } from "../../../lib/config";
 import { useT } from "../../../i18n/context";
+import dynamic from "next/dynamic";
+const DeviceValueChart = dynamic(() => import("../../../components/DeviceValueChart"), { ssr: false });
 
 const GET_DEVICE = gql`
   query GetDevice($where: DeviceWhereInput!) {
@@ -467,6 +469,8 @@ export default function DeviceDetailNew() {
   const [relationToRemoveId, setRelationToRemoveId] = useState<number | null>(null);
   const [deleteDeviceConfirm, setDeleteDeviceConfirm] = useState(false);
   const [infoExpanded, setInfoExpanded] = useState(false);
+  const [showValueHistory, setShowValueHistory] = useState(false);
+  const valueHistoryRef = useRef<HTMLDivElement | null>(null);
 
   const { loading, error, data, refetch } = useQuery(GET_DEVICE, {
     variables: { where: { id: parseInt(id as string), deleted: { equals: false } } },
@@ -588,6 +592,17 @@ export default function DeviceDetailNew() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [imageCountForNav]);
 
+  useEffect(() => {
+    if (!showValueHistory) return;
+    const handleOutside = (e: MouseEvent) => {
+      if (valueHistoryRef.current && !valueHistoryRef.current.contains(e.target as Node)) {
+        setShowValueHistory(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [showValueHistory]);
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -643,6 +658,12 @@ export default function DeviceDetailNew() {
   const sortedNotes = [...(device.notes ?? [])].sort(
     (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+
+  const chartData = (valueHistoryData?.valueHistory ?? []).map((v: any) => ({
+    date: new Date(v.snapshotDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+    dateMs: new Date(v.snapshotDate).getTime(),
+    value: v.estimatedValue,
+  }));
 
   const handleAddTag = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1067,15 +1088,45 @@ export default function DeviceDetailNew() {
                 </div>
               )}
               {device.estimatedValue != null && (
-                <div className="bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-tertiary">
+                <div ref={valueHistoryRef} className="relative bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-tertiary">
                   <div>
                     <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
                     <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
                   </div>
-                  <div className="text-right">
+                  <div className="flex flex-col items-end gap-1">
                     <Icon name="trending_up" className="w-6 h-6 text-tertiary" />
-                    <span className="text-outline text-[10px] uppercase block">Market Trend</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowValueHistory(v => !v)}
+                      className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider"
+                    >
+                      History ↗
+                    </button>
                   </div>
+                  {/* Value History Popover */}
+                  {showValueHistory && (
+                    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 bg-white rounded-xl shadow-lg border border-outline-variant/20 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-outline">Value History</span>
+                        <button
+                          type="button"
+                          onClick={() => setShowValueHistory(false)}
+                          aria-label="Close value history"
+                          className="w-6 h-6 flex items-center justify-center rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors text-sm"
+                        >×</button>
+                      </div>
+                      {chartData.length >= 2 ? (
+                        <DeviceValueChart data={chartData} />
+                      ) : (
+                        <p className="text-xs text-on-surface-variant py-4 text-center">No history yet — value snapshots build as you update this device.</p>
+                      )}
+                      {chartData.length > 0 && (
+                        <p className="text-[10px] text-outline mt-2 text-center">
+                          {chartData.length} snapshot{chartData.length !== 1 ? 's' : ''} · first recorded {new Date(Math.min(...chartData.map((c: any) => c.dateMs))).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </section>
