@@ -634,7 +634,7 @@ export default function DeviceDetailNew() {
     .filter((i: any) => !i.isThumbnail)
     .sort((a: any, b: any) => new Date(b.dateTaken).getTime() - new Date(a.dateTaken).getTime());
   const heroImage = heroImages[0] || images[0];
-  const photoGridImages = [...images].slice(0, 6);
+  const photoGridImages = [...images].slice(0, 5);
   const sortedTasks = [...(device.maintenanceTasks ?? [])].sort(
     (a: any, b: any) => new Date(b.dateCompleted).getTime() - new Date(a.dateCompleted).getTime()
   );
@@ -953,11 +953,11 @@ export default function DeviceDetailNew() {
           Back to Inventory
         </Link>
         <div className="flex items-center gap-2">
-          <button onClick={() => setShowShareModal(true)} className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all">
+          <button onClick={() => setShowShareModal(true)} title="Share" aria-label="Share" className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all">
             <Icon name="share" className="w-5 h-5" />
           </button>
           {isAuthenticated && (
-            <button onClick={() => setDeleteDeviceConfirm(true)} className="p-2 text-on-surface-variant hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+            <button onClick={() => setDeleteDeviceConfirm(true)} title="Delete device" aria-label="Delete device" className="p-2 text-on-surface-variant hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
               <Icon name="delete" className="w-5 h-5" />
             </button>
           )}
@@ -1122,7 +1122,7 @@ export default function DeviceDetailNew() {
                   <span key={tag.id} className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-surface-container text-on-surface rounded-full border border-outline-variant/20">
                     {tag.name}
                     {isAuthenticated && (
-                      <button type="button" onClick={() => handleRemoveTag(tag.id)} className="ml-1 hover:text-red-500 transition-colors">×</button>
+                      <button type="button" onClick={() => handleRemoveTag(tag.id)} aria-label={`Remove tag ${tag.name}`} className="ml-1 hover:text-red-500 transition-colors">×</button>
                     )}
                   </span>
                 ))}
