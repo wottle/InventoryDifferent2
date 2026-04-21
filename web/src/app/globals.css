@@ -273,3 +273,13 @@ input:-webkit-autofill:focus {
   animation: logo-spin 1.1s linear infinite;
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.15));
 }
+
+/* Technical Atelier: hero gradient overlay for redesigned device detail */
+.hero-gradient {
+  background: linear-gradient(
+    to top,
+    rgba(26, 28, 31, 0.9) 0%,
+    rgba(26, 28, 31, 0.4) 40%,
+    rgba(26, 28, 31, 0) 100%
+  );
+}
