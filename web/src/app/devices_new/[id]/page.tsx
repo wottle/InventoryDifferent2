@@ -1430,7 +1430,9 @@ export default function DeviceDetailNew() {
             <section className="bg-white p-8 rounded-xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Photos</h2>
-                <span className="text-on-surface-variant text-xs">{images.length} total</span>
+                <Link href={`/devices_new/${id}/photos`} className="text-xs text-primary font-semibold hover:underline">
+                  View all →
+                </Link>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {photoGridImages.slice(0, 5).map((img: any) => (
@@ -1452,9 +1454,12 @@ export default function DeviceDetailNew() {
             <section className="bg-surface-container-highest p-8 rounded-xl">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Maintenance Logs</h2>
-                {isAuthenticated && (
-                  <button onClick={() => setShowMaintenanceForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
-                )}
+                <div className="flex items-center gap-3">
+                  <Link href={`/devices_new/${id}/logs`} className="text-xs text-primary font-semibold hover:underline">View all →</Link>
+                  {isAuthenticated && (
+                    <button onClick={() => setShowMaintenanceForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                  )}
+                </div>
               </div>
               {sortedTasks.length === 0 && <p className="text-on-surface-variant text-xs">No maintenance logs yet.</p>}
               <div className="space-y-4">
@@ -1477,9 +1482,12 @@ export default function DeviceDetailNew() {
             <section className="bg-white p-8 rounded-xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Recent Notes</h2>
-                {isAuthenticated && (
-                  <button onClick={() => setShowNoteForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
-                )}
+                <div className="flex items-center gap-3">
+                  <Link href={`/devices_new/${id}/notes`} className="text-xs text-primary font-semibold hover:underline">View all →</Link>
+                  {isAuthenticated && (
+                    <button onClick={() => setShowNoteForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                  )}
+                </div>
               </div>
               {sortedNotes.length === 0 && <p className="text-on-surface-variant text-xs">No notes yet.</p>}
               <div className="space-y-6">
