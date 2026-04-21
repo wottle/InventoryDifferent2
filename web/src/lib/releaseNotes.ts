@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'New device detail design preview at /devices_new/[id] — matches iOS and showcase aesthetic',
+    ],
     changed: [
       'Refined list and card view typography to match the device detail editorial style',
     ],
