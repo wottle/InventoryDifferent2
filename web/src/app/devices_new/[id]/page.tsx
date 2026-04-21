@@ -1143,17 +1143,15 @@ export default function DeviceDetailNew() {
         <div className="col-span-12 lg:col-span-4 space-y-8">
 
           {/* Quick Actions */}
-          <section className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
-            <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Quick Actions</h2>
-            <div className="grid grid-cols-4 gap-3">
-              {isAuthenticated && (
+          {isAuthenticated && (
+            <section className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Quick Actions</h2>
+              <div className="grid grid-cols-4 gap-3">
                 <button onClick={handleUpdateLastPowerOnDate} disabled={updatingPowerDate}
                   title="Log Power On"
                   className="flex flex-col items-center justify-center p-3.5 bg-primary text-white rounded-xl hover:bg-primary-container disabled:opacity-50 transition-all active:scale-95">
                   <Icon name="power_settings_new" className="w-6 h-6" />
                 </button>
-              )}
-              {isAuthenticated && (
                 <button onClick={() => setShowUploader(true)} title="Add Image"
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <Icon name="image_icon" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
@@ -1161,8 +1159,6 @@ export default function DeviceDetailNew() {
                     <Icon name="add" className="w-3 h-3" />
                   </span>
                 </button>
-              )}
-              {isAuthenticated && (
                 <button onClick={() => setShowMaintenanceForm(true)} title="Add Maintenance Log"
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <Icon name="build" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
@@ -1170,8 +1166,6 @@ export default function DeviceDetailNew() {
                     <Icon name="add" className="w-3 h-3" />
                   </span>
                 </button>
-              )}
-              {isAuthenticated && (
                 <button onClick={() => setShowNoteForm(true)} title="Add Note"
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <Icon name="description" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
@@ -1179,9 +1173,9 @@ export default function DeviceDetailNew() {
                     <Icon name="add" className="w-3 h-3" />
                   </span>
                 </button>
-              )}
-            </div>
-          </section>
+              </div>
+            </section>
+          )}
 
           {/* Lifecycle Actions (auth-gated) */}
           {isAuthenticated && (
