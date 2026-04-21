@@ -943,8 +943,451 @@ export default function DeviceDetailNew() {
   };
 
   return (
-    <div className="font-inter text-on-surface p-8">
-      <p>Device detail redesign scaffold — {device.name}</p>
+    <div className="font-inter text-on-surface">
+      <DeepLinkBanner deviceId={id as string} />
+
+      {/* Back nav row */}
+      <div className="flex items-center justify-between mb-4">
+        <Link href="/" className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors group">
+          <Icon name="arrow_back" className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          Back to Inventory
+        </Link>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowShareModal(true)} className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all">
+            <Icon name="share" className="w-5 h-5" />
+          </button>
+          {isAuthenticated && (
+            <button onClick={() => setDeleteDeviceConfirm(true)} className="p-2 text-on-surface-variant hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+              <Icon name="delete" className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Hero section — negative margins to break out of parent container padding */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+        <section className="relative h-[500px] w-full rounded-xl overflow-hidden group">
+          {heroImage ? (
+            <img
+              src={`${API_BASE_URL}${heroImage.path}`}
+              alt={heroImage.caption || device.name}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
+              <Icon name="image_icon" className="w-16 h-16 text-outline" />
+            </div>
+          )}
+          <div className="absolute inset-0 hero-gradient flex flex-col justify-end p-12">
+            <span className="text-white/70 text-[11px] font-bold tracking-[0.2em] uppercase mb-2">
+              {device.category?.name}{device.releaseYear ? ` • ${device.releaseYear}` : ''}
+            </span>
+            <h1 className="text-white text-5xl lg:text-6xl font-extrabold tracking-tighter mb-1 drop-shadow-lg">
+              {device.name}{device.additionalName ? ` ${device.additionalName}` : ''}
+            </h1>
+            {device.info && (
+              <p className="text-white/80 text-xl font-light line-clamp-2 max-w-2xl">{device.info}</p>
+            )}
+          </div>
+          {isAuthenticated && (
+            <Link
+              href={`/devices/${id}/edit`}
+              className="absolute top-6 right-6 flex items-center gap-2 px-6 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-xl text-white border border-white/30 rounded-full text-sm font-semibold transition-all"
+            >
+              <Icon name="edit" className="w-4 h-4" />
+              Edit Device
+            </Link>
+          )}
+        </section>
+      </div>
+
+      {/* ===== MAIN 12-COLUMN GRID ===== */}
+      <div className="grid grid-cols-12 gap-8 mt-12">
+
+        {/* ===== LEFT COLUMN (col-span-8) ===== */}
+        <div className="col-span-12 lg:col-span-8 space-y-8">
+
+          {/* Quick Overview */}
+          <section className="bg-surface-container-low p-8 rounded-xl">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Quick Overview</h2>
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded text-[10px] font-bold tracking-wider uppercase">
+                {(t.status as Record<string, string>)[device.status] ?? device.status}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-12">
+              {device.manufacturer && <SpecField label="Manufacturer" value={device.manufacturer} />}
+              {device.modelNumber && <SpecField label="Model Number" value={device.modelNumber} />}
+              {device.serialNumber && <SpecField label="Serial Number" value={device.serialNumber} />}
+              {device.location && <SpecField label="Location" value={device.location.name} />}
+              {device.lastPowerOnDate && <SpecField label="Last Used" value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' })} />}
+              {device.releaseYear && <SpecField label="Release Year" value={String(device.releaseYear)} />}
+            </div>
+            {device.info && (
+              <div className="mt-10 pt-8 border-t border-outline-variant/20">
+                <span className="text-outline text-[10px] uppercase tracking-tighter mb-2 block">Device Notes</span>
+                <p className={`text-on-surface-variant text-sm leading-relaxed ${infoExpanded ? '' : 'line-clamp-3'}`}>
+                  {device.info}
+                </p>
+                <button onClick={() => setInfoExpanded(v => !v)} className="text-primary text-xs font-bold mt-2 hover:underline">
+                  {infoExpanded ? 'Collapse' : 'Expand'}
+                </button>
+              </div>
+            )}
+          </section>
+
+          {/* Indicator Cards */}
+          <section className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <IndicatorCard color="emerald" iconName="check_circle" label="Condition"
+              value={device.functionalStatus === 'YES' ? 'Fully Working' : device.functionalStatus === 'PARTIAL' ? 'Partially Working' : 'Not Working'} />
+            {device.rarity && <IndicatorCard color="amber" iconName="star" label="Rarity" value={device.rarity} />}
+            <IndicatorCard color="blue" iconName="sell" label="Status" value={(t.status as Record<string, string>)[device.status] ?? device.status} />
+            <IndicatorCard color="purple" iconName="package" label="Packaging" value={device.hasOriginalBox ? 'Original Box' : 'No Box'} />
+            <IndicatorCard color="red" iconName="battery_alert" label="PRAM Battery" value={device.isPramBatteryRemoved ? 'Removed' : 'Present'} />
+            <IndicatorCard color="pink" iconName="favorite" label="Priority" value={device.isFavorite ? 'Archival Fave' : 'Standard'} />
+          </section>
+
+          {/* Financials (auth-gated) */}
+          {isAuthenticated && (device.priceAcquired != null || device.estimatedValue != null) && (
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {device.priceAcquired != null && (
+                <div className="bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-primary">
+                  <div>
+                    <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Acquisition Price</span>
+                    <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.priceAcquired)}</span>
+                  </div>
+                  {device.estimatedValue != null && (
+                    <div className="text-right">
+                      <span className="text-emerald-600 text-sm font-bold block">{calcGainPct(device.priceAcquired, device.estimatedValue)}</span>
+                      <span className="text-outline text-[10px] uppercase">since purchase</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              {device.estimatedValue != null && (
+                <div className="bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-tertiary">
+                  <div>
+                    <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
+                    <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
+                  </div>
+                  <div className="text-right">
+                    <Icon name="trending_up" className="w-6 h-6 text-tertiary" />
+                    <span className="text-outline text-[10px] uppercase block">Market Trend</span>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Technical Specs */}
+          {(device.cpu || device.ram || device.storage || device.graphics || device.operatingSystem) && (
+            <section className="bg-surface-container-low rounded-xl p-8">
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Technical Specifications</h2>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                {device.cpu && <SpecField label="Processor" value={device.cpu} />}
+                {device.ram && <SpecField label="Memory (RAM)" value={device.ram} />}
+                {device.storage && <SpecField label="Storage" value={device.storage} />}
+                {device.graphics && <SpecField label="Graphics" value={device.graphics} />}
+                {device.operatingSystem && <SpecField label="Operating System" value={device.operatingSystem} />}
+                {device.isWifiEnabled != null && <SpecField label="WiFi" value={device.isWifiEnabled ? 'Yes' : 'No'} />}
+              </div>
+              {(device.customFieldValues ?? []).length > 0 && (
+                <div className="mt-6 pt-6 border-t border-outline-variant/20 grid grid-cols-2 gap-x-8 gap-y-4">
+                  {device.customFieldValues.map((cf: any) => (
+                    <SpecField key={cf.id} label={cf.customFieldName} value={cf.value} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Historical Notes */}
+          {device.historicalNotes && (
+            <section className="py-4">
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-4">Historical Significance</h2>
+              <div className="text-on-surface-variant text-sm leading-relaxed space-y-4">
+                {device.historicalNotes.split('\n\n').map((para: string, i: number) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Tags */}
+          {((device.tags ?? []).length > 0 || isAuthenticated) && (
+            <section>
+              <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Tags</h2>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {(device.tags ?? []).map((tag: any) => (
+                  <span key={tag.id} className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-surface-container text-on-surface rounded-full border border-outline-variant/20">
+                    {tag.name}
+                    {isAuthenticated && (
+                      <button type="button" onClick={() => handleRemoveTag(tag.id)} className="ml-1 hover:text-red-500 transition-colors">×</button>
+                    )}
+                  </span>
+                ))}
+              </div>
+              {isAuthenticated && (
+                <form onSubmit={handleAddTag} className="flex items-center gap-2 mt-2">
+                  <input type="text" value={tagName} onChange={e => setTagName(e.target.value)}
+                    placeholder="Add tag..." className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary" />
+                  <button type="submit" disabled={addingTag || !tagName.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
+                </form>
+              )}
+            </section>
+          )}
+
+        </div> {/* end left column */}
+
+        {/* ===== RIGHT COLUMN (col-span-4) ===== */}
+        <div className="col-span-12 lg:col-span-4 space-y-8">
+
+          {/* Quick Actions */}
+          <section className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
+            <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Quick Actions</h2>
+            <div className="grid grid-cols-4 gap-3">
+              {isAuthenticated && (
+                <button onClick={handleUpdateLastPowerOnDate} disabled={updatingPowerDate}
+                  title="Log Power On"
+                  className="flex flex-col items-center justify-center p-3.5 bg-primary text-white rounded-xl hover:bg-primary-container disabled:opacity-50 transition-all active:scale-95">
+                  <Icon name="power_settings_new" className="w-6 h-6" />
+                </button>
+              )}
+              {isAuthenticated && (
+                <button onClick={() => setShowUploader(true)} title="Add Image"
+                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
+                  <Icon name="image_icon" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-primary">
+                    <Icon name="add" className="w-3 h-3" />
+                  </span>
+                </button>
+              )}
+              {isAuthenticated && (
+                <button onClick={() => setShowMaintenanceForm(true)} title="Add Maintenance Log"
+                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
+                  <Icon name="build" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-primary">
+                    <Icon name="add" className="w-3 h-3" />
+                  </span>
+                </button>
+              )}
+              {isAuthenticated && (
+                <button onClick={() => setShowNoteForm(true)} title="Add Note"
+                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
+                  <Icon name="description" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-primary">
+                    <Icon name="add" className="w-3 h-3" />
+                  </span>
+                </button>
+              )}
+            </div>
+          </section>
+
+          {/* Lifecycle Actions (auth-gated) */}
+          {isAuthenticated && (
+            <section className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Lifecycle Actions</h2>
+              <div className="space-y-3">
+                {device.status !== 'PENDING_SALE' && (
+                  <button onClick={() => handleSetStatus('PENDING_SALE')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-sm font-bold hover:bg-amber-100 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="pending_actions" className="w-5 h-5" />
+                    PENDING SALE
+                  </button>
+                )}
+                {device.status !== 'SOLD' && (
+                  <button onClick={() => handleSetStatus('SOLD')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-black disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="shopping_cart_checkout" className="w-5 h-5" />
+                    SOLD
+                  </button>
+                )}
+                {device.status !== 'COLLECTION' && (
+                  <button onClick={() => handleSetStatus('COLLECTION')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface border border-outline-variant/20 rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
+                    Back to Collection
+                  </button>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Photos Grid */}
+          {images.length > 0 && (
+            <section className="bg-white p-8 rounded-xl shadow-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Photos</h2>
+                <span className="text-on-surface-variant text-xs">{images.length} total</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {photoGridImages.slice(0, 5).map((img: any) => (
+                  <div key={img.id} className="aspect-square bg-surface-container-low rounded-lg overflow-hidden group cursor-pointer">
+                    <img src={`${API_BASE_URL}${img.thumbnailPath || img.path}`} alt={img.caption || ''} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-300" />
+                  </div>
+                ))}
+                {images.length > 5 && (
+                  <div className="aspect-square bg-slate-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors">
+                    <span className="text-white font-bold text-sm">+{images.length - 5} more</span>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Maintenance Logs */}
+          {(sortedTasks.length > 0 || isAuthenticated) && (
+            <section className="bg-surface-container-highest p-8 rounded-xl">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Maintenance Logs</h2>
+                {isAuthenticated && (
+                  <button onClick={() => setShowMaintenanceForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                )}
+              </div>
+              {sortedTasks.length === 0 && <p className="text-on-surface-variant text-xs">No maintenance logs yet.</p>}
+              <div className="space-y-4">
+                {sortedTasks.slice(0, 5).map((task: any) => (
+                  <div key={task.id} className="bg-surface-container-lowest p-4 rounded-lg">
+                    <div className="flex justify-between mb-1">
+                      <span className="font-bold text-sm text-on-surface">{task.label}</span>
+                      <span className="text-[10px] text-outline">{formatDateForDisplay(task.dateCompleted).toUpperCase()}</span>
+                    </div>
+                    {task.notes && <p className="text-xs text-on-surface-variant">{task.notes}</p>}
+                    {task.cost != null && <p className="text-xs text-on-surface-variant mt-1">Cost: {formatCurrency(task.cost)}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Recent Notes */}
+          {(sortedNotes.length > 0 || isAuthenticated) && (
+            <section className="bg-white p-8 rounded-xl shadow-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Recent Notes</h2>
+                {isAuthenticated && (
+                  <button onClick={() => setShowNoteForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                )}
+              </div>
+              {sortedNotes.length === 0 && <p className="text-on-surface-variant text-xs">No notes yet.</p>}
+              <div className="space-y-6">
+                {sortedNotes.slice(0, 5).map((note: any) => (
+                  <div key={note.id} className="relative pl-6 border-l-2 border-primary-fixed-dim">
+                    <span className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-primary" />
+                    <span className="text-[10px] text-outline block uppercase tracking-tighter">{formatDateForDisplay(note.date)}</span>
+                    <p className="text-sm italic text-on-surface-variant mt-1 leading-relaxed">{linkifyText(note.content)}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+        </div> {/* end right column */}
+      </div> {/* end 12-col grid */}
+
+      {/* ===== MODALS ===== */}
+
+      {showUploader && (
+        <ImageUploader
+          deviceId={parseInt(id as string)}
+          onClose={() => setShowUploader(false)}
+          onUploadComplete={() => { setShowUploader(false); refetch(); }}
+        />
+      )}
+
+      {showShareModal && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          deviceUrl={typeof window !== 'undefined' ? window.location.href : `/devices_new/${id}`}
+          deviceName={device.name}
+          additionalName={device.additionalName}
+          deviceId={parseInt(id as string)}
+        />
+      )}
+
+      {showMaintenanceForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowMaintenanceForm(false)}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h4 className="text-lg font-bold text-on-surface mb-4">Add Maintenance Log</h4>
+            <form onSubmit={handleCreateMaintenanceTask} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Label *</label>
+                <input type="text" value={maintenanceFormData.label}
+                  onChange={e => setMaintenanceFormData(p => ({ ...p, label: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" required autoFocus />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Date Completed *</label>
+                <input type="date" value={maintenanceFormData.dateCompleted}
+                  onChange={e => setMaintenanceFormData(p => ({ ...p, dateCompleted: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" required />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Notes</label>
+                <textarea value={maintenanceFormData.notes}
+                  onChange={e => setMaintenanceFormData(p => ({ ...p, notes: e.target.value }))}
+                  rows={3} className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Cost</label>
+                <input type="number" step="0.01" value={maintenanceFormData.cost}
+                  onChange={e => setMaintenanceFormData(p => ({ ...p, cost: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setShowMaintenanceForm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+                <button type="submit" disabled={creatingTask} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-container disabled:opacity-50 transition-all">
+                  {creatingTask ? 'Saving...' : 'Save Log'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showNoteForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowNoteForm(false)}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h4 className="text-lg font-bold text-on-surface mb-4">Add Note</h4>
+            <form onSubmit={handleCreateNote} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Note *</label>
+                <textarea value={noteFormData.content}
+                  onChange={e => setNoteFormData(p => ({ ...p, content: e.target.value }))}
+                  rows={4} className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" required autoFocus />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Date</label>
+                <input type="datetime-local" value={noteFormData.date}
+                  onChange={e => setNoteFormData(p => ({ ...p, date: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setShowNoteForm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+                <button type="submit" disabled={creatingNote} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-container disabled:opacity-50 transition-all">
+                  {creatingNote ? 'Saving...' : 'Save Note'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {deleteDeviceConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+            <h4 className="text-lg font-bold text-on-surface mb-2">Delete Device?</h4>
+            <p className="text-sm text-on-surface-variant mb-6">This will move the device to the trash. You can restore it from there.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setDeleteDeviceConfirm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={handleDeleteDevice} disabled={deletingDevice} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all">
+                {deletingDevice ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
