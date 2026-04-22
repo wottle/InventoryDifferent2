@@ -340,7 +340,7 @@ const ICON_PATHS: Record<string, string> = {
   check_circle: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.41 14.09L5.5 11l1.41-1.41 3.09 3.08 7.09-7.07 1.41 1.41-8.5 8.5z",
   star: "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z",
   sell: "M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4a2 2 0 00-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z",
-  package: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4",
+  package: "M20 2H4c-1.1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.72V20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8.72c.57-.38 1-.99 1-1.71V4c0-1.1-.9-2-2-2zm-5 12H9v-2h6v2zm5-7H4V4l16-.01V7z",
   battery_alert: "M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4zM13 18h-2v-2h2v2zm0-4h-2V9h2v5z",
   favorite: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
   power_settings_new: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A6.92 6.92 0 0119 12c0 3.87-3.13 7-7 7A7 7 0 015 12c0-2.28 1.09-4.3 2.58-5.42L6.17 5.17A8.932 8.932 0 003 12a9 9 0 009 9 9 9 0 009-9c0-2.73-1.22-5.16-3.17-6.83z",
@@ -1418,6 +1418,23 @@ export default function DeviceDetailNew() {
                 </span>
               ))}
             </div>
+            {isAuthenticated && (() => {
+              const suggestions = device.category?.type === 'COMPUTER'
+                ? t.detail.accessorySuggestionsComputer
+                : t.detail.accessorySuggestionsOther;
+              const existing = new Set((device.accessories ?? []).map((a: any) => a.name));
+              const remaining = suggestions.filter((s: string) => !existing.has(s));
+              return remaining.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {remaining.map((s: string) => (
+                    <button key={s} type="button" onClick={() => handleAddAccessory(s)} disabled={addingAccessory}
+                      className="px-2 py-1 text-xs rounded-full border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-colors disabled:opacity-50">
+                      + {s}
+                    </button>
+                  ))}
+                </div>
+              ) : null;
+            })()}
             {isAuthenticated && (
               <form
                 onSubmit={e => { e.preventDefault(); handleAddAccessory(newAccessoryName); }}
