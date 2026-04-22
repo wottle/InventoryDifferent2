@@ -377,7 +377,7 @@ function IndicatorCard({ color, iconName, label, value }: { color: string; iconN
   };
   const c = colorMap[color] ?? colorMap.blue;
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
+    <div className="bg-[var(--card)] p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
       <div className={`w-12 h-12 rounded-full ${c.bg} flex items-center justify-center mb-3`}>
         <Icon name={iconName} className={`w-6 h-6 ${c.text}`} />
       </div>
@@ -656,10 +656,7 @@ export default function DeviceDetailNew() {
 
   const device = data.device;
   const images = device.images || [];
-  const heroImages = [...images]
-    .filter((i: any) => !i.isThumbnail)
-    .sort((a: any, b: any) => new Date(b.dateTaken).getTime() - new Date(a.dateTaken).getTime());
-  const heroImage = heroImages[0] || images[0];
+  const heroImage = pickThumbnail(images, isDark) as any;
   const photoGridImages = [...images].slice(0, 5);
   const sortedTasks = [...(device.maintenanceTasks ?? [])].sort(
     (a: any, b: any) => new Date(b.dateCompleted).getTime() - new Date(a.dateCompleted).getTime()
@@ -975,7 +972,7 @@ export default function DeviceDetailNew() {
   };
 
   return (
-    <div className="font-inter text-on-surface">
+    <div className="font-inter text-on-surface bg-[var(--background)]">
       <DeepLinkBanner deviceId={id as string} />
 
       {/* Back nav row */}
@@ -1083,7 +1080,7 @@ export default function DeviceDetailNew() {
           {isAuthenticated && (device.priceAcquired != null || device.estimatedValue != null) && (
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {device.priceAcquired != null && (
-                <div className="bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-primary">
+                <div className="bg-[var(--card)] p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-primary">
                   <div>
                     <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Acquisition Price</span>
                     <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.priceAcquired)}</span>
@@ -1097,7 +1094,7 @@ export default function DeviceDetailNew() {
                 </div>
               )}
               {device.estimatedValue != null && (
-                <div ref={valueHistoryRef} className="relative bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-tertiary">
+                <div ref={valueHistoryRef} className="relative bg-[var(--card)] p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-tertiary">
                   <div>
                     <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
                     <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
@@ -1114,7 +1111,7 @@ export default function DeviceDetailNew() {
                   </div>
                   {/* Value History Popover */}
                   {showValueHistory && (
-                    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 bg-white rounded-xl shadow-lg border border-outline-variant/20 p-4">
+                    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 bg-[var(--card)] rounded-xl shadow-lg border border-outline-variant/20 p-4">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-outline">Value History</span>
                         <button
@@ -1363,7 +1360,7 @@ export default function DeviceDetailNew() {
 
           {/* Quick Actions */}
           {isAuthenticated && (
-            <section className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
+            <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm border border-outline-variant/10">
               <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Quick Actions</h2>
               <div className="grid grid-cols-4 gap-3">
                 <button onClick={handleUpdateLastPowerOnDate} disabled={updatingPowerDate}
@@ -1374,21 +1371,21 @@ export default function DeviceDetailNew() {
                 <button onClick={() => setShowUploader(true)} title="Add Image"
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <Icon name="image_icon" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-primary">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
                     <Icon name="add" className="w-3 h-3" />
                   </span>
                 </button>
                 <button onClick={() => setShowMaintenanceForm(true)} title="Add Maintenance Log"
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <Icon name="build" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-primary">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
                     <Icon name="add" className="w-3 h-3" />
                   </span>
                 </button>
                 <button onClick={() => setShowNoteForm(true)} title="Add Note"
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <Icon name="description" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-primary">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
                     <Icon name="add" className="w-3 h-3" />
                   </span>
                 </button>
@@ -1398,7 +1395,7 @@ export default function DeviceDetailNew() {
 
           {/* Lifecycle Actions (auth-gated) */}
           {isAuthenticated && (
-            <section className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
+            <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm border border-outline-variant/10">
               <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Lifecycle Actions</h2>
               <div className="space-y-3">
                 {device.status !== 'PENDING_SALE' && (
@@ -1427,7 +1424,7 @@ export default function DeviceDetailNew() {
 
           {/* Photos Grid */}
           {images.length > 0 && (
-            <section className="bg-white p-8 rounded-xl shadow-sm">
+            <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Photos</h2>
                 <Link href={`/devices_new/${id}/photos`} className="text-xs text-primary font-semibold hover:underline">
@@ -1479,7 +1476,7 @@ export default function DeviceDetailNew() {
 
           {/* Recent Notes */}
           {(sortedNotes.length > 0 || isAuthenticated) && (
-            <section className="bg-white p-8 rounded-xl shadow-sm">
+            <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Recent Notes</h2>
                 <div className="flex items-center gap-3">
@@ -1528,7 +1525,7 @@ export default function DeviceDetailNew() {
 
       {showMaintenanceForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowMaintenanceForm(false)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
             <h4 className="text-lg font-bold text-on-surface mb-4">Add Maintenance Log</h4>
             <form onSubmit={handleCreateMaintenanceTask} className="space-y-4">
               <div>
@@ -1568,7 +1565,7 @@ export default function DeviceDetailNew() {
 
       {showNoteForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowNoteForm(false)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
             <h4 className="text-lg font-bold text-on-surface mb-4">Add Note</h4>
             <form onSubmit={handleCreateNote} className="space-y-4">
               <div>
@@ -1596,7 +1593,7 @@ export default function DeviceDetailNew() {
 
       {deleteDeviceConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
             <h4 className="text-lg font-bold text-on-surface mb-2">Delete Device?</h4>
             <p className="text-sm text-on-surface-variant mb-6">This will move the device to the trash. You can restore it from there.</p>
             <div className="flex justify-end gap-3">
