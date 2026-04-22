@@ -386,11 +386,11 @@ function SpecField({ label, value }: { label: string; value: string }) {
 
 function InfoNotes({ info }: { info: string }) {
   const [expanded, setExpanded] = useState(false);
-  const isLong = info.split('\n').length > 3 || info.length > 280;
+  const isLong = info.split('\n').length > 5 || info.length > 450;
   return (
     <div className="mt-10 pt-8 border-t border-outline-variant/20">
       <span className="text-outline text-[10px] uppercase tracking-tighter mb-2 block">Device Notes</span>
-      <p className={`text-on-surface-variant text-sm leading-relaxed whitespace-pre-wrap ${expanded ? '' : 'line-clamp-3'}`}>
+      <p className={`text-on-surface-variant text-sm leading-relaxed whitespace-pre-wrap ${expanded ? '' : 'line-clamp-5'}`}>
         {info}
       </p>
       {(isLong || expanded) && (
@@ -1218,7 +1218,7 @@ export default function DeviceDetailNew() {
           </section>
 
           {/* Financials (auth-gated) */}
-          {isAuthenticated && (device.priceAcquired != null || device.estimatedValue != null || device.soldPrice != null) && (() => {
+          {isAuthenticated && (device.priceAcquired != null || device.estimatedValue != null || device.soldPrice != null || device.listPrice != null) && (() => {
             const gainPct = device.priceAcquired && device.priceAcquired > 0 && device.estimatedValue != null
               ? ((device.estimatedValue - device.priceAcquired) / device.priceAcquired) * 100
               : null;
@@ -1233,7 +1233,8 @@ export default function DeviceDetailNew() {
               ? 'text-emerald-600 dark:text-emerald-400'
               : 'text-red-600 dark:text-red-400';
             const ebayQuery = encodeURIComponent(`${device.name}${device.additionalName ? ' ' + device.additionalName : ''}`);
-            const showRightCard = isDonated || device.status === 'RETURNED' || device.estimatedValue != null || device.soldPrice != null;
+            const isForSale = ['FOR_SALE','PENDING_SALE'].includes(device.status);
+            const showRightCard = isDonated || device.status === 'RETURNED' || device.estimatedValue != null || device.soldPrice != null || (isForSale && device.listPrice != null);
             return (
               <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Acquisition card */}
@@ -1285,6 +1286,26 @@ export default function DeviceDetailNew() {
                               <span className="text-on-surface-variant text-xs block mt-2">{formatDateForDisplay(device.soldDate)}</span>
                             )}
                           </>
+                        ) : isForSale ? (
+                          <>
+                            {device.listPrice != null && (
+                              <>
+                                <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">List Price</span>
+                                <span className="text-3xl font-bold text-on-surface mb-3">{formatCurrency(device.listPrice)}</span>
+                              </>
+                            )}
+                            {device.estimatedValue != null && (
+                              <>
+                                <span className="text-outline text-[10px] uppercase tracking-widest block mb-1 mt-2">Est. Value</span>
+                                <span className="text-xl font-semibold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
+                              </>
+                            )}
+                            {gainPct != null && (
+                              <span className={`${gainTextClass} text-sm font-bold block mt-1`}>
+                                {gainPct >= 0 ? '+' : ''}{gainPct.toFixed(1)}% since purchase
+                              </span>
+                            )}
+                          </>
                         ) : (
                           <>
                             <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
@@ -1302,18 +1323,18 @@ export default function DeviceDetailNew() {
                         {['COLLECTION','FOR_SALE','PENDING_SALE'].includes(device.status) && (
                           <Icon name="trending_up" className={`w-6 h-6 ${gainPct != null && gainPct < 0 ? 'text-red-400' : 'text-tertiary'}`} />
                         )}
+                        {device.estimatedValue != null && ['COLLECTION','FOR_SALE','PENDING_SALE'].includes(device.status) && chartData.length > 0 && (
+                          <button type="button" onClick={() => setShowValueHistory(v => !v)}
+                            className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
+                            History ↗
+                          </button>
+                        )}
                         {isCollection && (
                           <a href={`https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}&LH_Sold=1&LH_Complete=1`}
                             target="_blank" rel="noopener noreferrer"
                             className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
                             eBay Sold ↗
                           </a>
-                        )}
-                        {device.estimatedValue != null && ['COLLECTION','FOR_SALE','PENDING_SALE'].includes(device.status) && (
-                          <button type="button" onClick={() => setShowValueHistory(v => !v)}
-                            className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
-                            History ↗
-                          </button>
                         )}
                       </div>
                       )}
@@ -1674,34 +1695,41 @@ export default function DeviceDetailNew() {
                 {/* COLLECTION → For Sale */}
                 {device.status === 'COLLECTION' && (
                   <button onClick={() => handleSetStatus('FOR_SALE')} disabled={updatingStatus}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-blue-50 text-blue-800 rounded-xl text-sm font-bold hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 disabled:opacity-50 transition-all active:scale-[0.98]">
-                    <Icon name="sell" className="w-5 h-5" />
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-orange-50 text-orange-700 rounded-xl text-sm font-bold hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M22 9L20 4H4L2 9h2v11h7v-5h2v5h7V9h2zm-4 9h-3v-5H9v5H6V9h12v9zM4.27 9L5.6 5h12.8L19.73 9H4.27z"/></svg>
                     MARK FOR SALE
                   </button>
                 )}
                 {/* FOR_SALE → Pending Sale, Sold */}
                 {device.status === 'FOR_SALE' && (<>
                   <button onClick={() => handleSetStatus('PENDING_SALE')} disabled={updatingStatus}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-amber-50 text-amber-800 rounded-xl text-sm font-bold hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-300 disabled:opacity-50 transition-all active:scale-[0.98]">
-                    <Icon name="pending_actions" className="w-5 h-5" />
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-amber-50 text-amber-600 rounded-xl text-sm font-bold hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+                      <circle cx="11" cy="11" r="9" stroke="currentColor" strokeWidth="1.5"/>
+                      <line x1="11" y1="11" x2="4" y2="11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <line x1="11" y1="11" x2="11" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <circle cx="11" cy="11" r="1" fill="currentColor"/>
+                      <circle cx="18" cy="18" r="5" fill="currentColor"/>
+                      <path d="M15.5 18l1.75 1.75L21 15.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                     MARK PENDING SALE
                   </button>
                   <button onClick={() => setShowSoldModal(true)} disabled={updatingStatus}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-black disabled:opacity-50 transition-all active:scale-[0.98]">
-                    <Icon name="shopping_cart_checkout" className="w-5 h-5" />
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.88 14.76V18h-1.75v-1.28c-1.44-.28-2.63-1.17-2.63-2.83h1.75c0 .85.73 1.41 1.88 1.41 1.22 0 1.88-.6 1.88-1.41 0-.85-.74-1.27-2.13-1.63-1.87-.46-3.37-1.22-3.37-2.98 0-1.4 1.1-2.37 2.63-2.7V5.25h1.75v1.35c1.41.35 2.37 1.41 2.37 2.9H13.5c0-.85-.63-1.41-1.63-1.41-1.12 0-1.75.52-1.75 1.41 0 .79.83 1.2 2.13 1.58 2.12.58 3.37 1.5 3.37 3.08 0 1.42-1.1 2.37-2.74 2.6z"/></svg>
                     MARK SOLD
                   </button>
                 </>)}
                 {/* PENDING_SALE → For Sale, Sold */}
                 {device.status === 'PENDING_SALE' && (<>
                   <button onClick={() => handleSetStatus('FOR_SALE')} disabled={updatingStatus}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-blue-50 text-blue-800 rounded-xl text-sm font-bold hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 disabled:opacity-50 transition-all active:scale-[0.98]">
-                    <Icon name="sell" className="w-5 h-5" />
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-orange-50 text-orange-700 rounded-xl text-sm font-bold hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M22 9L20 4H4L2 9h2v11h7v-5h2v5h7V9h2zm-4 9h-3v-5H9v5H6V9h12v9zM4.27 9L5.6 5h12.8L19.73 9H4.27z"/></svg>
                     MARK FOR SALE
                   </button>
                   <button onClick={() => setShowSoldModal(true)} disabled={updatingStatus}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-black disabled:opacity-50 transition-all active:scale-[0.98]">
-                    <Icon name="shopping_cart_checkout" className="w-5 h-5" />
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.88 14.76V18h-1.75v-1.28c-1.44-.28-2.63-1.17-2.63-2.83h1.75c0 .85.73 1.41 1.88 1.41 1.22 0 1.88-.6 1.88-1.41 0-.85-.74-1.27-2.13-1.63-1.87-.46-3.37-1.22-3.37-2.98 0-1.4 1.1-2.37 2.63-2.7V5.25h1.75v1.35c1.41.35 2.37 1.41 2.37 2.9H13.5c0-.85-.63-1.41-1.63-1.41-1.12 0-1.75.52-1.75 1.41 0 .79.83 1.2 2.13 1.58 2.12.58 3.37 1.5 3.37 3.08 0 1.42-1.1 2.37-2.74 2.6z"/></svg>
                     MARK SOLD
                   </button>
                 </>)}
