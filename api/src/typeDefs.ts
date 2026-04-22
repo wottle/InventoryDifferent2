@@ -670,6 +670,14 @@ export const typeDefs = gql`
     cost: Float
   }
 
+  input MaintenanceTaskUpdateInput {
+    id: Int!
+    label: String!
+    dateCompleted: DateTime!
+    notes: String
+    cost: Float
+  }
+
   input NoteCreateInput {
     deviceId: Int!
     content: String!
@@ -783,6 +791,7 @@ export const typeDefs = gql`
     updateImage(input: ImageUpdateInput!): Image!
     deleteImage(id: Int!): Boolean!
     createMaintenanceTask(input: MaintenanceTaskCreateInput!): MaintenanceTask!
+    updateMaintenanceTask(input: MaintenanceTaskUpdateInput!): MaintenanceTask!
     deleteMaintenanceTask(id: Int!): Boolean!
     createNote(input: NoteCreateInput!): Note!
     updateNote(input: NoteUpdateInput!): Note!

@@ -2,9 +2,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Build argument for API URL (baked into Next.js at build time)
+# Build argument for API URL (baked into Next.js rewrites at build time)
 ARG NEXT_PUBLIC_API_URL=http://localhost:4000
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ARG API_URL=http://api:4000
+ENV API_URL=${API_URL}
 
 COPY package*.json ./
 

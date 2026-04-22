@@ -168,6 +168,18 @@ const CREATE_MAINTENANCE_TASK = gql`
   }
 `;
 
+const UPDATE_MAINTENANCE_TASK = gql`
+  mutation UpdateMaintenanceTask($input: MaintenanceTaskUpdateInput!) {
+    updateMaintenanceTask(input: $input) {
+      id
+      label
+      dateCompleted
+      notes
+      cost
+    }
+  }
+`;
+
 const DELETE_MAINTENANCE_TASK = gql`
   mutation DeleteMaintenanceTask($id: Int!) {
     deleteMaintenanceTask(id: $id)
@@ -333,7 +345,7 @@ const ICON_PATHS: Record<string, string> = {
   favorite: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
   power_settings_new: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A6.92 6.92 0 0119 12c0 3.87-3.13 7-7 7A7 7 0 015 12c0-2.28 1.09-4.3 2.58-5.42L6.17 5.17A8.932 8.932 0 003 12a9 9 0 009 9 9 9 0 009-9c0-2.73-1.22-5.16-3.17-6.83z",
   image_icon: "M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z",
-  build: "M13.78 15.3L19.78 21.3l2.11-2.16-5.97-6 2.11-2.14zM17.5 10c.28 0 .55-.03.8-.07l-3.58-3.58-.07.8c-.06.74.13 1.47.56 2.04.5.65 1.26 1.01 2.09 1.03.07 0 .14-.01.2-.02zM5.17 5.17L3.76 6.59 6.34 9.17 4.91 10.6l-2.58-2.58L.92 9.43l3.59 3.59L1.79 14.76.38 13.35 2 14.97l5.67 5.67 1.41-1.41-1.41-1.41 1.59-1.59 3.37 3.37 1.41-1.41-9.27-13z",
+  build: "M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z",
   description: "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z",
   pending_actions: "M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z",
   shopping_cart_checkout: "M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0019.99 4H5.21l-.94-2H1v2h2l3.6 7.59L5.25 14c-.16.28-.25.61-.25.96C5 16.1 5.9 17 7 17s2-.9 2-2-.9-2-2-2H5.82zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-1.99.9-1.99 2S13.9 22 15 22s2-.9 2-2-.9-2-2-2zm2-7H8.53L6.87 6H19l-2 5z",
@@ -345,6 +357,12 @@ const ICON_PATHS: Record<string, string> = {
   arrow_back: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z",
   open_in_new: "M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z",
   device_hub: "M17 16l-4-4V8.82C14.16 8.4 15 7.3 15 6c0-1.66-1.34-3-3-3S9 4.34 9 6c0 1.3.84 2.4 2 2.82V12l-4 4H3v5h5v-3.05l4-4.2 4 4.2V21h5v-5h-4z",
+  thumb_up: "M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z",
+  thumb_down: "M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z",
+  warning_triangle: "M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z",
+  crown: "M12 3L8 9L3 7L5 15H19L21 7L16 9Z M5 17H19V19H5Z",
+  star_outline: "M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z",
+  undo: "M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z",
 };
 
 function Icon({ name, className = "w-5 h-5" }: { name: string; className?: string }) {
@@ -366,23 +384,39 @@ function SpecField({ label, value }: { label: string; value: string }) {
   );
 }
 
-function IndicatorCard({ color, iconName, label, value }: { color: string; iconName: string; label: string; value: string }) {
+function InfoNotes({ info }: { info: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = info.split('\n').length > 3 || info.length > 280;
+  return (
+    <div className="mt-10 pt-8 border-t border-outline-variant/20">
+      <span className="text-outline text-[10px] uppercase tracking-tighter mb-2 block">Device Notes</span>
+      <p className={`text-on-surface-variant text-sm leading-relaxed whitespace-pre-wrap ${expanded ? '' : 'line-clamp-3'}`}>
+        {info}
+      </p>
+      {(isLong || expanded) && (
+        <button onClick={() => setExpanded(v => !v)} className="text-primary text-xs font-bold mt-2 hover:underline">
+          {expanded ? 'Collapse' : 'Expand'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function IndicatorCard({ color, iconName, label, value, active = true }: { color: string; iconName: string; label: string; value: string; active?: boolean }) {
   const colorMap: Record<string, { bg: string; text: string }> = {
     emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600' },
     amber: { bg: 'bg-amber-50', text: 'text-amber-600' },
     blue: { bg: 'bg-blue-50', text: 'text-blue-600' },
     purple: { bg: 'bg-purple-50', text: 'text-purple-600' },
     red: { bg: 'bg-red-50', text: 'text-red-600' },
-    pink: { bg: 'bg-pink-50', text: 'text-pink-600' },
+    yellow: { bg: 'bg-yellow-50', text: 'text-yellow-500' },
+    gray: { bg: 'bg-surface-container', text: 'text-outline' },
   };
-  const c = colorMap[color] ?? colorMap.blue;
+  const c = active ? (colorMap[color] ?? colorMap.gray) : colorMap.gray;
   return (
-    <div className="bg-[var(--card)] p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
-      <div className={`w-12 h-12 rounded-full ${c.bg} flex items-center justify-center mb-3`}>
-        <Icon name={iconName} className={`w-6 h-6 ${c.text}`} />
-      </div>
-      <span className="text-outline text-[10px] uppercase tracking-tighter mb-1">{label}</span>
-      <span className="text-on-surface font-bold">{value}</span>
+    <div className={`bg-[var(--card)] p-6 rounded-xl shadow-sm flex flex-col items-center text-center transition-opacity ${active ? 'opacity-100' : 'opacity-50'}`}>
+      <Icon name={iconName} className={`w-7 h-7 ${c.text} mb-3`} />
+      <span className="text-outline text-[10px] uppercase tracking-tighter">{value}</span>
     </div>
   );
 }
@@ -415,6 +449,13 @@ function formatDateForDisplay(dateString: string): string {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+function formatNoteDateForDisplay(dateString: string): string {
+  const d = new Date(dateString);
+  const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0;
+  if (!hasTime) return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  return d.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
 export default function DeviceDetailNew() {
   const params = useParams();
   const id = params.id;
@@ -442,6 +483,8 @@ export default function DeviceDetailNew() {
     cost: '',
   });
   const [deleteTaskId, setDeleteTaskId] = useState<number | null>(null);
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+  const [editTaskFormData, setEditTaskFormData] = useState({ label: '', dateCompleted: '', notes: '', cost: '' });
   const [showLabelSuggestions, setShowLabelSuggestions] = useState(false);
   const [showNoteForm, setShowNoteForm] = useState(false);
   const [noteFormData, setNoteFormData] = useState({
@@ -468,7 +511,12 @@ export default function DeviceDetailNew() {
   const [isRelationReversed, setIsRelationReversed] = useState(false);
   const [relationToRemoveId, setRelationToRemoveId] = useState<number | null>(null);
   const [deleteDeviceConfirm, setDeleteDeviceConfirm] = useState(false);
-  const [infoExpanded, setInfoExpanded] = useState(false);
+  const [showSoldModal, setShowSoldModal] = useState(false);
+  const [soldAmountInput, setSoldAmountInput] = useState('');
+  const [showReturnedModal, setShowReturnedModal] = useState(false);
+  const [repairFeeInput, setRepairFeeInput] = useState('');
+  const [logsExpanded, setLogsExpanded] = useState(false);
+  const [notesExpanded, setNotesExpanded] = useState(false);
   const [showValueHistory, setShowValueHistory] = useState(false);
   const valueHistoryRef = useRef<HTMLDivElement | null>(null);
 
@@ -486,6 +534,7 @@ export default function DeviceDetailNew() {
   });
 
   const [createMaintenanceTask, { loading: creatingTask }] = useMutation(CREATE_MAINTENANCE_TASK);
+  const [updateMaintenanceTask, { loading: updatingTask }] = useMutation(UPDATE_MAINTENANCE_TASK);
   const [deleteMaintenanceTask, { loading: deletingTask }] = useMutation(DELETE_MAINTENANCE_TASK);
   const [createNote, { loading: creatingNote }] = useMutation(CREATE_NOTE);
   const [updateNote, { loading: updatingNote }] = useMutation(UPDATE_NOTE);
@@ -697,6 +746,7 @@ export default function DeviceDetailNew() {
           tagId,
         },
       });
+      setTagToRemoveId(null);
       refetch();
     } catch (err) {
       console.error('Error removing tag:', err);
@@ -825,6 +875,40 @@ export default function DeviceDetailNew() {
       refetch();
     } catch (err) {
       console.error('Error deleting maintenance task:', err);
+    }
+  };
+
+  const handleEditTask = (task: any) => {
+    setEditingTaskId(task.id);
+    const utcDate = new Date(task.dateCompleted);
+    const local = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
+    setEditTaskFormData({
+      label: task.label,
+      dateCompleted: local.toISOString().slice(0, 10),
+      notes: task.notes ?? '',
+      cost: task.cost != null ? String(task.cost) : '',
+    });
+  };
+
+  const handleUpdateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTaskId) return;
+    try {
+      await updateMaintenanceTask({
+        variables: {
+          input: {
+            id: editingTaskId,
+            label: editTaskFormData.label,
+            dateCompleted: new Date(editTaskFormData.dateCompleted).toISOString(),
+            notes: editTaskFormData.notes || null,
+            cost: editTaskFormData.cost !== '' ? parseFloat(editTaskFormData.cost) : null,
+          },
+        },
+      });
+      setEditingTaskId(null);
+      refetch();
+    } catch (err) {
+      console.error('Error updating maintenance task:', err);
     }
   };
 
@@ -960,15 +1044,46 @@ export default function DeviceDetailNew() {
     }
   };
 
-  const handleSetStatus = async (newStatus: string) => {
+  const handleSetStatus = async (newStatus: string, extras?: { soldPrice?: number; soldDate?: string }) => {
     try {
       await updateDeviceStatus({
-        variables: { input: { id: device.id, status: newStatus } },
+        variables: { input: { id: device.id, status: newStatus, ...extras } },
       });
       refetch();
     } catch (err) {
       console.error('Error updating device status:', err);
     }
+  };
+
+  const handleMarkSold = async () => {
+    const price = parseFloat(soldAmountInput);
+    await handleSetStatus('SOLD', {
+      soldPrice: isNaN(price) ? undefined : price,
+      soldDate: new Date().toISOString(),
+    });
+    setShowSoldModal(false);
+    setSoldAmountInput('');
+  };
+
+  const handleMarkReturned = async () => {
+    const fee = parseFloat(repairFeeInput);
+    await handleSetStatus('RETURNED', {
+      soldPrice: isNaN(fee) || repairFeeInput.trim() === '' ? undefined : fee,
+      soldDate: new Date().toISOString(),
+    });
+    setShowReturnedModal(false);
+    setRepairFeeInput('');
+  };
+
+  const STATUS_PILL: Record<string, string> = {
+    COLLECTION:   'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+    FOR_SALE:     'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
+    PENDING_SALE: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
+    SOLD:         'bg-gray-200 text-gray-700 dark:bg-gray-700/60 dark:text-gray-300',
+    DONATED:      'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300',
+    IN_REPAIR:    'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300',
+    REPAIRED:     'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/40 dark:text-cyan-300',
+    RETURNED:     'bg-gray-200 text-gray-700 dark:bg-gray-700/60 dark:text-gray-300',
   };
 
   return (
@@ -990,11 +1105,17 @@ export default function DeviceDetailNew() {
               <Icon name="delete" className="w-5 h-5" />
             </button>
           )}
+          {isAuthenticated && (
+            <Link href={`/devices/${id}/edit`} title="Edit device" aria-label="Edit device" className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all">
+              <Icon name="edit" className="w-5 h-5" />
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Hero section — negative margins to break out of parent container padding */}
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+      {/* Hero + Quick Overview — side by side on xl, aligned with main grid */}
+      <div className="xl:grid xl:grid-cols-12 xl:gap-8 xl:items-stretch">
+        <div className="-mx-4 sm:-mx-6 lg:-mx-8 xl:mx-0 xl:col-span-8">
         <section className="relative h-[500px] w-full rounded-xl overflow-hidden group">
           {heroImage ? (
             <img
@@ -1007,140 +1128,225 @@ export default function DeviceDetailNew() {
               <Icon name="image_icon" className="w-16 h-16 text-outline" />
             </div>
           )}
+          <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/40 backdrop-blur-sm rounded-full text-white/70 text-lg font-medium tracking-tighter">
+            #{String(device.id).padStart(4, '0')}
+          </div>
           <div className="absolute inset-0 hero-gradient flex flex-col justify-end p-12">
             <span className="text-white/70 text-[11px] font-bold tracking-[0.2em] uppercase mb-2">
               {device.category?.name}{device.releaseYear ? ` • ${device.releaseYear}` : ''}
             </span>
             <h1 className="text-white text-5xl lg:text-6xl font-extrabold tracking-tighter mb-1 drop-shadow-lg">
-              {device.name}{device.additionalName ? ` ${device.additionalName}` : ''}
+              {device.name}
             </h1>
-            {device.info && (
-              <p className="text-white/80 text-xl font-light line-clamp-2 max-w-2xl">{device.info}</p>
+            {device.additionalName && (
+              <p className="text-white/80 text-xl font-light line-clamp-2 max-w-2xl">{device.additionalName}</p>
             )}
           </div>
-          {isAuthenticated && (
-            <Link
-              href={`/devices/${id}/edit`}
-              className="absolute top-6 right-6 flex items-center gap-2 px-6 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-xl text-white border border-white/30 rounded-full text-sm font-semibold transition-all"
-            >
-              <Icon name="edit" className="w-4 h-4" />
-              Edit Device
-            </Link>
-          )}
+        </section>
+        </div>
+
+        {/* Quick Overview — alongside hero on xl, stacked below on smaller */}
+        <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm mt-8 xl:mt-0 xl:col-span-4 xl:overflow-y-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Quick Overview</h2>
+            <span className={`${STATUS_PILL[device.status] ?? 'bg-surface-container-highest text-on-surface-variant'} px-3 py-1 rounded text-[10px] font-bold tracking-wider uppercase`}>
+              {(t.status as Record<string, string>)[device.status] ?? device.status}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-y-8 gap-x-8">
+            {device.manufacturer && <SpecField label="Manufacturer / Model #" value={`${device.manufacturer} ${device.modelNumber}`} />}
+            {device.serialNumber && <SpecField label="Serial Number" value={device.serialNumber} />}
+            {device.location && <SpecField label="Location" value={device.location.name} />}
+            {device.lastPowerOnDate && <SpecField label="Last Used" value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' })} />}
+          </div>
+          {device.info && <InfoNotes info={device.info} />}
         </section>
       </div>
 
       {/* ===== MAIN 12-COLUMN GRID ===== */}
-      <div className="grid grid-cols-12 gap-8 mt-12">
+      <div className="grid grid-cols-12 gap-8 mt-8">
 
         {/* ===== LEFT COLUMN (col-span-8) ===== */}
         <div className="col-span-12 lg:col-span-8 space-y-8">
 
-          {/* Quick Overview */}
-          <section className="bg-surface-container-low p-8 rounded-xl">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Quick Overview</h2>
-              <span className="bg-primary/10 text-primary px-3 py-1 rounded text-[10px] font-bold tracking-wider uppercase">
-                {(t.status as Record<string, string>)[device.status] ?? device.status}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-12">
-              {device.manufacturer && <SpecField label="Manufacturer" value={device.manufacturer} />}
-              {device.modelNumber && <SpecField label="Model Number" value={device.modelNumber} />}
-              {device.serialNumber && <SpecField label="Serial Number" value={device.serialNumber} />}
-              {device.location && <SpecField label="Location" value={device.location.name} />}
-              {device.lastPowerOnDate && <SpecField label="Last Used" value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' })} />}
-              {device.releaseYear && <SpecField label="Release Year" value={String(device.releaseYear)} />}
-            </div>
-            {device.info && (
-              <div className="mt-10 pt-8 border-t border-outline-variant/20">
-                <span className="text-outline text-[10px] uppercase tracking-tighter mb-2 block">Device Notes</span>
-                <p className={`text-on-surface-variant text-sm leading-relaxed ${infoExpanded ? '' : 'line-clamp-3'}`}>
-                  {device.info}
-                </p>
-                <button onClick={() => setInfoExpanded(v => !v)} className="text-primary text-xs font-bold mt-2 hover:underline">
-                  {infoExpanded ? 'Collapse' : 'Expand'}
-                </button>
-              </div>
-            )}
-          </section>
-
           {/* Indicator Cards */}
-          <section className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <IndicatorCard color="emerald" iconName="check_circle" label="Condition"
-              value={device.functionalStatus === 'YES' ? 'Fully Working' : device.functionalStatus === 'PARTIAL' ? 'Partially Working' : 'Not Working'} />
-            {device.rarity && <IndicatorCard color="amber" iconName="star" label="Rarity" value={device.rarity} />}
-            <IndicatorCard color="blue" iconName="sell" label="Status" value={(t.status as Record<string, string>)[device.status] ?? device.status} />
-            <IndicatorCard color="purple" iconName="package" label="Packaging" value={device.hasOriginalBox ? 'Original Box' : 'No Box'} />
-            <IndicatorCard color="red" iconName="battery_alert" label="PRAM Battery" value={device.isPramBatteryRemoved ? 'Removed' : 'Present'} />
-            <IndicatorCard color="pink" iconName="favorite" label="Priority" value={device.isFavorite ? 'Archival Fave' : 'Standard'} />
+          <section className="grid grid-cols-3 md:grid-cols-6 gap-4">
+            <IndicatorCard
+              iconName={device.functionalStatus === 'YES' ? 'thumb_up' : device.functionalStatus === 'PARTIAL' ? 'warning_triangle' : 'thumb_down'}
+              color={device.functionalStatus === 'YES' ? 'emerald' : device.functionalStatus === 'PARTIAL' ? 'amber' : 'red'}
+              label="Condition"
+              value={device.functionalStatus === 'YES' ? 'Fully Working' : device.functionalStatus === 'PARTIAL' ? 'Partially Working' : 'Not Working'}
+              active={true}
+            />
+            <IndicatorCard
+              iconName="crown"
+              color={device.rarity === 'UNCOMMON' ? 'yellow' : device.rarity === 'RARE' ? 'emerald' : device.rarity === 'VERY_RARE' ? 'blue' : device.rarity === 'EXTREMELY_RARE' ? 'purple' : 'gray'}
+              label="Rarity"
+              value={device.rarity ? device.rarity.split('_').map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(' ') : 'Common'}
+              active={!!device.rarity && device.rarity !== 'COMMON'}
+            />
+            <IndicatorCard
+              iconName="sell"
+              color={device.isAssetTagged ? 'emerald' : 'gray'}
+              label="Asset Tagged"
+              value={device.isAssetTagged ? 'Tagged' : 'Not Tagged'}
+              active={!!device.isAssetTagged}
+            />
+            <IndicatorCard
+              iconName="package"
+              color={device.hasOriginalBox ? 'emerald' : 'gray'}
+              label="Original Box"
+              value={device.hasOriginalBox ? 'Orig Box' : 'No Box'}
+              active={!!device.hasOriginalBox}
+            />
+            {device.category?.type === 'COMPUTER' && (
+              <IndicatorCard
+                iconName="battery_alert"
+                color={device.isPramBatteryRemoved ? 'emerald' : 'red'}
+                label="PRAM "
+                value={device.isPramBatteryRemoved ? 'PRAM Removed' : 'PRAM Installed'}
+                active={true}
+              />
+            )}
+            <IndicatorCard
+              iconName={device.isFavorite ? 'star' : 'star_outline'}
+              color={device.isFavorite ? 'yellow' : 'gray'}
+              label="Favorite"
+              value={device.isFavorite ? 'Favorite' : 'Not Favorite'}
+              active={!!device.isFavorite}
+            />
           </section>
 
           {/* Financials (auth-gated) */}
-          {isAuthenticated && (device.priceAcquired != null || device.estimatedValue != null) && (
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {device.priceAcquired != null && (
-                <div className="bg-[var(--card)] p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-primary">
-                  <div>
+          {isAuthenticated && (device.priceAcquired != null || device.estimatedValue != null || device.soldPrice != null) && (() => {
+            const gainPct = device.priceAcquired && device.priceAcquired > 0 && device.estimatedValue != null
+              ? ((device.estimatedValue - device.priceAcquired) / device.priceAcquired) * 100
+              : null;
+            const isDonated = device.status === 'DONATED';
+            const isCollection = !['SOLD','RETURNED','DONATED'].includes(device.status);
+            const valueBorderClass = isDonated
+              ? 'border-purple-500'
+              : isCollection && gainPct != null
+                ? (gainPct >= 0 ? 'border-emerald-500' : 'border-red-500')
+                : 'border-tertiary';
+            const gainTextClass = gainPct != null && gainPct >= 0
+              ? 'text-emerald-600 dark:text-emerald-400'
+              : 'text-red-600 dark:text-red-400';
+            const ebayQuery = encodeURIComponent(`${device.name}${device.additionalName ? ' ' + device.additionalName : ''}`);
+            const showRightCard = isDonated || device.status === 'RETURNED' || device.estimatedValue != null || device.soldPrice != null;
+            return (
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Acquisition card */}
+                {device.priceAcquired != null && (
+                  <div className="bg-[var(--card)] p-8 rounded-xl shadow-sm flex flex-col border-l-4 border-primary">
                     <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Acquisition Price</span>
-                    <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.priceAcquired)}</span>
-                  </div>
-                  {device.estimatedValue != null && (
-                    <div className="text-right">
-                      <span className="text-emerald-600 text-sm font-bold block">{calcGainPct(device.priceAcquired, device.estimatedValue)}</span>
-                      <span className="text-outline text-[10px] uppercase">since purchase</span>
+                    <span className="text-3xl font-bold text-on-surface mb-3">{formatCurrency(device.priceAcquired)}</span>
+                    <div className="flex flex-col gap-1 mt-auto">
+                      {device.dateAcquired && (
+                        <span className="text-on-surface-variant text-xs">{formatDateForDisplay(device.dateAcquired)}</span>
+                      )}
+                      {device.whereAcquired && (
+                        <span className="text-on-surface-variant text-xs">{device.whereAcquired}</span>
+                      )}
                     </div>
-                  )}
-                </div>
-              )}
-              {device.estimatedValue != null && (
-                <div ref={valueHistoryRef} className="relative bg-[var(--card)] p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-tertiary">
-                  <div>
-                    <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
-                    <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <Icon name="trending_up" className="w-6 h-6 text-tertiary" />
-                    <button
-                      type="button"
-                      onClick={() => setShowValueHistory(v => !v)}
-                      className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider"
-                    >
-                      History ↗
-                    </button>
-                  </div>
-                  {/* Value History Popover */}
-                  {showValueHistory && (
-                    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 bg-[var(--card)] rounded-xl shadow-lg border border-outline-variant/20 p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-outline">Value History</span>
-                        <button
-                          type="button"
-                          onClick={() => setShowValueHistory(false)}
-                          aria-label="Close value history"
-                          className="w-6 h-6 flex items-center justify-center rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors text-sm"
-                        >×</button>
+                )}
+                {/* Value / Sale / Donated card */}
+                {showRightCard && (
+                  <div ref={valueHistoryRef} className={`relative bg-[var(--card)] p-8 rounded-xl shadow-sm border-l-4 ${valueBorderClass}`}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        {isDonated ? (
+                          <>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Donated</span>
+                            {device.soldDate ? (
+                              <span className="text-2xl font-bold text-on-surface">{formatDateForDisplay(device.soldDate)}</span>
+                            ) : (
+                              <span className="text-on-surface-variant text-sm">No date recorded</span>
+                            )}
+                          </>
+                        ) : device.status === 'RETURNED' ? (
+                          <>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Repair Fee</span>
+                            {device.soldPrice != null ? (
+                              <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.soldPrice)}</span>
+                            ) : (
+                              <span className="text-on-surface-variant text-sm">No fee charged</span>
+                            )}
+                            {device.soldDate && (
+                              <span className="text-on-surface-variant text-xs block mt-2">Returned {formatDateForDisplay(device.soldDate)}</span>
+                            )}
+                          </>
+                        ) : device.soldPrice != null && !isCollection ? (
+                          <>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Sale Price</span>
+                            <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.soldPrice)}</span>
+                            {device.soldDate && (
+                              <span className="text-on-surface-variant text-xs block mt-2">{formatDateForDisplay(device.soldDate)}</span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
+                            <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
+                            {gainPct != null && (
+                              <span className={`${gainTextClass} text-sm font-bold block mt-1`}>
+                                {gainPct >= 0 ? '+' : ''}{gainPct.toFixed(1)}% since purchase
+                              </span>
+                            )}
+                          </>
+                        )}
                       </div>
-                      {chartData.length >= 2 ? (
-                        <DeviceValueChart data={chartData} />
-                      ) : (
-                        <p className="text-xs text-on-surface-variant py-4 text-center">No history yet — value snapshots build as you update this device.</p>
-                      )}
-                      {chartData.length > 0 && (
-                        <p className="text-[10px] text-outline mt-2 text-center">
-                          {chartData.length} snapshot{chartData.length !== 1 ? 's' : ''} · first recorded {new Date(Math.min(...chartData.map((c: any) => c.dateMs))).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                        </p>
+                      {!isDonated && (
+                      <div className="flex flex-col items-end gap-2">
+                        {['COLLECTION','FOR_SALE','PENDING_SALE'].includes(device.status) && (
+                          <Icon name="trending_up" className={`w-6 h-6 ${gainPct != null && gainPct < 0 ? 'text-red-400' : 'text-tertiary'}`} />
+                        )}
+                        {isCollection && (
+                          <a href={`https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}&LH_Sold=1&LH_Complete=1`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
+                            eBay Sold ↗
+                          </a>
+                        )}
+                        {device.estimatedValue != null && ['COLLECTION','FOR_SALE','PENDING_SALE'].includes(device.status) && (
+                          <button type="button" onClick={() => setShowValueHistory(v => !v)}
+                            className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
+                            History ↗
+                          </button>
+                        )}
+                      </div>
                       )}
                     </div>
-                  )}
-                </div>
-              )}
-            </section>
-          )}
+                    {/* Value History Popover */}
+                    {showValueHistory && (
+                      <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 bg-[var(--card)] rounded-xl shadow-lg border border-outline-variant/20 p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-outline">Value History</span>
+                          <button type="button" onClick={() => setShowValueHistory(false)} aria-label="Close value history"
+                            className="w-6 h-6 flex items-center justify-center rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors text-sm">×</button>
+                        </div>
+                        {chartData.length >= 2 ? (
+                          <DeviceValueChart data={chartData} />
+                        ) : (
+                          <p className="text-xs text-on-surface-variant py-4 text-center">No history yet — value snapshots build as you update this device.</p>
+                        )}
+                        {chartData.length > 0 && (
+                          <p className="text-[10px] text-outline mt-2 text-center">
+                            {chartData.length} snapshot{chartData.length !== 1 ? 's' : ''} · first recorded {new Date(Math.min(...chartData.map((c: any) => c.dateMs))).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </section>
+            );
+          })()}
 
           {/* Technical Specs */}
           {(device.cpu || device.ram || device.storage || device.graphics || device.operatingSystem) && (
-            <section className="bg-surface-container-low rounded-xl p-8">
+            <section className="bg-[var(--card)] rounded-xl p-8 shadow-sm">
               <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Technical Specifications</h2>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 {device.cpu && <SpecField label="Processor" value={device.cpu} />}
@@ -1162,7 +1368,7 @@ export default function DeviceDetailNew() {
 
           {/* Historical Notes */}
           {device.historicalNotes && (
-            <section className="py-4">
+            <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
               <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-4">Historical Significance</h2>
               <div className="text-on-surface-variant text-sm leading-relaxed space-y-4">
                 {device.historicalNotes.split('\n\n').map((para: string, i: number) => (
@@ -1338,17 +1544,78 @@ export default function DeviceDetailNew() {
                   <span key={tag.id} className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-surface-container text-on-surface rounded-full border border-outline-variant/20">
                     {tag.name}
                     {isAuthenticated && (
-                      <button type="button" onClick={() => handleRemoveTag(tag.id)} aria-label={`Remove tag ${tag.name}`} className="ml-1 hover:text-red-500 transition-colors">×</button>
+                      <button type="button" onClick={() => setTagToRemoveId(tag.id)} aria-label={`Remove tag ${tag.name}`} className="ml-1 hover:text-red-500 transition-colors">×</button>
                     )}
                   </span>
                 ))}
               </div>
               {isAuthenticated && (
                 <form onSubmit={handleAddTag} className="flex items-center gap-2 mt-2">
-                  <input type="text" value={tagName} onChange={e => setTagName(e.target.value)}
+                  <datalist id="tag-suggestions">
+                    {(tagsData?.tags ?? []).filter((t: any) => !(device.tags ?? []).some((dt: any) => dt.id === t.id)).map((t: any) => (
+                      <option key={t.id} value={t.name} />
+                    ))}
+                  </datalist>
+                  <input type="text" list="tag-suggestions" value={tagName} onChange={e => setTagName(e.target.value)}
                     placeholder="Add tag..." className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary" />
                   <button type="submit" disabled={addingTag || !tagName.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
                 </form>
+              )}
+            </section>
+          )}
+
+          {/* Recent Notes */}
+          {(sortedNotes.length > 0 || isAuthenticated) && (
+            <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Notes</h2>
+                {isAuthenticated && (
+                  <button onClick={() => setShowNoteForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                )}
+              </div>
+              {sortedNotes.length === 0 && <p className="text-on-surface-variant text-xs">No notes yet.</p>}
+              <div className="space-y-6">
+                {(notesExpanded ? sortedNotes : sortedNotes.slice(0, 3)).map((note: any) => (
+                  <div key={note.id} className="relative pl-6 border-l-2 border-primary-fixed-dim group/note">
+                    <span className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-primary" />
+                    {editingNoteId === note.id ? (
+                      <form onSubmit={handleUpdateNote} className="space-y-2 mt-1">
+                        <input type="datetime-local" value={editNoteFormData.date}
+                          onChange={e => setEditNoteFormData(p => ({ ...p, date: e.target.value }))}
+                          className="w-full px-2 py-1 text-xs bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" required />
+                        <textarea value={editNoteFormData.content}
+                          onChange={e => setEditNoteFormData(p => ({ ...p, content: e.target.value }))}
+                          rows={3} className="w-full px-2 py-1.5 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" required autoFocus />
+                        <div className="flex gap-2">
+                          <button type="submit" disabled={updatingNote} className="px-3 py-1 text-xs font-medium bg-primary text-white rounded-lg disabled:opacity-50">Save</button>
+                          <button type="button" onClick={() => setEditingNoteId(null)} className="px-3 py-1 text-xs font-medium bg-surface-container text-on-surface-variant rounded-lg">Cancel</button>
+                        </div>
+                      </form>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] text-outline uppercase tracking-tighter">{formatNoteDateForDisplay(note.date)}</span>
+                          {isAuthenticated && (
+                            <div className="flex gap-1 opacity-0 group-hover/note:opacity-100 transition-opacity">
+                              <button type="button" onClick={() => handleEditNote(note)} className="p-1 text-on-surface-variant hover:text-primary rounded transition-colors" title="Edit note">
+                                <Icon name="edit" className="w-3 h-3" />
+                              </button>
+                              <button type="button" onClick={() => setDeleteNoteId(note.id)} className="p-1 text-on-surface-variant hover:text-red-500 rounded transition-colors" title="Delete note">
+                                <Icon name="delete" className="w-3 h-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm italic text-on-surface-variant mt-1 leading-relaxed">{linkifyText(note.content)}</p>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {sortedNotes.length > 3 && (
+                <button onClick={() => setNotesExpanded(v => !v)} className="text-primary text-xs font-semibold hover:underline mt-6">
+                  {notesExpanded ? 'Collapse ↑' : `Show ${sortedNotes.length - 3} more ↓`}
+                </button>
               )}
             </section>
           )}
@@ -1360,34 +1627,40 @@ export default function DeviceDetailNew() {
 
           {/* Quick Actions */}
           {isAuthenticated && (
-            <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm border border-outline-variant/10">
+            <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm">
               <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Quick Actions</h2>
               <div className="grid grid-cols-4 gap-3">
                 <button onClick={handleUpdateLastPowerOnDate} disabled={updatingPowerDate}
                   title="Log Power On"
-                  className="flex flex-col items-center justify-center p-3.5 bg-primary text-white rounded-xl hover:bg-primary-container disabled:opacity-50 transition-all active:scale-95">
-                  <Icon name="power_settings_new" className="w-6 h-6" />
+                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95 disabled:opacity-50">
+                  <Icon name="power_settings_new" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
                 </button>
                 <button onClick={() => setShowUploader(true)} title="Add Image"
-                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
-                  <Icon name="image_icon" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
-                    <Icon name="add" className="w-3 h-3" />
-                  </span>
+                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
+                  <div className="relative">
+                    <Icon name="image_icon" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
+                    <span className="absolute -top-2 -right-2 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
+                      <Icon name="add" className="w-3 h-3" />
+                    </span>
+                  </div>
                 </button>
                 <button onClick={() => setShowMaintenanceForm(true)} title="Add Maintenance Log"
-                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
-                  <Icon name="build" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
-                    <Icon name="add" className="w-3 h-3" />
-                  </span>
+                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
+                  <div className="relative">
+                    <Icon name="build" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
+                    <span className="absolute -top-2 -right-2 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
+                      <Icon name="add" className="w-3 h-3" />
+                    </span>
+                  </div>
                 </button>
                 <button onClick={() => setShowNoteForm(true)} title="Add Note"
-                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
-                  <Icon name="description" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
-                    <Icon name="add" className="w-3 h-3" />
-                  </span>
+                  className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
+                  <div className="relative">
+                    <Icon name="description" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
+                    <span className="absolute -top-2 -right-2 w-4 h-4 bg-[var(--card)] rounded-full flex items-center justify-center text-primary">
+                      <Icon name="add" className="w-3 h-3" />
+                    </span>
+                  </div>
                 </button>
               </div>
             </section>
@@ -1395,27 +1668,75 @@ export default function DeviceDetailNew() {
 
           {/* Lifecycle Actions (auth-gated) */}
           {isAuthenticated && (
-            <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm border border-outline-variant/10">
+            <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm">
               <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Lifecycle Actions</h2>
               <div className="space-y-3">
-                {device.status !== 'PENDING_SALE' && (
-                  <button onClick={() => handleSetStatus('PENDING_SALE')} disabled={updatingStatus}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-sm font-bold hover:bg-amber-100 disabled:opacity-50 transition-all active:scale-[0.98]">
-                    <Icon name="pending_actions" className="w-5 h-5" />
-                    PENDING SALE
+                {/* COLLECTION → For Sale */}
+                {device.status === 'COLLECTION' && (
+                  <button onClick={() => handleSetStatus('FOR_SALE')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-blue-50 text-blue-800 rounded-xl text-sm font-bold hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="sell" className="w-5 h-5" />
+                    MARK FOR SALE
                   </button>
                 )}
-                {device.status !== 'SOLD' && (
-                  <button onClick={() => handleSetStatus('SOLD')} disabled={updatingStatus}
+                {/* FOR_SALE → Pending Sale, Sold */}
+                {device.status === 'FOR_SALE' && (<>
+                  <button onClick={() => handleSetStatus('PENDING_SALE')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-amber-50 text-amber-800 rounded-xl text-sm font-bold hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="pending_actions" className="w-5 h-5" />
+                    MARK PENDING SALE
+                  </button>
+                  <button onClick={() => setShowSoldModal(true)} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-black disabled:opacity-50 transition-all active:scale-[0.98]">
                     <Icon name="shopping_cart_checkout" className="w-5 h-5" />
-                    SOLD
+                    MARK SOLD
                   </button>
-                )}
-                {device.status !== 'COLLECTION' && (
+                </>)}
+                {/* PENDING_SALE → For Sale, Sold */}
+                {device.status === 'PENDING_SALE' && (<>
+                  <button onClick={() => handleSetStatus('FOR_SALE')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-blue-50 text-blue-800 rounded-xl text-sm font-bold hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="sell" className="w-5 h-5" />
+                    MARK FOR SALE
+                  </button>
+                  <button onClick={() => setShowSoldModal(true)} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-black disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="shopping_cart_checkout" className="w-5 h-5" />
+                    MARK SOLD
+                  </button>
+                </>)}
+                {/* IN_REPAIR → Repaired, Returned */}
+                {device.status === 'IN_REPAIR' && (<>
+                  <button onClick={() => handleSetStatus('REPAIRED')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-emerald-50 text-emerald-800 rounded-xl text-sm font-bold hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="check_circle" className="w-5 h-5" />
+                    MARK REPAIRED
+                  </button>
+                  <button onClick={() => setShowReturnedModal(true)} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="undo" className="w-5 h-5" />
+                    MARK RETURNED
+                  </button>
+                </>)}
+                {/* REPAIRED → In Repair, Returned */}
+                {device.status === 'REPAIRED' && (<>
+                  <button onClick={() => handleSetStatus('IN_REPAIR')} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-teal-50 text-teal-800 rounded-xl text-sm font-bold hover:bg-teal-100 dark:bg-teal-900/20 dark:text-teal-300 disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="build" className="w-5 h-5" />
+                    MARK IN REPAIR
+                  </button>
+                  <button onClick={() => setShowReturnedModal(true)} disabled={updatingStatus}
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="undo" className="w-5 h-5" />
+                    MARK RETURNED
+                  </button>
+                </>)}
+                {/* All other statuses → Back to Collection */}
+                {!['COLLECTION','FOR_SALE','PENDING_SALE','IN_REPAIR','REPAIRED'].includes(device.status) && (
                   <button onClick={() => handleSetStatus('COLLECTION')} disabled={updatingStatus}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface border border-outline-variant/20 rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
-                    Back to Collection
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
+                    <Icon name="arrow_back" className="w-5 h-5" />
+                    BACK TO COLLECTION
                   </button>
                 )}
               </div>
@@ -1423,79 +1744,122 @@ export default function DeviceDetailNew() {
           )}
 
           {/* Photos Grid */}
-          {images.length > 0 && (
+          {(images.length > 0 || isAuthenticated) && (
             <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Photos</h2>
-                <Link href={`/devices_new/${id}/photos`} className="text-xs text-primary font-semibold hover:underline">
-                  View all →
-                </Link>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {photoGridImages.slice(0, 5).map((img: any) => (
-                  <div key={img.id} className="aspect-square bg-surface-container-low rounded-lg overflow-hidden group cursor-pointer">
-                    <img src={`${API_BASE_URL}${img.thumbnailPath || img.path}`} alt={img.caption || ''} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-300" />
-                  </div>
-                ))}
-                {images.length > 5 && (
-                  <div className="aspect-square bg-slate-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors">
-                    <span className="text-white font-bold text-sm">+{images.length - 5} more</span>
-                  </div>
+                {images.length > 0 && (
+                  <Link href={`/devices_new/${id}/photos`} className="text-xs text-primary font-semibold hover:underline">
+                    View all →
+                  </Link>
                 )}
               </div>
+              {(() => {
+                const needsOverflow = images.length > 7;
+                const displayPhotos = needsOverflow ? images.slice(0, 6) : images.slice(0, 7);
+                const overflowCount = needsOverflow ? images.length - 6 : 0;
+                const tiles: { type: string; img?: any; count?: number }[] = [];
+                displayPhotos.forEach((img: any) => tiles.push({ type: 'photo', img }));
+                if (needsOverflow) tiles.push({ type: 'overflow', count: overflowCount });
+                while (tiles.length < 7) tiles.push({ type: 'empty' });
+                tiles.push({ type: 'add' });
+                return (
+                  <div className="grid grid-cols-4 gap-2">
+                    {tiles.map((tile, i) => {
+                      if (tile.type === 'photo') return (
+                        <div key={tile.img.id} className="aspect-square bg-surface-container-low rounded-lg overflow-hidden group cursor-pointer">
+                          <img src={`${API_BASE_URL}${tile.img.thumbnailPath || tile.img.path}`} alt={tile.img.caption || ''} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-300" />
+                        </div>
+                      );
+                      if (tile.type === 'overflow') return (
+                        <Link key="overflow" href={`/devices_new/${id}/photos`} className="aspect-square bg-surface-container rounded-lg flex flex-col items-center justify-center hover:bg-surface-container-high transition-all group active:scale-95 cursor-pointer">
+                          <span className="text-on-surface font-bold text-2xl transition-transform duration-300 group-hover:scale-110">+{tile.count}</span>
+                          <span className="text-outline text-[10px] uppercase tracking-tighter mt-0.5 transition-colors group-hover:text-primary">more</span>
+                        </Link>
+                      );
+                      if (tile.type === 'add') return (
+                        <button key="add"
+                          onClick={isAuthenticated ? () => setShowUploader(true) : undefined}
+                          className={`aspect-square rounded-lg border-2 border-dashed flex flex-col items-center justify-center transition-colors ${isAuthenticated ? 'border-outline-variant hover:border-primary hover:bg-primary/5 cursor-pointer group' : 'border-outline-variant/30 opacity-40 cursor-default'}`}
+                        >
+                          <Icon name="add" className={`w-8 h-8 text-outline ${isAuthenticated ? 'group-hover:text-primary transition-colors' : ''}`} />
+                        </button>
+                      );
+                      return <div key={`empty-${i}`} className="aspect-square bg-surface-container-low rounded-lg" />;
+                    })}
+                  </div>
+                );
+              })()}
             </section>
           )}
 
           {/* Maintenance Logs */}
           {(sortedTasks.length > 0 || isAuthenticated) && (
-            <section className="bg-surface-container-highest p-8 rounded-xl">
+            <section className="bg-[var(--card)] p-8 rounded-xl">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Maintenance Logs</h2>
-                <div className="flex items-center gap-3">
-                  <Link href={`/devices_new/${id}/logs`} className="text-xs text-primary font-semibold hover:underline">View all →</Link>
-                  {isAuthenticated && (
-                    <button onClick={() => setShowMaintenanceForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
-                  )}
-                </div>
+                {isAuthenticated && (
+                  <button onClick={() => setShowMaintenanceForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                )}
               </div>
               {sortedTasks.length === 0 && <p className="text-on-surface-variant text-xs">No maintenance logs yet.</p>}
               <div className="space-y-4">
-                {sortedTasks.slice(0, 5).map((task: any) => (
-                  <div key={task.id} className="bg-surface-container-lowest p-4 rounded-lg">
-                    <div className="flex justify-between mb-1">
-                      <span className="font-bold text-sm text-on-surface">{task.label}</span>
-                      <span className="text-[10px] text-outline">{formatDateForDisplay(task.dateCompleted).toUpperCase()}</span>
-                    </div>
-                    {task.notes && <p className="text-xs text-on-surface-variant">{task.notes}</p>}
-                    {task.cost != null && <p className="text-xs text-on-surface-variant mt-1">Cost: {formatCurrency(task.cost)}</p>}
+                {(logsExpanded ? sortedTasks : sortedTasks.slice(0, 5)).map((task: any) => (
+                  <div key={task.id} className="bg-surface-container-lowest p-4 rounded-lg group/task">
+                    {editingTaskId === task.id ? (
+                      <form onSubmit={handleUpdateTask} className="space-y-2">
+                        <datalist id="edit-task-label-suggestions">
+                          {[...new Set(sortedTasks.map((t: any) => t.label))].map((label: any) => (
+                            <option key={label} value={label} />
+                          ))}
+                        </datalist>
+                        <input type="text" list="edit-task-label-suggestions" value={editTaskFormData.label}
+                          onChange={e => setEditTaskFormData(p => ({ ...p, label: e.target.value }))}
+                          className="w-full px-2 py-1 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" required autoFocus />
+                        <input type="date" value={editTaskFormData.dateCompleted}
+                          onChange={e => setEditTaskFormData(p => ({ ...p, dateCompleted: e.target.value }))}
+                          className="w-full px-2 py-1 text-xs bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" required />
+                        <textarea value={editTaskFormData.notes}
+                          onChange={e => setEditTaskFormData(p => ({ ...p, notes: e.target.value }))}
+                          rows={2} placeholder="Notes (optional)" className="w-full px-2 py-1.5 text-xs bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" />
+                        <input type="number" step="0.01" value={editTaskFormData.cost}
+                          onChange={e => setEditTaskFormData(p => ({ ...p, cost: e.target.value }))}
+                          placeholder="Cost (optional)" className="w-full px-2 py-1 text-xs bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" />
+                        <div className="flex gap-2 pt-1">
+                          <button type="submit" disabled={updatingTask} className="px-3 py-1 text-xs font-medium bg-primary text-white rounded-lg disabled:opacity-50">Save</button>
+                          <button type="button" onClick={() => setEditingTaskId(null)} className="px-3 py-1 text-xs font-medium bg-surface-container text-on-surface-variant rounded-lg">Cancel</button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="flex justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="font-bold text-sm text-on-surface">{task.label}</span>
+                            <span className="text-[10px] text-outline shrink-0 ml-2">{formatDateForDisplay(task.dateCompleted).toUpperCase()}</span>
+                          </div>
+                          {task.notes && <p className="text-xs text-on-surface-variant">{task.notes}</p>}
+                          {task.cost != null && <p className="text-xs text-on-surface-variant mt-1">Cost: {formatCurrency(task.cost)}</p>}
+                        </div>
+                        {isAuthenticated && (
+                          <div className="flex flex-col gap-1 opacity-0 group-hover/task:opacity-100 transition-opacity shrink-0">
+                            <button type="button" onClick={() => handleEditTask(task)} className="p-1 text-on-surface-variant hover:text-primary rounded transition-colors" title="Edit">
+                              <Icon name="edit" className="w-3.5 h-3.5" />
+                            </button>
+                            <button type="button" onClick={() => setDeleteTaskId(task.id)} className="p-1 text-on-surface-variant hover:text-red-500 rounded transition-colors" title="Delete">
+                              <Icon name="delete" className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-            </section>
-          )}
-
-          {/* Recent Notes */}
-          {(sortedNotes.length > 0 || isAuthenticated) && (
-            <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Recent Notes</h2>
-                <div className="flex items-center gap-3">
-                  <Link href={`/devices_new/${id}/notes`} className="text-xs text-primary font-semibold hover:underline">View all →</Link>
-                  {isAuthenticated && (
-                    <button onClick={() => setShowNoteForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
-                  )}
-                </div>
-              </div>
-              {sortedNotes.length === 0 && <p className="text-on-surface-variant text-xs">No notes yet.</p>}
-              <div className="space-y-6">
-                {sortedNotes.slice(0, 5).map((note: any) => (
-                  <div key={note.id} className="relative pl-6 border-l-2 border-primary-fixed-dim">
-                    <span className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-primary" />
-                    <span className="text-[10px] text-outline block uppercase tracking-tighter">{formatDateForDisplay(note.date)}</span>
-                    <p className="text-sm italic text-on-surface-variant mt-1 leading-relaxed">{linkifyText(note.content)}</p>
-                  </div>
-                ))}
-              </div>
+              {sortedTasks.length > 5 && (
+                <button onClick={() => setLogsExpanded(v => !v)} className="text-primary text-xs font-semibold hover:underline mt-4">
+                  {logsExpanded ? 'Collapse ↑' : `Show ${sortedTasks.length - 5} more ↓`}
+                </button>
+              )}
             </section>
           )}
 
@@ -1530,27 +1894,32 @@ export default function DeviceDetailNew() {
             <form onSubmit={handleCreateMaintenanceTask} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Label *</label>
-                <input type="text" value={maintenanceFormData.label}
+                <datalist id="maintenance-label-suggestions">
+                  {[...new Set(sortedTasks.map((t: any) => t.label))].map((label: any) => (
+                    <option key={label} value={label} />
+                  ))}
+                </datalist>
+                <input type="text" list="maintenance-label-suggestions" value={maintenanceFormData.label}
                   onChange={e => setMaintenanceFormData(p => ({ ...p, label: e.target.value }))}
-                  className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" required autoFocus />
+                  className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" required autoFocus />
               </div>
               <div>
                 <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Date Completed *</label>
                 <input type="date" value={maintenanceFormData.dateCompleted}
                   onChange={e => setMaintenanceFormData(p => ({ ...p, dateCompleted: e.target.value }))}
-                  className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" required />
+                  className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" required />
               </div>
               <div>
                 <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Notes</label>
                 <textarea value={maintenanceFormData.notes}
                   onChange={e => setMaintenanceFormData(p => ({ ...p, notes: e.target.value }))}
-                  rows={3} className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" />
+                  rows={3} className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Cost</label>
                 <input type="number" step="0.01" value={maintenanceFormData.cost}
                   onChange={e => setMaintenanceFormData(p => ({ ...p, cost: e.target.value }))}
-                  className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" />
+                  className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" />
               </div>
               <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={() => setShowMaintenanceForm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
@@ -1587,6 +1956,93 @@ export default function DeviceDetailNew() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showSoldModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+            <h4 className="text-lg font-bold text-on-surface mb-2">Mark as Sold</h4>
+            <p className="text-sm text-on-surface-variant mb-4">Enter the sold price. The sold date will be set to today.</p>
+            <div className="relative mb-4">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+              <input type="number" min="0" step="0.01" placeholder="0.00" value={soldAmountInput}
+                onChange={e => setSoldAmountInput(e.target.value)}
+                className="w-full pl-7 pr-4 py-2 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary" />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => { setShowSoldModal(false); setSoldAmountInput(''); }} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={handleMarkSold} disabled={updatingStatus} className="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-black disabled:opacity-50 transition-all">
+                {updatingStatus ? 'Saving...' : 'Mark Sold'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showReturnedModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+            <h4 className="text-lg font-bold text-on-surface mb-2">Mark as Returned</h4>
+            <p className="text-sm text-on-surface-variant mb-4">Enter the repair fee charged (optional). The return date will be set to today.</p>
+            <div className="relative mb-4">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+              <input type="number" min="0" step="0.01" placeholder="0.00 (optional)" value={repairFeeInput}
+                onChange={e => setRepairFeeInput(e.target.value)}
+                className="w-full pl-7 pr-4 py-2 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary" />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => { setShowReturnedModal(false); setRepairFeeInput(''); }} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={handleMarkReturned} disabled={updatingStatus} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-container disabled:opacity-50 transition-all">
+                {updatingStatus ? 'Saving...' : 'Mark Returned'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tagToRemoveId !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+            <h4 className="text-lg font-bold text-on-surface mb-2">Remove Tag?</h4>
+            <p className="text-sm text-on-surface-variant mb-6">
+              Remove &ldquo;{(device.tags ?? []).find((t: any) => t.id === tagToRemoveId)?.name}&rdquo; from this device?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setTagToRemoveId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={() => handleRemoveTag(tagToRemoveId)} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all">Remove</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteTaskId !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+            <h4 className="text-lg font-bold text-on-surface mb-2">Delete Maintenance Log?</h4>
+            <p className="text-sm text-on-surface-variant mb-6">This log entry will be permanently deleted.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setDeleteTaskId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={handleDeleteMaintenanceTask} disabled={deletingTask} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all">
+                {deletingTask ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteNoteId !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+            <h4 className="text-lg font-bold text-on-surface mb-2">Delete Note?</h4>
+            <p className="text-sm text-on-surface-variant mb-6">This note will be permanently deleted.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setDeleteNoteId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={handleDeleteNote} disabled={deletingNote} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all">
+                {deletingNote ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
           </div>
         </div>
       )}

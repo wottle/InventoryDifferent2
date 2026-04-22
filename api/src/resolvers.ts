@@ -1385,6 +1385,19 @@ export const resolvers = {
                 },
             });
         },
+        updateMaintenanceTask: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const { id, label, dateCompleted, notes, cost } = args.input;
+            return context.prisma.maintenanceTask.update({
+                where: { id },
+                data: {
+                    label,
+                    dateCompleted: new Date(dateCompleted),
+                    notes: notes || null,
+                    cost: cost != null ? cost : null,
+                },
+            });
+        },
         deleteMaintenanceTask: async (_parent: any, args: { id: number }, context: Context) => {
             requireAuth(context);
             await context.prisma.maintenanceTask.delete({

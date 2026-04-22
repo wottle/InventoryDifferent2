@@ -328,7 +328,7 @@ export default async function HomePage() {
                         </p>
                       </div>
                       <span className="text-primary font-black italic text-lg">
-                        #{String(device.id).padStart(3, '0')}
+                        #{String(device.id).padStart(4, '0')}
                       </span>
                     </div>
                     {description && (
