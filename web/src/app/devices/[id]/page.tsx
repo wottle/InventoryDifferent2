@@ -714,7 +714,7 @@ export default function DeviceDetailNew() {
   });
   const heroImage = pickThumbnail(images, isDark) as any;
   const photoGridImages = [...images].slice(0, 5);
-  const navImages = images.filter((img: any) => !img.isThumbnail);
+  const navImages = images;
 
   const openLightbox = (index: number) => {
     setSelectedImage(index);
