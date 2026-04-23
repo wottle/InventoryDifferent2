@@ -58,6 +58,15 @@ const GET_DEVICE = gql`
         isPublic
         sortOrder
       }
+      accessories {
+        id
+        name
+      }
+      links {
+        id
+        label
+        url
+      }
     }
   }
 `;
