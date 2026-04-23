@@ -5,9 +5,11 @@ All notable changes to InventoryDifferent will be documented here.
 ## [Unreleased]
 
 ### Added
-- New device detail design preview at /devices_new/[id] — matches iOS and showcase aesthetic
+- Redesigned device detail page — cinematic hero, editorial 12-column layout, accessories, related devices, links, and photos sub-page
+- Value history popover on the Estimated Value card — chart anchors to the card, dismisses on outside click or Escape
 
 ### Changed
+- Device detail (/devices) now uses the new Technical Atelier design; old layout archived at /devices-old
 - Refined list and card view typography to match the device detail editorial style
 
 ---
