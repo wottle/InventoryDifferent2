@@ -2,7 +2,6 @@
 
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import Link from "next/link";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
 
@@ -58,21 +57,7 @@ export default function UsagePage() {
   return (
     <div className="min-h-screen bg-[var(--background)] p-4 sm:p-6">
       <div className="mx-auto max-w-4xl space-y-6">
-        <header className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-light text-[var(--foreground)]">{t.pages.usage.title}</h1>
-            <p className="text-sm text-[var(--muted-foreground)]">{t.pages.usage.subtitle}</p>
-          </div>
-          <Link
-            href="/"
-            className="btn-retro inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--foreground)]"
-          >
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            {t.common.back}
-          </Link>
-        </header>
+        <h1 className="text-2xl font-light text-[var(--foreground)] mb-6">{t.pages.usage.title}</h1>
 
         <section className="rounded border border-[var(--border)] bg-[var(--card)] p-6 card-retro">
           <h2 className="mb-4 text-lg font-semibold text-[var(--foreground)]">{t.pages.usage.dataCounts}</h2>
