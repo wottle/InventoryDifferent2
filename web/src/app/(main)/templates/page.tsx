@@ -312,9 +312,6 @@ export default function TemplatesPage() {
           >
             {t.pages.templates.newTemplate}
           </button>
-          <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-            {t.common.back}
-          </Link>
         </div>
       </header>
 

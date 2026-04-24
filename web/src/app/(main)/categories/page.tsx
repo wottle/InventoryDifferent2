@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import Link from "next/link";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
 
@@ -145,15 +144,7 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen font-sans">
-      <header className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.categories.title}</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">{t.pages.categories.subtitle}</p>
-        </div>
-        <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-          {t.common.back}
-        </Link>
-      </header>
+      <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)] mb-6">{t.pages.categories.title}</h1>
 
       <section className="mb-6 rounded border border-[var(--border)] bg-[var(--card)] p-4 card-retro">
         <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{t.pages.categories.addSection}</h2>

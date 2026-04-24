@@ -10,7 +10,7 @@ import { useT } from "../../../i18n/context";
 
 import type { PeriodBucket } from "../../../components/PeriodicCashFlowChart";
 
-const PeriodicCashFlowChart = dynamic(() => import("../../components/PeriodicCashFlowChart"), {
+const PeriodicCashFlowChart = dynamic(() => import("../../../components/PeriodicCashFlowChart"), {
   ssr: false,
   loading: () => (
     <div className="p-4">
@@ -19,7 +19,7 @@ const PeriodicCashFlowChart = dynamic(() => import("../../components/PeriodicCas
   ),
 });
 
-const FinancialChart = dynamic(() => import("../../components/FinancialChart"), {
+const FinancialChart = dynamic(() => import("../../../components/FinancialChart"), {
   ssr: false,
   loading: () => (
     <div className="p-4">
@@ -190,17 +190,7 @@ export default function FinancialsPage() {
 
   return (
     <div className="min-h-screen font-sans">
-      <header className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">{t.pages.financials.title}</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">
-            {t.pages.financials.subtitle}
-          </p>
-        </div>
-        <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-          {t.common.back}
-        </Link>
-      </header>
+      <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)] mb-6">{t.pages.financials.title}</h1>
 
       {loading && (
         <div className="p-4">
