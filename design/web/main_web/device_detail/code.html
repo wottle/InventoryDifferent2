@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2e3034",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#1a1c1f",
+                    "inverse-primary": "#adc6ff",
+                    "primary-fixed-dim": "#adc6ff",
+                    "surface-variant": "#e2e2e7",
+                    "surface-tint": "#005bc1",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#ffe261",
+                    "outline": "#717786",
+                    "background": "#f9f9fe",
+                    "primary-container": "#0070eb",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#c5aa22",
+                    "primary": "#0058bc",
+                    "on-primary-container": "#fefcff",
+                    "error": "#ba1a1a",
+                    "tertiary": "#6f5d00",
+                    "surface-container-high": "#e8e8ed",
+                    "on-secondary": "#ffffff",
+                    "secondary-container": "#e0dfe4",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed": "#e3e2e7",
+                    "on-tertiary-fixed": "#221b00",
+                    "on-background": "#1a1c1f",
+                    "surface": "#f9f9fe",
+                    "secondary-fixed-dim": "#c6c6cb",
+                    "on-tertiary-fixed-variant": "#534600",
+                    "on-primary-fixed-variant": "#004493",
+                    "tertiary-fixed-dim": "#e2c53e",
+                    "outline-variant": "#c1c6d7",
+                    "on-secondary-fixed-variant": "#46464b",
+                    "on-tertiary-container": "#4b3f00",
+                    "secondary": "#5d5e63",
+                    "on-error": "#ffffff",
+                    "surface-container": "#ededf2",
+                    "surface-container-low": "#f3f3f8",
+                    "on-secondary-fixed": "#1a1b1f",
+                    "surface-bright": "#f9f9fe",
+                    "on-secondary-container": "#626267",
+                    "surface-dim": "#d9dade",
+                    "surface-container-highest": "#e2e2e7",
+                    "inverse-on-surface": "#f0f0f5",
+                    "on-surface-variant": "#414755",
+                    "on-primary-fixed": "#001a41",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+        .hero-gradient {
+            background: linear-gradient(to top, rgba(26, 28, 31, 0.9) 0%, rgba(26, 28, 31, 0.4) 40%, rgba(26, 28, 31, 0) 100%);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed-dim">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 glass-header shadow-[0_4px_30px_rgba(0,0,0,0.04)] transition-colors duration-300">
+<div class="flex justify-between items-center h-16 px-8 max-w-[1440px] mx-auto">
+<div class="text-xl font-bold tracking-tighter text-slate-900">InventoryDifferent</div>
+<nav class="hidden md:flex items-center space-x-8 font-['Inter'] tracking-tight text-sm font-medium">
+<a class="text-[#0058bc] border-b-2 border-[#0058bc] pb-1" href="#">Devices</a>
+<a class="text-slate-500 hover:text-slate-900 transition-all rounded-lg" href="#">Financials</a>
+<a class="text-slate-500 hover:text-slate-900 transition-all rounded-lg" href="#">Wishlist</a>
+<a class="text-slate-500 hover:text-slate-900 transition-all rounded-lg" href="#">More</a>
+</nav>
+<div class="flex items-center space-x-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-full text-xs w-64 focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest outline-none transition-all" placeholder="Search archive..." type="text"/>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-1.5 rounded-full text-sm font-medium hover:opacity-90 active:scale-95 transition-all">Add Item</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-slate-100/50 p-2 rounded-lg transition-all" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-slate-100/50 p-2 rounded-lg transition-all" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<main class="pt-16 pb-24 max-w-[1440px] mx-auto px-8">
+<!-- Hero Section -->
+<section class="mt-8 relative h-[500px] w-full rounded-xl overflow-hidden shadow-2xl group">
+<img alt="Stunning cinematic shot of a vintage Macintosh 128k on a minimalist white desk" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBW1GnHqKU8RG_5nzKSt0X_gC9hb2UK6DOar4bpHmK_BwuZig2PfOfqNXFwJShVIs4ox5SW0u6oSxkggPE5sVBG5RqyPN4zhI6Xv5M9SiG1pH8NuRRxGld3JjnbD1NnrhKjE55ohbP_FxV1uxDC5ybGla0qsTqPMOm1iZzqnuNQbEggkYrSP3uJ3pxIpPn-CClpb9wxVbrb-clBKXfWqeqYS3cExRSRcX0N-rxn4RDYRmxJI76hpox9KeWI9KwcPCckc7D9j9qHQbs"/>
+<div class="absolute inset-0 hero-gradient flex flex-col justify-end p-12">
+<span class="text-white/70 font-label text-sm tracking-[0.2em] uppercase mb-2">Desktop Computer • 1984</span>
+<h1 class="text-white text-6xl font-extrabold tracking-tighter mb-1">Macintosh 128k</h1>
+<p class="text-white/80 text-xl font-light">The original Apple Macintosh computer</p>
+</div>
+<button class="absolute top-6 right-6 flex items-center gap-2 px-6 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-xl text-white border border-white/30 rounded-full text-sm font-semibold transition-all active:scale-95">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">edit</span>
+            Edit Device
+        </button>
+</section>
+<div class="grid grid-cols-12 gap-8 mt-12">
+<!-- Left Column: Overview, Indicators, Financials, Specs, History -->
+<div class="col-span-12 lg:col-span-8 space-y-8">
+<!-- Quick Overview -->
+<section class="bg-surface-container-low p-8 rounded-xl">
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest">Quick Overview</h2>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded text-[10px] font-bold tracking-wider uppercase">In Collection</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-12">
+<div class="flex flex-col">
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Manufacturer</span>
+<span class="text-on-surface font-semibold text-lg">Apple Computer Inc.</span>
+</div>
+<div class="flex flex-col">
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Model Number</span>
+<span class="text-on-surface font-semibold text-lg">M0001</span>
+</div>
+<div class="flex flex-col">
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Serial Number</span>
+<span class="text-on-surface font-semibold text-lg">F42036JM0001</span>
+</div>
+<div class="flex flex-col">
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Location</span>
+<span class="text-on-surface font-semibold text-lg">Archive Wing A-12</span>
+</div>
+<div class="flex flex-col">
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Last Used</span>
+<span class="text-on-surface font-semibold text-lg">Oct 12, 2023</span>
+</div>
+</div>
+<div class="mt-10 pt-8 border-t border-outline-variant/20">
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-2 block">Device Notes</span>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-3">
+                        This unit was acquired from the original owner in Cupertino. It remains in remarkable cosmetic condition with minimal yellowing of the plastics. The internal analog board has been recapped and the floppy drive has been lubricated and tested for full functionality. Includes the original M0110 keyboard and M0100 mouse...
+                    </p>
+<button class="text-primary text-xs font-bold mt-2 hover:underline">Expand</button>
+</div>
+</section>
+<!-- Indicator Cards Grid -->
+<section class="grid grid-cols-2 md:grid-cols-3 gap-4">
+<div class="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-emerald-600" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Condition</span>
+<span class="text-on-surface font-bold">Fully Working</span>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-amber-600" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Rarity</span>
+<span class="text-on-surface font-bold">High (Museum)</span>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-blue-600" style="font-variation-settings: 'FILL' 1;">sell</span>
+</div>
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Status</span>
+<span class="text-on-surface font-bold">RFID Tagged</span>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-purple-600" style="font-variation-settings: 'FILL' 1;">package</span>
+</div>
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Packaging</span>
+<span class="text-on-surface font-bold">Original Box</span>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-red-600" style="font-variation-settings: 'FILL' 1;">battery_alert</span>
+</div>
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">PRAM Battery</span>
+<span class="text-on-surface font-bold">Removed</span>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-pink-50 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-pink-600" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<span class="text-outline text-[10px] uppercase tracking-tighter mb-1">Priority</span>
+<span class="text-on-surface font-bold">Archival Fave</span>
+</div>
+</section>
+<!-- Financials Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-primary">
+<div>
+<span class="text-outline text-[10px] uppercase tracking-widest block mb-1">Acquisition Price</span>
+<span class="text-3xl font-bold text-on-surface">$790.00</span>
+</div>
+<div class="text-right">
+<span class="text-emerald-600 text-sm font-bold block">+89.8%</span>
+<span class="text-outline text-[10px] uppercase">since purchase</span>
+</div>
+</div>
+<div class="bg-white p-8 rounded-xl shadow-sm flex justify-between items-end border-l-4 border-tertiary">
+<div>
+<span class="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
+<span class="text-3xl font-bold text-on-surface">$1,500.00</span>
+</div>
+<div class="text-right">
+<span class="material-symbols-outlined text-tertiary">trending_up</span>
+<span class="text-outline text-[10px] uppercase block">Market Trend</span>
+</div>
+</div>
+</section>
+<!-- Technical Specifications Detail -->
+<section class="bg-surface-container-low rounded-xl p-8">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Technical Specifications</h2>
+<div class="grid grid-cols-2 gap-x-8 gap-y-4">
+<div>
+<span class="text-outline text-[10px] uppercase block mb-1">Processor</span>
+<span class="text-sm font-semibold">Motorola 68000 @ 8 MHz</span>
+</div>
+<div>
+<span class="text-outline text-[10px] uppercase block mb-1">Memory (RAM)</span>
+<span class="text-sm font-semibold">128 KB (Built-in)</span>
+</div>
+<div>
+<span class="text-outline text-[10px] uppercase block mb-1">Storage</span>
+<span class="text-sm font-semibold">400 KB 3.5" Floppy Drive</span>
+</div>
+<div>
+<span class="text-outline text-[10px] uppercase block mb-1">Display</span>
+<span class="text-sm font-semibold">9" Mono (512 x 342 px)</span>
+</div>
+<div>
+<span class="text-outline text-[10px] uppercase block mb-1">Ports</span>
+<span class="text-sm font-semibold">2x DB-9 Serial, DB-19 Floppy</span>
+</div>
+<div>
+<span class="text-outline text-[10px] uppercase block mb-1">Original Price</span>
+<span class="text-sm font-semibold">$2,495 (USD)</span>
+</div>
+</div>
+</section>
+<!-- Historical Notes -->
+<section class="py-4">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest mb-4">Historical Significance</h2>
+<div class="prose prose-sm text-on-surface-variant max-w-none space-y-4">
+<p>The Macintosh 128K, released in January 1984, was the first successful personal computer to feature a graphical user interface, built-in screen, and mouse. Its development began in the late 70s under Jef Raskin, eventually being taken over by Steve Jobs who envisioned it as an "appliance" computer for the masses.</p>
+<p>Notable for its high-resolution 9-inch monochrome display and compact 'all-in-one' design, it shipped with two applications designed to show off its graphics: MacWrite and MacPaint. It was famously introduced with the "1984" Super Bowl commercial directed by Ridley Scott.</p>
+</div>
+</section>
+</div>
+<!-- Right Column: Quick Actions, Photos, Maintenance & Notes -->
+<div class="col-span-12 lg:col-span-4 space-y-8">
+<!-- Quick Actions Section -->
+<section class="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Quick Actions</h2>
+<div class="grid grid-cols-4 gap-3">
+<button class="flex flex-col items-center justify-center p-3.5 bg-primary text-white rounded-xl transition-all hover:bg-primary-container active:scale-95 shadow-md shadow-primary/20" title="Powered On">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">power_settings_new</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95" title="Add Image">
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">image</span>
+<span class="material-symbols-outlined absolute -top-1 -right-1 text-[12px] bg-white rounded-full text-primary font-bold">add</span>
+</div>
+</button>
+<button class="flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95" title="Add Log">
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">build</span>
+<span class="material-symbols-outlined absolute -top-1 -right-1 text-[12px] bg-white rounded-full text-primary font-bold">add</span>
+</div>
+</button>
+<button class="flex flex-col items-center justify-center p-3.5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all group active:scale-95" title="Add Note">
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">description</span>
+<span class="material-symbols-outlined absolute -top-1 -right-1 text-[12px] bg-white rounded-full text-primary font-bold">add</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Lifecycle Actions Section -->
+<section class="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Lifecycle Actions</h2>
+<div class="space-y-3">
+<button class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-sm font-bold hover:bg-amber-100 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">pending_actions</span>
+                        PENDING SALE
+                    </button>
+<button class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-black transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">shopping_cart_checkout</span>
+                        SOLD
+                    </button>
+</div>
+</section>
+<!-- Photos Section -->
+<section class="bg-white p-8 rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest">Photos</h2>
+<a class="text-primary text-xs font-semibold" href="#">View Gallery</a>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square bg-slate-100 rounded-lg overflow-hidden group cursor-pointer">
+<img alt="Hardware view 1" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/f38d3886566a7b75879796e952674205466d74f26048039c9f28d84a7e93096b"/>
+</div>
+<div class="aspect-square bg-slate-100 rounded-lg overflow-hidden group cursor-pointer">
+<img alt="Hardware view 2" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/f653457199c0953a99e71ecba059ef8c81977759864273010b96863df70d8a9f"/>
+</div>
+<div class="aspect-square bg-slate-100 rounded-lg overflow-hidden group cursor-pointer">
+<img alt="Hardware view 3" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/9ec711f568a0a9761920807b55f171bc8814777d13038676239f60049f57f581"/>
+</div>
+<div class="aspect-square bg-slate-100 rounded-lg overflow-hidden group cursor-pointer">
+<img alt="Hardware view 4" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/656f4d22166e4a2118357a701979927602324903332034988755026905584852"/>
+</div>
+<div class="aspect-square bg-slate-100 rounded-lg overflow-hidden group cursor-pointer">
+<img alt="Hardware view 5" class="w-full h-full object-cover transition-transform group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/9194098586001090332822457850892015091720806495392231267868515091"/>
+</div>
+<div class="aspect-square bg-slate-900 rounded-lg flex items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors">
+<span class="text-white font-bold text-sm">+ 49 more</span>
+</div>
+</div>
+</section>
+<!-- Maintenance Logs -->
+<section class="bg-surface-container-highest p-8 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest">Maintenance Logs</h2>
+<a class="text-primary text-xs font-semibold" href="#">See all...</a>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-lg">
+<div class="flex justify-between mb-1">
+<span class="font-bold text-sm">Analog Board Recap</span>
+<span class="text-[10px] text-outline">JAN 2023</span>
+</div>
+<p class="text-xs text-on-surface-variant">Replaced all electrolytic capacitors on the power supply board.</p>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-lg">
+<div class="flex justify-between mb-1">
+<span class="font-bold text-sm">Floppy Drive CLA</span>
+<span class="text-[10px] text-outline">DEC 2022</span>
+</div>
+<p class="text-xs text-on-surface-variant">Clean, lubricate, and adjust Sony 400k internal drive.</p>
+</div>
+</div>
+</section>
+<!-- Recent Notes -->
+<section class="bg-white p-8 rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-on-surface font-bold text-sm uppercase tracking-widest">Recent Notes</h2>
+<a class="text-primary text-xs font-semibold" href="#">See all...</a>
+</div>
+<div class="space-y-6">
+<div class="relative pl-6 border-l-2 border-primary-fixed">
+<span class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] text-outline block uppercase tracking-tighter">Added by Curator</span>
+<p class="text-sm italic text-on-surface-variant mt-1">"System boots perfectly to 'Welcome to Macintosh' screen. Audio output is crisp."</p>
+</div>
+<div class="relative pl-6 border-l-2 border-outline-variant">
+<span class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-[10px] text-outline block uppercase tracking-tighter">System Alert</span>
+<p class="text-sm italic text-on-surface-variant mt-1">"Verified: This unit does not have the signature of the team in the bucket."</p>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer Attribution -->
+<footer class="py-12 px-8 border-t border-outline-variant/20 bg-surface-container-lowest">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+<div class="flex items-center space-x-4 mb-4 md:mb-0">
+<span class="text-xl font-bold tracking-tighter">InventoryDifferent</span>
+<span class="text-xs">Curated Cataloging System v4.2.1</span>
+</div>
+<div class="flex space-x-8 text-xs font-medium">
+<a href="#">Archival Policy</a>
+<a href="#">Collection Standards</a>
+<a href="#">Export Data</a>
+<a href="#">Support</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InventoryDifferent - Collection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#d8e2ff",
+                    "surface": "#f9f9fe",
+                    "on-secondary-container": "#626267",
+                    "on-tertiary-fixed": "#221b00",
+                    "secondary": "#5d5e63",
+                    "primary-container": "#0070eb",
+                    "inverse-on-surface": "#f0f0f5",
+                    "surface-container-highest": "#e2e2e7",
+                    "on-background": "#1a1c1f",
+                    "tertiary-container": "#c5aa22",
+                    "surface-variant": "#e2e2e7",
+                    "secondary-fixed-dim": "#c6c6cb",
+                    "on-tertiary-fixed-variant": "#534600",
+                    "tertiary-fixed-dim": "#e2c53e",
+                    "on-primary-container": "#fefcff",
+                    "primary": "#0058bc",
+                    "surface-container-low": "#f3f3f8",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2e3034",
+                    "inverse-primary": "#adc6ff",
+                    "surface-container": "#ededf2",
+                    "on-primary-fixed-variant": "#004493",
+                    "outline-variant": "#c1c6d7",
+                    "on-surface": "#1a1c1f",
+                    "on-tertiary-container": "#4b3f00",
+                    "secondary-fixed": "#e3e2e7",
+                    "surface-tint": "#005bc1",
+                    "tertiary-fixed": "#ffe261",
+                    "primary-fixed-dim": "#adc6ff",
+                    "surface-bright": "#f9f9fe",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#d9dade",
+                    "outline": "#717786",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#46464b",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#414755",
+                    "on-primary-fixed": "#001a41",
+                    "background": "#f9f9fe",
+                    "tertiary": "#6f5d00",
+                    "on-secondary-fixed": "#1a1b1f",
+                    "secondary-container": "#e0dfe4",
+                    "surface-container-high": "#e8e8ed"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .glass-nav { backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-[#f9f9fe]/80 dark:bg-[#1a1c1f]/80 backdrop-blur-xl docked full-width top-0 z-50 sticky">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto">
+<div class="text-xl font-black tracking-tighter text-[#1a1c1f] dark:text-[#f9f9fe]">InventoryDifferent</div>
+<nav class="hidden md:flex items-center space-x-8 font-['Inter'] text-sm font-medium">
+<a class="text-[#0058bc] dark:text-[#0070eb] font-bold border-b-2 border-[#0058bc] pb-1" href="#">Devices</a>
+<a class="text-[#414755] dark:text-[#c1c6d7] hover:text-[#0058bc]" href="#">Financials</a>
+<a class="text-[#414755] dark:text-[#c1c6d7] hover:text-[#0058bc]" href="#">Wishlist</a>
+<a class="text-[#414755] dark:text-[#c1c6d7] hover:text-[#0058bc]" href="#">More</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#414755] p-2 hover:bg-[#e2e2e7]/50 rounded-full cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-[#414755] p-2 hover:bg-[#e2e2e7]/50 rounded-full cursor-pointer">settings</span>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden ml-2 ring-2 ring-surface-container">
+<img alt="Owner Profile" data-alt="Close-up studio portrait of a middle-aged man with short graying hair and a confident, professional expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxDr-GIrDJzW7xb-bEuZlwot3Yj4U2SfYKE-IG8KhEJ9wvBmKLW6d52TrFPQkZqIwgCJN9I01ExY28JOA0t5YqthxfXM3U-Pec65awGwmhGVJtbirvMf0Wj5cr2D0lbeHye0oTEdicsuHJaXxx5aDimHs-eV1uNWm5vJyLdmKsf8cyIjFmioxAnIoqbOMnYuGRV8OmlhzvQMGBeUdV3DNNMs35KFEm8cKsbnloDcasCUzHaUHFkApUppsyCScLJhmPKGeEFpyQTGE"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-8 py-12">
+<!-- Collection Header Section -->
+<section class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 items-center">
+<div class="mb-0">
+<p class="text-on-surface-variant font-medium text-sm">Showing 48 devices (est. value $12,493)</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex bg-surface-container-low rounded-full p-1 shadow-sm mb-0">
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest text-on-surface text-xs font-bold shadow-sm transition-all">Grid</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant text-xs font-bold hover:text-on-surface transition-all">List</button>
+</div>
+<div class="h-8 w-px bg-outline-variant/30 mx-2"></div>
+<button class="flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold hover:bg-surface-container-highest transition-all"><span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    Filter
+                </button>
+<button class="flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                    Year: Newest
+                </button>
+</div>
+</section>
+<!-- Device Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+<!-- Card 1 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-outline-variant/10 hover:shadow-xl transition-all duration-500 flex flex-col">
+<div class="aspect-square w-full bg-surface-container-low relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Side view of a vintage beige Apple Macintosh computer from the 1980s on a minimalist white desk with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHb0JLwi38fOLzJaJW2UDxBju8E3EsWqYygaczHn9uuvmw7tdjILb8VVT4tVrkEFQkG6-DueikuU3PAIx0dWLumeognS7MsQlUIxsoIKNWvAikF2DcnVG9YWIXQoaxwI29Zk_vXM8v80eaq7T-dpYbJWgT6YLfzugZb2exmJbQy3S3mBy1X8CbSCSmOOyobqpWk5IhCTK77gIVas08tNtRgJDpARDZ499XnKPsHrE_CdSgLeJx8FKLX448ZbUFl5TIjUmMGuWB8aE"/>
+<div class="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full">
+<span class="text-[10px] font-black text-on-surface uppercase tracking-widest">In Collection</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/40 backdrop-blur-xl px-4 py-2 rounded-full flex gap-3 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Operational">check_circle</span>
+<span class="material-symbols-outlined text-[18px] text-tertiary" style="font-variation-settings: 'FILL' 1;" title="Premium Rarity">stars</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Connected">lan</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-3"><span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Compacts • 1983</span></div>
+<h3 class="text-xl font-bold tracking-tight text-on-surface mb-0.5 leading-tight">Apple Lisa 2/10</h3>
+<p class="text-sm font-medium text-on-surface-variant mb-3">Macintosh XL</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-sm font-bold text-primary">Est. $18,450</p>
+<span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors text-[18px]">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-outline-variant/10 hover:shadow-xl transition-all duration-500 flex flex-col">
+<div class="aspect-square w-full bg-surface-container-low relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Classic vintage personal computer workstation with chunky monitor and keyboard, 1980s retro tech aesthetic, soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6ijEzECm84fCOvjQ3g1mr1pY0z4sh1GFFyim1VZzL2FuQ7lOQUrto_8lc4MuqCox72H0WqBuVUaUy0yaYE4v5t4XvZcA9TXjQl0zgTqpbtBtBRvtFXQgRPxrKB-oJlU7NyPwDt5TV02pTEGNHeqcgTwiZwim_uRNweixPgQ72s_sK_Pdwf4zkWliCkuKEPJJ3GDqzrxtDKbTHu0PyrnytQyqHK2gw1-Ys2fW9GyfUg7aVEKL2PkmDQRTooQ5wCforbiPRshJd4fg"/>
+<div class="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full">
+<span class="text-[10px] font-black text-on-surface uppercase tracking-widest">On Loan</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/40 backdrop-blur-xl px-4 py-2 rounded-full flex gap-3 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Operational">check_circle</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Ethernet Port">terminal</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-3"><span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Workstations • 1988</span></div>
+<h3 class="text-xl font-bold tracking-tight text-on-surface mb-0.5 leading-tight">NeXT Computer</h3>
+<p class="text-sm font-medium text-on-surface-variant mb-3">The Cube (040 Upgrade)</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-sm font-bold text-primary">List $4,200</p>
+<span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors text-[18px]">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-outline-variant/10 hover:shadow-xl transition-all duration-500 flex flex-col">
+<div class="aspect-square w-full bg-surface-container-low relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Early portable laptop from the 1990s with grayscale screen and thick plastic casing, nostalgic electronics photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGIBDAGiAJaLQrGw6dVvnHjrRq8I71mqHaKtmZr4wBRAJKuXvPJZl-2fZ5tezWJw3EcYLg1vCiNb4IGkycCtv4UQVSB5gz-XjnzWB3IA-i-Eh_E4AaaarwEIgdxU0wn-aTiYwi2Z7nAhdyIAvevTPCIt2Ns3Wvmp5Yu8g75PR-5aE1JbjusKi9JN-XYZudw7cKkp9QRqqNhF3AFTVK7bnvWuSPuza36uE_soREZfz3ShZOIbrPrCwmY38Tx7c25aXOtst4a8tm2-c"/>
+<div class="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full">
+<span class="text-[10px] font-black text-on-surface uppercase tracking-widest">In Collection</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/40 backdrop-blur-xl px-4 py-2 rounded-full flex gap-3 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-error" title="Battery Service Required">battery_alert</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Case Integrity Good">shield</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-3"><span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Portables • 1991</span></div>
+<h3 class="text-xl font-bold tracking-tight text-on-surface mb-0.5 leading-tight">PowerBook 170</h3>
+<p class="text-sm font-medium text-on-surface-variant mb-3">Active Matrix Mono</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-sm font-bold text-primary">Est. $3,850</p>
+<span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors text-[18px]">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-outline-variant/10 hover:shadow-xl transition-all duration-500 flex flex-col">
+<div class="aspect-square w-full bg-surface-container-low relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Classic Commodore 64 home computer with its iconic brown keyboard and cassette deck, high angle macro shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzveXRxkwSlDRrdw-UpV68entlb_gG16ZR3PPavrZzmp3BFM8QKFImV-h85axP4cC5135FJXylwfSTg0vwcBV-cfynJHIJpnTnHsjLSyCTkq2CCxo5zpAve2hVm0XHuq-PNPFC3lMXqVxoyYe-4MNcpkZs8WUIbjjWYmYeYBoHti1rCyevUA3iOJr6XfzWisGvolln-0FjSvc2eVQ30Dc_Wyar5lMhOJy2kK3boP_YXwFAriK_zv3QXGDg6xv7cjfttxw_lYYljqI"/>
+<div class="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full">
+<span class="text-[10px] font-black text-on-surface uppercase tracking-widest">In Collection</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/40 backdrop-blur-xl px-4 py-2 rounded-full flex gap-3 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Operational">check_circle</span>
+<span class="material-symbols-outlined text-[18px] text-tertiary" style="font-variation-settings: 'FILL' 1;" title="Highly Desired">favorite</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-3"><span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Home • 1982</span></div>
+<h3 class="text-xl font-bold tracking-tight text-on-surface mb-0.5 leading-tight">Commodore 64</h3>
+<p class="text-sm font-medium text-on-surface-variant mb-3">"Silver Label" Early Production</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-sm font-bold text-primary">Est. $1,200</p>
+<span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors text-[18px]">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-outline-variant/10 hover:shadow-xl transition-all duration-500 flex flex-col">
+<div class="aspect-square w-full bg-surface-container-low relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Sleek silver mid-2000s laptop showing a clean minimalist operating system interface, professional product photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-sLe8kgyHHfDWqBRR6yEC5L-TL2CtdCH_anc1oZyMf4wTLpPI1nZTLOaJS9mv1SFgVdAktY9fZppj15_gM8JX_1vsPq-V9x-17g86jiOKv7GP5sTO9wg81q2QqzkyQi-ziGpHFPr_mS_5YtRxc8Pw1NEhKEcEzC6hnbRRo9ytaqu4rG8RQQqGOn4NXeKkWpAR-tYo_6GZyaAhxwGu8-9l-cWCZyhjh_Z_aIKnhpo4P7BhoehYwNrZJSxl4dCW_GAN3Erhjxfz2U8"/>
+<div class="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full">
+<span class="text-[10px] font-black text-on-surface uppercase tracking-widest">In Collection</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/40 backdrop-blur-xl px-4 py-2 rounded-full flex gap-3 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Operational">check_circle</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Original Packaging">inventory_2</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-3"><span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Modern • 2008</span></div>
+<h3 class="text-xl font-bold tracking-tight text-on-surface mb-0.5 leading-tight">MacBook Air</h3>
+<p class="text-sm font-medium text-on-surface-variant mb-3">Original "Manila Envelope"</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-sm font-bold text-primary">Est. $6,500</p>
+<span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors text-[18px]">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-outline-variant/10 hover:shadow-xl transition-all duration-500 flex flex-col">
+<div class="aspect-square w-full bg-surface-container-low relative overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Close-up of a classic 1970s mainframe computer panel with glowing toggle switches and blinking red LED lights, industrial design aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOQNY6l9f_vb1X8wwiANIo8LG3cnHNmPajSTWt2pRXCvkAPOgTyunhwVKMYGvFRWaLruF_BfK6xGE7rNe1e9mxfRDveTP7_3kXjqf9AT1hJuo8ATLeY7_cECLAI-pyasrnultp0VgRM2eJ7oz2JNKMRel4BjpQXeTHW2OAAAavKtuXS3_RBi5tFn-xCckHBzNZL5hkVrDAkHKCKNsP-maE73h9ZLVasBqzORbgb6SbNnBAjNIFkyDHSeFuNnFo-jK4-odNwyK_e-E"/>
+<div class="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full">
+<span class="text-[10px] font-black text-on-surface uppercase tracking-widest">Archived</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/40 backdrop-blur-xl px-4 py-2 rounded-full flex gap-3 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-tertiary" style="font-variation-settings: 'FILL' 1;" title="Extremely Rare">workspace_premium</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface" title="Historical Artifact">history_edu</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-3"><span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Mainframes • 1975</span></div>
+<h3 class="text-xl font-bold tracking-tight text-on-surface mb-0.5 leading-tight">Altair 8800</h3>
+<p class="text-sm font-medium text-on-surface-variant mb-3">Rev. 0 Motherboard</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-sm font-bold text-primary">Est. $120,000</p>
+<span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-primary transition-colors text-[18px]">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination / Footer Loading State -->
+</main>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 md:hidden bg-[#ffffff]/90 dark:bg-[#1a1c1f]/90 backdrop-blur-2xl rounded-t-3xl shadow-[0_-4px_20px_0_rgba(0,0,0,0.04)]">
+<a class="flex flex-col items-center justify-center text-[#0058bc] dark:text-[#0070eb] scale-110" href="#">
+<span class="material-symbols-outlined" data-icon="devices">devices</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Devices</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#c1c6d7] dark:text-[#414755]" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Financials</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#c1c6d7] dark:text-[#414755]" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome_motion">auto_awesome_motion</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Wishlist</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#c1c6d7] dark:text-[#414755]" href="#">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">More</span>
+</a>
+</nav>
+<!-- FAB (Contextual for Desktop/Mobile) -->
+<div class="fixed bottom-12 right-12 hidden md:block">
+<button class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</body></html>
