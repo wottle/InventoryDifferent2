@@ -5,10 +5,10 @@ import gql from "graphql-tag";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { useT } from "../../i18n/context";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useT } from "../../../i18n/context";
 
-import type { PeriodBucket } from "../../components/PeriodicCashFlowChart";
+import type { PeriodBucket } from "../../../components/PeriodicCashFlowChart";
 
 const PeriodicCashFlowChart = dynamic(() => import("../../components/PeriodicCashFlowChart"), {
   ssr: false,

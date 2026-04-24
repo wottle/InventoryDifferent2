@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
-import { API_BASE_URL } from "../../lib/config";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { useT } from "../../i18n/context";
+import { API_BASE_URL } from "../../../lib/config";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useT } from "../../../i18n/context";
 
 const GET_DELETED_DEVICES = gql`
   query GetDeletedDevices {

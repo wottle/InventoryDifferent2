@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { useT } from "../../i18n/context";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useT } from "../../../i18n/context";
 
 const GET_WISHLIST = gql`
   query GetWishlistItems {

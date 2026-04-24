@@ -3,8 +3,8 @@
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { useT } from "../../i18n/context";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useT } from "../../../i18n/context";
 
 const GET_SYSTEM_USAGE = gql`
   query GetSystemUsage {

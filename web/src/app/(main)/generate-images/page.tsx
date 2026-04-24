@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
-import { API_BASE_URL } from "../../lib/config";
-import { useAuth } from "../../lib/auth-context";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { useIsDarkMode } from "../../lib/useIsDarkMode";
-import { pickThumbnail } from "../../lib/pickThumbnail";
+import { API_BASE_URL } from "../../../lib/config";
+import { useAuth } from "../../../lib/auth-context";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useIsDarkMode } from "../../../lib/useIsDarkMode";
+import { pickThumbnail } from "../../../lib/pickThumbnail";
 
 const DEFAULT_PROMPT =
   "Create a professional product photograph of this vintage computer device on a dark background (#282828) with a 1:1 ratio for square image use. Use studio lighting with soft, even illumination to eliminate harsh shadows. Position the product at a slight 30-degree angle to show dimension. High detail, sharp focus throughout, showing clear material texture. Photorealistic rendering for high-end e-commerce use.";

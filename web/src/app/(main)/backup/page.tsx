@@ -5,13 +5,13 @@ import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import JSZip from "jszip";
-import { API_BASE_URL } from "../../lib/config";
-import { DeviceFilterPanel, FilterState, SortColumn } from "../../components/DeviceFilterPanel";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { useT } from "../../i18n/context";
-import { useAuth } from "../../lib/auth-context";
-import CsvImport from "../../components/CsvImport";
-import CsvExport from "../../components/CsvExport";
+import { API_BASE_URL } from "../../../lib/config";
+import { DeviceFilterPanel, FilterState, SortColumn } from "../../../components/DeviceFilterPanel";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useT } from "../../../i18n/context";
+import { useAuth } from "../../../lib/auth-context";
+import CsvImport from "../../../components/CsvImport";
+import CsvExport from "../../../components/CsvExport";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {

@@ -3,9 +3,9 @@
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import TimelineView from "../../components/TimelineView";
-import { useT } from "../../i18n/context";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import TimelineView from "../../../components/TimelineView";
+import { useT } from "../../../i18n/context";
 
 const GET_TIMELINE = gql`
   query GetTimeline {

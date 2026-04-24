@@ -5,11 +5,11 @@ import gql from "graphql-tag";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import { LoadingPanel } from "../../../components/LoadingPanel";
-import { useT } from "../../../i18n/context";
-import { pickThumbnail } from "../../../lib/pickThumbnail";
-import { useIsDarkMode } from "../../../lib/useIsDarkMode";
-import { API_BASE_URL } from "../../../lib/config";
+import { LoadingPanel } from "../../../../components/LoadingPanel";
+import { useT } from "../../../../i18n/context";
+import { pickThumbnail } from "../../../../lib/pickThumbnail";
+import { useIsDarkMode } from "../../../../lib/useIsDarkMode";
+import { API_BASE_URL } from "../../../../lib/config";
 
 const QRCodeSVG = dynamic(() => import("qrcode.react").then((m) => ({ default: m.QRCodeSVG })), { ssr: false });
 

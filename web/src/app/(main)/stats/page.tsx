@@ -4,8 +4,8 @@ import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { useT } from "../../i18n/context";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useT } from "../../../i18n/context";
 
 // StatsCharts dynamic import — loading text is static (component renders before t is available)
 const StatsCharts = dynamic(() => import("../../components/StatsCharts"), {

@@ -4,10 +4,10 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Link from "next/link";
-import { DeviceFilterPanel, FilterState, SortColumn } from "../../components/DeviceFilterPanel";
-import { LoadingPanel } from "../../components/LoadingPanel";
-import { API_BASE_URL } from "../../lib/config";
-import { useT } from "../../i18n/context";
+import { DeviceFilterPanel, FilterState, SortColumn } from "../../../components/DeviceFilterPanel";
+import { LoadingPanel } from "../../../components/LoadingPanel";
+import { API_BASE_URL } from "../../../lib/config";
+import { useT } from "../../../i18n/context";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {
