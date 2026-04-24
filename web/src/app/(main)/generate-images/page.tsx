@@ -202,15 +202,7 @@ export default function GenerateImagesPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] p-6">
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)]">AI Product Images</h1>
-        </div>
+        <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)] mb-6">AI Product Images</h1>
 
         {!openaiEnabled && (
           <div className="rounded border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 text-sm text-yellow-800 dark:text-yellow-200">
