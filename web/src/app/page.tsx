@@ -225,8 +225,19 @@ export default function ListNewPage() {
     const onScroll = () => {
       if (window.scrollY > 0) sessionStorage.setItem(SESSION_SCROLL, String(window.scrollY));
     };
+    // Capture scroll at click time (before Next.js navigation scroll-to-zero fires),
+    // so scrollY === 0 is saved correctly when the user is at the top.
+    const onLinkClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('a')) {
+        sessionStorage.setItem(SESSION_SCROLL, String(window.scrollY));
+      }
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    document.addEventListener('click', onLinkClick, true);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('click', onLinkClick, true);
+    };
   }, [loading]);
 
   if (loading) {
