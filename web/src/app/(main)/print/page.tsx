@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import Link from "next/link";
 import { DeviceFilterPanel, FilterState, SortColumn } from "../../../components/DeviceFilterPanel";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { API_BASE_URL } from "../../../lib/config";
@@ -469,9 +468,6 @@ export default function PrintListPage() {
               </svg>
               {t.pages.print.generateBtn} ({filteredDevices.length})
             </button>
-            <Link href="/" className="btn-retro px-3 py-2 text-sm font-medium">
-              {t.common.back}
-            </Link>
           </div>
         </div>
       </header>

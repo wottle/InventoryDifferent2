@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import Link from "next/link";
 import JSZip from "jszip";
 import { API_BASE_URL } from "../../../lib/config";
 import { DeviceFilterPanel, FilterState, SortColumn } from "../../../components/DeviceFilterPanel";
@@ -490,11 +489,6 @@ export default function BackupPage() {
             <p className="text-sm text-[var(--muted-foreground)]">
               {t.pages.backup.subtitle}
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-              {t.common.back}
-            </Link>
           </div>
         </div>
       </header>

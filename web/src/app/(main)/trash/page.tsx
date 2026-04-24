@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import gql from "graphql-tag";
-import Link from "next/link";
 import { API_BASE_URL } from "../../../lib/config";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
@@ -94,11 +93,6 @@ export default function TrashPage() {
             <p className="text-sm text-[var(--muted-foreground)]">
               {t.pages.trash.subtitle}
             </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/" className="btn-retro text-sm px-3 py-1.5">
-              {t.common.back}
-            </Link>
           </div>
         </div>
       </header>
