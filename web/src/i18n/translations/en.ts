@@ -128,6 +128,8 @@ export type Translations = {
     cameraError: string;
   };
   nav: {
+    devices: string;
+    more: string;
     wishlist: string;
     financials: string;
     stats: string;
@@ -858,6 +860,8 @@ export const en: Translations = {
     cameraError: "Unable to access the camera.",
   },
   nav: {
+    devices: "Devices",
+    more: "More",
     wishlist: "Wishlist",
     financials: "Financials",
     stats: "Stats",

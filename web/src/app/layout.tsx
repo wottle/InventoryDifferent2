@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@fontsource-variable/inter";
+import "@fontsource/material-symbols-outlined";
 import "./globals.css";
 import { ApolloWrapper } from "../lib/apollo-wrapper";
 import { AuthProvider } from "../lib/auth-context";

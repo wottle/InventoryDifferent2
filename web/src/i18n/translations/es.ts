@@ -130,6 +130,8 @@ export const es: Translations = {
     cameraError: "No se puede acceder a la cámara.",
   },
   nav: {
+    devices: "Dispositivos",
+    more: "Más",
     wishlist: "Lista de deseos",
     financials: "Finanzas",
     stats: "Estadísticas",

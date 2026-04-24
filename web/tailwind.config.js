@@ -50,6 +50,20 @@ module.exports = {
                 'outline': 'var(--outline)',
                 'outline-variant': 'var(--outline-variant)',
                 'primary-fixed-dim': 'var(--primary-fixed-dim)',
+                // Additional M3 tokens for Technical Atelier list redesign
+                'tertiary-fixed-dim': '#e2c53e',
+                'error': '#ba1a1a',
+                'error-container': '#ffdad6',
+                'on-primary': '#ffffff',
+                'on-tertiary': '#ffffff',
+                'secondary': '#5d5e63',
+                'secondary-container': '#e0dfe4',
+                'on-secondary-container': '#626267',
+                'surface-dim': '#d9dade',
+                'surface-bright': '#f9f9fe',
+                'inverse-surface': '#2e3034',
+                'inverse-on-surface': '#f0f0f5',
+                'inverse-primary': '#adc6ff',
             },
             fontFamily: {
                 // Chicago-inspired system font stack

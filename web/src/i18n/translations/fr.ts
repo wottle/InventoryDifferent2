@@ -130,6 +130,8 @@ export const fr: Translations = {
     cameraError: "Impossible d'accéder à la caméra.",
   },
   nav: {
+    devices: "Appareils",
+    more: "Plus",
     wishlist: "Liste de souhaits",
     financials: "Finances",
     stats: "Statistiques",
