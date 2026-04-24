@@ -6,7 +6,7 @@ import { useRef, useState, useEffect } from "react";
 import { useT } from "../i18n/context";
 
 const MAIN_NAV = [
-  { key: 'devices' as const,    href: '/list-new',   icon: 'devices' },
+  { key: 'devices' as const,    href: '/',           icon: 'devices' },
   { key: 'financials' as const, href: '/financials', icon: 'payments' },
   { key: 'wishlist' as const,   href: '/wishlist',   icon: 'auto_awesome_motion' },
 ];
@@ -42,7 +42,7 @@ export function NavBar() {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
 
-  const isDevicesActive = pathname === '/list-new' || pathname === '/';
+  const isDevicesActive = pathname === '/';
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
