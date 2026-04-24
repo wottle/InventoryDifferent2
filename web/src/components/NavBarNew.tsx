@@ -81,7 +81,7 @@ export function NavBar() {
                       : "text-on-surface-variant hover:text-primary dark:text-[#c1c6d7] dark:hover:text-[#adc6ff] transition-colors"
                   }
                 >
-                  {t.nav[item.key]}
+                  {t.nav[item.key as keyof typeof t.nav]}
                 </Link>
               );
             })}
@@ -196,7 +196,7 @@ export function NavBar() {
             >
               <span className="material-symbols-outlined">{item.icon}</span>
               <span className="text-[10px] uppercase tracking-widest font-bold mt-1">
-                {t.nav[item.key]}
+                {t.nav[item.key as keyof typeof t.nav]}
               </span>
             </Link>
           );
