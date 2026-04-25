@@ -942,6 +942,7 @@ class DeviceService {
                 customFieldName
                 value
                 isPublic
+                sortOrder
             }
         }
         """
