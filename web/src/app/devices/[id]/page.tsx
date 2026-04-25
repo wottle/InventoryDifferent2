@@ -1683,100 +1683,6 @@ export default function DeviceDetailNew() {
           </section>
         )}
 
-        {/* Links */}
-        {((device.links ?? []).length > 0 || isAuthenticated) && (
-          <section>
-            <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">{t.detail.referenceLinks}</h2>
-            <div className="space-y-2 mb-3">
-              {(device.links ?? []).map((link: any) => (
-                <div key={link.id} className="flex items-center gap-2">
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 flex items-center gap-2 p-3 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors group min-w-0"
-                  >
-                    <Icon name="open_in_new" className="w-4 h-4 text-primary flex-shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors truncate">{link.label}</p>
-                      <p className="text-[10px] text-outline truncate">{link.url}</p>
-                    </div>
-                  </a>
-                  {isAuthenticated && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveLink(link.id)}
-                      aria-label={`Remove link ${link.label}`}
-                      className="p-2 text-on-surface-variant hover:text-red-500 transition-colors flex-shrink-0"
-                    >
-                      <Icon name="delete" className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {isAuthenticated && !showLinkForm && (
-              <button
-                type="button"
-                onClick={() => setShowLinkForm(true)}
-                className="text-primary text-xs font-semibold hover:underline"
-              >+ {t.detail.addLink}</button>
-            )}
-            {isAuthenticated && showLinkForm && (
-              <form onSubmit={handleAddLink} className="space-y-2 mt-2">
-                <input
-                  type="text"
-                  value={newLinkLabel}
-                  onChange={e => setNewLinkLabel(e.target.value)}
-                  placeholder={t.form.linkLabelPlaceholder}
-                  className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
-                  autoFocus
-                />
-                <input
-                  type="url"
-                  value={newLinkUrl}
-                  onChange={e => setNewLinkUrl(e.target.value)}
-                  placeholder={t.form.linkUrlPlaceholder}
-                  className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <div className="flex gap-2">
-                  <button type="submit" disabled={addingLink || !newLinkLabel.trim() || !newLinkUrl.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
-                  <button type="button" onClick={() => { setShowLinkForm(false); setNewLinkLabel(''); setNewLinkUrl(''); }} className="px-4 py-1.5 text-sm font-medium text-on-surface-variant bg-surface-container rounded-full hover:bg-surface-container-high transition-all">Cancel</button>
-                </div>
-              </form>
-            )}
-          </section>
-        )}
-
-          {/* Tags */}
-          {((device.tags ?? []).length > 0 || isAuthenticated) && (
-            <section>
-              <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Tags</h2>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {(device.tags ?? []).map((tag: any) => (
-                  <span key={tag.id} className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-surface-container text-on-surface rounded-full border border-outline-variant/20">
-                    {tag.name}
-                    {isAuthenticated && (
-                      <button type="button" onClick={() => setTagToRemoveId(tag.id)} aria-label={`Remove tag ${tag.name}`} className="ml-1 hover:text-red-500 transition-colors">×</button>
-                    )}
-                  </span>
-                ))}
-              </div>
-              {isAuthenticated && (
-                <form onSubmit={handleAddTag} className="flex items-center gap-2 mt-2">
-                  <datalist id="tag-suggestions">
-                    {(tagsData?.tags ?? []).filter((t: any) => !(device.tags ?? []).some((dt: any) => dt.id === t.id)).map((t: any) => (
-                      <option key={t.id} value={t.name} />
-                    ))}
-                  </datalist>
-                  <input type="text" list="tag-suggestions" value={tagName} onChange={e => setTagName(e.target.value)}
-                    placeholder="Add tag..." className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary" />
-                  <button type="submit" disabled={addingTag || !tagName.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
-                </form>
-              )}
-            </section>
-          )}
-
           {/* Recent Notes */}
           {(sortedNotes.length > 0 || isAuthenticated) && (
             <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
@@ -2079,6 +1985,100 @@ export default function DeviceDetailNew() {
                 <button onClick={() => setLogsExpanded(v => !v)} className="text-primary text-xs font-semibold hover:underline mt-4">
                   {logsExpanded ? 'Collapse ↑' : `Show ${sortedTasks.length - 5} more ↓`}
                 </button>
+              )}
+            </section>
+          )}
+
+          {/* Links */}
+          {((device.links ?? []).length > 0 || isAuthenticated) && (
+            <section>
+              <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">{t.detail.referenceLinks}</h2>
+              <div className="space-y-2 mb-3">
+                {(device.links ?? []).map((link: any) => (
+                  <div key={link.id} className="flex items-center gap-2">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center gap-2 p-3 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors group min-w-0"
+                    >
+                      <Icon name="open_in_new" className="w-4 h-4 text-primary flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors truncate">{link.label}</p>
+                        <p className="text-[10px] text-outline truncate">{link.url}</p>
+                      </div>
+                    </a>
+                    {isAuthenticated && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveLink(link.id)}
+                        aria-label={`Remove link ${link.label}`}
+                        className="p-2 text-on-surface-variant hover:text-red-500 transition-colors flex-shrink-0"
+                      >
+                        <Icon name="delete" className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {isAuthenticated && !showLinkForm && (
+                <button
+                  type="button"
+                  onClick={() => setShowLinkForm(true)}
+                  className="text-primary text-xs font-semibold hover:underline"
+                >+ {t.detail.addLink}</button>
+              )}
+              {isAuthenticated && showLinkForm && (
+                <form onSubmit={handleAddLink} className="space-y-2 mt-2">
+                  <input
+                    type="text"
+                    value={newLinkLabel}
+                    onChange={e => setNewLinkLabel(e.target.value)}
+                    placeholder={t.form.linkLabelPlaceholder}
+                    className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+                    autoFocus
+                  />
+                  <input
+                    type="url"
+                    value={newLinkUrl}
+                    onChange={e => setNewLinkUrl(e.target.value)}
+                    placeholder={t.form.linkUrlPlaceholder}
+                    className="w-full px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                  <div className="flex gap-2">
+                    <button type="submit" disabled={addingLink || !newLinkLabel.trim() || !newLinkUrl.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
+                    <button type="button" onClick={() => { setShowLinkForm(false); setNewLinkLabel(''); setNewLinkUrl(''); }} className="px-4 py-1.5 text-sm font-medium text-on-surface-variant bg-surface-container rounded-full hover:bg-surface-container-high transition-all">Cancel</button>
+                  </div>
+                </form>
+              )}
+            </section>
+          )}
+
+          {/* Tags */}
+          {((device.tags ?? []).length > 0 || isAuthenticated) && (
+            <section>
+              <h2 className="text-on-surface font-bold text-[10px] uppercase tracking-widest mb-3">Tags</h2>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {(device.tags ?? []).map((tag: any) => (
+                  <span key={tag.id} className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-surface-container text-on-surface rounded-full border border-outline-variant/20">
+                    {tag.name}
+                    {isAuthenticated && (
+                      <button type="button" onClick={() => setTagToRemoveId(tag.id)} aria-label={`Remove tag ${tag.name}`} className="ml-1 hover:text-red-500 transition-colors">×</button>
+                    )}
+                  </span>
+                ))}
+              </div>
+              {isAuthenticated && (
+                <form onSubmit={handleAddTag} className="flex items-center gap-2 mt-2">
+                  <datalist id="tag-suggestions">
+                    {(tagsData?.tags ?? []).filter((t: any) => !(device.tags ?? []).some((dt: any) => dt.id === t.id)).map((t: any) => (
+                      <option key={t.id} value={t.name} />
+                    ))}
+                  </datalist>
+                  <input type="text" list="tag-suggestions" value={tagName} onChange={e => setTagName(e.target.value)}
+                    placeholder="Add tag..." className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary" />
+                  <button type="submit" disabled={addingTag || !tagName.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
+                </form>
               )}
             </section>
           )}
