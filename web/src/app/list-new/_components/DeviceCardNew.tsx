@@ -1,10 +1,30 @@
 'use client';
 
 import Link from "next/link";
+import { useRef, useLayoutEffect } from "react";
 import { API_BASE_URL } from "../../../lib/config";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
 import { useT } from "../../../i18n/context";
+
+function ScalingText({ text, className, maxPx = 16, minPx = 11 }: { text: string; className: string; maxPx?: number; minPx?: number }) {
+  const ref = useRef<HTMLHeadingElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let size = maxPx;
+    el.style.fontSize = `${size}px`;
+    while (el.scrollWidth > el.clientWidth && size > minPx) {
+      size -= 0.5;
+      el.style.fontSize = `${size}px`;
+    }
+  }, [text, maxPx, minPx]);
+  return (
+    <h3 ref={ref} className={className} style={{ fontSize: `${maxPx}px`, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+      {text}
+    </h3>
+  );
+}
 
 interface DeviceCardNewProps {
   device: {
@@ -36,14 +56,14 @@ interface DeviceCardNewProps {
 
 const INACTIVE = 'text-gray-500 dark:text-gray-400';
 
-const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  COLLECTION:   { bg: 'bg-[#218c21]', text: 'text-white' },
-  FOR_SALE:     { bg: 'bg-orange-500', text: 'text-white' },
-  PENDING_SALE: { bg: 'bg-yellow-400', text: 'text-black' },
-  SOLD:         { bg: 'bg-red-600',    text: 'text-white' },
-  DONATED:      { bg: 'bg-purple-600', text: 'text-white' },
-  IN_REPAIR:    { bg: 'bg-teal-600',   text: 'text-white' },
-  RETURNED:     { bg: 'bg-red-600',    text: 'text-white' },
+const STATUS_STYLES: Record<string, { bg: string; text: string; valueText: string }> = {
+  COLLECTION:   { bg: 'bg-[#218c21]', text: 'text-white', valueText: 'text-[#218c21]' },
+  FOR_SALE:     { bg: 'bg-orange-500', text: 'text-white', valueText: 'text-orange-500' },
+  PENDING_SALE: { bg: 'bg-yellow-400', text: 'text-black', valueText: 'text-yellow-600' },
+  SOLD:         { bg: 'bg-red-600',    text: 'text-white', valueText: 'text-red-600' },
+  DONATED:      { bg: 'bg-purple-600', text: 'text-white', valueText: 'text-purple-600' },
+  IN_REPAIR:    { bg: 'bg-teal-600',   text: 'text-white', valueText: 'text-teal-600' },
+  RETURNED:     { bg: 'bg-red-600',    text: 'text-white', valueText: 'text-red-600' },
 };
 const FILLED: React.CSSProperties = { fontVariationSettings: "'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24" };
 
@@ -127,7 +147,7 @@ export function DeviceCardNew({ device }: DeviceCardNewProps) {
       case 'COLLECTION':
         return device.estimatedValue ? `Est. ${formatPrice(device.estimatedValue)}` : null;
       case 'FOR_SALE':
-        return `List ${formatPrice(device.listPrice) ?? 'TBD'}`;
+        return `For Sale ${formatPrice(device.listPrice) ?? 'TBD'}`;
       case 'PENDING_SALE':
         return `Pending ${formatPrice(device.listPrice) ?? 'TBD'}`;
       case 'SOLD':
@@ -152,7 +172,7 @@ export function DeviceCardNew({ device }: DeviceCardNewProps) {
 
   return (
     <Link href={`/devices/${device.id}`} className="block group">
-      <div className="bg-surface-container-lowest dark:bg-[#1e2129] rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-[#e2e2e7] dark:border-[#2e3138] hover:shadow-xl transition-all duration-500 flex flex-col h-full">
+      <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-[#e2e2e7] dark:border-[#2e3138] hover:shadow-xl transition-all duration-500 flex flex-col h-full">
 
         {/* Image area */}
         <div className="aspect-square w-full bg-surface-container-low dark:bg-[#282d36] relative overflow-hidden">
@@ -169,18 +189,18 @@ export function DeviceCardNew({ device }: DeviceCardNewProps) {
           )}
 
           {/* Status chip — top left */}
-          <div className={`absolute top-4 left-4 [@media(min-width:1920px)]:top-2 [@media(min-width:1920px)]:left-2 ${statusStyle.bg} px-3 py-1.5 [@media(min-width:1920px)]:px-2 [@media(min-width:1920px)]:py-1 rounded-full flex items-center`}>
-            <span className={`text-xs [@media(min-width:1920px)]:text-[10px] font-bold ${statusStyle.text} uppercase tracking-wider leading-none font-inter`}>
+          <div className={`absolute top-2 left-2 ${statusStyle.bg} px-2 py-1 rounded-full flex items-center`}>
+            <span className={`text-[10px] font-bold ${statusStyle.text} uppercase tracking-wider leading-none font-inter`}>
               {statusText}
             </span>
           </div>
 
           {/* Icon row — bottom center */}
-          <div className="absolute bottom-4 [@media(min-width:1920px)]:bottom-2 left-1/2 -translate-x-1/2 bg-white/50 dark:bg-black/50 backdrop-blur-xl px-4 py-2 [@media(min-width:1920px)]:px-3 [@media(min-width:1920px)]:py-1.5 rounded-full flex gap-3 [@media(min-width:1920px)]:gap-2 shadow-sm">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/50 dark:bg-black/50 backdrop-blur-xl px-3 py-1.5 rounded-full flex gap-2 shadow-sm">
             {iconRow.map((icon, i) => (
               <span
                 key={i}
-                className={`material-symbols-outlined text-[18px] [@media(min-width:1920px)]:text-[14px] ${icon.className}`}
+                className={`material-symbols-outlined !text-[14px] ${icon.className}`}
                 style={icon.style}
               >
                 {icon.name}
@@ -190,25 +210,28 @@ export function DeviceCardNew({ device }: DeviceCardNewProps) {
         </div>
 
         {/* Card body */}
-        <div className="px-4 pt-3 pb-4 flex flex-col">
-          <div className="mb-1">
-            <span className="text-[10px] font-bold text-on-surface-variant dark:text-[#c1c6d7] tracking-widest uppercase">
+        <div className="px-3 pt-2 pb-3 flex flex-col">
+          <div className="mb-0.5">
+            <span className="text-[9px] font-semibold text-on-surface-variant dark:text-[#c1c6d7] tracking-widest uppercase">
               {device.category.name}{device.releaseYear ? ` • ${device.releaseYear}` : ''}
             </span>
           </div>
-          <h3 className="text-xl font-bold tracking-tight text-on-surface dark:text-[#e2e2e7] mb-0 leading-tight line-clamp-1">
-            {device.name}
-          </h3>
+          <ScalingText
+            text={device.name}
+            className="font-semibold tracking-tight text-on-surface dark:text-[#e2e2e7] mb-0 leading-tight"
+            maxPx={16}
+            minPx={11}
+          />
           {subtitle && (
-            <p className="text-sm font-medium text-on-surface-variant dark:text-[#c1c6d7] mb-0 line-clamp-1">
+            <p className="text-xs font-normal text-on-surface-variant dark:text-[#c1c6d7] mb-0 line-clamp-1">
               {subtitle}
             </p>
           )}
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-1.5">
             {value && (
-              <p className="text-sm font-bold text-primary dark:text-[#adc6ff]">{value}</p>
+              <p className={`text-xs font-semibold ${statusStyle.valueText}`}>{value}</p>
             )}
-            <span className="material-symbols-outlined text-outline-variant/40 group-hover:text-primary dark:group-hover:text-[#adc6ff] transition-colors text-[18px] ml-auto">
+            <span className="material-symbols-outlined text-outline-variant/40 group-hover:text-primary dark:group-hover:text-[#adc6ff] transition-colors text-[16px] ml-auto">
               arrow_forward_ios
             </span>
           </div>

@@ -145,6 +145,7 @@ export type Translations = {
     trash: string;
     logOut: string;
     logIn: string;
+    loggedInAs: string;
   };
   home: {
     search: string;
@@ -877,6 +878,7 @@ export const en: Translations = {
     trash: "Trash",
     logOut: "Log Out",
     logIn: "Log In",
+    loggedInAs: "Logged in as",
   },
   home: {
     search: "Search...",

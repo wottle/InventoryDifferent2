@@ -1,9 +1,10 @@
 'use client';
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { useT } from "../i18n/context";
+import { useAuth } from "../lib/auth-context";
 
 const MAIN_NAV = [
   { key: 'devices' as const,    href: '/',           icon: 'devices' },
@@ -39,14 +40,19 @@ const MORE_ADMIN: MoreItem[] = [
 export function NavBar() {
   const t = useT();
   const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated, authRequired, username, logout } = useAuth();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+  const [userOpen, setUserOpen] = useState(false);
+  const userRef = useRef<HTMLDivElement>(null);
 
   const isDevicesActive = pathname === '/';
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+      if (userRef.current && !userRef.current.contains(e.target as Node)) setUserOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -54,7 +60,7 @@ export function NavBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#f9f9fe]/80 dark:bg-[#111318]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 bg-[#e5e5e5]/80 dark:bg-[#2d2d2d]/80 backdrop-blur-2xl">
         <div className="max-w-[1440px] mx-auto px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="InventoryDifferent" width={32} height={32} />
@@ -173,13 +179,42 @@ export function NavBar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/categories"
-              className="p-2 rounded-full hover:bg-surface-container dark:hover:bg-[#1e2129] text-on-surface-variant dark:text-[#c1c6d7] transition-colors"
-              title={t.nav.manageCategories}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>settings</span>
-            </Link>
+            {authRequired && (
+              isAuthenticated ? (
+                <div ref={userRef} className="relative">
+                  <button
+                    onClick={() => setUserOpen(o => !o)}
+                    className="p-2 rounded-full hover:bg-surface-container dark:hover:bg-[#1e2129] text-[#009CDF] transition-colors"
+                    title={t.nav.logOut}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>person</span>
+                  </button>
+                  {userOpen && (
+                    <div className="absolute right-0 top-full mt-3 z-50 bg-surface-container-lowest dark:bg-[#1e2129] rounded-xl shadow-[0_8px_32px_-4px_rgba(0,0,0,0.12)] py-2 w-48 border border-outline-variant/10">
+                      <div className="px-4 py-2 text-xs text-on-surface-variant dark:text-[#c1c6d7]">
+                        {t.nav.loggedInAs} <span className="font-semibold text-on-surface dark:text-[#e2e2e7]">{username ?? 'Admin'}</span>
+                      </div>
+                      <div className="my-1 border-t border-outline-variant/10" />
+                      <button
+                        onClick={() => { logout(); setUserOpen(false); router.push('/'); }}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-500 hover:bg-surface-container dark:hover:bg-[#282d36] transition-colors"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>logout</span>
+                        {t.nav.logOut}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => router.push('/login')}
+                  className="p-2 rounded-full hover:bg-surface-container dark:hover:bg-[#1e2129] text-on-surface-variant dark:text-[#c1c6d7] transition-colors"
+                  title={t.nav.logIn}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>person</span>
+                </button>
+              )
+            )}
           </div>
         </div>
       </header>

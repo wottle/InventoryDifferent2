@@ -102,9 +102,9 @@ function buildIconRow(device: Device) {
 }
 
 // Shared cell classes — split into base, first, last so each <td> composes them
-const CELL     = 'bg-surface-container-lowest dark:bg-[#1e2129] border-y border-[#e2e2e7] dark:border-[#2e3138] py-3 px-4 transition-colors group-hover:bg-surface-container-low dark:group-hover:bg-[#282d36]';
-const CELL_L   = `${CELL} rounded-l-xl border-l`;
-const CELL_R   = `${CELL} rounded-r-xl border-r`;
+const CELL     = 'bg-transparent dark:bg-[#1e2129] py-3 px-4 transition-colors group-hover:bg-surface-container-low dark:group-hover:bg-[#282d36]';
+const CELL_L   = `${CELL} rounded-l-xl`;
+const CELL_R   = `${CELL} rounded-r-xl`;
 
 function SortIcon({ col, sortColumn, sortDirection }: { col: string; sortColumn: string; sortDirection: 'asc' | 'desc' }) {
   if (col !== sortColumn) return <span className="material-symbols-outlined text-[13px] opacity-30">unfold_more</span>;

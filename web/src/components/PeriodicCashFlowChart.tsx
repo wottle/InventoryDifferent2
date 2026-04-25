@@ -1,6 +1,7 @@
 // web/src/components/PeriodicCashFlowChart.tsx
 "use client";
 
+import { useEffect, useRef } from "react";
 import {
   ComposedChart,
   Bar,
@@ -28,10 +29,18 @@ interface PeriodicCashFlowChartProps {
 
 const BAR_WIDTH = 48; // px per period — controls horizontal scroll density
 const MIN_CHART_HEIGHT = 320; // px
+const YAXIS_PANEL_WIDTH = 72; // px — width of the fixed left Y-axis panel
 
 export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartProps) {
   const t = useT();
   const sym = t.common.currencySymbol;
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [data]);
 
   const formatCurrencyShort = (value: number) => {
     const abs = Math.abs(value);
@@ -55,24 +64,44 @@ export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartPro
 
   return (
     <div className="relative overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Fixed Y-axis panel — stays pinned while the chart scrolls horizontally */}
+      <div
+        className="absolute left-0 top-0 z-10 pointer-events-none"
+        style={{ width: YAXIS_PANEL_WIDTH, height: MIN_CHART_HEIGHT, backgroundColor: "var(--card)" }}
+      >
+        <ComposedChart
+          width={YAXIS_PANEL_WIDTH + 12}
+          height={MIN_CHART_HEIGHT}
+          data={data}
+          margin={{ top: 10, right: 0, left: 8, bottom: 5 }}
+        >
+          <YAxis
+            tickFormatter={formatCurrencyShort}
+            tick={{ fontSize: 11, fill: "#9CA3AF" }}
+            tickLine={{ stroke: "#6B7280" }}
+            axisLine={{ stroke: "#6B7280" }}
+            width={60}
+          />
+          {/* Invisible series so Recharts computes the same domain as the main chart */}
+          <Bar dataKey="received" fill="none" stroke="none" />
+          <Bar dataKey="spent" fill="none" stroke="none" />
+          <Line dataKey="net" stroke="none" dot={false} activeDot={false} />
+        </ComposedChart>
+      </div>
+
+      {/* Scrollable chart — offset right so content starts past the fixed Y-axis */}
+      <div className="overflow-x-auto" ref={scrollRef} style={{ marginLeft: YAXIS_PANEL_WIDTH }}>
         <div style={{ width: chartWidth, height: MIN_CHART_HEIGHT }}>
           <ComposedChart
             width={chartWidth}
             height={MIN_CHART_HEIGHT}
             data={data}
-            margin={{ top: 10, right: 16, left: 16, bottom: 5 }}
+            margin={{ top: 10, right: 16, left: 4, bottom: 5 }}
             barCategoryGap="30%"
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 11, fill: "#9CA3AF" }}
-              tickLine={{ stroke: "#6B7280" }}
-              axisLine={{ stroke: "#6B7280" }}
-            />
-            <YAxis
-              tickFormatter={formatCurrencyShort}
               tick={{ fontSize: 11, fill: "#9CA3AF" }}
               tickLine={{ stroke: "#6B7280" }}
               axisLine={{ stroke: "#6B7280" }}
@@ -119,6 +148,7 @@ export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartPro
           </ComposedChart>
         </div>
       </div>
+
       {/* Fade hint on right edge when content overflows */}
       <div
         className="pointer-events-none absolute inset-y-0 right-0 w-8"

@@ -16,14 +16,23 @@ export const releaseNotes: ReleaseEntry[] = [
       'Redesigned device detail page — cinematic hero, editorial 12-column layout, accessories, related devices, links, and photos sub-page',
       'Value history popover on the Estimated Value card — chart anchors to the card, dismisses on outside click or Escape',
       'New list page design — Technical Atelier editorial aesthetic with glassmorphic cards, grid/table view toggle with sortable columns, inline filter/sort bar, persistent view mode and scroll position, and new glassmorphic nav with full More dropdown menu',
+      'Barcode/QR scanner button in the filter bar on the main inventory page — scans QR deep-links, device URLs, or serial numbers to navigate directly to the matching device',
     ],
     changed: [
       'Device detail (/devices) now uses the new Technical Atelier design; old layout archived at /devices-old',
       'Refined list and card view typography to match the device detail editorial style',
       'All admin sub-pages now use the new Technical Atelier nav bar — route group (main) replaces per-page retro headers',
       'Technical Atelier list design promoted to main page (/); classic design archived at /list-classic',
+      'Nav bar settings gear replaced with a person icon — gray links to login when signed out, blue shows a logout dropdown when signed in',
+      'Page and nav bar background updated to warm gray (#e5e5e5 light / #2d2d2d dark) for a softer editorial feel',
     ],
-    fixed: [],
+    fixed: [
+      'Monthly cash flow chart on financials page now scrolls to the most recent months on load',
+      'Cash flow chart Y-axis stays pinned on the left while scrolling horizontally through periods',
+    ],
+    changed: [
+      'Device card value row now uses status-matched color (green for collection, orange for for sale, red for sold, etc.) instead of blue; "For Sale" prefix replaces "List"',
+    ],
   },
   {
     version: '2.5.2',

@@ -8,6 +8,7 @@ interface AuthContextType {
     isLoading: boolean;
     authRequired: boolean;
     usernameRequired: boolean;
+    username: string | null;
     login: (username: string | null, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
     getAccessToken: () => string | null;
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const ACCESS_TOKEN_KEY = 'inv_access_token';
 const REFRESH_TOKEN_KEY = 'inv_refresh_token';
 const TOKEN_EXPIRY_KEY = 'inv_token_expiry';
+const USERNAME_KEY = 'inv_username';
 
 // Buffer time before token expiry to trigger refresh (5 minutes)
 const REFRESH_BUFFER_MS = 5 * 60 * 1000;
@@ -28,6 +30,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const [authRequired, setAuthRequired] = useState(true);
     const [usernameRequired, setUsernameRequired] = useState(false);
+    const [username, setUsername] = useState<string | null>(() =>
+        typeof window !== 'undefined' ? localStorage.getItem(USERNAME_KEY) : null
+    );
 
     // Get tokens from storage
     const getStoredTokens = useCallback(() => {
@@ -58,7 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
         localStorage.removeItem(TOKEN_EXPIRY_KEY);
-        
+        localStorage.removeItem(USERNAME_KEY);
+        setUsername(null);
+
         // Also clear the cookie
         if (typeof window !== 'undefined') {
             document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; max-age=0; SameSite=Strict`;
@@ -203,6 +210,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             storeTokens(data.accessToken, data.refreshToken, data.expiresIn);
+            if (username) {
+                localStorage.setItem(USERNAME_KEY, username);
+                setUsername(username);
+            }
             setIsAuthenticated(true);
             return { success: true };
         } catch {
@@ -228,6 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             isLoading,
             authRequired,
             usernameRequired,
+            username,
             login,
             logout,
             getAccessToken,
