@@ -173,6 +173,7 @@ function DeviceRow({ device }: { device: Device }) {
       {/* Name — always visible, fills remaining width */}
       <td className={CELL}>
         <p className="text-sm font-bold text-on-surface dark:text-[#e2e2e7] truncate leading-tight">{device.name}</p>
+        {device.additionalName && <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] truncate leading-tight">{device.additionalName}</p>}
       </td>
 
       {/* Year — md+ */}
@@ -222,7 +223,7 @@ function DeviceRow({ device }: { device: Device }) {
         <div className="flex items-center gap-1">
           {iconRow.map((icon, i) => (
             icon.name
-              ? <span key={i} className={`material-symbols-outlined text-[13px] ${icon.className}`} style={icon.style}>{icon.name}</span>
+              ? <span key={i} className={`material-symbols-outlined ${icon.className}`} style={{ fontSize: '13px', ...icon.style }}>{icon.name}</span>
               : <span key={i} className="inline-block w-[13px]" />
           ))}
         </div>
