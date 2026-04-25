@@ -1,6 +1,7 @@
 // web/src/components/PeriodicCashFlowChart.tsx
 "use client";
 
+import { useEffect, useRef } from "react";
 import {
   ComposedChart,
   Bar,
@@ -32,6 +33,13 @@ const MIN_CHART_HEIGHT = 320; // px
 export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartProps) {
   const t = useT();
   const sym = t.common.currencySymbol;
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [data]);
 
   const formatCurrencyShort = (value: number) => {
     const abs = Math.abs(value);
@@ -55,7 +63,7 @@ export default function PeriodicCashFlowChart({ data }: PeriodicCashFlowChartPro
 
   return (
     <div className="relative overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" ref={scrollRef}>
         <div style={{ width: chartWidth, height: MIN_CHART_HEIGHT }}>
           <ComposedChart
             width={chartWidth}

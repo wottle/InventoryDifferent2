@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
+import { useRouter } from "next/navigation";
 import { NavBar } from "./list-new/_components/NavBar";
 import { FilterBar } from "./list-new/_components/FilterBar";
 import { DeviceCardNew } from "./list-new/_components/DeviceCardNew";
 import { DeviceTableNew } from "./list-new/_components/DeviceTableNew";
 import { LoadingPanel } from "../components/LoadingPanel";
+import { BarcodeScannerModal } from "../components/BarcodeScannerModal";
 import { useAuth } from "../lib/auth-context";
 import { useT } from "../i18n/context";
 
@@ -60,6 +62,14 @@ const GET_CATEGORIES = gql`
   }
 `;
 
+const GET_DEVICE_BY_SERIAL = gql`
+  query GetDeviceBySerialNew($where: DeviceWhereInput!) {
+    device(where: $where) {
+      id
+    }
+  }
+`;
+
 interface FilterState {
   categoryIds: number[];
   statuses: string[];
@@ -87,6 +97,7 @@ function loadFromStorage<T>(key: string, fallback: T): T {
 export default function ListNewPage() {
   const t = useT();
   const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const [filters, setFiltersState] = useState<FilterState>(() =>
     loadFromStorage(STORAGE_FILTERS, DEFAULT_FILTERS)
@@ -101,6 +112,11 @@ export default function ListNewPage() {
   const [viewMode, setViewModeState] = useState<'grid' | 'list'>(() =>
     loadFromStorage(STORAGE_VIEW, 'grid') as 'grid' | 'list'
   );
+  const [assetScanOpen, setAssetScanOpen] = useState(false);
+  const [assetScanMessage, setAssetScanMessage] = useState('');
+  const [barcodeSupported, setBarcodeSupported] = useState(false);
+  const assetScanFormats = useMemo(() => ['qr_code', 'code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'itf'], []);
+  const [getDeviceBySerial] = useLazyQuery(GET_DEVICE_BY_SERIAL);
 
   const setViewMode = (v: 'grid' | 'list') => {
     setViewModeState(v);
@@ -240,11 +256,16 @@ export default function ListNewPage() {
     };
   }, [loading]);
 
+  useEffect(() => {
+    const BarcodeDetectorCtor = typeof window !== 'undefined' ? (window as any).BarcodeDetector : undefined;
+    setBarcodeSupported(typeof BarcodeDetectorCtor === 'function' && !!navigator?.mediaDevices?.getUserMedia);
+  }, []);
+
   if (loading) {
     return (
       <>
         <NavBar />
-        <div className="min-h-screen bg-surface dark:bg-[#111318] pt-8">
+        <div className="min-h-screen pt-8">
           <div className="max-w-[1440px] mx-auto px-8">
             <LoadingPanel title={t.home.loadingTitle} subtitle={t.home.loadingSubtitle} />
           </div>
@@ -257,7 +278,7 @@ export default function ListNewPage() {
     return (
       <>
         <NavBar />
-        <div className="min-h-screen bg-surface dark:bg-[#111318] pt-8">
+        <div className="min-h-screen pt-8">
           <div className="max-w-[1440px] mx-auto px-8 text-error">Error: {error.message}</div>
         </div>
       </>
@@ -265,8 +286,41 @@ export default function ListNewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface dark:bg-[#111318] font-inter">
+    <div className="min-h-screen font-inter">
       <NavBar />
+
+      <BarcodeScannerModal
+        open={assetScanOpen}
+        title={t.home.scanAssetTag}
+        formats={assetScanFormats}
+        message={assetScanMessage}
+        onClose={() => { setAssetScanOpen(false); setAssetScanMessage(''); }}
+        onDetected={async (value) => {
+          const saveScroll = () => sessionStorage.setItem(SESSION_SCROLL, String(window.scrollY));
+          try {
+            const url = new URL(value);
+            const hashPath = url.hash.startsWith('#!') ? url.hash.slice(2) : url.hash.startsWith('#') ? url.hash.slice(1) : '';
+            for (const p of [url.pathname, hashPath].filter(Boolean)) {
+              const dm = p.match(/\/devices\/(\d+)(?:\/|$)/);
+              if (dm) { saveScroll(); router.push(`/devices/${dm[1]}`); return true; }
+              const lm = p.match(/\/locations\/(\d+)(?:\/|$)/);
+              if (lm) { saveScroll(); router.push(`/locations/${lm[1]}`); return true; }
+            }
+          } catch { /* not a URL */ }
+          const serialNumber = value.trim();
+          if (!serialNumber) { setAssetScanMessage('Scanned value is empty.'); return false; }
+          setAssetScanMessage('Looking up serial number...');
+          try {
+            const result = await getDeviceBySerial({ variables: { where: { serialNumber: { equals: serialNumber }, deleted: { equals: false } } } });
+            if (result.data?.device?.id) { saveScroll(); router.push(`/devices/${result.data.device.id}`); return true; }
+            setAssetScanMessage(`No device found with serial number: ${serialNumber}`);
+            return false;
+          } catch {
+            setAssetScanMessage(`Error looking up serial number: ${serialNumber}`);
+            return false;
+          }
+        }}
+      />
 
       <main className="max-w-[1440px] mx-auto px-8 pt-3 pb-32 md:pb-12">
         <FilterBar
@@ -283,6 +337,8 @@ export default function ListNewPage() {
           setSearchQuery={setSearchQuery}
           viewMode={viewMode}
           setViewMode={setViewMode}
+          barcodeSupported={barcodeSupported}
+          onScanClick={() => { setAssetScanMessage(''); setAssetScanOpen(true); }}
         />
 
         {sortedDevices.length === 0 ? (

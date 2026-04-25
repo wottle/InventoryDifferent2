@@ -152,7 +152,7 @@ export function DeviceCardNew({ device }: DeviceCardNewProps) {
 
   return (
     <Link href={`/devices/${device.id}`} className="block group">
-      <div className="bg-surface-container-lowest dark:bg-[#1e2129] rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-[#e2e2e7] dark:border-[#2e3138] hover:shadow-xl transition-all duration-500 flex flex-col h-full">
+      <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] border border-[#e2e2e7] dark:border-[#2e3138] hover:shadow-xl transition-all duration-500 flex flex-col h-full">
 
         {/* Image area */}
         <div className="aspect-square w-full bg-surface-container-low dark:bg-[#282d36] relative overflow-hidden">
@@ -169,18 +169,18 @@ export function DeviceCardNew({ device }: DeviceCardNewProps) {
           )}
 
           {/* Status chip — top left */}
-          <div className={`absolute top-4 left-4 [@media(min-width:1920px)]:top-2 [@media(min-width:1920px)]:left-2 ${statusStyle.bg} px-3 py-1.5 [@media(min-width:1920px)]:px-2 [@media(min-width:1920px)]:py-1 rounded-full flex items-center`}>
-            <span className={`text-xs [@media(min-width:1920px)]:text-[10px] font-bold ${statusStyle.text} uppercase tracking-wider leading-none font-inter`}>
+          <div className={`absolute top-2 left-2 ${statusStyle.bg} px-2 py-1 rounded-full flex items-center`}>
+            <span className={`text-[10px] font-bold ${statusStyle.text} uppercase tracking-wider leading-none font-inter`}>
               {statusText}
             </span>
           </div>
 
           {/* Icon row — bottom center */}
-          <div className="absolute bottom-4 [@media(min-width:1920px)]:bottom-2 left-1/2 -translate-x-1/2 bg-white/50 dark:bg-black/50 backdrop-blur-xl px-4 py-2 [@media(min-width:1920px)]:px-3 [@media(min-width:1920px)]:py-1.5 rounded-full flex gap-3 [@media(min-width:1920px)]:gap-2 shadow-sm">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/50 dark:bg-black/50 backdrop-blur-xl px-3 py-1.5 rounded-full flex gap-2 shadow-sm">
             {iconRow.map((icon, i) => (
               <span
                 key={i}
-                className={`material-symbols-outlined text-[18px] [@media(min-width:1920px)]:text-[14px] ${icon.className}`}
+                className={`material-symbols-outlined !text-[14px] ${icon.className}`}
                 style={icon.style}
               >
                 {icon.name}

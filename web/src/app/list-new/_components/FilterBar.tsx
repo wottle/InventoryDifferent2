@@ -29,6 +29,8 @@ interface FilterBarProps {
   setSearchQuery: (q: string) => void;
   viewMode: 'grid' | 'list';
   setViewMode: (v: 'grid' | 'list') => void;
+  barcodeSupported?: boolean;
+  onScanClick?: () => void;
 }
 
 const ALL_STATUSES = ['COLLECTION', 'IN_REPAIR', 'REPAIRED', 'FOR_SALE', 'PENDING_SALE', 'RETURNED', 'SOLD', 'DONATED'];
@@ -47,6 +49,8 @@ export function FilterBar({
   setSearchQuery,
   viewMode,
   setViewMode,
+  barcodeSupported,
+  onScanClick,
 }: FilterBarProps) {
   const t = useT();
   const { isAuthenticated } = useAuth();
@@ -134,6 +138,18 @@ export function FilterBar({
             </button>
           )}
         </div>
+
+        {/* Barcode / QR scanner */}
+        {onScanClick && (
+          <button
+            onClick={onScanClick}
+            disabled={!barcodeSupported}
+            title="Scan QR / barcode"
+            className={`flex items-center justify-center w-9 h-9 rounded-full bg-surface-container-low dark:bg-[#1e2129] transition-colors ${barcodeSupported ? 'hover:bg-surface-container dark:hover:bg-[#282d36] text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7]' : 'opacity-40 cursor-not-allowed text-on-surface-variant dark:text-[#c1c6d7]'}`}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>qr_code_scanner</span>
+          </button>
+        )}
 
         {/* View toggle */}
         <div className="flex items-center bg-surface-container-high dark:bg-[#1e2129] rounded-xl p-1 gap-0.5">

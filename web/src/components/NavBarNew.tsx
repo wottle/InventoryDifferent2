@@ -60,7 +60,7 @@ export function NavBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#f9f9fe]/80 dark:bg-[#111318]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 bg-[#e5e5e5]/80 dark:bg-[#2d2d2d]/80 backdrop-blur-2xl">
         <div className="max-w-[1440px] mx-auto px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="InventoryDifferent" width={32} height={32} />
