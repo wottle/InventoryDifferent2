@@ -31,6 +31,8 @@ export const releaseNotes: ReleaseEntry[] = [
     fixed: [
       'Monthly cash flow chart on financials page now scrolls to the most recent months on load',
       'Cash flow chart Y-axis stays pinned on the left while scrolling horizontally through periods',
+      'iOS: saving a device with custom field changes no longer fails with "Save Failed"',
+      'Custom field values now display on the device detail page even when the device has no technical specifications',
     ],
   },
   {
