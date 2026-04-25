@@ -220,6 +220,7 @@ struct DeviceDetailRedesignView: View {
                 maintenanceLogsSection
                 archiveNotesSection
                 techSpecsSection
+                customFieldsSection
                 historicalNotesSection
                 if authService.isAuthenticated {
                     deleteButton
@@ -1424,6 +1425,39 @@ struct DeviceDetailRedesignView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
         )
+    }
+
+    // MARK: - Custom Fields
+
+    @ViewBuilder
+    private var customFieldsSection: some View {
+        let t = lm.t
+        let sorted = device.customFieldValues.sorted {
+            $0.sortOrder != $1.sortOrder ? $0.sortOrder < $1.sortOrder : $0.customFieldName < $1.customFieldName
+        }
+        if !sorted.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                sectionOverline(t.deviceDetail.customFields)
+
+                VStack(spacing: 0) {
+                    ForEach(Array(sorted.enumerated()), id: \.offset) { index, cfv in
+                        HStack {
+                            Text(cfv.customFieldName)
+                                .font(.system(size: 13))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text(cfv.value)
+                                .font(.system(size: 13, weight: .bold))
+                                .multilineTextAlignment(.trailing)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(index % 2 == 0 ? Color.edSurfaceLow : Color.edSurfaceHigh.opacity(0.5))
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+        }
     }
 
     // MARK: - Historical Notes
