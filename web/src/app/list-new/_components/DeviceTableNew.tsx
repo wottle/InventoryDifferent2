@@ -172,8 +172,8 @@ function DeviceRow({ device }: { device: Device }) {
 
       {/* Name — always visible, fills remaining width */}
       <td className={CELL}>
-        <p className="text-sm font-bold text-on-surface dark:text-[#e2e2e7] truncate leading-tight">{device.name}</p>
-        {device.additionalName && <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] truncate leading-tight">{device.additionalName}</p>}
+        <p className="text-sm font-bold text-on-surface dark:text-[#e2e2e7] line-clamp-1 leading-tight">{device.name}</p>
+        {device.additionalName && <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] line-clamp-1 leading-tight">{device.additionalName}</p>}
       </td>
 
       {/* Year — md+ */}
@@ -218,8 +218,8 @@ function DeviceRow({ device }: { device: Device }) {
         </div>
       </td>
 
-      {/* Indicators — xl+; rounded-r at xl+ */}
-      <td className={`${CELL} hidden xl:table-cell xl:rounded-r-xl`}>
+      {/* Indicators — xl+; rounded-r at xl+; tighter padding to fit icons */}
+      <td className={`${CELL} hidden xl:table-cell xl:rounded-r-xl !px-2`}>
         <div className="flex items-center gap-1">
           {iconRow.map((icon, i) => (
             icon.name
@@ -265,14 +265,14 @@ export function DeviceTableNew({ devices, sortColumn, sortDirection, onSortChang
         <colgroup>
           <col style={{ width: '120px' }} />
           <col style={{ width: '56px'  }} />
-          <col />
+          <col style={{ width: '200px' }} />
           <col style={{ width: '60px'  }} />
           <col style={{ width: '160px' }} />
           <col style={{ width: '110px' }} />
           <col style={{ width: '95px'  }} />
           <col style={{ width: '120px' }} />
           <col style={{ width: '130px' }} />
-          <col style={{ width: '140px' }} />
+          <col style={{ width: '160px' }} />
         </colgroup>
 
         <thead>
