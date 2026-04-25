@@ -102,7 +102,7 @@ function buildIconRow(device: Device) {
 }
 
 // Shared cell classes — split into base, first, last so each <td> composes them
-const CELL     = 'bg-surface dark:bg-[#1e2129] py-3 px-4 transition-colors group-hover:bg-surface-container-low dark:group-hover:bg-[#282d36]';
+const CELL     = 'bg-transparent dark:bg-[#1e2129] py-3 px-4 transition-colors group-hover:bg-surface-container-low dark:group-hover:bg-[#282d36]';
 const CELL_L   = `${CELL} rounded-l-xl`;
 const CELL_R   = `${CELL} rounded-r-xl`;
 
