@@ -1490,6 +1490,7 @@ export const resolvers = {
                 customFieldName: result.customField.name,
                 value: result.value,
                 isPublic: result.customField.isPublic,
+                sortOrder: result.customField.sortOrder,
             };
         },
         removeCustomFieldValue: async (_parent: any, args: { deviceId: number; customFieldId: number }, context: Context) => {
