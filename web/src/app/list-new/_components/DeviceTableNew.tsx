@@ -212,18 +212,18 @@ function DeviceRow({ device }: { device: Device }) {
 
       {/* Status — always visible; rounded-r below xl */}
       <td className={`${CELL} rounded-r-xl xl:rounded-r-none`}>
-        <div className={`inline-flex ${statusStyle.bg} px-2.5 py-1 rounded-full`}>
-          <span className={`text-[10px] font-bold ${statusStyle.text} uppercase tracking-wider leading-none`}>{statusText}</span>
+        <div className={`inline-flex ${statusStyle.bg} px-1.5 py-0.5 rounded-full`}>
+          <span className={`text-[9px] font-bold ${statusStyle.text} uppercase tracking-wide leading-none`}>{statusText}</span>
         </div>
       </td>
 
       {/* Indicators — xl+; rounded-r at xl+ */}
       <td className={`${CELL} hidden xl:table-cell xl:rounded-r-xl`}>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {iconRow.map((icon, i) => (
             icon.name
-              ? <span key={i} className={`material-symbols-outlined text-[15px] ${icon.className}`} style={icon.style}>{icon.name}</span>
-              : <span key={i} className="inline-block w-[15px]" />
+              ? <span key={i} className={`material-symbols-outlined text-[13px] ${icon.className}`} style={icon.style}>{icon.name}</span>
+              : <span key={i} className="inline-block w-[13px]" />
           ))}
         </div>
       </td>
