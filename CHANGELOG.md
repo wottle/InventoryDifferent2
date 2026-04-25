@@ -11,6 +11,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Changed
 - Device detail (/devices) now uses the new Technical Atelier design; old layout archived at /devices-old
 - Refined list and card view typography to match the device detail editorial style
+- Nav bar settings gear replaced with a person icon — gray links to login when signed out, blue shows a logout dropdown when signed in
 
 ---
 

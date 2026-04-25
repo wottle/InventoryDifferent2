@@ -147,6 +147,7 @@ export const es: Translations = {
     trash: "Papelera",
     logOut: "Cerrar sesión",
     logIn: "Iniciar sesión",
+    loggedInAs: "Conectado como",
   },
   home: {
     search: "Buscar...",

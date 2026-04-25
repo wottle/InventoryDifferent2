@@ -22,6 +22,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Refined list and card view typography to match the device detail editorial style',
       'All admin sub-pages now use the new Technical Atelier nav bar — route group (main) replaces per-page retro headers',
       'Technical Atelier list design promoted to main page (/); classic design archived at /list-classic',
+      'Nav bar settings gear replaced with a person icon — gray links to login when signed out, blue shows a logout dropdown when signed in',
     ],
     fixed: [],
   },
