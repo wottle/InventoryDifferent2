@@ -9,6 +9,11 @@
 import SwiftUI
 import Charts
 
+struct ImageIndex: Identifiable {
+    let id = UUID()
+    let value: Int
+}
+
 // MARK: - Design Tokens
 
 private struct InfoFullHeightKey: PreferenceKey {
