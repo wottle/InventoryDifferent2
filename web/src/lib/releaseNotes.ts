@@ -25,13 +25,12 @@ export const releaseNotes: ReleaseEntry[] = [
       'Technical Atelier list design promoted to main page (/); classic design archived at /list-classic',
       'Nav bar settings gear replaced with a person icon — gray links to login when signed out, blue shows a logout dropdown when signed in',
       'Page and nav bar background updated to warm gray (#e5e5e5 light / #2d2d2d dark) for a softer editorial feel',
+      'Redesigned inventory table with 10 columns (category, thumbnail, name, year, make/model, date acquired, value, location, status, indicators) with responsive column hiding',
+      'Device card value row now uses status-matched color (green for collection, orange for for sale, red for sold, etc.) instead of blue; "For Sale" prefix replaces "List"',
     ],
     fixed: [
       'Monthly cash flow chart on financials page now scrolls to the most recent months on load',
       'Cash flow chart Y-axis stays pinned on the left while scrolling horizontally through periods',
-    ],
-    changed: [
-      'Device card value row now uses status-matched color (green for collection, orange for for sale, red for sold, etc.) instead of blue; "For Sale" prefix replaces "List"',
     ],
   },
   {
