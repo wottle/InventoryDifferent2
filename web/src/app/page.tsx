@@ -354,7 +354,7 @@ export default function ListNewPage() {
             onSortChange={onSortChange}
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 [@media(min-width:1920px)]:grid-cols-6 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 [@media(min-width:1680px)]:grid-cols-6 [@media(min-width:1780px)]:grid-cols-7 [@media(min-width:1980px)]:grid-cols-8 gap-3">
             {sortedDevices.map((device: any) => (
               <DeviceCardNew key={device.id} device={device} />
             ))}

@@ -28,6 +28,10 @@ export const releaseNotes: ReleaseEntry[] = [
     ],
     fixed: [
       'Monthly cash flow chart on financials page now scrolls to the most recent months on load',
+      'Cash flow chart Y-axis stays pinned on the left while scrolling horizontally through periods',
+    ],
+    changed: [
+      'Device card value row now uses status-matched color (green for collection, orange for for sale, red for sold, etc.) instead of blue; "For Sale" prefix replaces "List"',
     ],
   },
   {
