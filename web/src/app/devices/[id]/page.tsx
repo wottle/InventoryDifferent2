@@ -1404,13 +1404,24 @@ export default function DeviceDetailNew() {
                 {device.operatingSystem && <SpecField label="Operating System" value={device.operatingSystem} />}
                 {device.isWifiEnabled != null && <SpecField label="WiFi" value={device.isWifiEnabled ? 'Yes' : 'No'} />}
               </div>
-              {(device.customFieldValues ?? []).length > 0 && (
-                <div className="mt-6 pt-6 border-t border-outline-variant/20 grid grid-cols-2 gap-x-8 gap-y-4">
-                  {device.customFieldValues.map((cf: any) => (
+            </section>
+          )}
+
+          {/* Custom Fields */}
+          {(device.customFieldValues ?? []).length > 0 && (
+            <section className="bg-[var(--card)] rounded-xl p-8 shadow-sm">
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Custom Fields</h2>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                {[...device.customFieldValues]
+                  .sort((a: any, b: any) =>
+                    a.sortOrder !== b.sortOrder
+                      ? a.sortOrder - b.sortOrder
+                      : a.customFieldName.localeCompare(b.customFieldName)
+                  )
+                  .map((cf: any) => (
                     <SpecField key={cf.id} label={cf.customFieldName} value={cf.value} />
                   ))}
-                </div>
-              )}
+              </div>
             </section>
           )}
 
