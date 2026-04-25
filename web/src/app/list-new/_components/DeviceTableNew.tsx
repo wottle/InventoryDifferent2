@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../../../lib/config";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
@@ -22,7 +23,9 @@ interface Device {
   estimatedValue?: number | null;
   listPrice?: number | null;
   soldPrice?: number | null;
+  dateAcquired?: string | null;
   category: { name: string; type: string };
+  location?: { id: number; name: string } | null;
   images: {
     path: string;
     thumbnailPath?: string | null;
@@ -65,7 +68,10 @@ const DEFAULT_DIRECTION: Record<string, 'asc' | 'desc'> = {
   name:           'asc',
   category:       'asc',
   releaseYear:    'desc',
+  manufacturer:   'asc',
+  dateAcquired:   'desc',
   estimatedValue: 'desc',
+  location:       'asc',
   status:         'asc',
 };
 
@@ -101,10 +107,16 @@ function buildIconRow(device: Device) {
   return icons;
 }
 
-// Shared cell classes — split into base, first, last so each <td> composes them
-const CELL     = 'bg-transparent dark:bg-[#1e2129] py-3 px-4 transition-colors group-hover:bg-surface-container-low dark:group-hover:bg-[#282d36]';
-const CELL_L   = `${CELL} rounded-l-xl`;
-const CELL_R   = `${CELL} rounded-r-xl`;
+const CELL = 'bg-transparent dark:bg-[#1e2129] py-3 px-4 transition-colors group-hover:bg-surface-container-low dark:group-hover:bg-[#282d36]';
+
+function formatDate(dateString: string | null | undefined): string {
+  if (!dateString) return '—';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    timeZone: 'UTC',
+    year: 'numeric',
+    month: 'short',
+  });
+}
 
 function SortIcon({ col, sortColumn, sortDirection }: { col: string; sortColumn: string; sortDirection: 'asc' | 'desc' }) {
   if (col !== sortColumn) return <span className="material-symbols-outlined text-[13px] opacity-30">unfold_more</span>;
@@ -134,56 +146,79 @@ function DeviceRow({ device }: { device: Device }) {
   const statusText  = (t.status as Record<string, string>)[device.status] ?? device.status;
   const statusStyle = STATUS_STYLES[device.status] ?? { bg: 'bg-gray-600', text: 'text-white' };
   const iconRow     = buildIconRow(device);
-  const subtitle    = device.additionalName || `${device.manufacturer || ''} ${device.modelNumber || ''}`.trim();
+  const makeModel   = [device.manufacturer, device.modelNumber].filter(Boolean).join(' ') || '—';
+
+  const nav = () => router.push(`/devices/${device.id}`);
 
   return (
-    <tr
-      className="group cursor-pointer"
-      onClick={() => router.push(`/devices/${device.id}`)}
-    >
-      {/* Name */}
-      <td className={CELL_L}>
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden bg-surface-container-low dark:bg-[#282d36]">
-            {thumbnail ? (
-              <img src={`${API_BASE_URL}${thumbnail}`} alt={device.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-[18px] text-outline-variant dark:text-[#414755]">devices</span>
-              </div>
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-bold text-on-surface dark:text-[#e2e2e7] truncate leading-tight">{device.name}</p>
-            {subtitle && <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] truncate">{subtitle}</p>}
-          </div>
-        </div>
-      </td>
-
-      {/* Category */}
-      <td className={CELL}>
+    <tr className="group cursor-pointer" onClick={nav}>
+      {/* Category — first at sm+; rounded-l at sm+ */}
+      <td className={`${CELL} hidden sm:table-cell rounded-l-none sm:rounded-l-xl`}>
         <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] truncate">{device.category.name}</p>
       </td>
 
-      {/* Year */}
+      {/* Thumbnail — first at xs; rounded-l at xs only */}
+      <td className={`${CELL} rounded-l-xl sm:rounded-l-none`}>
+        <div className="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden bg-surface-container-low dark:bg-[#282d36]">
+          {thumbnail ? (
+            <img src={`${API_BASE_URL}${thumbnail}`} alt={device.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="material-symbols-outlined text-[18px] text-outline-variant dark:text-[#414755]">devices</span>
+            </div>
+          )}
+        </div>
+      </td>
+
+      {/* Name — always visible, fills remaining width */}
       <td className={CELL}>
+        <p className="text-sm font-bold text-on-surface dark:text-[#e2e2e7] truncate leading-tight">{device.name}</p>
+      </td>
+
+      {/* Year — md+ */}
+      <td className={`${CELL} hidden md:table-cell`}>
         <p className="text-xs text-on-surface dark:text-[#e2e2e7] font-medium tabular-nums">{device.releaseYear ?? '—'}</p>
       </td>
 
-      {/* Est. Value */}
-      <td className={CELL}>
+      {/* Make / Model — lg+ */}
+      <td className={`${CELL} hidden lg:table-cell`}>
+        <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] truncate">{makeModel}</p>
+      </td>
+
+      {/* Date Acquired — xl+ */}
+      <td className={`${CELL} hidden xl:table-cell`}>
+        <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] tabular-nums">{formatDate(device.dateAcquired)}</p>
+      </td>
+
+      {/* Est. Value — md+ */}
+      <td className={`${CELL} hidden md:table-cell`}>
         <p className="text-xs font-bold text-primary dark:text-[#adc6ff] tabular-nums">{valueLabel()}</p>
       </td>
 
-      {/* Status */}
-      <td className={CELL}>
+      {/* Location — 2xl+ */}
+      <td className={`${CELL} hidden 2xl:table-cell`}>
+        {device.location ? (
+          <Link
+            href={`/locations/${device.location.id}`}
+            className="text-xs text-primary dark:text-[#adc6ff] hover:underline truncate block max-w-[110px]"
+            onClick={e => e.stopPropagation()}
+          >
+            {device.location.name}
+          </Link>
+        ) : (
+          <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7]">—</p>
+        )}
+      </td>
+
+      {/* Status — always visible; rounded-r below xl */}
+      <td className={`${CELL} rounded-r-xl xl:rounded-r-none`}>
         <div className={`inline-flex ${statusStyle.bg} px-2.5 py-1 rounded-full`}>
           <span className={`text-[10px] font-bold ${statusStyle.text} uppercase tracking-wider leading-none`}>{statusText}</span>
         </div>
       </td>
 
-      {/* Indicators */}
-      <td className={CELL_R}>
+      {/* Indicators — xl+; rounded-r at xl+ */}
+      <td className={`${CELL} hidden xl:table-cell xl:rounded-r-xl`}>
         <div className="flex items-center gap-1.5">
           {iconRow.map((icon, i) => (
             icon.name
@@ -197,6 +232,8 @@ function DeviceRow({ device }: { device: Device }) {
 }
 
 export function DeviceTableNew({ devices, sortColumn, sortDirection, onSortChange }: DeviceTableNewProps) {
+  const t = useT();
+
   const handleSort = (col: string) => {
     if (col === sortColumn) {
       onSortChange(col, sortDirection === 'asc' ? 'desc' : 'asc');
@@ -205,40 +242,49 @@ export function DeviceTableNew({ devices, sortColumn, sortDirection, onSortChang
     }
   };
 
-  const TH_BASE = 'pb-2 pt-1 px-4 text-left font-bold text-[10px] uppercase tracking-widest text-on-surface-variant dark:text-[#c1c6d7]';
+  const TH = 'pb-2 pt-1 px-4 text-left font-bold text-[10px] uppercase tracking-widest text-on-surface-variant dark:text-[#c1c6d7]';
 
-  const columns: { key: string; label: string }[] = [
-    { key: 'name',           label: 'Name'      },
-    { key: 'category',       label: 'Category'  },
-    { key: 'releaseYear',    label: 'Year'       },
-    { key: 'estimatedValue', label: 'Est. Value' },
-    { key: 'status',         label: 'Status'     },
-    { key: 'indicators',     label: ''           },
+  // [key, label, sortable, responsiveClass]
+  const columns: [string, string, boolean, string][] = [
+    ['category',       t.filter.category,        true,  'hidden sm:table-cell'],
+    ['thumbnail',      '',                        false, ''],
+    ['name',           t.sort.name,               true,  ''],
+    ['releaseYear',    t.table.year,              true,  'hidden md:table-cell'],
+    ['manufacturer',   t.table.manufacturerModel, true,  'hidden lg:table-cell'],
+    ['dateAcquired',   t.table.dateAcquired,      true,  'hidden xl:table-cell'],
+    ['estimatedValue', t.table.estValue,          true,  'hidden md:table-cell'],
+    ['location',       t.table.location,          true,  'hidden 2xl:table-cell'],
+    ['status',         t.filter.status,           true,  ''],
+    ['indicators',     t.table.indicators,        false, 'hidden xl:table-cell'],
   ];
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-separate border-spacing-y-1.5">
         <colgroup>
-          <col />{/* Name: fills remaining space */}
-          <col style={{ width: '140px' }} />
-          <col style={{ width: '70px' }} />
-          <col style={{ width: '110px' }} />
+          <col style={{ width: '120px' }} />
+          <col style={{ width: '56px'  }} />
+          <col />
+          <col style={{ width: '60px'  }} />
           <col style={{ width: '160px' }} />
-          <col style={{ width: '150px' }} />
+          <col style={{ width: '110px' }} />
+          <col style={{ width: '95px'  }} />
+          <col style={{ width: '120px' }} />
+          <col style={{ width: '130px' }} />
+          <col style={{ width: '140px' }} />
         </colgroup>
 
         <thead>
           <tr>
-            {columns.map(col => (
-              <th key={col.key} className={TH_BASE}>
-                {col.key !== 'indicators' ? (
+            {columns.map(([key, label, sortable, responsive]) => (
+              <th key={key} className={`${TH} ${responsive}`}>
+                {sortable && label ? (
                   <button
-                    onClick={() => handleSort(col.key)}
-                    className={`flex items-center gap-1 hover:text-on-surface dark:hover:text-[#e2e2e7] transition-colors ${col.key === 'name' ? 'pl-[52px]' : ''}`}
+                    onClick={() => handleSort(key)}
+                    className="flex items-center gap-1 hover:text-on-surface dark:hover:text-[#e2e2e7] transition-colors"
                   >
-                    {col.label}
-                    <SortIcon col={col.key} sortColumn={sortColumn} sortDirection={sortDirection} />
+                    {label}
+                    <SortIcon col={key} sortColumn={sortColumn} sortDirection={sortDirection} />
                   </button>
                 ) : null}
               </th>

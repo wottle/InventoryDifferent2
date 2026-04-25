@@ -41,6 +41,10 @@ const GET_DEVICES = gql`
         type
         sortOrder
       }
+      location {
+        id
+        name
+      }
       images {
         id
         path
@@ -201,6 +205,11 @@ export default function ListNewPage() {
           const sA = a.status ?? '';
           const sB = b.status ?? '';
           return sA !== sB ? dir * sA.localeCompare(sB) : secondary();
+        }
+        case 'location': {
+          const locA = (a.location?.name ?? '').toLowerCase();
+          const locB = (b.location?.name ?? '').toLowerCase();
+          return locA !== locB ? dir * locA.localeCompare(locB) : secondary();
         }
         case 'category':
         default:
