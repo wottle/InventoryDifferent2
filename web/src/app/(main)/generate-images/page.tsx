@@ -9,6 +9,7 @@ import { useAuth } from "../../../lib/auth-context";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
+import { useT } from "../../../i18n/context";
 
 const DEFAULT_PROMPT =
   "Create a professional product photograph of this vintage computer device on a dark background (#282828) with a 1:1 ratio for square image use. Use studio lighting with soft, even illumination to eliminate harsh shadows. Position the product at a slight 30-degree angle to show dimension. High detail, sharp focus throughout, showing clear material texture. Photorealistic rendering for high-end e-commerce use.";
@@ -52,6 +53,7 @@ interface DeviceRow {
 
 export default function GenerateImagesPage() {
   const { isAuthenticated, isLoading: authLoading, getAccessToken } = useAuth();
+  const t = useT();
   const { data, loading: devicesLoading } = useQuery(GET_DEVICES);
   const [setSystemSetting] = useMutation(SET_SYSTEM_SETTING);
 
@@ -185,15 +187,15 @@ export default function GenerateImagesPage() {
   }
 
   if (authLoading || openaiEnabled === null) {
-    return <LoadingPanel title="Loading…" />;
+    return <LoadingPanel title={t.pages.generateImages.loading} />;
   }
 
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-[var(--muted-foreground)] mb-4">Authentication required.</p>
-          <Link href="/login" className="text-[var(--apple-blue)] hover:underline">Log In</Link>
+          <p className="text-[var(--muted-foreground)] mb-4">{t.pages.generateImages.authRequired}</p>
+          <Link href="/login" className="text-[var(--apple-blue)] hover:underline">{t.pages.generateImages.logIn}</Link>
         </div>
       </div>
     );
@@ -202,24 +204,24 @@ export default function GenerateImagesPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] p-6">
       <div className="max-w-5xl mx-auto space-y-6">
-        <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)] mb-6">AI Product Images</h1>
+        <h1 className="text-2xl font-light tracking-tight text-[var(--foreground)] mb-6">{t.pages.generateImages.pageTitle}</h1>
 
         {!openaiEnabled && (
           <div className="rounded border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 text-sm text-yellow-800 dark:text-yellow-200">
-            <strong>OPENAI_API_KEY not configured.</strong> Set the <code>OPENAI_API_KEY</code> environment variable on the API container to enable image generation.
+            <strong>{t.pages.generateImages.apiKeyMissing}</strong> {t.pages.generateImages.apiKeyMissingDesc}
           </div>
         )}
 
         {/* Settings */}
         <div className="rounded border border-[var(--border)] bg-[var(--card)] p-5 space-y-4 card-retro">
           <div>
-            <h2 className="text-sm font-semibold text-[var(--foreground)]">Settings</h2>
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">{t.pages.generateImages.settingsTitle}</h2>
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              The existing thumbnail is used as the source image for generation — preferring the <strong>Both</strong> thumbnail, then <strong>Light</strong>, then <strong>Dark</strong>. If no thumbnail exists, the first image is used.
+              {t.pages.generateImages.settingsDesc}
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">Prompt (applied to all)</label>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">{t.pages.generateImages.promptLabel}</label>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -237,9 +239,9 @@ export default function GenerateImagesPage() {
                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                 </svg>
-                Save as default
+                {t.pages.generateImages.saveAsDefault}
               </button>
-              {savedPrompt && <span className="text-xs text-green-600 font-medium">✓ Saved!</span>}
+              {savedPrompt && <span className="text-xs text-green-600 font-medium">{t.pages.generateImages.savedFeedback}</span>}
             </div>
           </div>
           <div className="flex flex-wrap gap-4 items-center">
@@ -252,7 +254,7 @@ export default function GenerateImagesPage() {
                 disabled={isRunning}
                 className="rounded"
               />
-              Set as thumbnail
+              {t.pages.generateImages.setAsThumbnail}
             </label>
             {assignAsThumbnail && (
               <select
@@ -261,9 +263,9 @@ export default function GenerateImagesPage() {
                 disabled={isRunning}
                 className="text-xs rounded border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[var(--apple-blue)] disabled:opacity-60"
               >
-                <option value="BOTH">Both modes</option>
-                <option value="LIGHT">Light mode only</option>
-                <option value="DARK">Dark mode only</option>
+                <option value="BOTH">{t.pages.generateImages.bothModes}</option>
+                <option value="LIGHT">{t.pages.generateImages.lightModeOnly}</option>
+                <option value="DARK">{t.pages.generateImages.darkModeOnly}</option>
               </select>
             )}
             {/* Shop image */}
@@ -275,7 +277,7 @@ export default function GenerateImagesPage() {
                 disabled={isRunning}
                 className="rounded"
               />
-              Set as shop image
+              {t.pages.generateImages.setAsShopImage}
             </label>
             {/* Listing image */}
             <label className="flex items-center gap-2 text-sm text-[var(--foreground)] cursor-pointer">
@@ -286,7 +288,7 @@ export default function GenerateImagesPage() {
                 disabled={isRunning}
                 className="rounded"
               />
-              Set as listing image
+              {t.pages.generateImages.setAsListingImage}
             </label>
           </div>
         </div>
@@ -303,9 +305,9 @@ export default function GenerateImagesPage() {
                   : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               }`}
             >
-              {f === "all" && "All Devices"}
-              {f === "missing_any" && "Missing Any Image"}
-              {f === "missing_shop" && "Missing Shop Image"}
+              {f === "all" && t.pages.generateImages.filterAll}
+              {f === "missing_any" && t.pages.generateImages.filterMissingAny}
+              {f === "missing_shop" && t.pages.generateImages.filterMissingShop}
             </button>
           ))}
         </div>
@@ -313,9 +315,9 @@ export default function GenerateImagesPage() {
         {/* Select controls + Generate button */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex gap-3">
-            <button onClick={selectAll} className="text-sm text-[var(--apple-blue)] hover:underline">Select all</button>
-            <button onClick={deselectAll} className="text-sm text-[var(--muted-foreground)] hover:underline">Deselect all</button>
-            <span className="text-sm text-[var(--muted-foreground)]">{selected.size} selected</span>
+            <button onClick={selectAll} className="text-sm text-[var(--apple-blue)] hover:underline">{t.pages.generateImages.selectAll}</button>
+            <button onClick={deselectAll} className="text-sm text-[var(--muted-foreground)] hover:underline">{t.pages.generateImages.deselectAll}</button>
+            <span className="text-sm text-[var(--muted-foreground)]">{selected.size} {t.pages.generateImages.selectedCount}</span>
           </div>
           <div className="flex gap-2">
             {isRunning && (
@@ -323,7 +325,7 @@ export default function GenerateImagesPage() {
                 onClick={handleCancel}
                 className="px-4 py-2 text-sm font-medium rounded border border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
               >
-                Cancel
+                {t.pages.generateImages.cancel}
               </button>
             )}
             <button
@@ -337,10 +339,10 @@ export default function GenerateImagesPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
                   </svg>
-                  Generating…
+                  {t.pages.generateImages.generating}
                 </>
               ) : (
-                "Generate Selected"
+                t.pages.generateImages.generateSelected
               )}
             </button>
           </div>
@@ -348,7 +350,7 @@ export default function GenerateImagesPage() {
 
         {/* Device table */}
         {devicesLoading ? (
-          <LoadingPanel title="Loading devices…" />
+          <LoadingPanel title={t.pages.generateImages.loadingDevices} />
         ) : (
           <div className="rounded border border-[var(--border)] overflow-hidden card-retro">
             <table className="w-full text-sm">
@@ -363,9 +365,9 @@ export default function GenerateImagesPage() {
                     />
                   </th>
                   <th className="w-14 px-2 py-2" />
-                  <th className="px-4 py-2 text-[var(--muted-foreground)] font-medium">Device</th>
-                  <th className="px-4 py-2 text-[var(--muted-foreground)] font-medium text-center">Images</th>
-                  <th className="px-4 py-2 text-[var(--muted-foreground)] font-medium text-right">Status</th>
+                  <th className="px-4 py-2 text-[var(--muted-foreground)] font-medium">{t.pages.generateImages.colDevice}</th>
+                  <th className="px-4 py-2 text-[var(--muted-foreground)] font-medium text-center">{t.pages.generateImages.colImages}</th>
+                  <th className="px-4 py-2 text-[var(--muted-foreground)] font-medium text-right">{t.pages.generateImages.colStatus}</th>
                 </tr>
               </thead>
               <tbody>
@@ -427,13 +429,13 @@ export default function GenerateImagesPage() {
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
                             </svg>
-                            Generating
+                            {t.pages.generateImages.statusGenerating}
                           </span>
                         )}
-                        {rowStatus === "done" && <span className="text-green-600">✓ Done</span>}
-                        {rowStatus === "skipped" && <span className="text-[var(--muted-foreground)]">⚠ Skipped</span>}
+                        {rowStatus === "done" && <span className="text-green-600">{t.pages.generateImages.statusDone}</span>}
+                        {rowStatus === "skipped" && <span className="text-[var(--muted-foreground)]">{t.pages.generateImages.statusSkipped}</span>}
                         {rowStatus === "error" && (
-                          <span className="text-red-600" title={errMsg || ""}>✗ Error</span>
+                          <span className="text-red-600" title={errMsg || ""}>{t.pages.generateImages.statusError}</span>
                         )}
                       </td>
                     </tr>
@@ -442,7 +444,7 @@ export default function GenerateImagesPage() {
                 {filteredDevices.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-4 py-8 text-center text-[var(--muted-foreground)]">
-                      No devices match the current filter.
+                      {t.pages.generateImages.noDevicesMatch}
                     </td>
                   </tr>
                 )}

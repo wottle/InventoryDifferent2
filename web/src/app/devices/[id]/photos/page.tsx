@@ -11,6 +11,7 @@ import { GenerateImageModal } from "../../../../components/GenerateImageModal";
 import { LoadingPanel } from "../../../../components/LoadingPanel";
 import { useAuth } from "../../../../lib/auth-context";
 import { API_BASE_URL } from "../../../../lib/config";
+import { useT } from "../../../../i18n/context";
 
 const GET_DEVICE_PHOTOS = gql`
   query GetDevicePhotos($where: DeviceWhereInput!) {
@@ -36,6 +37,7 @@ export default function DevicePhotosPage() {
   const params = useParams();
   const id = params.id;
   const { isAuthenticated } = useAuth();
+  const t = useT();
   const [showUploader, setShowUploader] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [openaiEnabled, setOpenaiEnabled] = useState(false);
@@ -56,7 +58,7 @@ export default function DevicePhotosPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <LoadingPanel title="Loading photos" subtitle="Please wait…" />
+        <LoadingPanel title={t.pages.photosPage.loadingTitle} subtitle={t.pages.photosPage.loadingSubtitle} />
       </div>
     );
   }
@@ -64,7 +66,7 @@ export default function DevicePhotosPage() {
   if (error || !data?.device) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-on-surface-variant text-sm">Could not load photos.</p>
+        <p className="text-on-surface-variant text-sm">{t.pages.photosPage.error}</p>
       </div>
     );
   }
@@ -101,7 +103,7 @@ export default function DevicePhotosPage() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
-                AI Image
+                {t.pages.photosPage.aiImage}
               </button>
             )}
             <button
@@ -111,7 +113,7 @@ export default function DevicePhotosPage() {
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
               </svg>
-              Add Photos
+              {t.detail.addPhotos}
             </button>
           </div>
         )}
@@ -119,9 +121,9 @@ export default function DevicePhotosPage() {
 
       {/* Page heading */}
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">Photos</h1>
+        <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">{t.detail.photos}</h1>
         <p className="text-sm text-on-surface-variant mt-1">
-          {images.length} photo{images.length !== 1 ? "s" : ""}
+          {images.length} {images.length !== 1 ? t.pages.photosPage.photoCountPlural : t.pages.photosPage.photoCount}
         </p>
       </div>
 
@@ -129,19 +131,19 @@ export default function DevicePhotosPage() {
       {isAuthenticated && images.length > 0 && (
         <div className="flex flex-wrap gap-3 mb-4 text-[11px] font-medium">
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-blue-600 inline-block" /> Thumbnail (both)
+            <span className="w-3 h-3 rounded bg-blue-600 inline-block" /> {t.pages.photosPage.legendThumbnailBoth}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-sky-500 inline-block" /> Light mode thumb
+            <span className="w-3 h-3 rounded bg-sky-500 inline-block" /> {t.pages.photosPage.legendLightThumb}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-indigo-600 inline-block" /> Dark mode thumb
+            <span className="w-3 h-3 rounded bg-indigo-600 inline-block" /> {t.pages.photosPage.legendDarkThumb}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-orange-500 inline-block" /> Listing image
+            <span className="w-3 h-3 rounded bg-orange-500 inline-block" /> {t.pages.photosPage.legendListing}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-emerald-600 inline-block" /> Shop image
+            <span className="w-3 h-3 rounded bg-emerald-600 inline-block" /> {t.pages.photosPage.legendShop}
           </span>
         </div>
       )}
@@ -153,13 +155,13 @@ export default function DevicePhotosPage() {
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12 opacity-20">
               <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
             </svg>
-            <p className="text-sm">No photos yet</p>
+            <p className="text-sm">{t.pages.photosPage.noPhotosYet}</p>
             {isAuthenticated && (
               <button
                 onClick={() => setShowUploader(true)}
                 className="mt-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-all"
               >
-                Add Photos
+                {t.detail.addPhotos}
               </button>
             )}
           </div>

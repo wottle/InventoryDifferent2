@@ -233,8 +233,148 @@ export type Translations = {
     removeRelationshipConfirm: string;
     relationshipTypeSuggestions: string[];
     inverseRelationLabels: Record<string, string>;
+    quickOverview: string;
+    quickActions: string;
+    manufacturerModel: string;
+    deviceNotes: string;
+    expand: string;
+    collapse: string;
+    logPowerOn: string;
+    conditionLabel: string;
+    rarityLabel: string;
+    assetTaggedLabel: string;
+    originalBoxLabel: string;
+    pramLabel: string;
+    favoriteLabel: string;
+    fullyWorking: string;
+    partiallyWorking: string;
+    notWorking: string;
+    tagged: string;
+    notTagged: string;
+    origBox: string;
+    noBox: string;
+    pramRemoved: string;
+    pramInstalled: string;
+    notFavorite: string;
+    acquisitionPrice: string;
+    donatedLabel: string;
+    repairFee: string;
+    noDateRecorded: string;
+    noFeeCharged: string;
+    returnedPrefix: string;
+    salePrice: string;
+    listPriceLabel: string;
+    estValue: string;
+    sincePurchase: string;
+    history: string;
+    ebaySold: string;
+    noValueHistoryYet: string;
+    snapshot: string;
+    snapshots: string;
+    firstRecorded: string;
+    technicalSpecs: string;
+    processor: string;
+    memoryRam: string;
+    wifi: string;
+    lifecycleActions: string;
+    markForSale: string;
+    markPendingSale: string;
+    markSoldButton: string;
+    markRepaired: string;
+    markReturnedButton: string;
+    markInRepair: string;
+    backToCollection: string;
+    photos: string;
+    viewAll: string;
+    noNotesYet: string;
+    noMaintenanceYet: string;
+    showMoreCount: string;
+    addShort: string;
+    saving: string;
+    saveLog: string;
+    saveNote: string;
+    markAsSold: string;
+    markAsSoldDesc: string;
+    confirmMarkSold: string;
+    markAsReturned: string;
+    markAsReturnedDesc: string;
+    confirmMarkReturned: string;
+    removeTagTitle: string;
+    removeTagMessage: string;
+    costLabel: string;
+    addMaintenanceLog: string;
+    deleteMaintenanceLogTitle: string;
+    deleteMaintenanceLogDesc: string;
+    deleteNoteTitle: string;
+    deleteNoteDesc: string;
+    deleteDeviceTitle: string;
+    deleteDeviceDesc: string;
+    deleting: string;
+    shareTitle: string;
+    shareLink: string;
+    assetTag: string;
+    deviceLink: string;
+    copied: string;
+    copy: string;
+    shareToSocialMedia: string;
+    assetTagPreview: string;
+    brotherPTouchLabel: string;
+    copyImage: string;
+    downloadPng: string;
+    backToInventory: string;
   };
   pages: {
+    photosPage: {
+      loadingTitle: string;
+      loadingSubtitle: string;
+      error: string;
+      aiImage: string;
+      photoCount: string;
+      photoCountPlural: string;
+      legendThumbnailBoth: string;
+      legendLightThumb: string;
+      legendDarkThumb: string;
+      legendListing: string;
+      legendShop: string;
+      noPhotosYet: string;
+    };
+    generateImages: {
+      pageTitle: string;
+      loading: string;
+      authRequired: string;
+      logIn: string;
+      apiKeyMissing: string;
+      apiKeyMissingDesc: string;
+      settingsTitle: string;
+      settingsDesc: string;
+      promptLabel: string;
+      saveAsDefault: string;
+      savedFeedback: string;
+      setAsThumbnail: string;
+      bothModes: string;
+      lightModeOnly: string;
+      darkModeOnly: string;
+      setAsShopImage: string;
+      setAsListingImage: string;
+      filterAll: string;
+      filterMissingAny: string;
+      filterMissingShop: string;
+      selectAll: string;
+      deselectAll: string;
+      selectedCount: string;
+      cancel: string;
+      generating: string;
+      generateSelected: string;
+      loadingDevices: string;
+      colDevice: string;
+      colImages: string;
+      colStatus: string;
+      statusGenerating: string;
+      statusDone: string;
+      statusSkipped: string;
+      statusError: string;
+      noDevicesMatch: string;
+    };
     timeline: {
       title: string;
       subtitle: string;
@@ -973,8 +1113,148 @@ export const en: Translations = {
       'purchased with': 'purchased with',
       'came bundled with': 'came bundled with',
     },
+    quickOverview: "Quick Overview",
+    quickActions: "Quick Actions",
+    manufacturerModel: "Manufacturer & Model",
+    deviceNotes: "Device Notes",
+    expand: "Expand",
+    collapse: "Collapse",
+    logPowerOn: "Log Power On",
+    conditionLabel: "Condition",
+    rarityLabel: "Rarity",
+    assetTaggedLabel: "Asset Tagged",
+    originalBoxLabel: "Original Box",
+    pramLabel: "PRAM",
+    favoriteLabel: "Favorite",
+    fullyWorking: "Fully Working",
+    partiallyWorking: "Partially Working",
+    notWorking: "Not Working",
+    tagged: "Tagged",
+    notTagged: "Not Tagged",
+    origBox: "Orig Box",
+    noBox: "No Box",
+    pramRemoved: "PRAM Removed",
+    pramInstalled: "PRAM Installed",
+    notFavorite: "Not Favorite",
+    acquisitionPrice: "Acquisition Price",
+    donatedLabel: "Donated",
+    repairFee: "Repair Fee",
+    noDateRecorded: "No date recorded",
+    noFeeCharged: "No fee charged",
+    returnedPrefix: "Returned",
+    salePrice: "Sale Price",
+    listPriceLabel: "List Price",
+    estValue: "Est. Value",
+    sincePurchase: "since purchase",
+    history: "History",
+    ebaySold: "eBay Sold",
+    noValueHistoryYet: "No history yet — value snapshots build as you update this device.",
+    snapshot: "snapshot",
+    snapshots: "snapshots",
+    firstRecorded: "first recorded",
+    technicalSpecs: "Technical Specifications",
+    processor: "Processor",
+    memoryRam: "Memory (RAM)",
+    wifi: "WiFi",
+    lifecycleActions: "Lifecycle Actions",
+    markForSale: "Mark for Sale",
+    markPendingSale: "Mark Pending Sale",
+    markSoldButton: "Mark Sold",
+    markRepaired: "Mark Repaired",
+    markReturnedButton: "Mark Returned",
+    markInRepair: "Mark In Repair",
+    backToCollection: "Back to Collection",
+    photos: "Photos",
+    viewAll: "View all",
+    noNotesYet: "No notes yet.",
+    noMaintenanceYet: "No maintenance logs yet.",
+    showMoreCount: "Show",
+    addShort: "+ Add",
+    saving: "Saving…",
+    saveLog: "Save Log",
+    saveNote: "Save Note",
+    markAsSold: "Mark as Sold",
+    markAsSoldDesc: "Enter the sold price. The sold date will be set to today.",
+    confirmMarkSold: "Mark Sold",
+    markAsReturned: "Mark as Returned",
+    markAsReturnedDesc: "Enter the repair fee charged (optional). The return date will be set to today.",
+    confirmMarkReturned: "Mark Returned",
+    removeTagTitle: "Remove Tag?",
+    removeTagMessage: "from this device?",
+    costLabel: "Cost",
+    addMaintenanceLog: "Add Maintenance Log",
+    deleteMaintenanceLogTitle: "Delete Maintenance Log?",
+    deleteMaintenanceLogDesc: "This log entry will be permanently deleted.",
+    deleteNoteTitle: "Delete Note?",
+    deleteNoteDesc: "This note will be permanently deleted.",
+    deleteDeviceTitle: "Delete Device?",
+    deleteDeviceDesc: "This will move the device to the trash. You can restore it from there.",
+    deleting: "Deleting…",
+    shareTitle: "Share",
+    shareLink: "Share Link",
+    assetTag: "Asset Tag",
+    deviceLink: "Device Link",
+    copied: "Copied!",
+    copy: "Copy",
+    shareToSocialMedia: "Share to Social Media",
+    assetTagPreview: "Preview of the asset tag (optimized for 24mm label tape)",
+    brotherPTouchLabel: "For Brother P-Touch Editor:",
+    copyImage: "Copy Image",
+    downloadPng: "Download PNG",
+    backToInventory: "Back to Inventory",
   },
   pages: {
+    photosPage: {
+      loadingTitle: "Loading photos",
+      loadingSubtitle: "Please wait…",
+      error: "Could not load photos.",
+      aiImage: "AI Image",
+      photoCount: "photo",
+      photoCountPlural: "photos",
+      legendThumbnailBoth: "Thumbnail (both)",
+      legendLightThumb: "Light mode thumb",
+      legendDarkThumb: "Dark mode thumb",
+      legendListing: "Listing image",
+      legendShop: "Shop image",
+      noPhotosYet: "No photos yet",
+    },
+    generateImages: {
+      pageTitle: "AI Product Images",
+      loading: "Loading…",
+      authRequired: "Authentication required.",
+      logIn: "Log In",
+      apiKeyMissing: "OPENAI_API_KEY not configured.",
+      apiKeyMissingDesc: "Set the OPENAI_API_KEY environment variable on the API container to enable image generation.",
+      settingsTitle: "Settings",
+      settingsDesc: "The existing thumbnail is used as the source image for generation — preferring the Both thumbnail, then Light, then Dark. If no thumbnail exists, the first image is used.",
+      promptLabel: "Prompt (applied to all)",
+      saveAsDefault: "Save as default",
+      savedFeedback: "✓ Saved!",
+      setAsThumbnail: "Set as thumbnail",
+      bothModes: "Both modes",
+      lightModeOnly: "Light mode only",
+      darkModeOnly: "Dark mode only",
+      setAsShopImage: "Set as shop image",
+      setAsListingImage: "Set as listing image",
+      filterAll: "All Devices",
+      filterMissingAny: "Missing Any Image",
+      filterMissingShop: "Missing Shop Image",
+      selectAll: "Select all",
+      deselectAll: "Deselect all",
+      selectedCount: "selected",
+      cancel: "Cancel",
+      generating: "Generating…",
+      generateSelected: "Generate Selected",
+      loadingDevices: "Loading devices…",
+      colDevice: "Device",
+      colImages: "Images",
+      colStatus: "Status",
+      statusGenerating: "Generating",
+      statusDone: "✓ Done",
+      statusSkipped: "⚠ Skipped",
+      statusError: "✗ Error",
+      noDevicesMatch: "No devices match the current filter.",
+    },
     timeline: {
       title: "Collection Timeline",
       subtitle: "Your collection in historical context.",

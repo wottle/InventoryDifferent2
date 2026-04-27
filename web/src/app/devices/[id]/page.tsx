@@ -390,16 +390,17 @@ function SpecField({ label, value }: { label: string; value: string }) {
 
 function InfoNotes({ info }: { info: string }) {
   const [expanded, setExpanded] = useState(false);
+  const t = useT();
   const isLong = info.split('\n').length > 5 || info.length > 450;
   return (
     <div className="mt-10 pt-8 border-t border-outline-variant/20">
-      <span className="text-outline text-[10px] uppercase tracking-tighter mb-2 block">Device Notes</span>
+      <span className="text-outline text-[10px] uppercase tracking-tighter mb-2 block">{t.detail.deviceNotes}</span>
       <p className={`text-on-surface-variant text-sm leading-relaxed whitespace-pre-wrap ${expanded ? '' : 'line-clamp-5'}`}>
         {info}
       </p>
       {(isLong || expanded) && (
         <button onClick={() => setExpanded(v => !v)} className="text-primary text-xs font-bold mt-2 hover:underline">
-          {expanded ? 'Collapse' : 'Expand'}
+          {expanded ? t.detail.collapse : t.detail.expand}
         </button>
       )}
     </div>
@@ -1115,7 +1116,7 @@ export default function DeviceDetailNew() {
       <div className="flex items-center justify-between mb-4">
         <Link href="/" className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors group">
           <Icon name="arrow_back" className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
-          Back to Inventory
+          {t.detail.backToInventory}
         </Link>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowShareModal(true)} title="Share" aria-label="Share" className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all">
@@ -1169,16 +1170,16 @@ export default function DeviceDetailNew() {
         {/* Quick Overview — alongside hero on xl, stacked below on smaller */}
         <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm mt-8 xl:mt-0 xl:col-span-4 xl:overflow-y-auto">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Quick Overview</h2>
+            <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">{t.detail.quickOverview}</h2>
             <span className={`${STATUS_PILL[device.status] ?? 'bg-surface-container-highest text-on-surface-variant'} px-3 py-1 rounded text-[10px] font-bold tracking-wider uppercase`}>
               {(t.status as Record<string, string>)[device.status] ?? device.status}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-y-8 gap-x-8">
-            {device.manufacturer && <SpecField label="Manufacturer / Model #" value={`${device.manufacturer} ${device.modelNumber}`} />}
-            {device.serialNumber && <SpecField label="Serial Number" value={device.serialNumber} />}
-            {device.location && <SpecField label="Location" value={device.location.name} />}
-            {device.lastPowerOnDate && <SpecField label="Last Used" value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' })} />}
+            {device.manufacturer && <SpecField label={t.detail.manufacturerModel} value={`${device.manufacturer} ${device.modelNumber}`} />}
+            {device.serialNumber && <SpecField label={t.detail.serialNumber} value={device.serialNumber} />}
+            {device.location && <SpecField label={t.detail.locationLabel} value={device.location.name} />}
+            {device.lastPowerOnDate && <SpecField label={t.detail.lastUsed} value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' })} />}
           </div>
           {device.info && <InfoNotes info={device.info} />}
         </section>
@@ -1195,45 +1196,45 @@ export default function DeviceDetailNew() {
             <IndicatorCard
               iconName={device.functionalStatus === 'YES' ? 'thumb_up' : device.functionalStatus === 'PARTIAL' ? 'warning_triangle' : 'thumb_down'}
               color={device.functionalStatus === 'YES' ? 'emerald' : device.functionalStatus === 'PARTIAL' ? 'amber' : 'red'}
-              label="Condition"
-              value={device.functionalStatus === 'YES' ? 'Fully Working' : device.functionalStatus === 'PARTIAL' ? 'Partially Working' : 'Not Working'}
+              label={t.detail.conditionLabel}
+              value={device.functionalStatus === 'YES' ? t.detail.fullyWorking : device.functionalStatus === 'PARTIAL' ? t.detail.partiallyWorking : t.detail.notWorking}
               active={true}
             />
             <IndicatorCard
               iconName="crown"
               color={device.rarity === 'UNCOMMON' ? 'yellow' : device.rarity === 'RARE' ? 'emerald' : device.rarity === 'VERY_RARE' ? 'blue' : device.rarity === 'EXTREMELY_RARE' ? 'purple' : 'gray'}
-              label="Rarity"
-              value={device.rarity ? device.rarity.split('_').map((w: string) => w.charAt(0) + w.slice(1).toLowerCase()).join(' ') : 'Common'}
+              label={t.detail.rarityLabel}
+              value={device.rarity ? (t.rarity as Record<string, string>)[device.rarity] ?? device.rarity : t.rarity.COMMON}
               active={!!device.rarity && device.rarity !== 'COMMON'}
             />
             <IndicatorCard
               iconName="sell"
               color={device.isAssetTagged ? 'emerald' : 'gray'}
-              label="Asset Tagged"
-              value={device.isAssetTagged ? 'Tagged' : 'Not Tagged'}
+              label={t.detail.assetTaggedLabel}
+              value={device.isAssetTagged ? t.detail.tagged : t.detail.notTagged}
               active={!!device.isAssetTagged}
             />
             <IndicatorCard
               iconName="package"
               color={device.hasOriginalBox ? 'emerald' : 'gray'}
-              label="Original Box"
-              value={device.hasOriginalBox ? 'Orig Box' : 'No Box'}
+              label={t.detail.originalBoxLabel}
+              value={device.hasOriginalBox ? t.detail.origBox : t.detail.noBox}
               active={!!device.hasOriginalBox}
             />
             {device.category?.type === 'COMPUTER' && (
               <IndicatorCard
                 iconName="battery_alert"
                 color={device.isPramBatteryRemoved ? 'emerald' : 'red'}
-                label="PRAM "
-                value={device.isPramBatteryRemoved ? 'PRAM Removed' : 'PRAM Installed'}
+                label={t.detail.pramLabel}
+                value={device.isPramBatteryRemoved ? t.detail.pramRemoved : t.detail.pramInstalled}
                 active={true}
               />
             )}
             <IndicatorCard
               iconName={device.isFavorite ? 'star' : 'star_outline'}
               color={device.isFavorite ? 'yellow' : 'gray'}
-              label="Favorite"
-              value={device.isFavorite ? 'Favorite' : 'Not Favorite'}
+              label={t.detail.favoriteLabel}
+              value={device.isFavorite ? t.detail.favoriteLabel : t.detail.notFavorite}
               active={!!device.isFavorite}
             />
           </section>
@@ -1263,11 +1264,11 @@ export default function DeviceDetailNew() {
                   <div className="bg-[var(--card)] p-8 rounded-xl shadow-sm flex flex-col border-l-4 border-primary">
                     {device.priceAcquired != null ? (
                       <>
-                        <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Acquisition Price</span>
+                        <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.acquisitionPrice}</span>
                         <span className="text-3xl font-bold text-on-surface mb-3">{formatCurrency(device.priceAcquired)}</span>
                       </>
                     ) : (
-                      <span className="text-outline text-[10px] uppercase tracking-widest block mb-3">Acquisition</span>
+                      <span className="text-outline text-[10px] uppercase tracking-widest block mb-3">{t.detail.acquisition}</span>
                     )}
                     <div className="flex flex-col gap-1 mt-auto">
                       {device.dateAcquired && (
@@ -1286,28 +1287,28 @@ export default function DeviceDetailNew() {
                       <div>
                         {isDonated ? (
                           <>
-                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Donated</span>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.donatedLabel}</span>
                             {device.soldDate ? (
                               <span className="text-2xl font-bold text-on-surface">{formatDateForDisplay(device.soldDate)}</span>
                             ) : (
-                              <span className="text-on-surface-variant text-sm">No date recorded</span>
+                              <span className="text-on-surface-variant text-sm">{t.detail.noDateRecorded}</span>
                             )}
                           </>
                         ) : device.status === 'RETURNED' ? (
                           <>
-                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Repair Fee</span>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.repairFee}</span>
                             {device.soldPrice != null ? (
                               <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.soldPrice)}</span>
                             ) : (
-                              <span className="text-on-surface-variant text-sm">No fee charged</span>
+                              <span className="text-on-surface-variant text-sm">{t.detail.noFeeCharged}</span>
                             )}
                             {device.soldDate && (
-                              <span className="text-on-surface-variant text-xs block mt-2">Returned {formatDateForDisplay(device.soldDate)}</span>
+                              <span className="text-on-surface-variant text-xs block mt-2">{t.detail.returnedPrefix} {formatDateForDisplay(device.soldDate)}</span>
                             )}
                           </>
                         ) : device.soldPrice != null && !isCollection ? (
                           <>
-                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Sale Price</span>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.salePrice}</span>
                             <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.soldPrice)}</span>
                             {device.soldDate && (
                               <span className="text-on-surface-variant text-xs block mt-2">{formatDateForDisplay(device.soldDate)}</span>
@@ -1317,29 +1318,29 @@ export default function DeviceDetailNew() {
                           <>
                             {device.listPrice != null && (
                               <>
-                                <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">List Price</span>
+                                <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.listPriceLabel}</span>
                                 <span className="text-3xl font-bold text-on-surface mb-3">{formatCurrency(device.listPrice)}</span>
                               </>
                             )}
                             {device.estimatedValue != null && (
                               <>
-                                <span className="text-outline text-[10px] uppercase tracking-widest block mb-1 mt-2">Est. Value</span>
+                                <span className="text-outline text-[10px] uppercase tracking-widest block mb-1 mt-2">{t.detail.estValue}</span>
                                 <span className="text-xl font-semibold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
                               </>
                             )}
                             {gainPct != null && (
                               <span className={`${gainTextClass} text-sm font-bold block mt-1`}>
-                                {gainPct >= 0 ? '+' : ''}{gainPct.toFixed(1)}% since purchase
+                                {gainPct >= 0 ? '+' : ''}{gainPct.toFixed(1)}% {t.detail.sincePurchase}
                               </span>
                             )}
                           </>
                         ) : (
                           <>
-                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">Estimated Value</span>
+                            <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.estimatedValue}</span>
                             <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.estimatedValue)}</span>
                             {gainPct != null && (
                               <span className={`${gainTextClass} text-sm font-bold block mt-1`}>
-                                {gainPct >= 0 ? '+' : ''}{gainPct.toFixed(1)}% since purchase
+                                {gainPct >= 0 ? '+' : ''}{gainPct.toFixed(1)}% {t.detail.sincePurchase}
                               </span>
                             )}
                           </>
@@ -1353,14 +1354,14 @@ export default function DeviceDetailNew() {
                         {device.estimatedValue != null && ['COLLECTION','FOR_SALE','PENDING_SALE'].includes(device.status) && chartData.length > 0 && (
                           <button type="button" onClick={() => setShowValueHistory(v => !v)}
                             className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
-                            History ↗
+                            {t.detail.history} ↗
                           </button>
                         )}
                         {isCollection && (
                           <a href={`https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}&LH_Sold=1&LH_Complete=1`}
                             target="_blank" rel="noopener noreferrer"
                             className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
-                            eBay Sold ↗
+                            {t.detail.ebaySold} ↗
                           </a>
                         )}
                       </div>
@@ -1370,18 +1371,18 @@ export default function DeviceDetailNew() {
                     {showValueHistory && (
                       <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 bg-[var(--card)] rounded-xl shadow-lg border border-outline-variant/20 p-4">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-outline">Value History</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-outline">{t.detail.valueHistory}</span>
                           <button type="button" onClick={() => setShowValueHistory(false)} aria-label="Close value history"
                             className="w-6 h-6 flex items-center justify-center rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors text-sm">×</button>
                         </div>
                         {chartData.length >= 2 ? (
                           <DeviceValueChart data={chartData} />
                         ) : (
-                          <p className="text-xs text-on-surface-variant py-4 text-center">No history yet — value snapshots build as you update this device.</p>
+                          <p className="text-xs text-on-surface-variant py-4 text-center">{t.detail.noValueHistoryYet}</p>
                         )}
                         {chartData.length > 0 && (
                           <p className="text-[10px] text-outline mt-2 text-center">
-                            {chartData.length} snapshot{chartData.length !== 1 ? 's' : ''} · first recorded {new Date(Math.min(...chartData.map((c: any) => c.dateMs))).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                            {chartData.length} {chartData.length !== 1 ? t.detail.snapshots : t.detail.snapshot} · {t.detail.firstRecorded} {new Date(Math.min(...chartData.map((c: any) => c.dateMs))).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                           </p>
                         )}
                       </div>
@@ -1395,14 +1396,14 @@ export default function DeviceDetailNew() {
           {/* Technical Specs */}
           {(device.cpu || device.ram || device.storage || device.graphics || device.operatingSystem) && (
             <section className="bg-[var(--card)] rounded-xl p-8 shadow-sm">
-              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Technical Specifications</h2>
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">{t.detail.technicalSpecs}</h2>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                {device.cpu && <SpecField label="Processor" value={device.cpu} />}
-                {device.ram && <SpecField label="Memory (RAM)" value={device.ram} />}
-                {device.storage && <SpecField label="Storage" value={device.storage} />}
-                {device.graphics && <SpecField label="Graphics" value={device.graphics} />}
-                {device.operatingSystem && <SpecField label="Operating System" value={device.operatingSystem} />}
-                {device.isWifiEnabled != null && <SpecField label="WiFi" value={device.isWifiEnabled ? 'Yes' : 'No'} />}
+                {device.cpu && <SpecField label={t.detail.processor} value={device.cpu} />}
+                {device.ram && <SpecField label={t.detail.memoryRam} value={device.ram} />}
+                {device.storage && <SpecField label={t.detail.storage} value={device.storage} />}
+                {device.graphics && <SpecField label={t.detail.graphics} value={device.graphics} />}
+                {device.operatingSystem && <SpecField label={t.detail.operatingSystem} value={device.operatingSystem} />}
+                {device.isWifiEnabled != null && <SpecField label={t.detail.wifi} value={device.isWifiEnabled ? t.common.yes : t.common.no} />}
               </div>
             </section>
           )}
@@ -1410,7 +1411,7 @@ export default function DeviceDetailNew() {
           {/* Custom Fields */}
           {(device.customFieldValues ?? []).length > 0 && (
             <section className="bg-[var(--card)] rounded-xl p-8 shadow-sm">
-              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Custom Fields</h2>
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">{t.detail.customFields}</h2>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 {[...device.customFieldValues]
                   .sort((a: any, b: any) =>
@@ -1687,12 +1688,12 @@ export default function DeviceDetailNew() {
           {(sortedNotes.length > 0 || isAuthenticated) && (
             <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Notes</h2>
+                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">{t.detail.notes}</h2>
                 {isAuthenticated && (
-                  <button onClick={() => setShowNoteForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                  <button onClick={() => setShowNoteForm(true)} className="text-primary text-xs font-semibold hover:underline">{t.detail.addShort}</button>
                 )}
               </div>
-              {sortedNotes.length === 0 && <p className="text-on-surface-variant text-xs">No notes yet.</p>}
+              {sortedNotes.length === 0 && <p className="text-on-surface-variant text-xs">{t.detail.noNotesYet}</p>}
               <div className="space-y-6">
                 {(notesExpanded ? sortedNotes : sortedNotes.slice(0, 3)).map((note: any) => (
                   <div key={note.id} className="relative pl-6 border-l-2 border-primary-fixed-dim group/note">
@@ -1733,7 +1734,7 @@ export default function DeviceDetailNew() {
               </div>
               {sortedNotes.length > 3 && (
                 <button onClick={() => setNotesExpanded(v => !v)} className="text-primary text-xs font-semibold hover:underline mt-6">
-                  {notesExpanded ? 'Collapse ↑' : `Show ${sortedNotes.length - 3} more ↓`}
+                  {notesExpanded ? `${t.detail.collapse} ↑` : `${t.detail.showMoreCount} ${sortedNotes.length - 3} ↓`}
                 </button>
               )}
             </section>
@@ -1747,14 +1748,14 @@ export default function DeviceDetailNew() {
           {/* Quick Actions */}
           {isAuthenticated && (
             <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm">
-              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Quick Actions</h2>
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">{t.detail.quickActions}</h2>
               <div className="grid grid-cols-4 gap-3">
                 <button onClick={handleUpdateLastPowerOnDate} disabled={updatingPowerDate}
-                  title="Log Power On"
+                  title={t.detail.logPowerOn}
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95 disabled:opacity-50">
                   <Icon name="power_settings_new" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
                 </button>
-                <button onClick={() => setShowUploader(true)} title="Add Image"
+                <button onClick={() => setShowUploader(true)} title={t.detail.addPhotos}
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <div className="relative">
                     <Icon name="image_icon" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
@@ -1763,7 +1764,7 @@ export default function DeviceDetailNew() {
                     </span>
                   </div>
                 </button>
-                <button onClick={() => setShowMaintenanceForm(true)} title="Add Maintenance Log"
+                <button onClick={() => setShowMaintenanceForm(true)} title={t.detail.addMaintenance}
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <div className="relative">
                     <Icon name="build" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
@@ -1772,7 +1773,7 @@ export default function DeviceDetailNew() {
                     </span>
                   </div>
                 </button>
-                <button onClick={() => setShowNoteForm(true)} title="Add Note"
+                <button onClick={() => setShowNoteForm(true)} title={t.detail.addNote}
                   className="relative flex flex-col items-center justify-center p-3.5 bg-surface-container hover:bg-surface-container-high rounded-xl transition-all group active:scale-95">
                   <div className="relative">
                     <Icon name="description" className="w-6 h-6 text-on-surface-variant group-hover:text-primary transition-colors" />
@@ -1788,14 +1789,14 @@ export default function DeviceDetailNew() {
           {/* Lifecycle Actions (auth-gated) */}
           {isAuthenticated && (
             <section className="bg-[var(--card)] p-6 rounded-xl shadow-sm">
-              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">Lifecycle Actions</h2>
+              <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest mb-6">{t.detail.lifecycleActions}</h2>
               <div className="space-y-3">
                 {/* COLLECTION → For Sale */}
                 {device.status === 'COLLECTION' && (
                   <button onClick={() => handleSetStatus('FOR_SALE')} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-orange-50 text-orange-700 rounded-xl text-sm font-bold hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-300 disabled:opacity-50 transition-all active:scale-[0.98]">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M22 9L20 4H4L2 9h2v11h7v-5h2v5h7V9h2zm-4 9h-3v-5H9v5H6V9h12v9zM4.27 9L5.6 5h12.8L19.73 9H4.27z"/></svg>
-                    MARK FOR SALE
+                    {t.detail.markForSale.toUpperCase()}
                   </button>
                 )}
                 {/* FOR_SALE → Pending Sale, Sold */}
@@ -1810,12 +1811,12 @@ export default function DeviceDetailNew() {
                       <circle cx="18" cy="18" r="5" fill="currentColor"/>
                       <path d="M15.5 18l1.75 1.75L21 15.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    MARK PENDING SALE
+                    {t.detail.markPendingSale.toUpperCase()}
                   </button>
                   <button onClick={() => setShowSoldModal(true)} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-[0.98]">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.88 14.76V18h-1.75v-1.28c-1.44-.28-2.63-1.17-2.63-2.83h1.75c0 .85.73 1.41 1.88 1.41 1.22 0 1.88-.6 1.88-1.41 0-.85-.74-1.27-2.13-1.63-1.87-.46-3.37-1.22-3.37-2.98 0-1.4 1.1-2.37 2.63-2.7V5.25h1.75v1.35c1.41.35 2.37 1.41 2.37 2.9H13.5c0-.85-.63-1.41-1.63-1.41-1.12 0-1.75.52-1.75 1.41 0 .79.83 1.2 2.13 1.58 2.12.58 3.37 1.5 3.37 3.08 0 1.42-1.1 2.37-2.74 2.6z"/></svg>
-                    MARK SOLD
+                    {t.detail.markSoldButton.toUpperCase()}
                   </button>
                 </>)}
                 {/* PENDING_SALE → For Sale, Sold */}
@@ -1823,12 +1824,12 @@ export default function DeviceDetailNew() {
                   <button onClick={() => handleSetStatus('FOR_SALE')} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-orange-50 text-orange-700 rounded-xl text-sm font-bold hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-300 disabled:opacity-50 transition-all active:scale-[0.98]">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M22 9L20 4H4L2 9h2v11h7v-5h2v5h7V9h2zm-4 9h-3v-5H9v5H6V9h12v9zM4.27 9L5.6 5h12.8L19.73 9H4.27z"/></svg>
-                    MARK FOR SALE
+                    {t.detail.markForSale.toUpperCase()}
                   </button>
                   <button onClick={() => setShowSoldModal(true)} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-[0.98]">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.88 14.76V18h-1.75v-1.28c-1.44-.28-2.63-1.17-2.63-2.83h1.75c0 .85.73 1.41 1.88 1.41 1.22 0 1.88-.6 1.88-1.41 0-.85-.74-1.27-2.13-1.63-1.87-.46-3.37-1.22-3.37-2.98 0-1.4 1.1-2.37 2.63-2.7V5.25h1.75v1.35c1.41.35 2.37 1.41 2.37 2.9H13.5c0-.85-.63-1.41-1.63-1.41-1.12 0-1.75.52-1.75 1.41 0 .79.83 1.2 2.13 1.58 2.12.58 3.37 1.5 3.37 3.08 0 1.42-1.1 2.37-2.74 2.6z"/></svg>
-                    MARK SOLD
+                    {t.detail.markSoldButton.toUpperCase()}
                   </button>
                 </>)}
                 {/* IN_REPAIR → Repaired, Returned */}
@@ -1836,12 +1837,12 @@ export default function DeviceDetailNew() {
                   <button onClick={() => handleSetStatus('REPAIRED')} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-emerald-50 text-emerald-800 rounded-xl text-sm font-bold hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 disabled:opacity-50 transition-all active:scale-[0.98]">
                     <Icon name="check_circle" className="w-5 h-5" />
-                    MARK REPAIRED
+                    {t.detail.markRepaired.toUpperCase()}
                   </button>
                   <button onClick={() => setShowReturnedModal(true)} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
                     <Icon name="undo" className="w-5 h-5" />
-                    MARK RETURNED
+                    {t.detail.markReturnedButton.toUpperCase()}
                   </button>
                 </>)}
                 {/* REPAIRED → In Repair, Returned */}
@@ -1849,12 +1850,12 @@ export default function DeviceDetailNew() {
                   <button onClick={() => handleSetStatus('IN_REPAIR')} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-teal-50 text-teal-800 rounded-xl text-sm font-bold hover:bg-teal-100 dark:bg-teal-900/20 dark:text-teal-300 disabled:opacity-50 transition-all active:scale-[0.98]">
                     <Icon name="build" className="w-5 h-5" />
-                    MARK IN REPAIR
+                    {t.detail.markInRepair.toUpperCase()}
                   </button>
                   <button onClick={() => setShowReturnedModal(true)} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
                     <Icon name="undo" className="w-5 h-5" />
-                    MARK RETURNED
+                    {t.detail.markReturnedButton.toUpperCase()}
                   </button>
                 </>)}
                 {/* All other statuses → Back to Collection */}
@@ -1862,7 +1863,7 @@ export default function DeviceDetailNew() {
                   <button onClick={() => handleSetStatus('COLLECTION')} disabled={updatingStatus}
                     className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-surface-container-low text-on-surface rounded-xl text-sm font-bold hover:bg-surface-container disabled:opacity-50 transition-all active:scale-[0.98]">
                     <Icon name="arrow_back" className="w-5 h-5" />
-                    BACK TO COLLECTION
+                    {t.detail.backToCollection.toUpperCase()}
                   </button>
                 )}
               </div>
@@ -1873,10 +1874,10 @@ export default function DeviceDetailNew() {
           {(navImages.length > 0 || isAuthenticated) && (
             <section className="bg-[var(--card)] p-8 rounded-xl shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Photos</h2>
+                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">{t.detail.photos}</h2>
                 {navImages.length > 0 && (
                   <Link href={`/devices/${id}/photos`} className="text-xs text-primary font-semibold hover:underline">
-                    View all →
+                    {t.detail.viewAll} →
                   </Link>
                 )}
               </div>
@@ -1900,7 +1901,7 @@ export default function DeviceDetailNew() {
                       if (tile.type === 'overflow') return (
                         <Link key="overflow" href={`/devices/${id}/photos`} className="aspect-square bg-surface-container rounded-lg flex flex-col items-center justify-center hover:bg-surface-container-high transition-all group active:scale-95 cursor-pointer">
                           <span className="text-on-surface font-bold text-2xl transition-transform duration-300 group-hover:scale-110">+{tile.count}</span>
-                          <span className="text-outline text-[10px] uppercase tracking-tighter mt-0.5 transition-colors group-hover:text-primary">more</span>
+                          <span className="text-outline text-[10px] uppercase tracking-tighter mt-0.5 transition-colors group-hover:text-primary">{t.nav.more}</span>
                         </Link>
                       );
                       if (tile.type === 'add') return (
@@ -1923,12 +1924,12 @@ export default function DeviceDetailNew() {
           {(sortedTasks.length > 0 || isAuthenticated) && (
             <section className="bg-[var(--card)] p-8 rounded-xl">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">Maintenance Logs</h2>
+                <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">{t.detail.maintenanceTasks}</h2>
                 {isAuthenticated && (
-                  <button onClick={() => setShowMaintenanceForm(true)} className="text-primary text-xs font-semibold hover:underline">+ Add</button>
+                  <button onClick={() => setShowMaintenanceForm(true)} className="text-primary text-xs font-semibold hover:underline">{t.detail.addShort}</button>
                 )}
               </div>
-              {sortedTasks.length === 0 && <p className="text-on-surface-variant text-xs">No maintenance logs yet.</p>}
+              {sortedTasks.length === 0 && <p className="text-on-surface-variant text-xs">{t.detail.noMaintenanceYet}</p>}
               <div className="space-y-4">
                 {(logsExpanded ? sortedTasks : sortedTasks.slice(0, 5)).map((task: any) => (
                   <div key={task.id} className="bg-surface-container-lowest p-4 rounded-lg group/task">
@@ -1983,7 +1984,7 @@ export default function DeviceDetailNew() {
               </div>
               {sortedTasks.length > 5 && (
                 <button onClick={() => setLogsExpanded(v => !v)} className="text-primary text-xs font-semibold hover:underline mt-4">
-                  {logsExpanded ? 'Collapse ↑' : `Show ${sortedTasks.length - 5} more ↓`}
+                  {logsExpanded ? `${t.detail.collapse} ↑` : `${t.detail.showMoreCount} ${sortedTasks.length - 5} ↓`}
                 </button>
               )}
             </section>
@@ -2076,7 +2077,7 @@ export default function DeviceDetailNew() {
                     ))}
                   </datalist>
                   <input type="text" list="tag-suggestions" value={tagName} onChange={e => setTagName(e.target.value)}
-                    placeholder="Add tag..." className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary" />
+                    placeholder={t.detail.addTagPlaceholder} className="flex-1 px-3 py-1.5 text-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:ring-1 focus:ring-primary" />
                   <button type="submit" disabled={addingTag || !tagName.trim()} className="px-4 py-1.5 text-sm font-medium bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-50 transition-all">Add</button>
                 </form>
               )}
@@ -2110,10 +2111,10 @@ export default function DeviceDetailNew() {
       {showMaintenanceForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowMaintenanceForm(false)}>
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h4 className="text-lg font-bold text-on-surface mb-4">Add Maintenance Log</h4>
+            <h4 className="text-lg font-bold text-on-surface mb-4">{t.detail.addMaintenanceLog}</h4>
             <form onSubmit={handleCreateMaintenanceTask} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Label *</label>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">{t.detail.taskLabel} *</label>
                 <datalist id="maintenance-label-suggestions">
                   {[...new Set(sortedTasks.map((t: any) => t.label))].map((label: any) => (
                     <option key={label} value={label} />
@@ -2124,27 +2125,27 @@ export default function DeviceDetailNew() {
                   className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" required autoFocus />
               </div>
               <div>
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Date Completed *</label>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">{t.detail.dateCompleted} *</label>
                 <input type="date" value={maintenanceFormData.dateCompleted}
                   onChange={e => setMaintenanceFormData(p => ({ ...p, dateCompleted: e.target.value }))}
                   className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" required />
               </div>
               <div>
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Notes</label>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">{t.common.notes}</label>
                 <textarea value={maintenanceFormData.notes}
                   onChange={e => setMaintenanceFormData(p => ({ ...p, notes: e.target.value }))}
                   rows={3} className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Cost</label>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">{t.detail.costLabel}</label>
                 <input type="number" step="0.01" value={maintenanceFormData.cost}
                   onChange={e => setMaintenanceFormData(p => ({ ...p, cost: e.target.value }))}
                   className="w-full px-3 py-2 text-sm bg-surface-container-low border border-outline-variant/40 rounded-lg focus:ring-1 focus:ring-primary outline-none" />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setShowMaintenanceForm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+                <button type="button" onClick={() => setShowMaintenanceForm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
                 <button type="submit" disabled={creatingTask} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-container disabled:opacity-50 transition-all">
-                  {creatingTask ? 'Saving...' : 'Save Log'}
+                  {creatingTask ? t.detail.saving : t.detail.saveLog}
                 </button>
               </div>
             </form>
@@ -2155,24 +2156,24 @@ export default function DeviceDetailNew() {
       {showNoteForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowNoteForm(false)}>
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h4 className="text-lg font-bold text-on-surface mb-4">Add Note</h4>
+            <h4 className="text-lg font-bold text-on-surface mb-4">{t.detail.addNoteTitle}</h4>
             <form onSubmit={handleCreateNote} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Note *</label>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">{t.detail.noteContent} *</label>
                 <textarea value={noteFormData.content}
                   onChange={e => setNoteFormData(p => ({ ...p, content: e.target.value }))}
                   rows={4} className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none resize-none" required autoFocus />
               </div>
               <div>
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">Date</label>
+                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">{t.detail.dateLabel}</label>
                 <input type="datetime-local" value={noteFormData.date}
                   onChange={e => setNoteFormData(p => ({ ...p, date: e.target.value }))}
                   className="w-full px-3 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary outline-none" />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setShowNoteForm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+                <button type="button" onClick={() => setShowNoteForm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
                 <button type="submit" disabled={creatingNote} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-container disabled:opacity-50 transition-all">
-                  {creatingNote ? 'Saving...' : 'Save Note'}
+                  {creatingNote ? t.detail.saving : t.detail.saveNote}
                 </button>
               </div>
             </form>
@@ -2183,18 +2184,18 @@ export default function DeviceDetailNew() {
       {showSoldModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h4 className="text-lg font-bold text-on-surface mb-2">Mark as Sold</h4>
-            <p className="text-sm text-on-surface-variant mb-4">Enter the sold price. The sold date will be set to today.</p>
+            <h4 className="text-lg font-bold text-on-surface mb-2">{t.detail.markAsSold}</h4>
+            <p className="text-sm text-on-surface-variant mb-4">{t.detail.markAsSoldDesc}</p>
             <div className="relative mb-4">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">{t.common.currencySymbol}</span>
               <input type="number" min="0" step="0.01" placeholder="0.00" value={soldAmountInput}
                 onChange={e => setSoldAmountInput(e.target.value)}
                 className="w-full pl-7 pr-4 py-2 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary" />
             </div>
             <div className="flex justify-end gap-3">
-              <button onClick={() => { setShowSoldModal(false); setSoldAmountInput(''); }} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={() => { setShowSoldModal(false); setSoldAmountInput(''); }} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
               <button onClick={handleMarkSold} disabled={updatingStatus} className="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-black disabled:opacity-50 transition-all">
-                {updatingStatus ? 'Saving...' : 'Mark Sold'}
+                {updatingStatus ? t.detail.saving : t.detail.confirmMarkSold}
               </button>
             </div>
           </div>
@@ -2204,18 +2205,18 @@ export default function DeviceDetailNew() {
       {showReturnedModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h4 className="text-lg font-bold text-on-surface mb-2">Mark as Returned</h4>
-            <p className="text-sm text-on-surface-variant mb-4">Enter the repair fee charged (optional). The return date will be set to today.</p>
+            <h4 className="text-lg font-bold text-on-surface mb-2">{t.detail.markAsReturned}</h4>
+            <p className="text-sm text-on-surface-variant mb-4">{t.detail.markAsReturnedDesc}</p>
             <div className="relative mb-4">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">{t.common.currencySymbol}</span>
               <input type="number" min="0" step="0.01" placeholder="0.00 (optional)" value={repairFeeInput}
                 onChange={e => setRepairFeeInput(e.target.value)}
                 className="w-full pl-7 pr-4 py-2 text-sm bg-surface-container-low border border-outline-variant/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary" />
             </div>
             <div className="flex justify-end gap-3">
-              <button onClick={() => { setShowReturnedModal(false); setRepairFeeInput(''); }} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={() => { setShowReturnedModal(false); setRepairFeeInput(''); }} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
               <button onClick={handleMarkReturned} disabled={updatingStatus} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-container disabled:opacity-50 transition-all">
-                {updatingStatus ? 'Saving...' : 'Mark Returned'}
+                {updatingStatus ? t.detail.saving : t.detail.confirmMarkReturned}
               </button>
             </div>
           </div>
@@ -2225,13 +2226,13 @@ export default function DeviceDetailNew() {
       {tagToRemoveId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h4 className="text-lg font-bold text-on-surface mb-2">Remove Tag?</h4>
+            <h4 className="text-lg font-bold text-on-surface mb-2">{t.detail.removeTagTitle}</h4>
             <p className="text-sm text-on-surface-variant mb-6">
-              Remove &ldquo;{(device.tags ?? []).find((t: any) => t.id === tagToRemoveId)?.name}&rdquo; from this device?
+              &ldquo;{(device.tags ?? []).find((tag: any) => tag.id === tagToRemoveId)?.name}&rdquo; {t.detail.removeTagMessage}
             </p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setTagToRemoveId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
-              <button onClick={() => handleRemoveTag(tagToRemoveId)} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all">Remove</button>
+              <button onClick={() => setTagToRemoveId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
+              <button onClick={() => handleRemoveTag(tagToRemoveId)} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all">{t.common.remove}</button>
             </div>
           </div>
         </div>
@@ -2240,12 +2241,12 @@ export default function DeviceDetailNew() {
       {deleteTaskId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h4 className="text-lg font-bold text-on-surface mb-2">Delete Maintenance Log?</h4>
-            <p className="text-sm text-on-surface-variant mb-6">This log entry will be permanently deleted.</p>
+            <h4 className="text-lg font-bold text-on-surface mb-2">{t.detail.deleteMaintenanceLogTitle}</h4>
+            <p className="text-sm text-on-surface-variant mb-6">{t.detail.deleteMaintenanceLogDesc}</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteTaskId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={() => setDeleteTaskId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
               <button onClick={handleDeleteMaintenanceTask} disabled={deletingTask} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all">
-                {deletingTask ? 'Deleting...' : 'Delete'}
+                {deletingTask ? t.detail.deleting : t.common.delete}
               </button>
             </div>
           </div>
@@ -2255,12 +2256,12 @@ export default function DeviceDetailNew() {
       {deleteNoteId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h4 className="text-lg font-bold text-on-surface mb-2">Delete Note?</h4>
-            <p className="text-sm text-on-surface-variant mb-6">This note will be permanently deleted.</p>
+            <h4 className="text-lg font-bold text-on-surface mb-2">{t.detail.deleteNoteTitle}</h4>
+            <p className="text-sm text-on-surface-variant mb-6">{t.detail.deleteNoteDesc}</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteNoteId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={() => setDeleteNoteId(null)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
               <button onClick={handleDeleteNote} disabled={deletingNote} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all">
-                {deletingNote ? 'Deleting...' : 'Delete'}
+                {deletingNote ? t.detail.deleting : t.common.delete}
               </button>
             </div>
           </div>
@@ -2357,12 +2358,12 @@ export default function DeviceDetailNew() {
       {deleteDeviceConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-[var(--card)] rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h4 className="text-lg font-bold text-on-surface mb-2">Delete Device?</h4>
-            <p className="text-sm text-on-surface-variant mb-6">This will move the device to the trash. You can restore it from there.</p>
+            <h4 className="text-lg font-bold text-on-surface mb-2">{t.detail.deleteDeviceTitle}</h4>
+            <p className="text-sm text-on-surface-variant mb-6">{t.detail.deleteDeviceDesc}</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteDeviceConfirm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">Cancel</button>
+              <button onClick={() => setDeleteDeviceConfirm(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high transition-all">{t.common.cancel}</button>
               <button onClick={handleDeleteDevice} disabled={deletingDevice} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all">
-                {deletingDevice ? 'Deleting...' : 'Delete'}
+                {deletingDevice ? t.detail.deleting : t.common.delete}
               </button>
             </div>
           </div>
