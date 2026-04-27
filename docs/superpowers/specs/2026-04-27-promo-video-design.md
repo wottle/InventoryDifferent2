@@ -127,6 +127,42 @@ Each scene's text overlay is a short Keynote slide exported as video:
 
 ---
 
+## Staging Server Device List
+
+27 devices selected from the full collection for the demo environment. Chosen for visual impact, historical range (1983–2013), and to keep financials non-revealing (~$15k estimated value total).
+
+| ID | Device | Year | Status | Category |
+|----|--------|------|--------|----------|
+| 1 | Apple Lisa 2/10 Macintosh XL | 1983 | COLLECTION | Compacts |
+| 296 | Mac 128k FatMac upgrade | 1984 | COLLECTION | Compacts |
+| 12 | Mac SE/30 Reloaded MacEffects | 1989 | COLLECTION | Compacts |
+| 16 | Color Classic Mystic | 1993 | COLLECTION | Compacts |
+| 91 | Macintosh TV | 1993 | COLLECTION | All-in-Ones |
+| 93 | Twentieth Anniversary Mac Sonnet G3 | 1997 | COLLECTION | All-in-Ones |
+| 103 | iMac G3 Flower Power | 2001 | COLLECTION | All-in-Ones |
+| 106 | iMac G4 20" 1.25GHz | 2003 | COLLECTION | All-in-Ones |
+| 247 | Apple IIgs ROM 01 w/Accelerator | 1986 | COLLECTION | Desktops |
+| 275 | Macintosh IIfx | 1990 | COLLECTION | Desktops |
+| 127 | PowerMac G4 Cube 1GHz | 2000 | COLLECTION | Desktops |
+| 119 | Quadra 700 | 1991 | COLLECTION | Towers |
+| 411 | Mac Pro (2013) Trash Can | 2013 | COLLECTION | Towers |
+| 185 | Macintosh Portable Backlight | 1989 | COLLECTION | Laptops |
+| 58 | PowerBook 540c PowerPC Upgrade | 1994 | COLLECTION | Laptops |
+| 62 | iBook G3 Tangerine | 1999 | COLLECTION | Laptops |
+| 70 | iBook G3 SE Lime | 2000 | COLLECTION | Laptops |
+| 144 | Newton Messagepad Original | 1993 | COLLECTION | Portables |
+| 148 | Newton eMate 300 | 1997 | COLLECTION | Portables |
+| 393 | iPod Classic 6th Gen | 2007 | COLLECTION | Portables |
+| 115 | Macintosh II Recapped | 1987 | FOR_SALE | Desktops |
+| 373 | Centris 650 32MB RAM | 1993 | FOR_SALE | Desktops |
+| 124 | Performa 6115CD DOS Compatible | 1994 | FOR_SALE | Desktops |
+| 413 | NeXT Cube N1000 | 1990 | COLLECTION | Non-Apples |
+| 182 | NeXTstation | 1990 | COLLECTION | Non-Apples |
+| 225 | QuickTake 100 | 1994 | COLLECTION | Accessories |
+| 222 | QuickTake 200 | 1997 | COLLECTION | Accessories |
+
+---
+
 ## Verification
 
 - [ ] Watch full YouTube cut end-to-end — does pacing feel right? No scene too long or too short?
