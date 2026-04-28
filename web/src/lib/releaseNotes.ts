@@ -17,6 +17,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'Value history popover on the Estimated Value card — chart anchors to the card, dismisses on outside click or Escape',
       'New list page design — Technical Atelier editorial aesthetic with glassmorphic cards, grid/table view toggle with sortable columns, inline filter/sort bar, persistent view mode and scroll position, and new glassmorphic nav with full More dropdown menu',
       'Barcode/QR scanner button in the filter bar on the main inventory page — scans QR deep-links, device URLs, or serial numbers to navigate directly to the matching device',
+      'Fisheye view mode on inventory page — circular thumbnail grid with proximity-based zoom effect',
     ],
     changed: [
       'Device detail (/devices) now uses the new Technical Atelier design; old layout archived at /devices-old',

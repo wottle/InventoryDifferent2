@@ -7,6 +7,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Added
 - Redesigned device detail page — cinematic hero, editorial 12-column layout, accessories, related devices, links, and photos sub-page
 - Value history popover on the Estimated Value card — chart anchors to the card, dismisses on outside click or Escape
+- Fisheye view mode on inventory page — circular thumbnail grid with proximity-based zoom effect
 
 ### Changed
 - Device detail (/devices) now uses the new Technical Atelier design; old layout archived at /devices-old
