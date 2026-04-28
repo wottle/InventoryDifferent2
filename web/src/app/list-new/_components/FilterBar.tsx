@@ -27,8 +27,8 @@ interface FilterBarProps {
   onSortChange: (column: string, direction: 'asc' | 'desc') => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
-  viewMode: 'grid' | 'list';
-  setViewMode: (v: 'grid' | 'list') => void;
+  viewMode: 'grid' | 'list' | 'fisheye';
+  setViewMode: (v: 'grid' | 'list' | 'fisheye') => void;
   barcodeSupported?: boolean;
   onScanClick?: () => void;
 }
@@ -166,6 +166,13 @@ export function FilterBar({
             title="List view"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>view_list</span>
+          </button>
+          <button
+            onClick={() => setViewMode('fisheye')}
+            className={`p-1.5 rounded-lg transition-all ${viewMode === 'fisheye' ? 'bg-surface-container-lowest dark:bg-[#282d36] text-on-surface dark:text-[#e2e2e7] shadow-sm' : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7]'}`}
+            title="Fisheye view"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>bubble_chart</span>
           </button>
         </div>
 
