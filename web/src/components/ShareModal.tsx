@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { useT } from "../i18n/context";
 
 interface ShareModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface ShareModalProps {
 }
 
 export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalName, deviceId }: ShareModalProps) {
+    const t = useT();
     const [copied, setCopied] = useState(false);
     const [imageCopied, setImageCopied] = useState(false);
     const [activeTab, setActiveTab] = useState<'share' | 'asset-tag'>('share');
@@ -156,7 +158,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
             <div className="relative bg-[var(--card)] rounded-xl shadow-xl border border-[var(--border)] w-full max-w-md mx-4 card-retro">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-                    <h2 className="text-lg font-semibold text-[var(--foreground)]">Share</h2>
+                    <h2 className="text-lg font-semibold text-[var(--foreground)]">{t.detail.shareTitle}</h2>
                     <button
                         onClick={onClose}
                         className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] rounded transition-colors"
@@ -177,7 +179,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                                 : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
                         }`}
                     >
-                        Share Link
+                        {t.detail.shareLink}
                     </button>
                     <button
                         onClick={() => setActiveTab('asset-tag')}
@@ -187,7 +189,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                                 : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
                         }`}
                     >
-                        Asset Tag
+                        {t.detail.assetTag}
                     </button>
                 </div>
 
@@ -198,7 +200,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                             {/* Copy Link */}
                             <div>
                                 <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-                                    Device Link
+                                    {t.detail.deviceLink}
                                 </label>
                                 <div className="flex gap-2">
                                     <input
@@ -215,7 +217,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                                                 : 'bg-[var(--apple-blue)] text-white border-[#007acc] hover:brightness-110'
                                         }`}
                                     >
-                                        {copied ? 'Copied!' : 'Copy'}
+                                        {copied ? t.detail.copied : t.detail.copy}
                                     </button>
                                 </div>
                             </div>
@@ -223,7 +225,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                             {/* Social Share Buttons */}
                             <div>
                                 <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-                                    Share to Social Media
+                                    {t.detail.shareToSocialMedia}
                                 </label>
                                 <div className="grid grid-cols-2 gap-2">
                                     <button
@@ -298,13 +300,13 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                             </div>
 
                             <p className="text-xs text-[var(--muted-foreground)] text-center">
-                                Preview of the asset tag (optimized for 24mm label tape)
+                                {t.detail.assetTagPreview}
                             </p>
 
                             {/* Brother P-Touch Buttons */}
                             <div className="space-y-2">
                                 <p className="text-xs font-medium text-[var(--muted-foreground)]">
-                                    For Brother P-Touch Editor:
+                                    {t.detail.brotherPTouchLabel}
                                 </p>
                                 <div className="grid grid-cols-2 gap-2">
                                     <button
@@ -318,7 +320,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                                         <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                                         </svg>
-                                        {imageCopied ? 'Copied!' : 'Copy Image'}
+                                        {imageCopied ? t.detail.copied : t.detail.copyImage}
                                     </button>
                                     <button
                                         onClick={() => generateLabelImage('download')}
@@ -327,7 +329,7 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                                         <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                         </svg>
-                                        Download PNG
+                                        {t.detail.downloadPng}
                                     </button>
                                 </div>
                             </div>

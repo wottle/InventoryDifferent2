@@ -29,6 +29,7 @@ struct Translations {
         let currencySymbol: String
         let yes, no: String
         let more, less: String
+        let remove: String
     }
 
     // MARK: - Menu
@@ -100,6 +101,8 @@ struct Translations {
         let relatedDevices, noRelatedDevices: String
         let removeRelationship, removeRelationshipFmt: String
         let addRelationship, relationshipDevice, relationshipType: String
+        let inverseAccessoryOf, inverseSoftwareFor, inverseManualFor: String
+        let inverseContains, inversePurchasedWith, inverseCameBundledWith: String
     }
 
     // MARK: - Add / Edit Device

@@ -385,9 +385,9 @@ struct DeviceDetailRedesignView: View {
             }
             Button(lm.t.common.cancel, role: .cancel) { imageForThumbnailChoice = nil }
         } message: { Text(lm.t.deviceDetail.chooseThumbnailMessage) }
-        .alert("Remove Tag", isPresented: $showRemoveTagAlert) {
-            Button("Cancel", role: .cancel) { tagToRemove = nil }
-            Button("Remove", role: .destructive) {
+        .alert(lm.t.deviceDetail.removeTag, isPresented: $showRemoveTagAlert) {
+            Button(lm.t.common.cancel, role: .cancel) { tagToRemove = nil }
+            Button(lm.t.common.remove, role: .destructive) {
                 if let tag = tagToRemove { Task { await removeTag(tag); tagToRemove = nil } }
             }
         } message: {
@@ -1262,13 +1262,14 @@ struct DeviceDetailRedesignView: View {
     }
 
     private func inverseLabel(for type: String) -> String {
+        let t = LocalizationManager.shared.t
         let map: [String: String] = [
-            "accessory": "Accessory of",
-            "software": "Software for",
-            "manual / documentation": "Manual for",
-            "installed inside": "Contains",
-            "purchased with": "Purchased with",
-            "came bundled with": "Came bundled with",
+            "accessory": t.deviceDetail.inverseAccessoryOf,
+            "software": t.deviceDetail.inverseSoftwareFor,
+            "manual / documentation": t.deviceDetail.inverseManualFor,
+            "installed inside": t.deviceDetail.inverseContains,
+            "purchased with": t.deviceDetail.inversePurchasedWith,
+            "came bundled with": t.deviceDetail.inverseCameBundledWith,
         ]
         return map[type.lowercased()] ?? type
     }

@@ -51,7 +51,8 @@ extension Translations {
             yes: "Yes",
             no: "No",
             more: "More...",
-            less: "Less"
+            less: "Less",
+            remove: "Remove"
         ),
         menu: .init(
             wishlist: "Wishlist",
@@ -213,7 +214,13 @@ extension Translations {
             removeRelationshipFmt: "Remove \"%@\" as %@?",
             addRelationship: "Add Relationship",
             relationshipDevice: "Device",
-            relationshipType: "Type"
+            relationshipType: "Type",
+            inverseAccessoryOf: "Accessory of",
+            inverseSoftwareFor: "Software for",
+            inverseManualFor: "Manual for",
+            inverseContains: "Contains",
+            inversePurchasedWith: "Purchased with",
+            inverseCameBundledWith: "Came bundled with"
         ),
         addEditDevice: .init(
             addTitle: "Add Device",
