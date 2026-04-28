@@ -8,6 +8,7 @@ import { NavBar } from "./list-new/_components/NavBar";
 import { FilterBar } from "./list-new/_components/FilterBar";
 import { DeviceCardNew } from "./list-new/_components/DeviceCardNew";
 import { DeviceTableNew } from "./list-new/_components/DeviceTableNew";
+import { FisheyeGrid } from "./list-new/_components/FisheyeGrid";
 import { LoadingPanel } from "../components/LoadingPanel";
 import { BarcodeScannerModal } from "../components/BarcodeScannerModal";
 import { useAuth } from "../lib/auth-context";
@@ -113,8 +114,8 @@ export default function ListNewPage() {
     loadFromStorage(STORAGE_SORT_DIR, 'asc')
   );
   const [searchQuery, setSearchQueryState] = useState('');
-  const [viewMode, setViewModeState] = useState<'grid' | 'list'>(() =>
-    loadFromStorage(STORAGE_VIEW, 'grid') as 'grid' | 'list'
+  const [viewMode, setViewModeState] = useState<'grid' | 'list' | 'fisheye'>(() =>
+    loadFromStorage(STORAGE_VIEW, 'grid') as 'grid' | 'list' | 'fisheye'
   );
   const [assetScanOpen, setAssetScanOpen] = useState(false);
   const [assetScanMessage, setAssetScanMessage] = useState('');
@@ -122,7 +123,7 @@ export default function ListNewPage() {
   const assetScanFormats = useMemo(() => ['qr_code', 'code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'itf'], []);
   const [getDeviceBySerial] = useLazyQuery(GET_DEVICE_BY_SERIAL);
 
-  const setViewMode = (v: 'grid' | 'list') => {
+  const setViewMode = (v: 'grid' | 'list' | 'fisheye') => {
     setViewModeState(v);
     try { localStorage.setItem(STORAGE_VIEW, v); } catch { /* noop */ }
   };
@@ -362,6 +363,8 @@ export default function ListNewPage() {
             sortDirection={sortDirection}
             onSortChange={onSortChange}
           />
+        ) : viewMode === 'fisheye' ? (
+          <FisheyeGrid devices={sortedDevices} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 [@media(min-width:1680px)]:grid-cols-6 [@media(min-width:1780px)]:grid-cols-7 [@media(min-width:1980px)]:grid-cols-8 gap-3">
             {sortedDevices.map((device: any) => (
