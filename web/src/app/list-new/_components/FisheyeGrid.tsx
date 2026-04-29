@@ -15,6 +15,7 @@ const MAX_SCALE = 2.5;
 const RADIUS = 2.6;
 const GAP = 3;
 const PAD = 10;
+const LERP = 0.18;
 
 interface ImageData {
   path: string;
@@ -98,10 +99,14 @@ export function FisheyeGrid({ devices }: Props) {
     [slots, STEP, BASE]
   );
 
-  const rafRef = useRef<number | null>(null);
-  const pendingMouse = useRef({ mc: -99, mr: -99 });
+  type CellTransform = { dx: number; dy: number; sx: number; sy: number };
+  const currentT = useRef<CellTransform[]>([]);
+  const targetT = useRef<CellTransform[]>([]);
+  const animRef = useRef<number | null>(null);
 
-  const applyLayout = useCallback(
+  const zero = (): CellTransform => ({ dx: 0, dy: 0, sx: 1, sy: 1 });
+
+  const computeTargets = useCallback(
     (mc: number, mr: number) => {
       const rw = Array.from({ length: C }, (_, r) =>
         computeRowWidths(r, mc, mr, C, BASE, RADIUS, MAX_SCALE)
@@ -109,56 +114,77 @@ export function FisheyeGrid({ devices }: Props) {
       const ch = Array.from({ length: C }, (_, c) =>
         computeColHeights(c, mc, mr, C, BASE, RADIUS, MAX_SCALE)
       );
-
       slots.forEach(({ c, r }, idx) => {
-        const el = cellRefs.current[idx];
-        if (!el) return;
-
         const tw = rw[r][c];
         const th = ch[c][r];
-
         let tx = PAD;
         for (let i = 0; i < c; i++) tx += rw[r][i] + GAP;
         let ty = PAD;
         for (let j = 0; j < r; j++) ty += ch[c][j] + GAP;
-
         const base = baseCenters[idx];
-        const dx = tx + tw / 2 - base.x;
-        const dy = ty + th / 2 - base.y;
-        el.style.transform = `translate(${dx.toFixed(2)}px,${dy.toFixed(2)}px) scale(${(tw / BASE).toFixed(4)},${(th / BASE).toFixed(4)})`;
+        targetT.current[idx] = {
+          dx: tx + tw / 2 - base.x,
+          dy: ty + th / 2 - base.y,
+          sx: tw / BASE,
+          sy: th / BASE,
+        };
       });
     },
     [slots, baseCenters, C, BASE]
   );
 
-  const resetTransforms = useCallback(() => {
-    cellRefs.current.forEach(el => { if (el) el.style.transform = ""; });
-  }, []);
+  const runLoop = useCallback(() => {
+    let needsMore = false;
+    slots.forEach((_slot, idx) => {
+      const el = cellRefs.current[idx];
+      if (!el) return;
+      const tgt = targetT.current[idx] ?? zero();
+      const cur = currentT.current[idx] ?? zero();
+      cur.dx += (tgt.dx - cur.dx) * LERP;
+      cur.dy += (tgt.dy - cur.dy) * LERP;
+      cur.sx += (tgt.sx - cur.sx) * LERP;
+      cur.sy += (tgt.sy - cur.sy) * LERP;
+      currentT.current[idx] = cur;
+      if (
+        Math.abs(tgt.dx - cur.dx) > 0.1 ||
+        Math.abs(tgt.dy - cur.dy) > 0.1 ||
+        Math.abs(tgt.sx - cur.sx) > 0.001 ||
+        Math.abs(tgt.sy - cur.sy) > 0.001
+      ) needsMore = true;
+      el.style.transform = `translate(${cur.dx.toFixed(2)}px,${cur.dy.toFixed(2)}px) scale(${cur.sx.toFixed(4)},${cur.sy.toFixed(4)})`;
+    });
+    animRef.current = needsMore ? requestAnimationFrame(runLoop) : null;
+  }, [slots]);
 
-  useEffect(() => { resetTransforms(); }, [devices, resetTransforms]);
+  const startLoop = useCallback(() => {
+    if (!animRef.current) animRef.current = requestAnimationFrame(runLoop);
+  }, [runLoop]);
+
+  useEffect(() => {
+    slots.forEach((_slot, idx) => {
+      targetT.current[idx] = zero();
+      currentT.current[idx] = zero();
+    });
+    if (animRef.current) { cancelAnimationFrame(animRef.current); animRef.current = null; }
+    cellRefs.current.forEach(el => { if (el) el.style.transform = ""; });
+  }, [devices, slots]);
 
   const onMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
-      pendingMouse.current = {
-        mc: (e.clientX - rect.left - PAD) / STEP,
-        mr: (e.clientY - rect.top - PAD) / STEP,
-      };
-      if (!rafRef.current) {
-        rafRef.current = requestAnimationFrame(() => {
-          rafRef.current = null;
-          applyLayout(pendingMouse.current.mc, pendingMouse.current.mr);
-        });
-      }
+      computeTargets(
+        (e.clientX - rect.left - PAD) / STEP,
+        (e.clientY - rect.top - PAD) / STEP,
+      );
+      startLoop();
     },
-    [STEP, applyLayout]
+    [STEP, computeTargets, startLoop]
   );
 
   const onMouseLeave = useCallback(() => {
-    pendingMouse.current = { mc: -99, mr: -99 };
-    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
-    resetTransforms();
-  }, [resetTransforms]);
+    slots.forEach((_slot, idx) => { targetT.current[idx] = zero(); });
+    startLoop();
+  }, [slots, startLoop]);
 
   const iconSize = Math.max(12, Math.floor(BASE * 0.4));
 
@@ -181,7 +207,6 @@ export function FisheyeGrid({ devices }: Props) {
           height: BASE,
           borderRadius: 4,
           overflow: "hidden",
-          transition: "transform 0.09s ease",
           willChange: "transform",
           visibility: !device ? "hidden" : "visible",
         };
