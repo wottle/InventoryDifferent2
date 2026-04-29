@@ -11,7 +11,7 @@ import {
   computeColHeights,
 } from "./fisheyeGridMath";
 
-const MAX_SCALE = 2.5;
+const MAX_SCALE = 3.5;
 const RADIUS = 2.6;
 const GAP = 3;
 const PAD = 10;
