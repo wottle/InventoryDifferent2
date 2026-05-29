@@ -6,6 +6,16 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [2.8.3] - 2026-05-28
+
+### Fixed
+- iOS image viewer now responds to swipe gestures directly on the image when zoomed out, not just the surrounding black area
+- iOS image viewer resets zoom to fit-to-screen when swiping to a different image
+- iOS image viewer pinch-to-zoom now zooms toward the pinch center instead of always zooming from the image center
+- iOS image viewer double-tap now zooms to 3× centered on the tapped point instead of the image center
+
+---
+
 ## [2.8.2] - 2026-05-28
 
 ### Added
