@@ -1246,15 +1246,20 @@ export default function DeviceDetailNew() {
               value={device.hasOriginalBox ? t.detail.origBox : t.detail.noBox}
               active={!!device.hasOriginalBox}
             />
-            {device.category?.type === 'COMPUTER' && (
-              <IndicatorCard
-                iconName="battery_alert"
-                color={device.pramBatteryInstalled ? 'emerald' : 'red'}
-                label={t.detail.pramLabel}
-                value={device.pramBatteryInstalled ? t.detail.pramInstalled : t.detail.pramRemoved}
-                active={true}
-              />
-            )}
+            {device.category?.type === 'COMPUTER' && (() => {
+              const pramInstalled = !!device.pramBatteryInstalled
+              const expiryDate = device.pramBatteryExpiryDate ? new Date(device.pramBatteryExpiryDate) : null
+              const pramOk = !pramInstalled || (expiryDate !== null && expiryDate > new Date())
+              return (
+                <IndicatorCard
+                  iconName={!pramInstalled ? 'battery_0_bar' : pramOk ? 'battery_full' : 'battery_alert'}
+                  color={pramOk ? 'emerald' : 'red'}
+                  label={t.detail.pramLabel}
+                  value={pramInstalled ? t.detail.pramInstalled : t.detail.pramRemoved}
+                  active={true}
+                />
+              )
+            })()}
             <IndicatorCard
               iconName={device.isFavorite ? 'star' : 'star_outline'}
               color={device.isFavorite ? 'yellow' : 'gray'}

@@ -689,7 +689,14 @@ struct DeviceDetailRedesignView: View {
     private var indicatorGrid: some View {
         let t = lm.t
         let hasOriginalBox = accessories.contains(where: { $0.name == "Original Box" })
-        let isPram = device.pramBatteryInstalled ?? true
+        let isPram = device.pramBatteryInstalled ?? false
+        let pramNeedsAttention: Bool = {
+            guard isPram else { return false }
+            guard let expiryStr = device.pramBatteryExpiryDate else { return true }
+            let fmt = ISO8601DateFormatter()
+            let parsed = fmt.date(from: expiryStr)
+            return (parsed ?? .distantPast) <= Date()
+        }()
         let isComputer = device.category.type == "COMPUTER"
 
         return LazyVGrid(
@@ -750,7 +757,7 @@ struct DeviceDetailRedesignView: View {
                 indicatorTile(
                     icon: isPram ? "battery.100" : "battery.0",
                     label: isPram ? t.deviceDetail.indicatorPramInstalled : t.deviceDetail.indicatorNoPram,
-                    color: isPram ? .green : .red,
+                    color: pramNeedsAttention ? .red : .green,
                     active: true
                 )
             } else {
