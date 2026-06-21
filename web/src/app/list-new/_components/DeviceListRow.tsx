@@ -19,7 +19,8 @@ interface DeviceListRowProps {
     rarity?: string | null;
     hasOriginalBox?: boolean;
     isAssetTagged?: boolean;
-    isPramBatteryRemoved?: boolean;
+    pramBatteryInstalled?: boolean | null;
+    pramBatteryExpiryDate?: string | null;
     estimatedValue?: number | null;
     listPrice?: number | null;
     soldPrice?: number | null;
@@ -78,8 +79,8 @@ function buildIconRow(device: DeviceListRowProps['device']): IconSpec[] {
 
   if (device.category.type === 'COMPUTER') {
     icons.push({
-      name: device.isPramBatteryRemoved ? 'battery_full' : 'battery_alert',
-      className: device.isPramBatteryRemoved ? 'text-green-500' : 'text-red-500',
+      name: (() => { const inst = !!device.pramBatteryInstalled; const exp = device.pramBatteryExpiryDate ? new Date(device.pramBatteryExpiryDate) : null; const ok = !inst || (exp !== null && exp > new Date()); return !inst ? 'battery_0_bar' : ok ? 'battery_full' : 'battery_alert'; })(),
+      className: (() => { const inst = !!device.pramBatteryInstalled; const exp = device.pramBatteryExpiryDate ? new Date(device.pramBatteryExpiryDate) : null; const ok = !inst || (exp !== null && exp > new Date()); return ok ? 'text-green-500' : 'text-red-500'; })(),
       style: FILLED,
     });
   }
