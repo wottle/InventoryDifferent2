@@ -39,6 +39,9 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
       PORT: 4000
+      DOMAIN: ${DOMAIN:-}
+      SHOP_DOMAIN: ${SHOP_DOMAIN:-}
+      SHOWCASE_DOMAIN: ${SHOWCASE_DOMAIN:-}
       AUTH_USERNAME: ${AUTH_USERNAME:-}
       AUTH_PASSWORD: ${AUTH_PASSWORD:-}
       JWT_SECRET: ${JWT_SECRET:-}
