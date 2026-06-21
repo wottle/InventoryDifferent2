@@ -343,14 +343,19 @@ export const GET_SHOWCASE_DEVICE = gql`
       functionalStatus
       hasOriginalBox
       isWifiEnabled
-      isPramBatteryRemoved
+      pramBatteryInstalled
       info
       historicalNotes
-      cpu
+      cpuType
+      cpuSpeed
       ram
-      storage
-      graphics
-      operatingSystem
+      graphicsChip
+      screenSize
+      displayType
+      displayVariant
+      nativeResolution
+      storageEntries { value sortOrder }
+      osEntries { value sortOrder }
       externalUrl
       rarity
       location { id name }

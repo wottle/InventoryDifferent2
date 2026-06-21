@@ -36,14 +36,19 @@ interface DeviceDetail {
   functionalStatus: string | null;
   hasOriginalBox: boolean;
   isWifiEnabled: boolean;
-  isPramBatteryRemoved: boolean;
+  pramBatteryInstalled: boolean | null;
   info: string | null;
   historicalNotes: string | null;
-  cpu: string | null;
+  cpuType: string | null;
+  cpuSpeed: string | null;
   ram: string | null;
-  storage: string | null;
-  graphics: string | null;
-  operatingSystem: string | null;
+  graphicsChip: string | null;
+  screenSize: string | null;
+  displayType: string | null;
+  displayVariant: string | null;
+  nativeResolution: string | null;
+  storageEntries: { value: string; sortOrder: number }[];
+  osEntries: { value: string; sortOrder: number }[];
   externalUrl: string | null;
   rarity: string | null;
   location: { id: number; name: string } | null;
@@ -175,8 +180,21 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
   // Spec cards
   const hardwareNotes: string[] = [];
   if (device.hasOriginalBox) hardwareNotes.push('Original box included');
-  if (device.isPramBatteryRemoved) hardwareNotes.push('PRAM battery removed');
+  if (device.pramBatteryInstalled === false) hardwareNotes.push('PRAM battery removed');
   if (device.isWifiEnabled) hardwareNotes.push('Wi-Fi enabled');
+
+  const cpuLabel = [device.cpuType, device.cpuSpeed].filter(Boolean).join(' @ ');
+  const storageLabel = device.storageEntries
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map(e => e.value)
+    .join(' + ');
+  const osLabel = device.osEntries
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map(e => e.value)
+    .join(', ');
+  const displayLabel = [device.screenSize, device.displayType, device.displayVariant]
+    .filter(Boolean)
+    .join(' · ');
 
   interface SpecCard {
     label: string;
@@ -184,11 +202,13 @@ export default async function DeviceDetailPage({ params }: { params: { id: strin
     wide?: boolean;
   }
   const specCards: SpecCard[] = [];
-  if (device.cpu) specCards.push({ label: 'Processor', value: device.cpu });
+  if (cpuLabel) specCards.push({ label: 'Processor', value: cpuLabel });
   if (device.ram) specCards.push({ label: 'Memory', value: device.ram });
-  if (device.storage) specCards.push({ label: 'Storage', value: device.storage });
-  if (device.graphics) specCards.push({ label: 'Graphics', value: device.graphics, wide: true });
-  if (device.operatingSystem) specCards.push({ label: 'Operating System', value: device.operatingSystem });
+  if (storageLabel) specCards.push({ label: 'Storage', value: storageLabel });
+  if (device.graphicsChip) specCards.push({ label: 'Graphics', value: device.graphicsChip, wide: true });
+  if (displayLabel) specCards.push({ label: 'Display', value: displayLabel });
+  if (device.nativeResolution) specCards.push({ label: 'Resolution', value: device.nativeResolution });
+  if (osLabel) specCards.push({ label: 'Operating System', value: osLabel });
   if (device.condition) specCards.push({ label: 'Condition', value: device.condition });
   if (hardwareNotes.length > 0) specCards.push({ label: 'Hardware Notes', value: hardwareNotes.join(' · ') });
 
