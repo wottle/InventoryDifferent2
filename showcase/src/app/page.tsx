@@ -4,6 +4,8 @@ import { getTranslations } from '@/i18n';
 import { GET_SHOWCASE_CONFIG, GET_FEATURED_DEVICES, GET_SHOWCASE_JOURNEYS, GET_SHOWCASE_QUOTES } from '@/lib/queries';
 import { pickThumbnail } from '@/lib/image-utils';
 
+export const dynamic = 'force-dynamic';
+
 interface ShowcaseConfig {
   id: string;
   siteTitle: string;

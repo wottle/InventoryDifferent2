@@ -3,6 +3,8 @@ import { GET_TIMELINE_DATA } from '@/lib/queries';
 import TimelineClient from '@/components/TimelineClient';
 import { pickThumbnail } from '@/lib/image-utils';
 
+export const dynamic = 'force-dynamic';
+
 interface ShowcaseConfig {
   timelineCuratorNote: string;
 }

@@ -3,6 +3,8 @@ import { getClient } from '@/lib/apollo-rsc';
 import { getTranslations } from '@/i18n';
 import { GET_ALL_SHOWCASE_JOURNEYS } from '@/lib/queries';
 
+export const dynamic = 'force-dynamic';
+
 interface JourneyListItem {
   id: string;
   title: string;
