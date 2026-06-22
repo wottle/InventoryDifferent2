@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'Device share sheet now offers a Storefront link (https://SHOP_DOMAIN/item/ID) for devices that are For Sale, Pending Sale, or Sold when SHOP_DOMAIN is configured',
+    ],
     changed: [],
     fixed: [],
   },

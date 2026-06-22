@@ -11,11 +11,13 @@ interface ShareModalProps {
     deviceName: string;
     additionalName?: string | null;
     deviceId: number;
+    storefrontUrl?: string | null;
 }
 
-export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalName, deviceId }: ShareModalProps) {
+export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalName, deviceId, storefrontUrl }: ShareModalProps) {
     const t = useT();
     const [copied, setCopied] = useState(false);
+    const [storefrontCopied, setStorefrontCopied] = useState(false);
     const [imageCopied, setImageCopied] = useState(false);
     const [activeTab, setActiveTab] = useState<'share' | 'asset-tag'>('share');
     const assetTagRef = useRef<HTMLDivElement>(null);
@@ -27,6 +29,17 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
             await navigator.clipboard.writeText(deviceUrl);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    };
+
+    const handleCopyStorefront = async () => {
+        if (!storefrontUrl) return;
+        try {
+            await navigator.clipboard.writeText(storefrontUrl);
+            setStorefrontCopied(true);
+            setTimeout(() => setStorefrontCopied(false), 2000);
         } catch (err) {
             console.error('Failed to copy:', err);
         }
@@ -197,10 +210,10 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                 <div className="p-4">
                     {activeTab === 'share' ? (
                         <div className="space-y-4">
-                            {/* Copy Link */}
+                            {/* Admin Link */}
                             <div>
                                 <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-                                    {t.detail.deviceLink}
+                                    {t.detail.adminLink}
                                 </label>
                                 <div className="flex gap-2">
                                     <input
@@ -221,6 +234,33 @@ export function ShareModal({ isOpen, onClose, deviceUrl, deviceName, additionalN
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Storefront Link */}
+                            {storefrontUrl && (
+                                <div>
+                                    <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
+                                        {t.detail.storefrontLink}
+                                    </label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={storefrontUrl}
+                                            readOnly
+                                            className="input-retro flex-1 px-3 py-2 text-sm text-[var(--foreground)] bg-[var(--muted)]"
+                                        />
+                                        <button
+                                            onClick={handleCopyStorefront}
+                                            className={`px-4 py-2 text-sm font-medium rounded border transition-colors ${
+                                                storefrontCopied
+                                                    ? 'bg-green-600 text-white border-green-600'
+                                                    : 'bg-[var(--apple-blue)] text-white border-[#007acc] hover:brightness-110'
+                                            }`}
+                                        >
+                                            {storefrontCopied ? t.detail.copied : t.detail.copy}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Social Share Buttons */}
                             <div>
