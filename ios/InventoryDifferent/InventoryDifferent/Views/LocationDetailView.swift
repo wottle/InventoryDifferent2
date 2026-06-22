@@ -118,6 +118,7 @@ struct LocationDetailView: View {
                 isAssetTagged
                 isFavorite
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 accessories { id name }
                 dateAcquired
                 estimatedValue

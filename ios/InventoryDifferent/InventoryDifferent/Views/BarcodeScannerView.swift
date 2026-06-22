@@ -375,6 +375,7 @@ struct BarcodeScannerView: View {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name

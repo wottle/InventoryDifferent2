@@ -66,6 +66,7 @@ protocol DeviceRowPresentable {
     var accessories: [DeviceAccessory] { get }
     var isFavorite: Bool { get }
     var pramBatteryInstalled: Bool? { get }
+    var pramBatteryExpiryDate: String? { get }
     var category: Category { get }
     var estimatedValue: Double? { get }
     var listPrice: Double? { get }
@@ -357,6 +358,7 @@ struct DeviceListItem: Codable, Identifiable, Hashable {
     let lastPowerOnDate: String?
     let isAssetTagged: Bool
     let pramBatteryInstalled: Bool?
+    let pramBatteryExpiryDate: String?
     let accessories: [DeviceAccessory]
 
     let dateAcquired: String?
