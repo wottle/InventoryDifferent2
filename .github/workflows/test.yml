@@ -148,6 +148,12 @@ jobs:
       - name: Install Playwright browsers
         run: ./node_modules/.bin/playwright install --with-deps chromium
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Start services
         run: |
           docker compose -f docker-compose.test.yml up -d
