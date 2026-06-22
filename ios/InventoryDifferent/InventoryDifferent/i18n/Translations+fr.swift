@@ -487,7 +487,9 @@ extension Translations {
             savedToPhotos: "Enregistré dans Photos !",
             saveToPhotos: "Enregistrer dans Photos",
             shareAssetTag: "Partager l'étiquette d'actif",
-            idPrefix: "ID : "
+            idPrefix: "ID : ",
+            adminLink: "Lien admin",
+            storefrontLink: "Lien boutique"
         ),
         filter: .init(
             title: "Filtres",
