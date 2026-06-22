@@ -3,7 +3,8 @@
 //  InventoryDifferent
 //
 //  Redesigned device detail view using the "Precision Editorial / Technical Atelier"
-//  design system. The original DeviceDetailView.swift is preserved and unchanged.
+//  design system. This is the only device detail view; the legacy DeviceDetailView
+//  was removed once the app routed exclusively here.
 //
 
 import SwiftUI

@@ -72,7 +72,7 @@ struct Translations {
         let notes, noNotes: String
         let deleteTask, deleteNote: String
         let valueHistory: String
-        // Additional keys for DeviceDetailView
+        // Additional keys for the device detail view
         let deleteDeviceMessage, deleteImageMessage, chooseThumbnailMessage: String
         let setLightMode, setDarkMode: String
         let deleteTaskConfirm, deleteNoteConfirm: String
