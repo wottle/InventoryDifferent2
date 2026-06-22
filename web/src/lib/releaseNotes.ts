@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Storefront item detail page failed to load (GraphQL 400) because it still requested the old cpu/graphics/storage/operatingSystem fields after they were renamed/restructured — now queries cpuType, cpuSpeed, graphicsChip, storageEntries, and osEntries',
+    ],
   },
   {
     version: '2.8.6',

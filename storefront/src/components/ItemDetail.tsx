@@ -30,11 +30,12 @@ const GET_SHOP_DEVICE = gql`
       listPrice
       soldPrice
       soldDate
-      cpu
+      cpuType
+      cpuSpeed
       ram
-      graphics
-      storage
-      operatingSystem
+      graphicsChip
+      storageEntries { id value sortOrder }
+      osEntries { id value sortOrder }
       isWifiEnabled
       accessories {
         id
@@ -492,11 +493,11 @@ export default function ItemDetail({ id, contactEmail }: ItemDetailProps) {
                                 <DetailRow label="Release Year" value={device.releaseYear} />
                                 {device.category.type === 'COMPUTER' && (
                                     <>
-                                        <DetailRow label="CPU" value={device.cpu} />
+                                        <DetailRow label="CPU" value={device.cpuType ? device.cpuType + (device.cpuSpeed ? ` @ ${device.cpuSpeed}` : '') : null} />
                                         <DetailRow label="RAM" value={device.ram} />
-                                        <DetailRow label="Graphics" value={device.graphics} />
-                                        <DetailRow label="Storage" value={device.storage} />
-                                        <DetailRow label="Operating System" value={device.operatingSystem} />
+                                        <DetailRow label="Graphics" value={device.graphicsChip} />
+                                        <DetailRow label="Storage" value={device.storageEntries?.length > 0 ? device.storageEntries.map((s: any) => s.value).join(', ') : null} />
+                                        <DetailRow label="Operating System" value={device.osEntries?.length > 0 ? device.osEntries.map((o: any) => o.value).join(', ') : null} />
                                         <DetailRow label="Wi-Fi" value={device.isWifiEnabled ? 'Yes' : device.isWifiEnabled === false ? 'No' : null} />
                                     </>
                                 )}
