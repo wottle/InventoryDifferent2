@@ -1447,7 +1447,7 @@ struct DeviceDetailRedesignView: View {
                             HStack {
                                 Text(t.deviceDetail.pramBattery).font(.system(size: 13)).foregroundColor(.secondary)
                                 Spacer()
-                                Text(pram ? t.deviceDetail.pramInstalled : t.deviceDetail.pramRemoved).font(.system(size: 13, weight: .bold)).foregroundColor(pram ? .green : .red)
+                                Text(pram ? t.deviceDetail.pramInstalled : t.deviceDetail.pramRemoved).font(.system(size: 13, weight: .bold)).foregroundColor(device.pramNeedsAttention ? .red : .green)
                             }
                             .padding(.horizontal, 14).padding(.vertical, 10)
                             .background(idx % 2 == 0 ? Color.edSurfaceLow : Color.edSurfaceHigh.opacity(0.5))
