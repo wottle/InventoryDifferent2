@@ -186,6 +186,12 @@ export async function createApp(prismaOverride?: PrismaClient) {
         ? allowedOrigins
         : true; // permissive in dev or when no domains are configured
 
+    console.log(`[config] DOMAIN=${process.env.DOMAIN || '(not set)'}`);
+    console.log(`[config] SHOP_DOMAIN=${process.env.SHOP_DOMAIN || '(not set)'}`);
+    console.log(`[config] SHOWCASE_DOMAIN=${process.env.SHOWCASE_DOMAIN || '(not set)'}`);
+    console.log(`[config] CORS mode: ${corsOrigin === true ? 'permissive (no domains configured or dev)' : `restricted to [${allowedOrigins.join(', ')}]`}`);
+    console.log(`[config] Auth: ${process.env.AUTH_PASSWORD ? 'enabled' : 'disabled'}`);
+
     app.use(cors({ origin: corsOrigin, credentials: true }));
 
     app.use(express.json({ limit: '50mb' }));
