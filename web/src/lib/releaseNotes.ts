@@ -13,7 +13,9 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'Removed the unused legacy /devices-old and /list-classic pages, which were superseded by the current device detail and list designs and still referenced removed spec fields',
+    ],
     fixed: [
       'Storefront item detail page failed to load (GraphQL 400) because it still requested the old cpu/graphics/storage/operatingSystem fields after they were renamed/restructured — now queries cpuType, cpuSpeed, graphicsChip, storageEntries, and osEntries',
     ],
