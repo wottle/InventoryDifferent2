@@ -319,7 +319,6 @@ Instead, use one of these patterns:
 ## iOS Development Notes
 
 - When modifying the `Device` struct in `ios/.../Models/Device.swift`, always update ALL preview instances that construct a `Device`. These are found in:
-  - `DeviceDetailView.swift` (preview at bottom)
   - `EditDeviceView.swift` (preview at bottom)
   - `ShareView.swift` (preview at bottom)
 - Failing to update previews will cause iOS build failures.
