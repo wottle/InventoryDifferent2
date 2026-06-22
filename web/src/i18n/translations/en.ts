@@ -386,6 +386,8 @@ export type Translations = {
     shareLink: string;
     assetTag: string;
     deviceLink: string;
+    adminLink: string;
+    storefrontLink: string;
     copied: string;
     copy: string;
     shareToSocialMedia: string;
@@ -1411,6 +1413,8 @@ export const en: Translations = {
     shareLink: "Share Link",
     assetTag: "Asset Tag",
     deviceLink: "Device Link",
+    adminLink: "Admin Link",
+    storefrontLink: "Storefront Link",
     copied: "Copied!",
     copy: "Copy",
     shareToSocialMedia: "Share to Social Media",

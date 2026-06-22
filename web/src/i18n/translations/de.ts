@@ -395,6 +395,8 @@ export const de: Translations = {
     shareLink: "Link teilen",
     assetTag: "Inventaraufkleber",
     deviceLink: "Geräte-Link",
+    adminLink: "Admin-Link",
+    storefrontLink: "Shop-Link",
     copied: "Kopiert!",
     copy: "Kopieren",
     shareToSocialMedia: "In sozialen Medien teilen",

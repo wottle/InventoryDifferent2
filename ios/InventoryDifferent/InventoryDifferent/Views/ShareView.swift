@@ -14,16 +14,25 @@ struct ShareView: View {
     
     @State private var selectedTab: ShareTab = .link
     @State private var copied = false
+    @State private var storefrontCopied = false
     @State private var assetTagSaved = false
-    
+    @State private var shopDomain: String?
+
     enum ShareTab {
         case link
         case assetTag
     }
-    
+
     private var deviceUrl: String {
         let baseURL = APIService.shared.getBaseURL()
         return "\(baseURL)/devices/\(device.id)"
+    }
+
+    private var storefrontUrl: String? {
+        guard let domain = shopDomain, !domain.isEmpty else { return nil }
+        let eligible: [Status] = [.FOR_SALE, .PENDING_SALE, .SOLD]
+        guard eligible.contains(device.status) else { return nil }
+        return "https://\(domain)/item/\(device.id)"
     }
     
     private var displayName: String {
@@ -58,6 +67,9 @@ struct ShareView: View {
                     }
                 }
             }
+            .task {
+                shopDomain = try? await DeviceService.shared.fetchPublicConfig()
+            }
         }
     }
     
@@ -65,9 +77,9 @@ struct ShareView: View {
         ScrollView {
             VStack(spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Device Link")
+                    Text(LocalizationManager.shared.t.share.adminLink)
                         .font(.headline)
-                    
+
                     HStack {
                         Text(deviceUrl)
                             .font(.caption)
@@ -77,7 +89,7 @@ struct ShareView: View {
                             .padding()
                             .background(Color(.systemGray6))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
+
                         Button {
                             UIPasteboard.general.string = deviceUrl
                             copied = true
@@ -97,6 +109,42 @@ struct ShareView: View {
                     }
                 }
                 .padding(.horizontal)
+
+                if let storefrontUrl {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(LocalizationManager.shared.t.share.storefrontLink)
+                            .font(.headline)
+
+                        HStack {
+                            Text(storefrontUrl)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(2)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                            Button {
+                                UIPasteboard.general.string = storefrontUrl
+                                storefrontCopied = true
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    storefrontCopied = false
+                                }
+                            } label: {
+                                Text(storefrontCopied ? "Copied!" : "Copy")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                    .background(storefrontCopied ? Color.green : Color.accentColor)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
                 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Share Via")
@@ -292,7 +340,10 @@ struct ShareView: View {
     
     private func shareViaActivitySheet() {
         let text = "Check out this \(displayName)"
-        let items: [Any] = [text, URL(string: deviceUrl)!]
+        var items: [Any] = [text, URL(string: deviceUrl)!]
+        if let storefrontUrl, let url = URL(string: storefrontUrl) {
+            items.append(url)
+        }
         
         let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
         

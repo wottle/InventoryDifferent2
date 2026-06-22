@@ -395,6 +395,8 @@ export const fr: Translations = {
     shareLink: "Partager le lien",
     assetTag: "Étiquette d'inventaire",
     deviceLink: "Lien de l'appareil",
+    adminLink: "Lien admin",
+    storefrontLink: "Lien boutique",
     copied: "Copié !",
     copy: "Copier",
     shareToSocialMedia: "Partager sur les réseaux sociaux",

@@ -10,8 +10,29 @@ import Foundation
 class DeviceService {
     static let shared = DeviceService()
     private let api = APIService.shared
-    
+
     private init() {}
+
+    private var cachedShopDomain: String?? = nil
+
+    /// Returns the configured storefront domain (or nil). Cached after first fetch.
+    func fetchPublicConfig() async throws -> String? {
+        if let cached = cachedShopDomain { return cached }
+        let query = """
+        query GetPublicConfig {
+            publicConfig {
+                shopDomain
+            }
+        }
+        """
+        struct Response: Decodable {
+            struct PublicConfig: Decodable { let shopDomain: String? }
+            let publicConfig: PublicConfig
+        }
+        let response: Response = try await api.execute(query: query)
+        cachedShopDomain = response.publicConfig.shopDomain
+        return response.publicConfig.shopDomain
+    }
 
     func fetchDeviceListItems(categoryId: Int? = nil, status: Status? = nil) async throws -> [DeviceListItem] {
         var whereClause = "deleted: { equals: false }"

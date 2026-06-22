@@ -531,6 +531,10 @@ export const typeDefs = gql`
     sortOrder: Int!
   }
 
+  type PublicConfig {
+    shopDomain: String
+  }
+
   type ShowcaseConfig {
     id: ID!
     siteTitle: String!
@@ -654,6 +658,7 @@ export const typeDefs = gql`
     wishlistItems(where: WishlistItemWhereInput): [WishlistItem!]!
     systemSetting(key: String!): String
     showcaseConfig: ShowcaseConfig
+    publicConfig: PublicConfig!
     showcaseJourneys: [ShowcaseJourney!]!
     showcaseJourney(slug: String!): ShowcaseJourney
     showcaseFeaturedDevices: [ShowcaseDevice!]!

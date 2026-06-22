@@ -138,6 +138,9 @@ const GET_DEVICE = gql`
         }
       }
     }
+    publicConfig {
+      shopDomain
+    }
   }
 `;
 
@@ -2169,6 +2172,11 @@ export default function DeviceDetailNew() {
           deviceName={device.name}
           additionalName={device.additionalName}
           deviceId={parseInt(id as string)}
+          storefrontUrl={
+            data?.publicConfig?.shopDomain && ['FOR_SALE', 'PENDING_SALE', 'SOLD'].includes(device.status)
+              ? `https://${data.publicConfig.shopDomain}/item/${id}`
+              : null
+          }
         />
       )}
 

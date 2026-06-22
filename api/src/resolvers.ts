@@ -975,6 +975,10 @@ export const resolvers = {
             });
         },
 
+        publicConfig: () => {
+            return { shopDomain: process.env.SHOP_DOMAIN || null };
+        },
+
         showcaseJourneys: async (_parent: any, _args: any, context: Context) => {
             // Fetch all published journeys once to compute effective volume numbers
             const allPublished = await (context.prisma as any).showcaseJourney.findMany({

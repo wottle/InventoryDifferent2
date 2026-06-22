@@ -222,6 +222,7 @@ struct Translations {
         let assetTagPreview, labelOptimized: String
         let savedToPhotos, saveToPhotos, shareAssetTag: String
         let idPrefix: String
+        let adminLink, storefrontLink: String
     }
 
     // MARK: - Filter

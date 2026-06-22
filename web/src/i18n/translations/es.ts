@@ -395,6 +395,8 @@ export const es: Translations = {
     shareLink: "Compartir enlace",
     assetTag: "Etiqueta de inventario",
     deviceLink: "Enlace del dispositivo",
+    adminLink: "Enlace de administración",
+    storefrontLink: "Enlace de tienda",
     copied: "¡Copiado!",
     copy: "Copiar",
     shareToSocialMedia: "Compartir en redes sociales",
