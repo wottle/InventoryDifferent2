@@ -139,7 +139,7 @@ extension Translations {
             deleteTask: "Delete this log?",
             deleteNote: "Delete this note?",
             valueHistory: "Value History",
-            // Additional keys for DeviceDetailView
+            // Additional keys for the device detail view
             deleteDeviceMessage: "This will move the device to trash. You can restore it later.",
             deleteImageMessage: "Are you sure you want to delete this image? This action cannot be undone.",
             chooseThumbnailMessage: "Choose how this image should be used as a thumbnail.",

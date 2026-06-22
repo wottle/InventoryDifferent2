@@ -139,7 +139,7 @@ extension Translations {
             deleteTask: "Dieses Protokoll löschen?",
             deleteNote: "Diese Notiz löschen?",
             valueHistory: "Wertverlauf",
-            // Additional keys for DeviceDetailView
+            // Additional keys for the device detail view
             deleteDeviceMessage: "Das Gerät wird in den Papierkorb verschoben. Sie können es später wiederherstellen.",
             deleteImageMessage: "Möchten Sie dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
             chooseThumbnailMessage: "Wählen Sie, wie dieses Bild als Vorschaubild verwendet werden soll.",
