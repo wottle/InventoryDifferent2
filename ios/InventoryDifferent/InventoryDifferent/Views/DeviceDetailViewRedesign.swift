@@ -690,13 +690,7 @@ struct DeviceDetailRedesignView: View {
         let t = lm.t
         let hasOriginalBox = accessories.contains(where: { $0.name == "Original Box" })
         let isPram = device.pramBatteryInstalled ?? false
-        let pramNeedsAttention: Bool = {
-            guard isPram else { return false }
-            guard let expiryStr = device.pramBatteryExpiryDate else { return true }
-            let fmt = ISO8601DateFormatter()
-            let parsed = fmt.date(from: expiryStr)
-            return (parsed ?? .distantPast) <= Date()
-        }()
+        let pramNeedsAttention = device.pramNeedsAttention
         let isComputer = device.category.type == "COMPUTER"
 
         return LazyVGrid(
@@ -1447,18 +1441,29 @@ struct DeviceDetailRedesignView: View {
                         .background(idx % 2 == 0 ? Color.edSurfaceLow : Color.edSurfaceHigh.opacity(0.5))
                     }
                     if isComputer {
+                        let hasPramExpiry = device.pramBatteryInstalled == true && device.pramBatteryExpiryDate != nil
                         if let pram = device.pramBatteryInstalled {
                             let idx = specs.count + (device.isWifiEnabled != nil ? 1 : 0)
                             HStack {
                                 Text(t.deviceDetail.pramBattery).font(.system(size: 13)).foregroundColor(.secondary)
                                 Spacer()
-                                Text(pram ? t.deviceDetail.pramInstalled : t.deviceDetail.pramRemoved).font(.system(size: 13, weight: .bold)).foregroundColor(pram ? .green : .red)
+                                Text(pram ? t.deviceDetail.pramInstalled : t.deviceDetail.pramRemoved).font(.system(size: 13, weight: .bold)).foregroundColor(device.pramNeedsAttention ? .red : .green)
+                            }
+                            .padding(.horizontal, 14).padding(.vertical, 10)
+                            .background(idx % 2 == 0 ? Color.edSurfaceLow : Color.edSurfaceHigh.opacity(0.5))
+                        }
+                        if hasPramExpiry, let expiry = formatDate(device.pramBatteryExpiryDate) {
+                            let idx = specs.count + (device.isWifiEnabled != nil ? 1 : 0) + 1
+                            HStack {
+                                Text(t.deviceDetail.pramExpiry).font(.system(size: 13)).foregroundColor(.secondary)
+                                Spacer()
+                                Text(expiry).font(.system(size: 13, weight: .bold)).foregroundColor(device.pramNeedsAttention ? .red : .primary)
                             }
                             .padding(.horizontal, 14).padding(.vertical, 10)
                             .background(idx % 2 == 0 ? Color.edSurfaceLow : Color.edSurfaceHigh.opacity(0.5))
                         }
                         if device.isRetroBrited == true {
-                            let idx = specs.count + (device.isWifiEnabled != nil ? 1 : 0) + (device.pramBatteryInstalled != nil ? 1 : 0)
+                            let idx = specs.count + (device.isWifiEnabled != nil ? 1 : 0) + (device.pramBatteryInstalled != nil ? 1 : 0) + (hasPramExpiry ? 1 : 0)
                             HStack {
                                 Text("Retr0brited").font(.system(size: 13)).foregroundColor(.secondary)
                                 Spacer()
@@ -1468,7 +1473,7 @@ struct DeviceDetailRedesignView: View {
                             .background(idx % 2 == 0 ? Color.edSurfaceLow : Color.edSurfaceHigh.opacity(0.5))
                         }
                         if device.isRecapped == true {
-                            let idx = specs.count + (device.isWifiEnabled != nil ? 1 : 0) + (device.pramBatteryInstalled != nil ? 1 : 0) + (device.isRetroBrited == true ? 1 : 0)
+                            let idx = specs.count + (device.isWifiEnabled != nil ? 1 : 0) + (device.pramBatteryInstalled != nil ? 1 : 0) + (hasPramExpiry ? 1 : 0) + (device.isRetroBrited == true ? 1 : 0)
                             HStack {
                                 Text("Recapped").font(.system(size: 13)).foregroundColor(.secondary)
                                 Spacer()

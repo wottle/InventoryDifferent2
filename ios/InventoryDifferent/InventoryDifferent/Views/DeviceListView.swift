@@ -386,7 +386,7 @@ struct StatusIndicatorsRow: View {
             if device.category.type == "COMPUTER" {
                 Image(systemName: device.pramBatteryInstalled == true ? "battery.100" : "battery.0")
                     .font(.system(size: 12))
-                    .foregroundColor(device.pramBatteryInstalled == true ? .green : .red)
+                    .foregroundColor(device.pramNeedsAttention ? .red : .green)
             }
             
             // Favorite

@@ -46,6 +46,7 @@ class DeviceService {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 accessories { id name }
                 dateAcquired
                 estimatedValue
@@ -100,6 +101,7 @@ class DeviceService {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 accessories { id name }
                 dateAcquired
                 estimatedValue
@@ -179,6 +181,7 @@ class DeviceService {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
@@ -285,6 +288,7 @@ class DeviceService {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
@@ -574,6 +578,7 @@ class DeviceService {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
@@ -1049,6 +1054,7 @@ class DeviceService {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
@@ -1223,6 +1229,7 @@ class DeviceService {
                 isRetroBrited
                 isRecapped
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
@@ -1322,6 +1329,7 @@ class DeviceService {
                 externalUrl
                 isWifiEnabled
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
@@ -1397,6 +1405,7 @@ class DeviceService {
                 externalUrl
                 isWifiEnabled
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
@@ -1500,6 +1509,7 @@ class DeviceService {
                 externalUrl
                 isWifiEnabled
                 pramBatteryInstalled
+                pramBatteryExpiryDate
                 category {
                     id
                     name
