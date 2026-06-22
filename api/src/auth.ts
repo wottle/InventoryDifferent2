@@ -102,7 +102,10 @@ export function verifyAdminCredentials(username: string | null, password: string
         return false;
     }
 
-    return password === adminPassword;
+    const a = Buffer.from(password);
+    const b = Buffer.from(adminPassword);
+    if (a.length !== b.length) return false;
+    return crypto.timingSafeEqual(a, b);
 }
 
 // Legacy function for backward compatibility
