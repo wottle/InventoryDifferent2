@@ -73,6 +73,30 @@ protocol DeviceRowPresentable {
     var soldPrice: Double? { get }
 }
 
+extension DeviceRowPresentable {
+    /// Parses an API date string (ISO8601 with/without fractional seconds, or date-only).
+    var pramBatteryExpiry: Date? {
+        guard let s = pramBatteryExpiryDate else { return nil }
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let d = iso.date(from: s) { return d }
+        iso.formatOptions = [.withInternetDateTime]
+        if let d = iso.date(from: s) { return d }
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.dateFormat = "yyyy-MM-dd"
+        return df.date(from: s)
+    }
+
+    /// Red indicator only when a battery is installed with no expiry date on record,
+    /// or an expiry date that is today or in the past. A missing battery is safe (green).
+    var pramNeedsAttention: Bool {
+        guard pramBatteryInstalled == true else { return false }
+        guard let expiry = pramBatteryExpiry else { return true }
+        return expiry <= Date()
+    }
+}
+
 enum Status: String, Codable, CaseIterable {
     case COLLECTION
     case FOR_SALE

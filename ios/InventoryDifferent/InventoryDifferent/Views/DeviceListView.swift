@@ -384,16 +384,9 @@ struct StatusIndicatorsRow: View {
             
             // PRAM Battery (only for computers)
             if device.category.type == "COMPUTER" {
-                let pramInstalled = device.pramBatteryInstalled == true
-                let pramNeedsAttention: Bool = {
-                    guard pramInstalled else { return false }
-                    guard let expiryStr = device.pramBatteryExpiryDate else { return true }
-                    let parsed = ISO8601DateFormatter().date(from: expiryStr)
-                    return (parsed ?? .distantPast) <= Date()
-                }()
-                Image(systemName: pramInstalled ? "battery.100" : "battery.0")
+                Image(systemName: device.pramBatteryInstalled == true ? "battery.100" : "battery.0")
                     .font(.system(size: 12))
-                    .foregroundColor(pramNeedsAttention ? .red : .green)
+                    .foregroundColor(device.pramNeedsAttention ? .red : .green)
             }
             
             // Favorite
