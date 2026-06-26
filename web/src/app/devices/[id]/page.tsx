@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Download } from "lucide-react";
 import { ImageUploader } from "../../../components/ImageUploader";
 import { ShareModal } from "../../../components/ShareModal";
 import { LoadingPanel } from "../../../components/LoadingPanel";
@@ -742,6 +743,18 @@ export default function DeviceDetailNew() {
     setSelectedImage(prev => (prev + delta + navImages.length) % navImages.length);
     setLightboxZoom(1);
     setLightboxPan({ x: 0, y: 0 });
+  };
+  const handleLightboxDownload = async () => {
+    const img = navImages[selectedImage];
+    if (!img || img.mediaType === 'VIDEO') return;
+    const response = await fetch(`${API_BASE_URL}${img.path}`);
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = objectUrl;
+    a.download = img.path.split('/').pop() || 'image';
+    a.click();
+    URL.revokeObjectURL(objectUrl);
   };
   const sortedTasks = [...(device.maintenanceTasks ?? [])].sort(
     (a: any, b: any) => new Date(b.dateCompleted).getTime() - new Date(a.dateCompleted).getTime()
@@ -2368,6 +2381,17 @@ export default function DeviceDetailNew() {
             applyLightboxZoom((prev) => prev * (e.deltaY < 0 ? 1.1 : 1 / 1.1), lastPointerOffsetRef.current ?? undefined);
           }}
         >
+          {/* Download — images only */}
+          {navImages[selectedImage]?.mediaType !== 'VIDEO' && (
+            <button
+              className="absolute top-4 right-16 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white transition-colors"
+              onClick={(e) => { e.stopPropagation(); handleLightboxDownload(); }}
+              title="Download image"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          )}
+
           {/* Close */}
           <button
             className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white transition-colors"
