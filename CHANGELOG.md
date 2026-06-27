@@ -6,6 +6,13 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [2.9.0] - 2026-06-27
+
+### Added
+- External templates (experimental): enable a remote template catalog in Settings to load TemplatesDifferent templates alongside local ones in the Add Device form
+
+---
+
 ## [2.8.7] - 2026-06-25
 
 ### Added
