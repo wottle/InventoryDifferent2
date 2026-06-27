@@ -172,16 +172,8 @@ export function useExternalTemplates(enabled: boolean): {
           (t) => t.status === undefined || t.status === null || t.status === 'PUBLISHED'
         );
 
-        // Deduplicate by ID (pagination overlap from TemplatesDifferent API)
-        const seenIds = new Set<string | number>();
-        const deduped = published.filter((t) => {
-          if (seenIds.has(t.id)) return false;
-          seenIds.add(t.id);
-          return true;
-        });
-
         // Map to TemplateData
-        const mapped = deduped.map(mapRemoteTemplate);
+        const mapped = published.map(mapRemoteTemplate);
 
         // Persist to localStorage
         try {
