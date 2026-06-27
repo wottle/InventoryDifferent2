@@ -68,7 +68,7 @@ interface TemplatesPageResponse {
 }
 
 // Bump when cache schema or deduplication logic changes to force a client-side refetch.
-const CACHE_SCHEMA_VERSION = '2';
+const CACHE_SCHEMA_VERSION = '3';
 
 function mapRemoteTemplate(remote: RemoteTemplate): TemplateData {
   return {
@@ -172,12 +172,11 @@ export function useExternalTemplates(enabled: boolean): {
           (t) => t.status === undefined || t.status === null || t.status === 'PUBLISHED'
         );
 
-        // Deduplicate within remote dataset by name + additionalName
-        const seen = new Set<string>();
+        // Deduplicate by ID (pagination overlap from TemplatesDifferent API)
+        const seenIds = new Set<string | number>();
         const deduped = published.filter((t) => {
-          const key = `${t.name.toLowerCase()}||${(t.additionalName ?? '').toLowerCase()}`;
-          if (seen.has(key)) return false;
-          seen.add(key);
+          if (seenIds.has(t.id)) return false;
+          seenIds.add(t.id);
           return true;
         });
 
