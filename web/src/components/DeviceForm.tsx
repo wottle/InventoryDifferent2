@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { BarcodeScannerModal } from "./BarcodeScannerModal";
 import { useT } from "../i18n/context";
+import { useExternalTemplates, type TemplateData } from '../lib/useExternalTemplates';
+import { API_BASE_URL } from '../lib/config';
 
 const GET_CUSTOM_FIELDS = gql`
   query GetCustomFields {
@@ -153,6 +155,14 @@ const GET_TEMPLATES = gql`
       rarity
       historicalNotes
       categoryId
+    }
+  }
+`;
+
+const CREATE_TEMPLATE_IMAGE = gql`
+  mutation CreateTemplateImage($input: ImageCreateInput!) {
+    createImage(input: $input) {
+      id
     }
   }
 `;
@@ -459,8 +469,14 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
     const [customFieldFormValues, setCustomFieldFormValues] = useState<Record<number, string>>({});
 
-    const [selectedTemplateId, setSelectedTemplateId] = useState<number>(0);
+    const [selectedTemplateId, setSelectedTemplateId] = useState<number | string>(0);
     const [templateQuery, setTemplateQuery] = useState<string>("");
+    const [pendingTemplateImages, setPendingTemplateImages] = useState<{ url: string; mode: 'LIGHT' | 'DARK' | null }[]>([]);
+
+    const [externalEnabled] = useState(() =>
+        typeof window !== 'undefined' && localStorage.getItem('externalTemplatesEnabled') === 'true'
+    );
+    const { templates: externalTemplates, loading: extLoading } = useExternalTemplates(externalEnabled);
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -560,10 +576,13 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
     const templates: Template[] = templatesData?.templates || [];
 
-    const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
+    const selectedTemplate: TemplateData | undefined =
+        templates.find(t => t.id === selectedTemplateId)
+            ? { ...templates.find(t => t.id === selectedTemplateId)!, source: 'local' as const }
+            : externalTemplates.find(t => t.id === selectedTemplateId);
 
     const normalizedTemplateQuery = templateQuery.trim().toLowerCase();
-    const filteredTemplates = templates
+    const filteredLocalTemplates = templates
         .filter((t) => {
             if (!normalizedTemplateQuery) return true;
             const haystack = [t.name, t.additionalName, t.manufacturer, t.modelNumber]
@@ -571,8 +590,34 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 .join(' ')
                 .toLowerCase();
             return haystack.includes(normalizedTemplateQuery);
+        });
+
+    // Normalize local templates to TemplateData shape
+    const localAsTemplateData: TemplateData[] = filteredLocalTemplates.map(t => ({
+        ...t,
+        source: 'local' as const,
+        id: t.id,
+        estimatedValue: t.estimatedValue != null ? Number(t.estimatedValue) : null,
+    }));
+
+    // Filter external templates by search query (same fields: name, additionalName, manufacturer, modelNumber)
+    const filteredExternal = externalEnabled
+        ? externalTemplates.filter(t => {
+            if (!normalizedTemplateQuery) return true;
+            const q = normalizedTemplateQuery;
+            return (
+                t.name.toLowerCase().includes(q) ||
+                (t.additionalName ?? '').toLowerCase().includes(q) ||
+                (t.manufacturer ?? '').toLowerCase().includes(q) ||
+                (t.modelNumber ?? '').toLowerCase().includes(q)
+            );
         })
-        .slice(0, 50);
+        : [];
+
+    const allTemplates: TemplateData[] = [
+        ...localAsTemplateData,
+        ...filteredExternal,
+    ].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 50);
 
     const showTemplateResults = normalizedTemplateQuery.length > 0;
 
@@ -614,10 +659,8 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         }
     };
 
-    const applyTemplate = (templateId: number) => {
-        setSelectedTemplateId(templateId);
-        const tpl = templates.find(t => t.id === templateId);
-        if (!tpl) return;
+    const applyTemplateData = (tpl: TemplateData) => {
+        setSelectedTemplateId(tpl.id);
 
         setFormData(prev => {
             const next = { ...prev };
@@ -679,12 +722,20 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
             // Template has no link — remove any previously added template link
             setLinks(prev => prev.filter(l => l._fromTemplate !== true));
         }
+
+        // Store any thumbnail images from a remote template for upload after device creation
+        setPendingTemplateImages(
+            tpl.source === 'remote' && tpl.images?.length ? tpl.images : []
+        );
     };
 
     // Apply prefill template once the template list has loaded
     useEffect(() => {
         if (prefill?.templateId && templates.length > 0) {
-            applyTemplate(prefill.templateId);
+            const found = templates.find(t => t.id === prefill.templateId);
+            if (found) {
+                applyTemplateData({ ...found, source: 'local', id: found.id, estimatedValue: found.estimatedValue != null ? Number(found.estimatedValue) : null });
+            }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [prefill?.templateId, templates.length]);
@@ -813,6 +864,39 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 }
                 for (const entry of osEntries) {
                     await addDeviceOS({ variables: { deviceId, value: entry.value } });
+                }
+            }
+
+            // Upload template thumbnail images after device creation (best-effort)
+            if (mode === 'create' && pendingTemplateImages.length > 0) {
+                const effectiveImages = pendingTemplateImages.map((img, _i, arr) => ({
+                    ...img,
+                    thumbnailMode: arr.length === 1 || img.mode === null ? 'BOTH' : img.mode,
+                }));
+                const token = typeof window !== 'undefined'
+                    ? localStorage.getItem('inv_access_token')
+                    : null;
+                const authHeaders: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+                for (const img of effectiveImages) {
+                    try {
+                        const imgRes = await fetch(img.url);
+                        if (!imgRes.ok) continue;
+                        const blob = await imgRes.blob();
+                        const fd = new FormData();
+                        fd.append('image', blob, img.url.split('/').pop() || 'template.webp');
+                        const uploadRes = await fetch(
+                            `${API_BASE_URL}/upload?deviceId=${deviceId}`,
+                            { method: 'POST', headers: authHeaders, body: fd }
+                        );
+                        if (!uploadRes.ok) continue;
+                        const { path } = await uploadRes.json();
+                        await apolloClient.mutate({
+                            mutation: CREATE_TEMPLATE_IMAGE,
+                            variables: {
+                                input: { deviceId, path, isThumbnail: true, thumbnailMode: img.thumbnailMode, isShopImage: false },
+                            },
+                        });
+                    } catch { /* best-effort: image import failure never blocks navigation */ }
                 }
             }
 
@@ -957,6 +1041,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                 onClick={() => {
                                                     setSelectedTemplateId(0);
                                                     setTemplateQuery("");
+                                                    setPendingTemplateImages([]);
                                                 }}
                                             >
                                                 {t.form.clearTemplate}
@@ -964,13 +1049,16 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                         </div>
                                     )}
 
+                                    {externalEnabled && extLoading && (
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Loading external templates…</p>
+                                    )}
+
                                     {showTemplateResults && (
                                         <div className="border border-[var(--border)] rounded max-h-60 overflow-auto bg-[var(--card)]">
-                                            {filteredTemplates.length === 0 ? (
+                                            {allTemplates.length === 0 ? (
                                                 <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">{t.form.noMatchingTemplates}</div>
                                             ) : (
-                                                filteredTemplates.map((tpl) => {
-                                                    const title = tpl.additionalName ? `${tpl.name} (${tpl.additionalName})` : tpl.name;
+                                                allTemplates.map((tpl) => {
                                                     const meta = [tpl.manufacturer, tpl.modelNumber, tpl.releaseYear ? String(tpl.releaseYear) : null]
                                                         .filter(Boolean)
                                                         .join(' · ');
@@ -983,11 +1071,19 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                                 tpl.id === selectedTemplateId ? 'bg-[var(--muted)]' : ''
                                                             }`}
                                                             onClick={() => {
-                                                                applyTemplate(tpl.id);
+                                                                applyTemplateData(tpl);
                                                                 setTemplateQuery("");
                                                             }}
                                                         >
-                                                            <div className="font-medium">{title}</div>
+                                                            <div className="font-medium">
+                                                                {tpl.name}
+                                                                {tpl.source === 'remote' && (
+                                                                    <span className="ml-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                                                                        {t.form.externalTemplateBadge}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {tpl.additionalName && <div className="text-xs text-[var(--muted-foreground)] italic">{tpl.additionalName}</div>}
                                                             {meta && <div className="text-xs text-[var(--muted-foreground)]">{meta}</div>}
                                                         </button>
                                                     );

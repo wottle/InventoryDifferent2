@@ -1964,6 +1964,7 @@ async function startServer() {
         console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`);
         console.log(`📁 File uploads at http://localhost:${PORT}/upload`);
         console.log(`🖼️  Static files at http://localhost:${PORT}/uploads`);
+        console.log(`[version] BUILD_VERSION=${process.env.BUILD_VERSION || 'dev'}`);
     });
 }
 

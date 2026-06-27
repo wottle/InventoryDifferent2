@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.8.7';
+export const APP_VERSION = '2.9.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,7 +12,26 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running',
+    ],
+    changed: [
+      '"Original Box" status is now derived from the accessories list (same as iOS) rather than a separate checkbox; add or remove the "Original Box" accessory in the device edit form to set it',
+      'Applying a remote template to a new device now automatically imports the template\'s thumbnail image(s) as the device thumbnail (light/dark variants respected)',
+    ],
+    fixed: [
+      'External template picker now shows both local and remote templates even when they share a name, so you can apply either',
+      'External template picker no longer shows duplicate entries when the remote catalog itself contains duplicate records',
+      'Additional name now shown as a separate line in the template picker dropdown',
+      'External template cache now expires after 1 hour so edits to the remote catalog propagate without waiting for a version bump',
+    ],
+  },
+  {
+    version: '2.9.0',
+    date: '2026-06-27',
+    added: [
+      'External templates (experimental): enable a remote template catalog in Settings to load TemplatesDifferent templates alongside local ones in the Add Device form',
+    ],
     changed: [],
     fixed: [],
   },

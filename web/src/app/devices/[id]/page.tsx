@@ -40,7 +40,6 @@ const GET_DEVICE = gql`
       functionalStatus
       condition
       rarity
-      hasOriginalBox
       isAssetTagged
       dateAcquired
       whereAcquired
@@ -1259,10 +1258,10 @@ export default function DeviceDetailNew() {
             />
             <IndicatorCard
               iconName="package"
-              color={device.hasOriginalBox ? 'emerald' : 'gray'}
+              color={(device.accessories ?? []).some((a: any) => a.name === 'Original Box') ? 'emerald' : 'gray'}
               label={t.detail.originalBoxLabel}
-              value={device.hasOriginalBox ? t.detail.origBox : t.detail.noBox}
-              active={!!device.hasOriginalBox}
+              value={(device.accessories ?? []).some((a: any) => a.name === 'Original Box') ? t.detail.origBox : t.detail.noBox}
+              active={(device.accessories ?? []).some((a: any) => a.name === 'Original Box')}
             />
             {device.category?.type === 'COMPUTER' && (() => {
               const pramInstalled = !!device.pramBatteryInstalled

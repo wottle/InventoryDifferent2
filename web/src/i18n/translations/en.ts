@@ -888,6 +888,12 @@ export type Translations = {
       guestAccessDescription: string;
       guestAccessEnabled: string;
       guestAccessDisabled: string;
+      externalTemplates: string;
+      externalTemplatesExperimental: string;
+      externalTemplatesLabel: string;
+      externalTemplatesDescription: string;
+      externalTemplatesEnabled: string;
+      externalTemplatesDisabled: string;
     };
     slideshow: {
       settings: string;
@@ -957,6 +963,7 @@ export type Translations = {
     clearTemplate: string;
     noMatchingTemplates: string;
     startTypingSearch: string;
+    externalTemplateBadge: string;
     basicInformation: string;
     statusCondition: string;
     repairInformation: string;
@@ -1915,6 +1922,12 @@ export const en: Translations = {
       guestAccessDescription: "When enabled, visitors can browse your collection without signing in. Guests will see device information but not pricing, notes, or acquisition details.",
       guestAccessEnabled: "Guest access is on",
       guestAccessDisabled: "Guest access is off — sign-in required to view the collection",
+      externalTemplates: "External Templates",
+      externalTemplatesExperimental: "Experimental",
+      externalTemplatesLabel: "Enable remote template catalog",
+      externalTemplatesDescription: "Shows TemplatesDifferent templates alongside your local ones in the Add Device form.",
+      externalTemplatesEnabled: "Remote catalog enabled",
+      externalTemplatesDisabled: "Remote catalog disabled",
     },
     slideshow: {
       settings: "Settings",
@@ -1984,6 +1997,7 @@ export const en: Translations = {
     clearTemplate: "Clear",
     noMatchingTemplates: "No matching templates.",
     startTypingSearch: "Start typing to search templates.",
+    externalTemplateBadge: "External",
     basicInformation: "Basic Information",
     statusCondition: "Status & Condition",
     repairInformation: "Repair Information",
