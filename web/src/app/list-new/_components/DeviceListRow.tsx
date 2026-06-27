@@ -17,8 +17,8 @@ interface DeviceListRowProps {
     status: string;
     functionalStatus: string;
     rarity?: string | null;
-    hasOriginalBox?: boolean;
     isAssetTagged?: boolean;
+    accessories?: { id: number; name: string }[];
     pramBatteryInstalled?: boolean | null;
     pramBatteryExpiryDate?: string | null;
     estimatedValue?: number | null;
@@ -75,7 +75,7 @@ function buildIconRow(device: DeviceListRowProps['device']): IconSpec[] {
   }
 
   icons.push({ name: 'sell', className: device.isAssetTagged ? 'text-green-500' : INACTIVE, style: FILLED });
-  icons.push({ name: 'inventory_2', className: device.hasOriginalBox ? 'text-green-500' : INACTIVE, style: FILLED });
+  icons.push({ name: 'inventory_2', className: device.accessories?.some(a => a.name === 'Original Box') ? 'text-green-500' : INACTIVE, style: FILLED });
 
   if (device.category.type === 'COMPUTER') {
     icons.push({

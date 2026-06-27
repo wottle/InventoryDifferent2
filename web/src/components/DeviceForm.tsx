@@ -1289,17 +1289,6 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                     <label className="flex items-center gap-2 cursor-pointer">
                         <input
                             type="checkbox"
-                            name="hasOriginalBox"
-                            checked={formData.hasOriginalBox}
-                            onChange={handleChange}
-                            className="w-4 h-4 rounded border-[var(--border)] text-[var(--apple-blue)] focus:ring-[var(--apple-blue)]"
-                        />
-                        <span className="text-sm text-[var(--foreground)]">{t.form.originalBoxLabel}</span>
-                    </label>
-
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="checkbox"
                             name="isRetroBrited"
                             checked={formData.isRetroBrited}
                             onChange={handleChange}

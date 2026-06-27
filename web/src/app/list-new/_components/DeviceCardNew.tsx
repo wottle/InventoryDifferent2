@@ -37,8 +37,8 @@ interface DeviceCardNewProps {
     status: string;
     functionalStatus: string;
     rarity?: string | null;
-    hasOriginalBox?: boolean;
     isAssetTagged?: boolean;
+    accessories?: { id: number; name: string }[];
     pramBatteryInstalled?: boolean | null;
     pramBatteryExpiryDate?: string | null;
     estimatedValue?: number | null;
@@ -113,7 +113,7 @@ function buildIconRow(device: DeviceCardNewProps['device']): IconSpec[] {
   // 4. Original box — always shown
   icons.push({
     name: 'inventory_2',
-    className: device.hasOriginalBox ? 'text-green-500' : INACTIVE,
+    className: device.accessories?.some(a => a.name === 'Original Box') ? 'text-green-500' : INACTIVE,
     style: FILLED,
   });
 

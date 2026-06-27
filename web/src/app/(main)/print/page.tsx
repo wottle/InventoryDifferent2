@@ -27,8 +27,11 @@ const GET_DEVICES = gql`
       externalUrl
       status
       functionalStatus
-      hasOriginalBox
       isAssetTagged
+      accessories {
+        id
+        name
+      }
       dateAcquired
       whereAcquired
       priceAcquired
@@ -322,7 +325,7 @@ export default function PrintListPage() {
                 <table className="w-full">
                   <tbody>
                     <tr><td className="text-gray-500 pr-2">{t.pages.print.functionalLabel}</td><td>{getFunctionalStatusText(device.functionalStatus)}</td></tr>
-                    <tr><td className="text-gray-500 pr-2">{t.pages.print.originalBoxLabel}</td><td>{device.hasOriginalBox ? t.common.yes : t.common.no}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.originalBoxLabel}</td><td>{(device.accessories ?? []).some((a: any) => a.name === 'Original Box') ? t.common.yes : t.common.no}</td></tr>
                     {device.category.type === "COMPUTER" && (
                       <tr><td className="text-gray-500 pr-2">{t.pages.print.pramRemovedLabel}</td><td>{device.pramBatteryInstalled ? 'Installed' : 'Removed'}</td></tr>
                     )}

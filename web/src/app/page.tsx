@@ -30,8 +30,11 @@ const GET_DEVICES = gql`
       status
       functionalStatus
       rarity
-      hasOriginalBox
       isAssetTagged
+      accessories {
+        id
+        name
+      }
       isWifiEnabled
       pramBatteryInstalled
       pramBatteryExpiryDate

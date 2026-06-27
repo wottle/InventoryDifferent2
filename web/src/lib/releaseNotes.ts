@@ -15,9 +15,10 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [
       'API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running',
     ],
-    changed: [],
+    changed: [
+      '"Original Box" status is now derived from the accessories list (same as iOS) rather than a separate checkbox; add or remove the "Original Box" accessory in the device edit form to set it',
+    ],
     fixed: [
-      'Restored missing "Original Box" checkbox in the device edit form',
       'External template picker now shows both local and remote templates even when they share a name, so you can apply either',
       'External template picker no longer shows duplicate entries when the remote catalog itself contains duplicate records',
       'Additional name now shown as a separate line in the template picker dropdown',
