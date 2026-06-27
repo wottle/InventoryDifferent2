@@ -28,7 +28,9 @@ jobs:
   publish:
     name: Build and Push ${{ matrix.name }}
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: |
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') &&
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.head_repository.full_name == github.repository)
 
     strategy:
       matrix:
