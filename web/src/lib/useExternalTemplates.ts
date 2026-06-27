@@ -124,18 +124,26 @@ export function useExternalTemplates(enabled: boolean): {
 
         if (cachedVersion === version) {
           // Cache hit — return stored data
-          const raw = localStorage.getItem('extTemplates_cache') ?? '[]';
-          const cached = JSON.parse(raw) as TemplateData[];
-          if (!cancelled) {
-            setTemplates(cached);
-            setLoading(false);
+          const raw = localStorage.getItem('extTemplates_cache');
+          let cached: TemplateData[] | null = null;
+          try {
+            if (raw) cached = JSON.parse(raw) as TemplateData[];
+          } catch {}
+          if (cached) {
+            if (!cancelled) {
+              setTemplates(cached);
+              setLoading(false);
+            }
+            return;
           }
-          return;
+          // fall through to full fetch
         }
 
         // Cache miss — paginate through the catalog
         const allRemote: RemoteTemplate[] = [];
         let cursor: string | null = null;
+        let pageCount = 0;
+        const MAX_PAGES = 50;
 
         do {
           const url = new URL(`${EXTERNAL_TEMPLATES_API_URL}/templates`);
@@ -149,7 +157,8 @@ export function useExternalTemplates(enabled: boolean): {
 
           allRemote.push(...page.templates);
           cursor = page.nextCursor;
-        } while (cursor !== null);
+          pageCount++;
+        } while (cursor !== null && pageCount < MAX_PAGES);
 
         // Filter to published (or no status)
         const published = allRemote.filter(
@@ -160,8 +169,10 @@ export function useExternalTemplates(enabled: boolean): {
         const mapped = published.map(mapRemoteTemplate);
 
         // Persist to localStorage
-        localStorage.setItem('extTemplates_version', version);
-        localStorage.setItem('extTemplates_cache', JSON.stringify(mapped));
+        try {
+          localStorage.setItem('extTemplates_version', version);
+          localStorage.setItem('extTemplates_cache', JSON.stringify(mapped));
+        } catch {}
 
         if (!cancelled) {
           setTemplates(mapped);
@@ -182,10 +193,6 @@ export function useExternalTemplates(enabled: boolean): {
       cancelled = true;
     };
   }, [enabled]);
-
-  if (!enabled) {
-    return { templates: [], loading: false, error: null };
-  }
 
   return { templates, loading, error };
 }

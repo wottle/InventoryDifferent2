@@ -1031,7 +1031,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                                 {title}
                                                                 {tpl.source === 'remote' && (
                                                                     <span className="ml-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-                                                                        External
+                                                                        {t.form.externalTemplateBadge}
                                                                     </span>
                                                                 )}
                                                             </div>
