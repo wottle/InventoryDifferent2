@@ -16,7 +16,10 @@ export const releaseNotes: ReleaseEntry[] = [
       'API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running',
     ],
     changed: [],
-    fixed: [],
+    fixed: [
+      'External template picker no longer shows duplicates when a remote template has the same name as a local one',
+      'Additional name now shown as a separate line in the template picker dropdown',
+    ],
   },
   {
     version: '2.9.0',

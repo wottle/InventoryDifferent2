@@ -604,9 +604,12 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         })
         : [];
 
+    const localNames = new Set(localAsTemplateData.map(t => t.name.toLowerCase()));
+    const deduplicatedExternal = filteredExternal.filter(t => !localNames.has(t.name.toLowerCase()));
+
     const allTemplates: TemplateData[] = [
         ...localAsTemplateData,
-        ...filteredExternal,
+        ...deduplicatedExternal,
     ].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 50);
 
     const showTemplateResults = normalizedTemplateQuery.length > 0;
@@ -1010,7 +1013,6 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                 <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">{t.form.noMatchingTemplates}</div>
                                             ) : (
                                                 allTemplates.map((tpl) => {
-                                                    const title = tpl.additionalName ? `${tpl.name} (${tpl.additionalName})` : tpl.name;
                                                     const meta = [tpl.manufacturer, tpl.modelNumber, tpl.releaseYear ? String(tpl.releaseYear) : null]
                                                         .filter(Boolean)
                                                         .join(' · ');
@@ -1028,13 +1030,14 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                             }}
                                                         >
                                                             <div className="font-medium">
-                                                                {title}
+                                                                {tpl.name}
                                                                 {tpl.source === 'remote' && (
                                                                     <span className="ml-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                                                                         {t.form.externalTemplateBadge}
                                                                     </span>
                                                                 )}
                                                             </div>
+                                                            {tpl.additionalName && <div className="text-xs text-[var(--muted-foreground)] italic">{tpl.additionalName}</div>}
                                                             {meta && <div className="text-xs text-[var(--muted-foreground)]">{meta}</div>}
                                                         </button>
                                                     );
