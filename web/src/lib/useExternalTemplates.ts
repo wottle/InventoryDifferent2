@@ -28,6 +28,8 @@ export interface TemplateData {
   historicalNotes?: string | null;
   externalUrl?: string | null;
   externalLinkLabel?: string | null;
+  /** Thumbnail images from the remote catalog. mode=null means use BOTH (single image). */
+  images?: { url: string; mode: 'LIGHT' | 'DARK' | null }[];
 }
 
 interface RemoteTemplate {
@@ -55,6 +57,7 @@ interface RemoteTemplate {
   historicalNotes?: string | null;
   externalUrl?: string | null;
   externalLinkLabel?: string | null;
+  images?: { type: 'LIGHT' | 'DARK'; url: string }[];
 }
 
 interface SyncResponse {
@@ -68,9 +71,10 @@ interface TemplatesPageResponse {
 }
 
 // Bump when cache schema or deduplication logic changes to force a client-side refetch.
-const CACHE_SCHEMA_VERSION = '3';
+const CACHE_SCHEMA_VERSION = '4';
 
 function mapRemoteTemplate(remote: RemoteTemplate): TemplateData {
+  const imgs = remote.images ?? [];
   return {
     id: 'ext_' + remote.id,
     source: 'remote',
@@ -96,6 +100,11 @@ function mapRemoteTemplate(remote: RemoteTemplate): TemplateData {
     historicalNotes: remote.historicalNotes ?? null,
     externalUrl: remote.externalUrl ?? null,
     externalLinkLabel: remote.externalLinkLabel ?? null,
+    images: imgs.length === 0
+      ? undefined
+      : imgs.length === 1
+        ? [{ url: imgs[0].url, mode: null }]
+        : imgs.map(img => ({ url: img.url, mode: img.type })),
   };
 }
 

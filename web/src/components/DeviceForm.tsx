@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { BarcodeScannerModal } from "./BarcodeScannerModal";
 import { useT } from "../i18n/context";
 import { useExternalTemplates, type TemplateData } from '../lib/useExternalTemplates';
+import { API_BASE_URL } from '../lib/config';
 
 const GET_CUSTOM_FIELDS = gql`
   query GetCustomFields {
@@ -154,6 +155,14 @@ const GET_TEMPLATES = gql`
       rarity
       historicalNotes
       categoryId
+    }
+  }
+`;
+
+const CREATE_TEMPLATE_IMAGE = gql`
+  mutation CreateTemplateImage($input: ImageCreateInput!) {
+    createImage(input: $input) {
+      id
     }
   }
 `;
@@ -462,6 +471,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
 
     const [selectedTemplateId, setSelectedTemplateId] = useState<number | string>(0);
     const [templateQuery, setTemplateQuery] = useState<string>("");
+    const [pendingTemplateImages, setPendingTemplateImages] = useState<{ url: string; mode: 'LIGHT' | 'DARK' | null }[]>([]);
 
     const [externalEnabled] = useState(() =>
         typeof window !== 'undefined' && localStorage.getItem('externalTemplatesEnabled') === 'true'
@@ -712,6 +722,11 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
             // Template has no link — remove any previously added template link
             setLinks(prev => prev.filter(l => l._fromTemplate !== true));
         }
+
+        // Store any thumbnail images from a remote template for upload after device creation
+        setPendingTemplateImages(
+            tpl.source === 'remote' && tpl.images?.length ? tpl.images : []
+        );
     };
 
     // Apply prefill template once the template list has loaded
@@ -849,6 +864,39 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                 }
                 for (const entry of osEntries) {
                     await addDeviceOS({ variables: { deviceId, value: entry.value } });
+                }
+            }
+
+            // Upload template thumbnail images after device creation (best-effort)
+            if (mode === 'create' && pendingTemplateImages.length > 0) {
+                const effectiveImages = pendingTemplateImages.map((img, _i, arr) => ({
+                    ...img,
+                    thumbnailMode: arr.length === 1 || img.mode === null ? 'BOTH' : img.mode,
+                }));
+                const token = typeof window !== 'undefined'
+                    ? localStorage.getItem('inv_access_token')
+                    : null;
+                const authHeaders: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+                for (const img of effectiveImages) {
+                    try {
+                        const imgRes = await fetch(img.url);
+                        if (!imgRes.ok) continue;
+                        const blob = await imgRes.blob();
+                        const fd = new FormData();
+                        fd.append('image', blob, img.url.split('/').pop() || 'template.webp');
+                        const uploadRes = await fetch(
+                            `${API_BASE_URL}/upload?deviceId=${deviceId}`,
+                            { method: 'POST', headers: authHeaders, body: fd }
+                        );
+                        if (!uploadRes.ok) continue;
+                        const { path } = await uploadRes.json();
+                        await apolloClient.mutate({
+                            mutation: CREATE_TEMPLATE_IMAGE,
+                            variables: {
+                                input: { deviceId, path, isThumbnail: true, thumbnailMode: img.thumbnailMode, isShopImage: false },
+                            },
+                        });
+                    } catch { /* best-effort: image import failure never blocks navigation */ }
                 }
             }
 
@@ -993,6 +1041,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                 onClick={() => {
                                                     setSelectedTemplateId(0);
                                                     setTemplateQuery("");
+                                                    setPendingTemplateImages([]);
                                                 }}
                                             >
                                                 {t.form.clearTemplate}

@@ -9,6 +9,7 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Changed
 - "Original Box" status is now derived from the accessories list (same as iOS) rather than a separate checkbox; add or remove the "Original Box" accessory in the device edit form to set it
+- Applying a remote template to a new device now automatically imports the template's thumbnail image(s) as the device thumbnail (light/dark variants respected)
 
 ### Fixed
 - External template picker now shows both local and remote templates even when they share a name, so you can apply either
