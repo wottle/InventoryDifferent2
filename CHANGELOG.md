@@ -6,6 +6,20 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [2.8.7] - 2026-06-25
+
+### Added
+- Device share sheet now offers a Storefront link for devices that are For Sale, Pending Sale, or Sold when SHOP_DOMAIN is configured
+- Download button in the image lightbox lets you save the full-resolution image directly to disk
+
+### Changed
+- Removed the unused legacy /devices-old and /list-classic pages
+
+### Fixed
+- Storefront item detail page failed to load (GraphQL 400) because it still requested old renamed spec fields
+
+---
+
 ## [2.8.6] - 2026-06-21
 
 ### Fixed

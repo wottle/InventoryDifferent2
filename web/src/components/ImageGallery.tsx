@@ -3,7 +3,7 @@
 import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import { useState, useEffect } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Download } from "lucide-react";
 import { API_BASE_URL } from "../lib/config";
 import { EditImageModal, type EditableImage } from "./EditImageModal";
 
@@ -56,6 +56,18 @@ export function ImageGallery({ images, onImagesChanged }: ImageGalleryProps) {
     const [editingImage, setEditingImage] = useState<EditableImage | null>(null);
     const [deleteImage, { loading: deleting }] = useMutation(DELETE_IMAGE);
     const [updateImage, { loading: updating }] = useMutation(UPDATE_IMAGE);
+
+    const handleDownload = async (image: Image) => {
+        const url = `${API_BASE_URL}${image.path}`;
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = objectUrl;
+        a.download = image.path.split('/').pop() || 'image';
+        a.click();
+        URL.revokeObjectURL(objectUrl);
+    };
 
     const openLightbox = (index: number) => setLightboxIndex(index);
     const closeLightbox = () => setLightboxIndex(null);
@@ -380,6 +392,17 @@ export function ImageGallery({ images, onImagesChanged }: ImageGalleryProps) {
                         className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
                         onClick={closeLightbox}
                     >
+                        {/* Download button — images only */}
+                        {image.mediaType !== 'VIDEO' && (
+                            <button
+                                className="absolute top-4 right-16 w-9 h-9 flex items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
+                                onClick={(e) => { e.stopPropagation(); handleDownload(image); }}
+                                title="Download image"
+                            >
+                                <Download className="w-4 h-4" />
+                            </button>
+                        )}
+
                         {/* Close button */}
                         <button
                             className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"

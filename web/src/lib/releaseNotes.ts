@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.8.6';
+export const APP_VERSION = '2.8.7';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,8 +12,16 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '2.8.7',
+    date: '2026-06-25',
     added: [
       'Device share sheet now offers a Storefront link (https://SHOP_DOMAIN/item/ID) for devices that are For Sale, Pending Sale, or Sold when SHOP_DOMAIN is configured',
+      'Download button in the image lightbox lets you save the full-resolution image directly to disk',
     ],
     changed: [
       'Removed the unused legacy /devices-old and /list-classic pages, which were superseded by the current device detail and list designs and still referenced removed spec fields',
