@@ -4,6 +4,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ## [Unreleased]
 
+### Added
+- API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running
+
 ---
 
 ## [2.9.0] - 2026-06-27

@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running',
+    ],
     changed: [],
     fixed: [],
   },
