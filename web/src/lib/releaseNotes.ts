@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.8.7';
+export const APP_VERSION = '2.9.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -17,8 +17,8 @@ export const releaseNotes: ReleaseEntry[] = [
     fixed: [],
   },
   {
-    version: '2.8.7',
-    date: '2026-06-25',
+    version: '2.9.0',
+    date: '2026-06-27',
     added: [
       'External templates (experimental): enable a remote template catalog in Settings to load TemplatesDifferent templates alongside local ones in the Add Device form',
     ],
