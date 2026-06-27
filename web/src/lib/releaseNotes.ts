@@ -17,6 +17,7 @@ export const releaseNotes: ReleaseEntry[] = [
     ],
     changed: [],
     fixed: [
+      'Restored missing "Original Box" checkbox in the device edit form',
       'External template picker now shows both local and remote templates even when they share a name, so you can apply either',
       'External template picker no longer shows duplicate entries when the remote catalog itself contains duplicate records',
       'Additional name now shown as a separate line in the template picker dropdown',
