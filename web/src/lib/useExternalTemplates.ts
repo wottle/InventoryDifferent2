@@ -121,8 +121,11 @@ export function useExternalTemplates(enabled: boolean): {
         const { version } = (await syncRes.json()) as SyncResponse;
 
         const cachedVersion = localStorage.getItem('extTemplates_version');
+        const cachedAt = parseInt(localStorage.getItem('extTemplates_cachedAt') ?? '0', 10);
+        const cacheAge = Date.now() - cachedAt;
+        const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
-        if (cachedVersion === version) {
+        if (cachedVersion === version && cacheAge < CACHE_TTL_MS) {
           // Cache hit — return stored data
           const raw = localStorage.getItem('extTemplates_cache');
           let cached: TemplateData[] | null = null;
@@ -165,13 +168,23 @@ export function useExternalTemplates(enabled: boolean): {
           (t) => t.status === undefined || t.status === null || t.status === 'PUBLISHED'
         );
 
+        // Deduplicate within remote dataset by name + additionalName
+        const seen = new Set<string>();
+        const deduped = published.filter((t) => {
+          const key = `${t.name.toLowerCase()}||${(t.additionalName ?? '').toLowerCase()}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
         // Map to TemplateData
-        const mapped = published.map(mapRemoteTemplate);
+        const mapped = deduped.map(mapRemoteTemplate);
 
         // Persist to localStorage
         try {
           localStorage.setItem('extTemplates_version', version);
           localStorage.setItem('extTemplates_cache', JSON.stringify(mapped));
+          localStorage.setItem('extTemplates_cachedAt', String(Date.now()));
         } catch {}
 
         if (!cancelled) {

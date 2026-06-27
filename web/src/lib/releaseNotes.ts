@@ -17,8 +17,9 @@ export const releaseNotes: ReleaseEntry[] = [
     ],
     changed: [],
     fixed: [
-      'External template picker no longer shows duplicates when a remote template has the same name as a local one',
+      'External template picker no longer shows duplicates when a remote template has the same name as a local one (local wins), or when the remote catalog itself contains duplicate entries',
       'Additional name now shown as a separate line in the template picker dropdown',
+      'External template cache now expires after 1 hour so edits to the remote catalog propagate without waiting for a version bump',
     ],
   },
   {
