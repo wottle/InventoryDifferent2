@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'External templates (experimental): enable a remote template catalog in Settings to load TemplatesDifferent templates alongside local ones in the Add Device form',
+    ],
     changed: [],
     fixed: [],
   },
