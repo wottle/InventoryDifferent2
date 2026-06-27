@@ -7,12 +7,11 @@ All notable changes to InventoryDifferent will be documented here.
 ### Added
 - API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running
 
----
-
-## [2.9.0] - 2026-06-27
-
-### Added
-- External templates (experimental): enable a remote template catalog in Settings to load TemplatesDifferent templates alongside local ones in the Add Device form
+### Fixed
+- External template picker now shows both local and remote templates even when they share a name, so you can apply either
+- External template picker no longer shows duplicate entries when the remote catalog itself contains duplicate records
+- Additional name now shown as a separate line in the template picker dropdown
+- External template cache now expires after 1 hour so edits to the remote catalog propagate without waiting for a version bump
 
 ---
 

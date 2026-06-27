@@ -604,12 +604,9 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         })
         : [];
 
-    const localNames = new Set(localAsTemplateData.map(t => t.name.toLowerCase()));
-    const deduplicatedExternal = filteredExternal.filter(t => !localNames.has(t.name.toLowerCase()));
-
     const allTemplates: TemplateData[] = [
         ...localAsTemplateData,
-        ...deduplicatedExternal,
+        ...filteredExternal,
     ].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 50);
 
     const showTemplateResults = normalizedTemplateQuery.length > 0;
