@@ -67,6 +67,9 @@ interface TemplatesPageResponse {
   total: number;
 }
 
+// Bump when cache schema or deduplication logic changes to force a client-side refetch.
+const CACHE_SCHEMA_VERSION = '2';
+
 function mapRemoteTemplate(remote: RemoteTemplate): TemplateData {
   return {
     id: 'ext_' + remote.id,
@@ -121,11 +124,12 @@ export function useExternalTemplates(enabled: boolean): {
         const { version } = (await syncRes.json()) as SyncResponse;
 
         const cachedVersion = localStorage.getItem('extTemplates_version');
+        const cachedSchema = localStorage.getItem('extTemplates_schema');
         const cachedAt = parseInt(localStorage.getItem('extTemplates_cachedAt') ?? '0', 10);
         const cacheAge = Date.now() - cachedAt;
         const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
-        if (cachedVersion === version && cacheAge < CACHE_TTL_MS) {
+        if (cachedVersion === version && cachedSchema === CACHE_SCHEMA_VERSION && cacheAge < CACHE_TTL_MS) {
           // Cache hit — return stored data
           const raw = localStorage.getItem('extTemplates_cache');
           let cached: TemplateData[] | null = null;
@@ -183,6 +187,7 @@ export function useExternalTemplates(enabled: boolean): {
         // Persist to localStorage
         try {
           localStorage.setItem('extTemplates_version', version);
+          localStorage.setItem('extTemplates_schema', CACHE_SCHEMA_VERSION);
           localStorage.setItem('extTemplates_cache', JSON.stringify(mapped));
           localStorage.setItem('extTemplates_cachedAt', String(Date.now()));
         } catch {}
