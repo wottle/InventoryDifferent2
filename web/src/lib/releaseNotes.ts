@@ -20,6 +20,15 @@ export const releaseNotes: ReleaseEntry[] = [
     version: '2.8.7',
     date: '2026-06-25',
     added: [
+      'External templates (experimental): enable a remote template catalog in Settings to load TemplatesDifferent templates alongside local ones in the Add Device form',
+    ],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '2.8.7',
+    date: '2026-06-25',
+    added: [
       'Device share sheet now offers a Storefront link (https://SHOP_DOMAIN/item/ID) for devices that are For Sale, Pending Sale, or Sold when SHOP_DOMAIN is configured',
       'Download button in the image lightbox lets you save the full-resolution image directly to disk',
     ],
