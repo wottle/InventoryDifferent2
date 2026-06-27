@@ -1,6 +1,6 @@
 name: Publish Docker Images
 
-# Builds and pushes multi-arch images to Docker Hub after tests pass on main or dev.
+# Builds and pushes multi-arch images to Docker Hub on push to main or dev.
 # Pushing to main publishes :latest; pushing to dev publishes :dev.
 # Trigger manually via workflow_dispatch to publish any custom tag.
 #
@@ -9,9 +9,7 @@ name: Publish Docker Images
 #
 
 on:
-  workflow_run:
-    workflows: [Tests]
-    types: [completed]
+  push:
     branches: [main, dev]
   workflow_dispatch:
     inputs:
@@ -28,9 +26,6 @@ jobs:
   publish:
     name: Build and Push ${{ matrix.name }}
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') &&
-      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.head_repository.full_name == github.repository)
 
     strategy:
       matrix:
@@ -53,8 +48,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -73,11 +66,11 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_TAG: ${{ inputs.image_tag }}
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "value=$INPUT_TAG" >> $GITHUB_OUTPUT
-          elif [ "$HEAD_BRANCH" = "dev" ]; then
+          elif [ "$GITHUB_REF_NAME" = "dev" ]; then
             echo "value=dev" >> $GITHUB_OUTPUT
           else
             echo "value=latest" >> $GITHUB_OUTPUT
