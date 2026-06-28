@@ -26,6 +26,7 @@ export interface TemplateData {
   categoryName?: string | null;
   categoryType?: string | null;
   isWifiEnabled?: boolean | null;
+  isSeeded?: boolean | null;
   rarity?: string | null;
   historicalNotes?: string | null;
   externalUrl?: string | null;

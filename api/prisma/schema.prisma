@@ -256,6 +256,7 @@ model Template {
   isPramBatteryRemoved Boolean?
   rarity          Rarity?
   historicalNotes String?   @db.Text
+  isSeeded        Boolean   @default(false)
 
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])

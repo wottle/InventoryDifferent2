@@ -29,6 +29,7 @@ struct Template: Identifiable, Decodable {
     let externalLinkLabel: String?
     let isWifiEnabled: Bool?
     let rarity: Rarity?
+    let isSeeded: Bool?
     let categoryId: Int
     let category: Category
 }

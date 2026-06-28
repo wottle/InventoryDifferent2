@@ -183,6 +183,7 @@ model Template {
   isWifiEnabled       Boolean?
   pramBatteryInstalled Boolean?
   rarity          Rarity?
+  isSeeded        Boolean   @default(false)
 
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])

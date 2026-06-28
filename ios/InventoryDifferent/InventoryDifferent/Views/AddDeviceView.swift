@@ -231,7 +231,8 @@ struct AddDeviceView: View {
     private var mergedTemplateResults: [TemplateResult] {
         if templateSearchText.isEmpty { return [] }
         let q = templateSearchText
-        let local = externalTemplates.isEmpty ? filteredTemplates.map { TemplateResult.local($0) } : []
+        let localSource = externalTemplates.isEmpty ? filteredTemplates : filteredTemplates.filter { !($0.isSeeded ?? false) }
+        let local = localSource.map { TemplateResult.local($0) }
         let remote = filteredExternalTemplates.map { TemplateResult.remote($0) }
         return (local + remote)
             .sorted { a, b in
@@ -701,6 +702,7 @@ struct AddDeviceView: View {
                     externalLinkLabel
                     isWifiEnabled
                     rarity
+                    isSeeded
                     categoryId
                     category {
                         id

@@ -593,6 +593,7 @@ async function main() {
                         pramBatteryInstalled: tpl.pramBatteryInstalled,
                         rarity: tpl.rarity as any,
                         categoryId: tpl.categoryId,
+                        isSeeded: true,
                     },
                     create: {
                         id: tpl.id,
@@ -616,6 +617,7 @@ async function main() {
                         pramBatteryInstalled: tpl.pramBatteryInstalled,
                         rarity: tpl.rarity as any,
                         categoryId: tpl.categoryId,
+                        isSeeded: true,
                     },
                 });
             }

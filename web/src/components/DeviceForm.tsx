@@ -154,6 +154,7 @@ const GET_TEMPLATES = gql`
       isWifiEnabled
       rarity
       historicalNotes
+      isSeeded
       categoryId
     }
   }
@@ -272,6 +273,7 @@ interface Template {
     pramBatteryExpiryDate?: string;
     rarity?: string;
     historicalNotes?: string;
+    isSeeded?: boolean;
     categoryId: number;
 }
 
@@ -615,7 +617,9 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         : [];
 
     const allTemplates: TemplateData[] = [
-        ...(externalTemplates.length > 0 ? [] : localAsTemplateData),
+        ...(externalTemplates.length > 0
+            ? localAsTemplateData.filter(t => !t.isSeeded)
+            : localAsTemplateData),
         ...filteredExternal,
     ].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 50);
 

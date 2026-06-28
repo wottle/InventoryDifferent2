@@ -255,6 +255,7 @@ export const typeDefs = gql`
     pramBatteryInstalled: Boolean
     rarity: Rarity
     historicalNotes: String
+    isSeeded: Boolean!
     categoryId: Int!
     category: Category!
   }

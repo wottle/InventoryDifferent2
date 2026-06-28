@@ -1,0 +1,1 @@
+ALTER TABLE "Template" ADD COLUMN "isSeeded" BOOLEAN NOT NULL DEFAULT false;
