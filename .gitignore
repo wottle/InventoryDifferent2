@@ -61,3 +61,4 @@ populate-historical-notes.js
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+.superpowers/

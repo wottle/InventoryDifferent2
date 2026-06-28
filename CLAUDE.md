@@ -604,3 +604,22 @@ Open `docs/architecture/flows.html` directly in a browser. No server required. C
 | `edges[].id` | Unique identifier used in step `edges` arrays |
 | `flows[].steps[].packages` | Package IDs active during this step (highlighted on diagram) |
 | `flows[].steps[].edges` | Edge IDs active during this step (animated arrows on diagram) |
+
+---
+
+## Related Project: TemplatesDifferent
+
+A standalone Cloudflare-hosted template catalog for vintage Apple devices. Integration is live: when enabled in Settings, the remote catalog appears in the Add Device template picker on both iOS and web. Seeded local templates are hidden when the remote catalog is loaded; user-created local templates always appear.
+
+**Full documentation:** `/Users/wottle/Documents/Development/TemplatesDifferent/CLAUDE.md`
+
+Key facts for integration:
+- **API base:** `https://api.templates.inventorydifferent.com`
+- **Auth:** `POST /auth/login` with `{ password }` → `{ accessToken }` (1h TTL)
+- **Read templates:** `GET /templates?sort=name|year|rarity&cursor=&limit=` → `{ templates[], nextCursor, total }` — public, no auth required
+- **Get single template:** `GET /templates/:id` → full object merged with parent, includes `variants[]` and `images[]`
+- **Sync detection:** `GET /sync` → `{ version }` — poll cheaply; only pull full catalog on version change
+- **Field names match exactly** — all fields on InvDifferent2's local `Template` model exist on the remote with the same camelCase names; remote adds more fields (codename, gestaltId, ramSlots, ports, etc.)
+- **Integration hook:** `applyTemplate()` in `web/src/components/DeviceForm.tsx` and `applyExternalTemplate()` in `AddDeviceView.swift` handle applying remote template data
+- **Instance-specific fields never come from remote:** serialNumber, condition, dateAcquired, location, notes, maintenanceTasks, etc. stay local
+- **isSeeded flag:** local templates created by the seed pipeline have `isSeeded: true`; user-created templates have `isSeeded: false` (default)
