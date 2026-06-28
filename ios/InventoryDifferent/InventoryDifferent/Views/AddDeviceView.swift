@@ -795,6 +795,7 @@ struct AddDeviceView: View {
             osEntries = parts.enumerated().map { DeviceOSEntry(id: -(($0.offset) + 1), value: $0.element, sortOrder: $0.offset) }
         }
         isWifiEnabled = (template.isWifiEnabled ?? 0) != 0
+        historicalNotes = template.historicalNotes ?? ""
         if let r = template.rarity, let rarityVal = Rarity(rawValue: r) { rarity = rarityVal }
         if let remoteCategory = template.category {
             if let match = categories.first(where: { $0.name.lowercased() == remoteCategory.name.lowercased() }) {

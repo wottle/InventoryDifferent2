@@ -38,6 +38,7 @@ struct ExternalTemplate: Codable, Identifiable {
     let externalLinkLabel: String?
     let isWifiEnabled: Int?
     let rarity: String?
+    let historicalNotes: String?
     let categoryId: Int?
     let category: ExternalTemplateCategory?
     let images: [ExternalTemplateImage]?
@@ -57,7 +58,7 @@ actor ExternalTemplateService {
     static let shared = ExternalTemplateService()
 
     private let apiBaseURL = "https://api.templates.inventorydifferent.com"
-    private let cacheSchemaVersion = "5"
+    private let cacheSchemaVersion = "6"
     private let cacheVersionKey   = "extTemplates_version"
     private let cacheSchemaKey    = "extTemplates_schema"
     private let cacheDateKey      = "extTemplates_cachedAt"
