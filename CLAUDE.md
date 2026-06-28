@@ -458,14 +458,15 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Device create/edit** (`/devices/new`, `/devices/[id]/edit`):
 - Full form covering all device fields
-- Template application to pre-fill specs
+- Template picker: merged local + remote results in a single ranked list (exact match → prefix → contains, then alphabetical within tier, capped at 8); seeded local templates hidden when remote catalog is active; user-created local templates always shown
+- Applying a remote template auto-imports its thumbnail image(s) as the device thumbnail (LIGHT/DARK modes respected; single image → BOTH mode)
 - Conditional sales section for FOR_SALE status
 
 **Financials** (`/financials`): total spent, total received, net cash, estimated value owned, net position, total profit; interactive cumulative chart over time; transaction list with running totals. TransactionType enum: ACQUISITION | SALE | DONATION | MAINTENANCE | REPAIR_RETURN. IN_REPAIR and RETURNED are excluded from estimatedValueOwned. RETURNED devices with soldPrice generate a REPAIR_RETURN transaction (labeled "Repair Fee").
 
 **Categories** (`/categories`): view, create, edit categories with type and sort order
 
-**Templates** (`/templates`): view, create, edit, delete templates; one-click device creation from template
+**Templates** (`/templates`): view, create, edit, delete templates; one-click device creation from template; when `EXTERNAL_TEMPLATES_ENABLED` is on, seeded templates are hidden (count banner shown) so only user-created templates appear
 
 **Custom Fields** (`/customFields`): create, edit, delete fields; toggle public/private; set sort order
 
@@ -501,7 +502,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Image management**: gallery with full-size viewer; set thumbnail/shop/listing flags; delete with confirmation. Full-screen viewer supports: pinch-to-zoom (up to 6×), double-tap to zoom in/reset (works on image and black letterbox area), bounded pan (can't drag image off-screen), swipe on image at 1× to navigate prev/next, swipe past the edge boundary while zoomed to navigate prev/next, zoom resets to fit-to-screen when switching images
 
-**Add/Edit device**: full form with all fields, template selection, category picker, custom field values
+**Add/Edit device**: full form with all fields, template selection, category picker, custom field values; template picker merges local and remote results in a single ranked list when the remote catalog is enabled; seeded local templates hidden when remote catalog active
 
 **Financials**: summary cards (6 metrics), interactive cumulative line chart (landscape), transaction list
 
@@ -609,17 +610,20 @@ Open `docs/architecture/flows.html` directly in a browser. No server required. C
 
 ## Related Project: TemplatesDifferent
 
-A standalone Cloudflare-hosted template catalog for vintage Apple devices. Integration is live: when enabled in Settings, the remote catalog appears in the Add Device template picker on both iOS and web. Seeded local templates are hidden when the remote catalog is loaded; user-created local templates always appear.
+A standalone Cloudflare-hosted template catalog for vintage Apple devices. Integration is live: when `EXTERNAL_TEMPLATES_ENABLED=true` (server default), the remote catalog is fetched and merged into the Add Device template picker on both iOS and web. Seeded local templates are hidden when the remote catalog is loaded; user-created local templates always appear.
 
 **Full documentation:** `/Users/wottle/Documents/Development/TemplatesDifferent/CLAUDE.md`
 
 Key facts for integration:
 - **API base:** `https://api.templates.inventorydifferent.com`
-- **Auth:** `POST /auth/login` with `{ password }` → `{ accessToken }` (1h TTL)
+- **Auth:** `POST /auth/login` with `{ password }` → `{ accessToken }` (1h TTL) — only needed for write operations; reads are public
 - **Read templates:** `GET /templates?sort=name|year|rarity&cursor=&limit=` → `{ templates[], nextCursor, total }` — public, no auth required
 - **Get single template:** `GET /templates/:id` → full object merged with parent, includes `variants[]` and `images[]`
 - **Sync detection:** `GET /sync` → `{ version }` — poll cheaply; only pull full catalog on version change
+- **Enabled flag delivery:** `externalTemplatesEnabled: bool` is returned by the local API's `GET /auth/status` endpoint; both iOS (`AuthService.shared.externalTemplatesEnabled`) and web (`useAuth().externalTemplatesEnabled`) read it from there on startup — no extra round-trip needed
 - **Field names match exactly** — all fields on InvDifferent2's local `Template` model exist on the remote with the same camelCase names; remote adds more fields (codename, gestaltId, ramSlots, ports, etc.)
-- **Integration hook:** `applyTemplate()` in `web/src/components/DeviceForm.tsx` and `applyExternalTemplate()` in `AddDeviceView.swift` handle applying remote template data
-- **Instance-specific fields never come from remote:** serialNumber, condition, dateAcquired, location, notes, maintenanceTasks, etc. stay local
-- **isSeeded flag:** local templates created by the seed pipeline have `isSeeded: true`; user-created templates have `isSeeded: false` (default)
+- **Integration hook:** `applyTemplateData()` in `web/src/components/DeviceForm.tsx` and `applyExternalTemplate()` in `AddDeviceView.swift` handle applying remote template data
+- **Image auto-import (web only):** when a remote template is applied on the create-device form, its thumbnail image(s) are fetched from the remote URL and uploaded as the new device's thumbnail; LIGHT/DARK modes are preserved; a single image gets `thumbnailMode: BOTH`; iOS does not yet do this
+- **Merged picker sort:** results are ranked exact match (0) → prefix (1) → contains (2), then alphabetical within tier, capped at 8; the list interleaves local user-created and remote entries
+- **Instance-specific fields never come from remote:** serialNumber, condition, dateAcquired, location, device notes (the `Note` model), maintenanceTasks, etc. stay local. `historicalNotes` (the free-text history field) IS copied from remote templates on web; iOS does not yet copy it.
+- **isSeeded flag:** local templates created by the seed pipeline have `isSeeded: true`; user-created templates have `isSeeded: false` (default); seeded templates are hidden from the `/templates` admin page and the Add Device picker when the remote catalog is active
