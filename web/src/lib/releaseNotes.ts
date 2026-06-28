@@ -1,4 +1,4 @@
-export const APP_VERSION = '2.9.0';
+export const APP_VERSION = '2.9.1';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '2.9.1',
+    date: '2026-06-28',
     added: [
       'API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running',
       'iOS and web: when the remote template catalog is loaded, seeded (built-in) local templates are hidden to avoid duplicates; user-created local templates always appear regardless',
