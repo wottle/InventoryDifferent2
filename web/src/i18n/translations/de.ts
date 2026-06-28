@@ -903,6 +903,7 @@ export const de: Translations = {
       externalTemplatesDescription: "Zeigt TemplatesDifferent-Vorlagen neben Ihren lokalen Vorlagen im Gerät-hinzufügen-Formular an.",
       externalTemplatesEnabled: "Externer Katalog aktiviert",
       externalTemplatesDisabled: "Externer Katalog deaktiviert",
+      externalTemplatesServerNote: "Wird über EXTERNAL_TEMPLATES_ENABLED auf dem Server gesteuert.",
     },
     slideshow: {
       settings: "Einstellungen",

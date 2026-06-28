@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { BarcodeScannerModal } from "./BarcodeScannerModal";
 import { useT } from "../i18n/context";
 import { useExternalTemplates, type TemplateData } from '../lib/useExternalTemplates';
+import { useAuth } from '../lib/auth-context';
 import { API_BASE_URL } from '../lib/config';
 
 const GET_CUSTOM_FIELDS = gql`
@@ -475,9 +476,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
     const [templateQuery, setTemplateQuery] = useState<string>("");
     const [pendingTemplateImages, setPendingTemplateImages] = useState<{ url: string; mode: 'LIGHT' | 'DARK' | null }[]>([]);
 
-    const [externalEnabled] = useState(() =>
-        typeof window !== 'undefined' && localStorage.getItem('externalTemplatesEnabled') === 'true'
-    );
+    const { externalTemplatesEnabled: externalEnabled } = useAuth();
     const { templates: externalTemplates, loading: extLoading } = useExternalTemplates(externalEnabled);
 
     const [errors, setErrors] = useState<Record<string, string>>({});

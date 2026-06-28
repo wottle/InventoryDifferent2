@@ -15,6 +15,7 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [
       'API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running',
       'iOS and web: when the remote template catalog is loaded, seeded (built-in) local templates are hidden to avoid duplicates; user-created local templates always appear regardless',
+      'External templates on/off is now a server setting (EXTERNAL_TEMPLATES_ENABLED env var, default on); iOS reads it from the API on startup alongside auth status; the web Settings toggle is replaced by a read-only status display',
     ],
     changed: [
       '"Original Box" status is now derived from the accessories list (same as iOS) rather than a separate checkbox; add or remove the "Original Box" accessory in the device edit form to set it',

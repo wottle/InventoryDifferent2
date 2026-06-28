@@ -181,7 +181,9 @@ struct AddDeviceView: View {
                 await loadCategories()
                 await loadTemplates()
                 await loadLocations()
-                externalTemplates = await ExternalTemplateService.shared.loadTemplates()
+                if AuthService.shared.externalTemplatesEnabled {
+                    externalTemplates = await ExternalTemplateService.shared.loadTemplates()
+                }
                 // Auto-apply matched template from barcode decoder (before other prefills
                 // so that prefill values take precedence over template defaults)
                 if let id = prefillTemplateId, let template = templates.first(where: { $0.id == id }) {

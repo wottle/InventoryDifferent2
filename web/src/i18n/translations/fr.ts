@@ -903,6 +903,7 @@ export const fr: Translations = {
       externalTemplatesDescription: "Affiche les modèles TemplatesDifferent avec vos modèles locaux dans le formulaire d'ajout d'appareil.",
       externalTemplatesEnabled: "Catalogue distant activé",
       externalTemplatesDisabled: "Catalogue distant désactivé",
+      externalTemplatesServerNote: "Contrôlé par EXTERNAL_TEMPLATES_ENABLED sur le serveur.",
     },
     slideshow: {
       settings: "Paramètres",
