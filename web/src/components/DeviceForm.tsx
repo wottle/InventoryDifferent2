@@ -615,7 +615,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         : [];
 
     const allTemplates: TemplateData[] = [
-        ...localAsTemplateData,
+        ...(externalTemplates.length > 0 ? [] : localAsTemplateData),
         ...filteredExternal,
     ].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 50);
 

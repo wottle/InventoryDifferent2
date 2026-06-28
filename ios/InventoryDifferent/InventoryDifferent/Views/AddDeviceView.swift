@@ -231,7 +231,7 @@ struct AddDeviceView: View {
     private var mergedTemplateResults: [TemplateResult] {
         if templateSearchText.isEmpty { return [] }
         let q = templateSearchText
-        let local = filteredTemplates.map { TemplateResult.local($0) }
+        let local = externalTemplates.isEmpty ? filteredTemplates.map { TemplateResult.local($0) } : []
         let remote = filteredExternalTemplates.map { TemplateResult.remote($0) }
         return (local + remote)
             .sorted { a, b in
