@@ -1548,19 +1548,43 @@ export const resolvers = {
         },
         createImage: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
-            const { deviceId, path: imagePath, caption, isThumbnail, isShopImage } = args.input;
+            const { deviceId, path: imagePath, caption, isThumbnail, thumbnailMode: inputThumbnailMode, isShopImage } = args.input;
 
             // Derive mediaType from file extension
             const videoExts = new Set(['.mp4', '.mov', '.webm', '.avi', '.m4v']);
             const fileExt = path.posix.extname(imagePath).toLowerCase();
             const mediaType: 'IMAGE' | 'VIDEO' = videoExts.has(fileExt) ? 'VIDEO' : 'IMAGE';
 
-            // If this is an image being set as thumbnail, unset other thumbnails
+            // If this is an image being set as thumbnail, maintain valid thumbnail state
             if (mediaType === 'IMAGE' && isThumbnail) {
-                await context.prisma.image.updateMany({
-                    where: { deviceId, isThumbnail: true },
-                    data: { isThumbnail: false },
-                });
+                if (inputThumbnailMode === 'LIGHT' || inputThumbnailMode === 'DARK') {
+                    // Paired mode: apply the same promotion/replacement logic as updateImage
+                    const existingThumbs = await (context.prisma as any).image.findMany({
+                        where: { deviceId, isThumbnail: true },
+                    });
+                    const bothThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'BOTH');
+                    const lightThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'LIGHT');
+                    const darkThumb = existingThumbs.find((t: any) => t.thumbnailMode === 'DARK');
+                    if (inputThumbnailMode === 'LIGHT') {
+                        if (bothThumb) {
+                            await (context.prisma as any).image.update({ where: { id: bothThumb.id }, data: { thumbnailMode: 'DARK' } });
+                        } else if (lightThumb) {
+                            await context.prisma.image.update({ where: { id: lightThumb.id }, data: { isThumbnail: false } });
+                        }
+                    } else {
+                        if (bothThumb) {
+                            await (context.prisma as any).image.update({ where: { id: bothThumb.id }, data: { thumbnailMode: 'LIGHT' } });
+                        } else if (darkThumb) {
+                            await context.prisma.image.update({ where: { id: darkThumb.id }, data: { isThumbnail: false } });
+                        }
+                    }
+                } else {
+                    // BOTH mode (or unspecified): replace all existing thumbnails
+                    await context.prisma.image.updateMany({
+                        where: { deviceId, isThumbnail: true },
+                        data: { isThumbnail: false },
+                    });
+                }
             }
 
             let dateTaken: Date | undefined;
@@ -1623,7 +1647,7 @@ export const resolvers = {
                     ...(dateTaken ? { dateTaken } : {}),
                     caption: caption || null,
                     isThumbnail: shouldBeThumbnail,
-                    thumbnailMode: 'BOTH',
+                    thumbnailMode: (inputThumbnailMode as any) ?? 'BOTH',
                     isShopImage: (isShopImage && mediaType === 'IMAGE') || false,
                     mediaType,
                 },
