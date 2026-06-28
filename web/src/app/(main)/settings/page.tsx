@@ -31,7 +31,6 @@ export default function SettingsPage() {
   const [guestAccess, setGuestAccess] = useState(true);
   const [guestAccessSaved, setGuestAccessSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
   useEffect(() => {
     fetch(`${API_BASE_URL}/generate-image/config`)
       .then(r => r.json())
