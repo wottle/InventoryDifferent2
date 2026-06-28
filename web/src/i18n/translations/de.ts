@@ -689,6 +689,7 @@ export const de: Translations = {
       deleteConfirm: "Diese Vorlage löschen?",
       linkLabel: "Link-Bezeichnung",
       linkLabelPlaceholder: "z. B. EveryMac",
+      seededHiddenNote: "{count} integrierte Vorlagen sind ausgeblendet, da der Remote-Katalog aktiviert ist. Setze EXTERNAL_TEMPLATES_ENABLED=false auf dem Server, um nur lokale Vorlagen zu verwenden.",
     },
     backup: {
       title: "Geräte exportieren",

@@ -174,6 +174,7 @@ acme:
 | `ANTHROPIC_API_KEY` | Enables the AI chat assistant |
 | `MCP_TOKEN` | Optional token for the MCP server (token required for auth MCP server from AI agent) |
 | `CONTACT_EMAIL` | Email shown on the storefront contact button (default: `store@example.com`) |
+| `EXTERNAL_TEMPLATES_ENABLED` | Controls the remote template catalog (default: `true`). Set to `false` to use local templates only — see [Template Catalog](#template-catalog) below. |
 
 ### Traefik / Domain (prod deployment only)
 
@@ -437,6 +438,26 @@ npm run build
 In Claude Code, run `/mcp` — you should see `inventory` listed with its tools. Then try:
 
 > "List all my computers" — should return all devices in your collection.
+
+---
+
+## Template Catalog
+
+By default, the Add Device form connects to the remote [TemplatesDifferent](https://api.templates.inventorydifferent.com) catalog — a community-maintained database of vintage Apple hardware specs, images, and estimated values. When enabled:
+
+- Remote template results are merged with your local user-created templates in a single ranked list
+- Seeded (built-in) local templates are hidden from the `/templates` admin page to avoid duplication
+- The first launch fetches and caches the full catalog locally; subsequent launches use the cache (refreshed hourly or on catalog version change)
+
+**To disable the remote catalog** and use only local templates, set:
+
+```env
+EXTERNAL_TEMPLATES_ENABLED=false
+```
+
+When disabled, all local templates (including seeded ones) appear on the `/templates` admin page, and no remote catalog is fetched.
+
+**User-created templates** (ones you add yourself) are always visible regardless of the setting — they are never hidden by the remote catalog.
 
 ---
 

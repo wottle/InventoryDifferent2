@@ -680,6 +680,7 @@ export type Translations = {
       deleteConfirm: string;
       linkLabel: string;
       linkLabelPlaceholder: string;
+      seededHiddenNote: string;
     };
     backup: {
       title: string;
@@ -1715,6 +1716,7 @@ export const en: Translations = {
       deleteConfirm: "Delete this template?",
       linkLabel: "Link Label",
       linkLabelPlaceholder: "e.g. EveryMac",
+      seededHiddenNote: "{count} built-in templates are hidden because the remote catalog is enabled. Set EXTERNAL_TEMPLATES_ENABLED=false on the server to use local templates only.",
     },
     backup: {
       title: "Export Devices",
