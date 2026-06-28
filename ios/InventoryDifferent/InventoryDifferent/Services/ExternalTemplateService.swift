@@ -58,7 +58,7 @@ actor ExternalTemplateService {
     static let shared = ExternalTemplateService()
 
     private let apiBaseURL = "https://api.templates.inventorydifferent.com"
-    private let cacheSchemaVersion = "6"
+    private let cacheSchemaVersion = "7"
     private let cacheVersionKey   = "extTemplates_version"
     private let cacheSchemaKey    = "extTemplates_schema"
     private let cacheDateKey      = "extTemplates_cachedAt"
