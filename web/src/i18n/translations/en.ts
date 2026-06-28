@@ -680,6 +680,7 @@ export type Translations = {
       deleteConfirm: string;
       linkLabel: string;
       linkLabelPlaceholder: string;
+      seededHiddenNote: string;
     };
     backup: {
       title: string;
@@ -894,6 +895,7 @@ export type Translations = {
       externalTemplatesDescription: string;
       externalTemplatesEnabled: string;
       externalTemplatesDisabled: string;
+      externalTemplatesServerNote: string;
     };
     slideshow: {
       settings: string;
@@ -1714,6 +1716,7 @@ export const en: Translations = {
       deleteConfirm: "Delete this template?",
       linkLabel: "Link Label",
       linkLabelPlaceholder: "e.g. EveryMac",
+      seededHiddenNote: "{count} built-in templates are hidden because the remote catalog is enabled. Set EXTERNAL_TEMPLATES_ENABLED=false on the server to use local templates only.",
     },
     backup: {
       title: "Export Devices",
@@ -1928,6 +1931,7 @@ export const en: Translations = {
       externalTemplatesDescription: "Shows TemplatesDifferent templates alongside your local ones in the Add Device form.",
       externalTemplatesEnabled: "Remote catalog enabled",
       externalTemplatesDisabled: "Remote catalog disabled",
+      externalTemplatesServerNote: "Controlled by EXTERNAL_TEMPLATES_ENABLED on the server.",
     },
     slideshow: {
       settings: "Settings",

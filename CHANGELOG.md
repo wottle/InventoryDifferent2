@@ -6,12 +6,14 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Added
 - API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running
+- iOS: remote (TemplatesDifferent) templates now appear alongside local templates in the Add Device form, with a cloud badge; applying one auto-imports the template thumbnail image(s) as the device thumbnail
 
 ### Changed
 - "Original Box" status is now derived from the accessories list (same as iOS) rather than a separate checkbox; add or remove the "Original Box" accessory in the device edit form to set it
 - Applying a remote template to a new device now automatically imports the template's thumbnail image(s) as the device thumbnail (light/dark variants respected)
 
 ### Fixed
+- Template image import now correctly assigns LIGHT and DARK thumbnail modes when a remote template has both variants; previously createImage ignored the requested thumbnailMode and always stored BOTH
 - External template picker now shows both local and remote templates even when they share a name, so you can apply either
 - External template picker no longer shows duplicate entries when the remote catalog itself contains duplicate records
 - Additional name now shown as a separate line in the template picker dropdown

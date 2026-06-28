@@ -296,11 +296,13 @@ export async function createApp(prismaOverride?: PrismaClient) {
         try {
             const setting = await prisma.systemSetting.findUnique({ where: { key: 'guestAccessEnabled' } });
             const guestAccessEnabled = setting?.value !== 'false';
+            const externalTemplatesEnabled = process.env.EXTERNAL_TEMPLATES_ENABLED !== 'false';
             return res.json({
                 authenticated: req.isAuthenticated ?? false,
                 authRequired: isAuthConfigured(),
                 usernameRequired: !!getAdminUsername(),
                 guestAccessEnabled,
+                externalTemplatesEnabled,
             });
         } catch {
             return res.json({
@@ -308,6 +310,7 @@ export async function createApp(prismaOverride?: PrismaClient) {
                 authRequired: isAuthConfigured(),
                 usernameRequired: !!getAdminUsername(),
                 guestAccessEnabled: true,
+                externalTemplatesEnabled: process.env.EXTERNAL_TEMPLATES_ENABLED !== 'false',
             });
         }
     });

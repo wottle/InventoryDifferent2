@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import Link from "next/link";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useAuth } from "../../../lib/auth-context";
 
 const GET_TEMPLATES = gql`
   query GetTemplates {
@@ -30,6 +31,7 @@ const GET_TEMPLATES = gql`
       nativeResolution
       rarity
       historicalNotes
+      isSeeded
       categoryId
       category {
         id
@@ -146,6 +148,7 @@ type Template = {
   nativeResolution?: string | null;
   rarity?: string | null;
   historicalNotes?: string | null;
+  isSeeded?: boolean | null;
   categoryId: number;
   category?: Category;
 };
@@ -198,6 +201,7 @@ const emptyFormState: TemplateFormState = {
 
 export default function TemplatesPage() {
   const t = useT();
+  const { externalTemplatesEnabled } = useAuth();
   const { data, loading, error, refetch } = useQuery(GET_TEMPLATES, {
     fetchPolicy: "cache-and-network",
   });
@@ -206,7 +210,12 @@ export default function TemplatesPage() {
   const [updateTemplate, { loading: updating }] = useMutation(UPDATE_TEMPLATE);
   const [deleteTemplate, { loading: deleting }] = useMutation(DELETE_TEMPLATE);
 
-  const templates: Template[] = useMemo(() => data?.templates ?? [], [data?.templates]);
+  const allTemplates: Template[] = useMemo(() => data?.templates ?? [], [data?.templates]);
+  const templates: Template[] = useMemo(
+    () => externalTemplatesEnabled ? allTemplates.filter(t => !t.isSeeded) : allTemplates,
+    [allTemplates, externalTemplatesEnabled]
+  );
+  const hiddenSeededCount = allTemplates.length - templates.length;
   const categories: Category[] = useMemo(() => data?.categories ?? [], [data?.categories]);
 
   const categoryTypeById = useMemo(() => {
@@ -366,6 +375,12 @@ export default function TemplatesPage() {
         </div>
       )}
       {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
+
+      {!loading && !error && hiddenSeededCount > 0 && (
+        <div className="mb-4 rounded border border-[var(--border)] bg-[var(--muted)] px-4 py-3 text-sm text-[var(--muted-foreground)]">
+          {t.pages.templates.seededHiddenNote.replace('{count}', String(hiddenSeededCount))}
+        </div>
+      )}
 
       {!loading && !error && (
         <section className="overflow-hidden rounded border border-[var(--border)] card-retro">

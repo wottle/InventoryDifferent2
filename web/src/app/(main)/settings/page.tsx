@@ -19,7 +19,7 @@ type ImageModel = (typeof MODELS)[number];
 export default function SettingsPage() {
   const t = useT();
   const ts = t.pages.settings;
-  const { isAuthenticated, isLoading: authLoading, getAccessToken, authRequired } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, getAccessToken, authRequired, externalTemplatesEnabled } = useAuth();
   const [setSystemSetting] = useMutation(SET_SYSTEM_SETTING);
 
   const [openaiEnabled, setOpenaiEnabled] = useState<boolean | null>(null);
@@ -31,9 +31,6 @@ export default function SettingsPage() {
   const [guestAccess, setGuestAccess] = useState(true);
   const [guestAccessSaved, setGuestAccessSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [externalTemplatesEnabled, setExternalTemplatesEnabled] = useState<boolean>(false);
-  const [externalTemplatesSaved, setExternalTemplatesSaved] = useState(false);
-
   useEffect(() => {
     fetch(`${API_BASE_URL}/generate-image/config`)
       .then(r => r.json())
@@ -56,18 +53,6 @@ export default function SettingsPage() {
       })
       .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('externalTemplatesEnabled');
-    setExternalTemplatesEnabled(stored === 'true');
-  }, []);
-
-  const saveExternalTemplates = (enabled: boolean) => {
-    setExternalTemplatesEnabled(enabled);
-    localStorage.setItem('externalTemplatesEnabled', enabled ? 'true' : 'false');
-    setExternalTemplatesSaved(true);
-    setTimeout(() => setExternalTemplatesSaved(false), 2000);
-  };
 
   const savePrompt = async () => {
     await setSystemSetting({ variables: { key: 'imagePrompt', value: prompt } });
@@ -180,11 +165,8 @@ export default function SettingsPage() {
 
       {/* External Templates */}
       <section className="space-y-4">
-        <h2 className="text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/30 pb-2 flex items-center gap-2">
+        <h2 className="text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/30 pb-2">
           {ts.externalTemplates}
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 normal-case tracking-normal">
-            {ts.externalTemplatesExperimental}
-          </span>
         </h2>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -193,25 +175,12 @@ export default function SettingsPage() {
             <p className="text-xs mt-1 font-medium" style={{ color: externalTemplatesEnabled ? 'var(--color-primary, #2563eb)' : 'var(--color-on-surface-variant, #6b7280)' }}>
               {externalTemplatesEnabled ? ts.externalTemplatesEnabled : ts.externalTemplatesDisabled}
             </p>
+            <p className="text-xs text-on-surface-variant mt-1">{ts.externalTemplatesServerNote}</p>
           </div>
-          <button
-            role="switch"
-            aria-checked={externalTemplatesEnabled}
-            onClick={() => saveExternalTemplates(!externalTemplatesEnabled)}
-            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 ${
-              externalTemplatesEnabled ? 'bg-primary' : 'bg-outline-variant'
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform ${
-                externalTemplatesEnabled ? 'translate-x-5' : 'translate-x-0'
-              }`}
-            />
-          </button>
+          <div className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent ${externalTemplatesEnabled ? 'bg-primary' : 'bg-outline-variant'}`}>
+            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform ${externalTemplatesEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+          </div>
         </div>
-        {externalTemplatesSaved && (
-          <p className="text-xs text-primary font-medium">{ts.saved}</p>
-        )}
       </section>
 
       {authRequired && (

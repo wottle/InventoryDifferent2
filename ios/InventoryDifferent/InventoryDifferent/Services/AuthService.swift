@@ -23,6 +23,7 @@ class AuthService: ObservableObject {
     @Published var authRequired: Bool = true
     @Published var usernameRequired: Bool = false
     @Published var isLoading: Bool = true
+    @Published var externalTemplatesEnabled: Bool = true
 
     // Token refresh buffer (5 minutes before expiry)
     private let refreshBufferSeconds: TimeInterval = 5 * 60
@@ -50,6 +51,7 @@ class AuthService: ObservableObject {
             if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 authRequired = json["authRequired"] as? Bool ?? true
                 usernameRequired = json["usernameRequired"] as? Bool ?? false
+                externalTemplatesEnabled = json["externalTemplatesEnabled"] as? Bool ?? true
 
                 if !authRequired {
                     // Auth not required, everyone is authenticated

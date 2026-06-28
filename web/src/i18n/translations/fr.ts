@@ -689,6 +689,7 @@ export const fr: Translations = {
       deleteConfirm: "Supprimer ce modèle ?",
       linkLabel: "Libellé du lien",
       linkLabelPlaceholder: "ex. EveryMac",
+      seededHiddenNote: "{count} modèles intégrés sont masqués car le catalogue distant est activé. Définissez EXTERNAL_TEMPLATES_ENABLED=false sur le serveur pour utiliser uniquement les modèles locaux.",
     },
     backup: {
       title: "Exporter les appareils",
@@ -903,6 +904,7 @@ export const fr: Translations = {
       externalTemplatesDescription: "Affiche les modèles TemplatesDifferent avec vos modèles locaux dans le formulaire d'ajout d'appareil.",
       externalTemplatesEnabled: "Catalogue distant activé",
       externalTemplatesDisabled: "Catalogue distant désactivé",
+      externalTemplatesServerNote: "Contrôlé par EXTERNAL_TEMPLATES_ENABLED sur le serveur.",
     },
     slideshow: {
       settings: "Paramètres",

@@ -9,6 +9,7 @@ interface AuthContextType {
     authRequired: boolean;
     usernameRequired: boolean;
     guestAccessEnabled: boolean;
+    externalTemplatesEnabled: boolean;
     username: string | null;
     login: (username: string | null, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
@@ -32,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [authRequired, setAuthRequired] = useState(true);
     const [usernameRequired, setUsernameRequired] = useState(false);
     const [guestAccessEnabled, setGuestAccessEnabled] = useState(true);
+    const [externalTemplatesEnabled, setExternalTemplatesEnabled] = useState(true);
     const [username, setUsername] = useState<string | null>(() =>
         typeof window !== 'undefined' ? localStorage.getItem(USERNAME_KEY) : null
     );
@@ -157,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUsernameRequired(statusData.usernameRequired ?? false);
                 const guestAllowed = statusData.guestAccessEnabled ?? true;
                 setGuestAccessEnabled(guestAllowed);
+                setExternalTemplatesEnabled(statusData.externalTemplatesEnabled ?? true);
 
                 // If auth is not required, everyone is authenticated
                 if (!statusData.authRequired) {
@@ -256,6 +259,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             authRequired,
             usernameRequired,
             guestAccessEnabled,
+            externalTemplatesEnabled,
             username,
             login,
             logout,

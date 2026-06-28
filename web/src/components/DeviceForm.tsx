@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { BarcodeScannerModal } from "./BarcodeScannerModal";
 import { useT } from "../i18n/context";
 import { useExternalTemplates, type TemplateData } from '../lib/useExternalTemplates';
+import { useAuth } from '../lib/auth-context';
 import { API_BASE_URL } from '../lib/config';
 
 const GET_CUSTOM_FIELDS = gql`
@@ -154,6 +155,7 @@ const GET_TEMPLATES = gql`
       isWifiEnabled
       rarity
       historicalNotes
+      isSeeded
       categoryId
     }
   }
@@ -272,6 +274,7 @@ interface Template {
     pramBatteryExpiryDate?: string;
     rarity?: string;
     historicalNotes?: string;
+    isSeeded?: boolean;
     categoryId: number;
 }
 
@@ -473,9 +476,7 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
     const [templateQuery, setTemplateQuery] = useState<string>("");
     const [pendingTemplateImages, setPendingTemplateImages] = useState<{ url: string; mode: 'LIGHT' | 'DARK' | null }[]>([]);
 
-    const [externalEnabled] = useState(() =>
-        typeof window !== 'undefined' && localStorage.getItem('externalTemplatesEnabled') === 'true'
-    );
+    const { externalTemplatesEnabled: externalEnabled } = useAuth();
     const { templates: externalTemplates, loading: extLoading } = useExternalTemplates(externalEnabled);
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -615,7 +616,9 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
         : [];
 
     const allTemplates: TemplateData[] = [
-        ...localAsTemplateData,
+        ...(externalTemplates.length > 0
+            ? localAsTemplateData.filter(t => !t.isSeeded)
+            : localAsTemplateData),
         ...filteredExternal,
     ].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 50);
 
@@ -682,7 +685,17 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
             if (typeof tpl.nativeResolution === 'string') next.nativeResolution = tpl.nativeResolution;
             // Don't set storage/operatingSystem on formData — they're handled via storageEntries/osEntries below
 
-            if (typeof tpl.categoryId === 'number') next.categoryId = tpl.categoryId;
+            if (tpl.source === 'remote' && tpl.categoryName) {
+                const byName = categories.find(c => c.name.toLowerCase() === tpl.categoryName!.toLowerCase());
+                if (byName) {
+                    next.categoryId = byName.id;
+                } else if (tpl.categoryType) {
+                    const byType = categories.find(c => c.type === tpl.categoryType);
+                    if (byType) next.categoryId = byType.id;
+                }
+            } else if (typeof tpl.categoryId === 'number') {
+                next.categoryId = tpl.categoryId;
+            }
             if (typeof tpl.releaseYear === 'number') next.releaseYear = tpl.releaseYear;
 
             if (typeof tpl.estimatedValue === 'number') next.estimatedValue = tpl.estimatedValue.toString();
@@ -1075,12 +1088,15 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                                 setTemplateQuery("");
                                                             }}
                                                         >
-                                                            <div className="font-medium">
+                                                            <div className="font-medium flex items-center gap-1.5">
                                                                 {tpl.name}
                                                                 {tpl.source === 'remote' && (
-                                                                    <span className="ml-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                                                                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                                                                         {t.form.externalTemplateBadge}
                                                                     </span>
+                                                                )}
+                                                                {tpl.images && tpl.images.length > 0 && (
+                                                                    <span title="Has thumbnail image(s)">🖼</span>
                                                                 )}
                                                             </div>
                                                             {tpl.additionalName && <div className="text-xs text-[var(--muted-foreground)] italic">{tpl.additionalName}</div>}

@@ -97,6 +97,8 @@ struct AddDeviceView: View {
     @State private var isLoadingTemplates = false
     @State private var templateSearchText = ""
     @State private var selectedTemplate: Template?
+    @State private var externalTemplates: [ExternalTemplate] = []
+    @State private var selectedExternalTemplate: ExternalTemplate?
     
     @State private var isSaving = false
     @State private var errorMessage: String?
@@ -179,6 +181,9 @@ struct AddDeviceView: View {
                 await loadCategories()
                 await loadTemplates()
                 await loadLocations()
+                if AuthService.shared.externalTemplatesEnabled {
+                    externalTemplates = await ExternalTemplateService.shared.loadTemplates()
+                }
                 // Auto-apply matched template from barcode decoder (before other prefills
                 // so that prefill values take precedence over template defaults)
                 if let id = prefillTemplateId, let template = templates.first(where: { $0.id == id }) {
@@ -211,50 +216,110 @@ struct AddDeviceView: View {
         }
     }
     
+    private enum TemplateResult: Identifiable {
+        case local(Template)
+        case remote(ExternalTemplate)
+        var id: String {
+            switch self { case .local(let t): return "l_\(t.id)"; case .remote(let t): return "r_\(t.id)" }
+        }
+        var name: String {
+            switch self { case .local(let t): return t.name; case .remote(let t): return t.name }
+        }
+        var additionalName: String? {
+            switch self { case .local(let t): return t.additionalName; case .remote(let t): return t.additionalName }
+        }
+    }
+
+    private var mergedTemplateResults: [TemplateResult] {
+        if templateSearchText.isEmpty { return [] }
+        let q = templateSearchText
+        let localSource = externalTemplates.isEmpty ? filteredTemplates : filteredTemplates.filter { !($0.isSeeded ?? false) }
+        let local = localSource.map { TemplateResult.local($0) }
+        let remote = filteredExternalTemplates.map { TemplateResult.remote($0) }
+        return (local + remote)
+            .sorted { a, b in
+                let ra = templateMatchRank(name: a.name, additionalName: a.additionalName, query: q)
+                let rb = templateMatchRank(name: b.name, additionalName: b.additionalName, query: q)
+                if ra != rb { return ra < rb }
+                if a.name != b.name { return a.name < b.name }
+                return (a.additionalName ?? "") < (b.additionalName ?? "")
+            }
+            .prefix(8).map { $0 }
+    }
+
     private var templateSection: some View {
         let t = lm.t
+        let results = mergedTemplateResults
         return Section {
             TextField(t.addEditDevice.searchTemplates, text: $templateSearchText)
                 .textInputAutocapitalization(.never)
 
-            if !filteredTemplates.isEmpty {
-                ForEach(filteredTemplates.prefix(5)) { template in
-                    Button {
-                        applyTemplate(template)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(template.name)
-                                .foregroundColor(.primary)
-                            if let additionalName = template.additionalName {
-                                Text(additionalName)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            HStack {
-                                Text(template.category.name)
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                if let manufacturer = template.manufacturer {
-                                    Text("•")
-                                        .font(.caption2)
-                                        .foregroundColor(.secondary)
-                                    Text(manufacturer)
-                                        .font(.caption2)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                        }
-                        .padding(.vertical, 4)
+            ForEach(results) { result in
+                switch result {
+                case .local(let template):
+                    Button { applyTemplate(template) } label: {
+                        templateRow(name: template.name, additionalName: template.additionalName,
+                                    categoryName: template.category.name, manufacturer: template.manufacturer,
+                                    isExternal: false)
+                    }
+                case .remote(let template):
+                    Button { applyExternalTemplate(template) } label: {
+                        templateRow(name: template.name, additionalName: template.additionalName,
+                                    categoryName: template.category?.name ?? "",
+                                    manufacturer: template.manufacturer,
+                                    isExternal: true,
+                                    hasImages: !(template.images ?? []).isEmpty)
                     }
                 }
             }
         } header: {
             Text(t.addEditDevice.templateOptional)
         } footer: {
-            if selectedTemplate != nil {
+            if selectedTemplate != nil || selectedExternalTemplate != nil {
                 Text(t.addEditDevice.templateApplied)
-            } else if !templateSearchText.isEmpty && filteredTemplates.isEmpty {
+            } else if !templateSearchText.isEmpty && results.isEmpty {
                 Text(t.addEditDevice.noTemplates)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func templateRow(name: String, additionalName: String?, categoryName: String,
+                              manufacturer: String?, isExternal: Bool, hasImages: Bool = false) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(name)
+                    .foregroundColor(.primary)
+                if let additionalName = additionalName {
+                    Text(additionalName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                HStack {
+                    Text(categoryName)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    if let manufacturer = manufacturer {
+                        Text("•")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        Text(manufacturer)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+            Spacer()
+            if hasImages {
+                Image(systemName: "photo")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            if isExternal {
+                Image(systemName: "cloud")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -544,16 +609,52 @@ struct AddDeviceView: View {
         return categories.first(where: { $0.id == categoryId })?.type == "COMPUTER"
     }
     
+    // 0 = exact, 1 = prefix, 2 = contains — lower is better
+    private func templateMatchRank(name: String, additionalName: String?, query: String) -> Int {
+        let q = query.lowercased()
+        let n = name.lowercased()
+        let a = additionalName?.lowercased()
+        if n == q || a == q { return 0 }
+        if n.hasPrefix(q) || a?.hasPrefix(q) == true { return 1 }
+        return 2
+    }
+
     private var filteredTemplates: [Template] {
-        if templateSearchText.isEmpty {
-            return []
-        }
-        return templates.filter { template in
-            template.name.localizedCaseInsensitiveContains(templateSearchText) ||
-            template.additionalName?.localizedCaseInsensitiveContains(templateSearchText) == true ||
-            template.manufacturer?.localizedCaseInsensitiveContains(templateSearchText) == true ||
-            template.modelNumber?.localizedCaseInsensitiveContains(templateSearchText) == true
-        }
+        if templateSearchText.isEmpty { return [] }
+        let q = templateSearchText
+        return templates
+            .filter { t in
+                t.name.localizedCaseInsensitiveContains(q) ||
+                t.additionalName?.localizedCaseInsensitiveContains(q) == true ||
+                t.manufacturer?.localizedCaseInsensitiveContains(q) == true ||
+                t.modelNumber?.localizedCaseInsensitiveContains(q) == true
+            }
+            .sorted { a, b in
+                let ra = templateMatchRank(name: a.name, additionalName: a.additionalName, query: q)
+                let rb = templateMatchRank(name: b.name, additionalName: b.additionalName, query: q)
+                if ra != rb { return ra < rb }
+                if a.name != b.name { return a.name < b.name }
+                return (a.additionalName ?? "") < (b.additionalName ?? "")
+            }
+    }
+
+    private var filteredExternalTemplates: [ExternalTemplate] {
+        if templateSearchText.isEmpty { return [] }
+        let q = templateSearchText
+        return externalTemplates
+            .filter { t in
+                t.name.localizedCaseInsensitiveContains(q) ||
+                t.additionalName?.localizedCaseInsensitiveContains(q) == true ||
+                t.manufacturer?.localizedCaseInsensitiveContains(q) == true ||
+                t.modelNumber?.localizedCaseInsensitiveContains(q) == true
+            }
+            .sorted { a, b in
+                let ra = templateMatchRank(name: a.name, additionalName: a.additionalName, query: q)
+                let rb = templateMatchRank(name: b.name, additionalName: b.additionalName, query: q)
+                if ra != rb { return ra < rb }
+                if a.name != b.name { return a.name < b.name }
+                return (a.additionalName ?? "") < (b.additionalName ?? "")
+            }
     }
     
     private func loadCategories() async {
@@ -603,6 +704,7 @@ struct AddDeviceView: View {
                     externalLinkLabel
                     isWifiEnabled
                     rarity
+                    isSeeded
                     categoryId
                     category {
                         id
@@ -628,6 +730,7 @@ struct AddDeviceView: View {
     
     private func applyTemplate(_ template: Template) {
         selectedTemplate = template
+        selectedExternalTemplate = nil
         name = template.name
         additionalName = template.additionalName ?? ""
         manufacturer = template.manufacturer ?? ""
@@ -665,7 +768,51 @@ struct AddDeviceView: View {
 
         templateSearchText = ""
     }
-    
+
+    private func applyExternalTemplate(_ template: ExternalTemplate) {
+        selectedExternalTemplate = template
+        selectedTemplate = nil
+        name = template.name
+        additionalName = template.additionalName ?? ""
+        manufacturer = template.manufacturer ?? ""
+        modelNumber = template.modelNumber ?? ""
+        releaseYear = template.releaseYear.map { String($0) } ?? ""
+        estimatedValue = template.estimatedValue.map { String(format: "%.2f", $0) } ?? ""
+        cpuType = template.cpuType ?? ""
+        cpuSpeed = template.cpuSpeed ?? ""
+        ram = template.ram ?? ""
+        graphicsChip = template.graphicsChip ?? ""
+        screenSize = template.screenSize ?? ""
+        displayType = template.displayType ?? ""
+        displayVariant = template.displayVariant ?? ""
+        nativeResolution = template.nativeResolution ?? ""
+        if let stor = template.storage, !stor.isEmpty {
+            let parts = stor.components(separatedBy: "+").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+            storageEntries = parts.enumerated().map { DeviceStorageEntry(id: -(($0.offset) + 1), value: $0.element, sortOrder: $0.offset) }
+        }
+        if let os = template.operatingSystem, !os.isEmpty {
+            let parts = os.components(separatedBy: "+").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+            osEntries = parts.enumerated().map { DeviceOSEntry(id: -(($0.offset) + 1), value: $0.element, sortOrder: $0.offset) }
+        }
+        isWifiEnabled = (template.isWifiEnabled ?? 0) != 0
+        historicalNotes = template.historicalNotes ?? ""
+        if let r = template.rarity, let rarityVal = Rarity(rawValue: r) { rarity = rarityVal }
+        if let remoteCategory = template.category {
+            if let match = categories.first(where: { $0.name.lowercased() == remoteCategory.name.lowercased() }) {
+                selectedCategoryId = match.id
+            } else if let remoteType = remoteCategory.type,
+                      let match = categories.first(where: { $0.type == remoteType }) {
+                selectedCategoryId = match.id
+            }
+        }
+        if let url = template.externalUrl, !url.isEmpty {
+            let label = "Reference"
+            localLinks.removeAll { $0.url == url }
+            localLinks.append((label: label, url: url))
+        }
+        templateSearchText = ""
+    }
+
     private func saveDevice() async {
         guard let categoryId = selectedCategoryId else { return }
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
@@ -769,6 +916,22 @@ struct AddDeviceView: View {
             for linkEntry in localLinks {
                 do { _ = try await DeviceService.shared.addDeviceLink(deviceId: newDeviceId, label: linkEntry.label, url: linkEntry.url) }
                 catch { print("Failed to add link: \(error)") }
+            }
+
+            // Upload template images (best-effort)
+            if let extTemplate = selectedExternalTemplate, let images = extTemplate.images, !images.isEmpty {
+                let setThumbnailMode = images.count == 1 ? "BOTH" : nil
+                for img in images {
+                    guard let imageURL = URL(string: img.url),
+                          let (imgData, _) = try? await URLSession.shared.data(from: imageURL) else { continue }
+                    let filename = imageURL.lastPathComponent.isEmpty ? "template.webp" : imageURL.lastPathComponent
+                    let mimeType = filename.hasSuffix(".webp") ? "image/webp" : "image/jpeg"
+                    guard let uploadedImage = try? await DeviceService.shared.uploadImage(
+                        deviceId: newDeviceId, mediaData: imgData, filename: filename, mimeType: mimeType
+                    ) else { continue }
+                    let mode = setThumbnailMode ?? img.type
+                    _ = try? await DeviceService.shared.updateImage(id: uploadedImage.id, isThumbnail: true, thumbnailMode: mode)
+                }
             }
 
             await MainActor.run {

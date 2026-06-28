@@ -23,7 +23,10 @@ export interface TemplateData {
   storage?: string | null;
   operatingSystem?: string | null;
   categoryId?: number | null;
+  categoryName?: string | null;
+  categoryType?: string | null;
   isWifiEnabled?: boolean | null;
+  isSeeded?: boolean | null;
   rarity?: string | null;
   historicalNotes?: string | null;
   externalUrl?: string | null;
@@ -52,6 +55,7 @@ interface RemoteTemplate {
   storage?: string | null;
   operatingSystem?: string | null;
   categoryId?: number | null;
+  category?: { id: number; name: string; type: string } | null;
   isWifiEnabled?: boolean | null;
   rarity?: string | null;
   historicalNotes?: string | null;
@@ -95,6 +99,8 @@ function mapRemoteTemplate(remote: RemoteTemplate): TemplateData {
     storage: remote.storage ?? null,
     operatingSystem: remote.operatingSystem ?? null,
     categoryId: remote.categoryId ?? null,
+    categoryName: remote.category?.name ?? null,
+    categoryType: remote.category?.type ?? null,
     isWifiEnabled: remote.isWifiEnabled ?? null,
     rarity: remote.rarity ?? null,
     historicalNotes: remote.historicalNotes ?? null,
