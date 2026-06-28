@@ -14,6 +14,7 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [
       'API and web server now log BUILD_VERSION (git SHA) and APP_VERSION at startup to make it easy to verify which image is running',
+      'iOS: remote (TemplatesDifferent) templates now appear alongside local templates in the Add Device form, with a cloud badge; applying one auto-imports the template thumbnail image(s) as the device thumbnail',
     ],
     changed: [
       '"Original Box" status is now derived from the accessories list (same as iOS) rather than a separate checkbox; add or remove the "Original Box" accessory in the device edit form to set it',

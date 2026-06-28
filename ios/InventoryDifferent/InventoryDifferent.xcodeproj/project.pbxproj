@@ -54,11 +54,11 @@
 		AA717C732F31A3C9002D041E /* InventoryDifferent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InventoryDifferent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA717C8C2F31A3CB002D041E /* InventoryDifferentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InventoryDifferentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA717C962F31A3CB002D041E /* InventoryDifferentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InventoryDifferentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AACF66012F31A3C9002D041E /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		AAF8465A2FC94BD500C73908 /* InventoryDifferentWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = InventoryDifferentWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAF8465C2FC94BD500C73908 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		AAF8465E2FC94BD500C73908 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		AAF846742FC94C2400C73908 /* InventoryDifferentWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = InventoryDifferentWidgetsExtension.entitlements; sourceTree = "<group>"; };
-		AACF66012F31A3C9002D041E /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -166,6 +166,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		AACF66022F31A3C9002D041E /* Configurations */ = {
+			isa = PBXGroup;
+			children = (
+				AACF66012F31A3C9002D041E /* Shared.xcconfig */,
+			);
+			path = Configurations;
+			sourceTree = "<group>";
+		};
 		AAF8465B2FC94BD500C73908 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,15 +181,6 @@
 				AAF8465E2FC94BD500C73908 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		AACF66022F31A3C9002D041E /* Configurations */ = {
-			isa = PBXGroup;
-			children = (
-				AACF66012F31A3C9002D041E /* Shared.xcconfig */,
-			);
-			name = Configurations;
-			path = Configurations;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -420,6 +419,7 @@
 				DEVELOPMENT_TEAM = XLY3EERM8Z;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = InventoryDifferent/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -430,6 +430,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).InventoryDifferent";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = com.wottle.InventoryDifferent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -453,6 +454,7 @@
 				DEVELOPMENT_TEAM = XLY3EERM8Z;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = InventoryDifferent/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
