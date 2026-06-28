@@ -581,24 +581,52 @@ struct AddDeviceView: View {
         return categories.first(where: { $0.id == categoryId })?.type == "COMPUTER"
     }
     
+    // 0 = exact, 1 = prefix, 2 = contains — lower is better
+    private func templateMatchRank(name: String, additionalName: String?, query: String) -> Int {
+        let q = query.lowercased()
+        let n = name.lowercased()
+        let a = additionalName?.lowercased()
+        if n == q || a == q { return 0 }
+        if n.hasPrefix(q) || a?.hasPrefix(q) == true { return 1 }
+        return 2
+    }
+
     private var filteredTemplates: [Template] {
         if templateSearchText.isEmpty { return [] }
-        return templates.filter { t in
-            t.name.localizedCaseInsensitiveContains(templateSearchText) ||
-            t.additionalName?.localizedCaseInsensitiveContains(templateSearchText) == true ||
-            t.manufacturer?.localizedCaseInsensitiveContains(templateSearchText) == true ||
-            t.modelNumber?.localizedCaseInsensitiveContains(templateSearchText) == true
-        }
+        let q = templateSearchText
+        return templates
+            .filter { t in
+                t.name.localizedCaseInsensitiveContains(q) ||
+                t.additionalName?.localizedCaseInsensitiveContains(q) == true ||
+                t.manufacturer?.localizedCaseInsensitiveContains(q) == true ||
+                t.modelNumber?.localizedCaseInsensitiveContains(q) == true
+            }
+            .sorted { a, b in
+                let ra = templateMatchRank(name: a.name, additionalName: a.additionalName, query: q)
+                let rb = templateMatchRank(name: b.name, additionalName: b.additionalName, query: q)
+                if ra != rb { return ra < rb }
+                if a.name != b.name { return a.name < b.name }
+                return (a.additionalName ?? "") < (b.additionalName ?? "")
+            }
     }
 
     private var filteredExternalTemplates: [ExternalTemplate] {
         if templateSearchText.isEmpty { return [] }
-        return externalTemplates.filter { t in
-            t.name.localizedCaseInsensitiveContains(templateSearchText) ||
-            t.additionalName?.localizedCaseInsensitiveContains(templateSearchText) == true ||
-            t.manufacturer?.localizedCaseInsensitiveContains(templateSearchText) == true ||
-            t.modelNumber?.localizedCaseInsensitiveContains(templateSearchText) == true
-        }
+        let q = templateSearchText
+        return externalTemplates
+            .filter { t in
+                t.name.localizedCaseInsensitiveContains(q) ||
+                t.additionalName?.localizedCaseInsensitiveContains(q) == true ||
+                t.manufacturer?.localizedCaseInsensitiveContains(q) == true ||
+                t.modelNumber?.localizedCaseInsensitiveContains(q) == true
+            }
+            .sorted { a, b in
+                let ra = templateMatchRank(name: a.name, additionalName: a.additionalName, query: q)
+                let rb = templateMatchRank(name: b.name, additionalName: b.additionalName, query: q)
+                if ra != rb { return ra < rb }
+                if a.name != b.name { return a.name < b.name }
+                return (a.additionalName ?? "") < (b.additionalName ?? "")
+            }
     }
     
     private func loadCategories() async {
