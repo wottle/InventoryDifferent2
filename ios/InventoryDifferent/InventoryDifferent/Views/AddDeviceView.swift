@@ -214,34 +214,59 @@ struct AddDeviceView: View {
         }
     }
     
+    private enum TemplateResult: Identifiable {
+        case local(Template)
+        case remote(ExternalTemplate)
+        var id: String {
+            switch self { case .local(let t): return "l_\(t.id)"; case .remote(let t): return "r_\(t.id)" }
+        }
+        var name: String {
+            switch self { case .local(let t): return t.name; case .remote(let t): return t.name }
+        }
+        var additionalName: String? {
+            switch self { case .local(let t): return t.additionalName; case .remote(let t): return t.additionalName }
+        }
+    }
+
+    private var mergedTemplateResults: [TemplateResult] {
+        if templateSearchText.isEmpty { return [] }
+        let q = templateSearchText
+        let local = filteredTemplates.map { TemplateResult.local($0) }
+        let remote = filteredExternalTemplates.map { TemplateResult.remote($0) }
+        return (local + remote)
+            .sorted { a, b in
+                let ra = templateMatchRank(name: a.name, additionalName: a.additionalName, query: q)
+                let rb = templateMatchRank(name: b.name, additionalName: b.additionalName, query: q)
+                if ra != rb { return ra < rb }
+                if a.name != b.name { return a.name < b.name }
+                return (a.additionalName ?? "") < (b.additionalName ?? "")
+            }
+            .prefix(8).map { $0 }
+    }
+
     private var templateSection: some View {
         let t = lm.t
-        let localResults = filteredTemplates.prefix(5)
-        let remoteResults = filteredExternalTemplates.prefix(5)
-        let hasResults = !localResults.isEmpty || !remoteResults.isEmpty
+        let results = mergedTemplateResults
         return Section {
             TextField(t.addEditDevice.searchTemplates, text: $templateSearchText)
                 .textInputAutocapitalization(.never)
 
-            ForEach(Array(localResults)) { template in
-                Button {
-                    applyTemplate(template)
-                } label: {
-                    templateRow(name: template.name, additionalName: template.additionalName,
-                                categoryName: template.category.name, manufacturer: template.manufacturer,
-                                isExternal: false)
-                }
-            }
-
-            ForEach(Array(remoteResults)) { template in
-                Button {
-                    applyExternalTemplate(template)
-                } label: {
-                    templateRow(name: template.name, additionalName: template.additionalName,
-                                categoryName: template.category?.name ?? "",
-                                manufacturer: template.manufacturer,
-                                isExternal: true,
-                                hasImages: !(template.images ?? []).isEmpty)
+            ForEach(results) { result in
+                switch result {
+                case .local(let template):
+                    Button { applyTemplate(template) } label: {
+                        templateRow(name: template.name, additionalName: template.additionalName,
+                                    categoryName: template.category.name, manufacturer: template.manufacturer,
+                                    isExternal: false)
+                    }
+                case .remote(let template):
+                    Button { applyExternalTemplate(template) } label: {
+                        templateRow(name: template.name, additionalName: template.additionalName,
+                                    categoryName: template.category?.name ?? "",
+                                    manufacturer: template.manufacturer,
+                                    isExternal: true,
+                                    hasImages: !(template.images ?? []).isEmpty)
+                    }
                 }
             }
         } header: {
@@ -249,7 +274,7 @@ struct AddDeviceView: View {
         } footer: {
             if selectedTemplate != nil || selectedExternalTemplate != nil {
                 Text(t.addEditDevice.templateApplied)
-            } else if !templateSearchText.isEmpty && !hasResults {
+            } else if !templateSearchText.isEmpty && results.isEmpty {
                 Text(t.addEditDevice.noTemplates)
             }
         }
