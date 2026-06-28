@@ -731,7 +731,7 @@ struct AddDeviceView: View {
             let parts = os.components(separatedBy: "+").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
             osEntries = parts.enumerated().map { DeviceOSEntry(id: -(($0.offset) + 1), value: $0.element, sortOrder: $0.offset) }
         }
-        isWifiEnabled = template.isWifiEnabled ?? false
+        isWifiEnabled = (template.isWifiEnabled ?? 0) != 0
         if let r = template.rarity, let rarityVal = Rarity(rawValue: r) { rarity = rarityVal }
         if let catId = template.categoryId { selectedCategoryId = catId }
         if let url = template.externalUrl, !url.isEmpty {

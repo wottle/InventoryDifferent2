@@ -30,7 +30,7 @@ struct ExternalTemplate: Codable, Identifiable {
     let operatingSystem: String?
     let externalUrl: String?
     let externalLinkLabel: String?
-    let isWifiEnabled: Bool?
+    let isWifiEnabled: Int?
     let rarity: String?
     let categoryId: Int?
     let images: [ExternalTemplateImage]?
