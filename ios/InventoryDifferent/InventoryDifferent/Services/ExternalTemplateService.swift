@@ -102,9 +102,21 @@ actor ExternalTemplateService {
         repeat {
             var urlString = "\(apiBaseURL)/templates?sort=name&limit=200"
             if let c = cursor { urlString += "&cursor=\(c)" }
-            guard let url = URL(string: urlString),
-                  let (data, _) = try? await URLSession.shared.data(from: url),
-                  let page = try? JSONDecoder().decode(ExternalTemplatesPage.self, from: data) else { break }
+            guard let url = URL(string: urlString) else { break }
+            guard let (data, _) = try? await URLSession.shared.data(from: url) else {
+                print("[ExternalTemplates] Network request failed for \(urlString)")
+                break
+            }
+            let page: ExternalTemplatesPage
+            do {
+                page = try JSONDecoder().decode(ExternalTemplatesPage.self, from: data)
+            } catch {
+                print("[ExternalTemplates] Decode error: \(error)")
+                if let raw = String(data: data, encoding: .utf8) {
+                    print("[ExternalTemplates] Raw response (first 500 chars): \(raw.prefix(500))")
+                }
+                break
+            }
 
             let published = page.templates.filter { $0.status == nil || $0.status == "PUBLISHED" }
             all.append(contentsOf: published)
