@@ -240,7 +240,8 @@ struct AddDeviceView: View {
                     templateRow(name: template.name, additionalName: template.additionalName,
                                 categoryName: template.category?.name ?? "",
                                 manufacturer: template.manufacturer,
-                                isExternal: true)
+                                isExternal: true,
+                                hasImages: !(template.images ?? []).isEmpty)
                 }
             }
         } header: {
@@ -256,7 +257,7 @@ struct AddDeviceView: View {
 
     @ViewBuilder
     private func templateRow(name: String, additionalName: String?, categoryName: String,
-                              manufacturer: String?, isExternal: Bool) -> some View {
+                              manufacturer: String?, isExternal: Bool, hasImages: Bool = false) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(name)
@@ -282,6 +283,11 @@ struct AddDeviceView: View {
             }
             .padding(.vertical, 4)
             Spacer()
+            if hasImages {
+                Image(systemName: "photo")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
             if isExternal {
                 Image(systemName: "cloud")
                     .font(.caption)

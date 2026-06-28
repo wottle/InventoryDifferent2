@@ -682,7 +682,17 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
             if (typeof tpl.nativeResolution === 'string') next.nativeResolution = tpl.nativeResolution;
             // Don't set storage/operatingSystem on formData — they're handled via storageEntries/osEntries below
 
-            if (typeof tpl.categoryId === 'number') next.categoryId = tpl.categoryId;
+            if (tpl.source === 'remote' && tpl.categoryName) {
+                const byName = categories.find(c => c.name.toLowerCase() === tpl.categoryName!.toLowerCase());
+                if (byName) {
+                    next.categoryId = byName.id;
+                } else if (tpl.categoryType) {
+                    const byType = categories.find(c => c.type === tpl.categoryType);
+                    if (byType) next.categoryId = byType.id;
+                }
+            } else if (typeof tpl.categoryId === 'number') {
+                next.categoryId = tpl.categoryId;
+            }
             if (typeof tpl.releaseYear === 'number') next.releaseYear = tpl.releaseYear;
 
             if (typeof tpl.estimatedValue === 'number') next.estimatedValue = tpl.estimatedValue.toString();
@@ -1075,12 +1085,15 @@ export function DeviceForm({ device, mode, prefill }: DeviceFormProps) {
                                                                 setTemplateQuery("");
                                                             }}
                                                         >
-                                                            <div className="font-medium">
+                                                            <div className="font-medium flex items-center gap-1.5">
                                                                 {tpl.name}
                                                                 {tpl.source === 'remote' && (
-                                                                    <span className="ml-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                                                                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                                                                         {t.form.externalTemplateBadge}
                                                                     </span>
+                                                                )}
+                                                                {tpl.images && tpl.images.length > 0 && (
+                                                                    <span title="Has thumbnail image(s)">🖼</span>
                                                                 )}
                                                             </div>
                                                             {tpl.additionalName && <div className="text-xs text-[var(--muted-foreground)] italic">{tpl.additionalName}</div>}
