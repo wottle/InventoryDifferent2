@@ -733,8 +733,11 @@ struct AddDeviceView: View {
         }
         isWifiEnabled = (template.isWifiEnabled ?? 0) != 0
         if let r = template.rarity, let rarityVal = Rarity(rawValue: r) { rarity = rarityVal }
-        if let remoteName = template.category?.name {
-            if let match = categories.first(where: { $0.name.lowercased() == remoteName.lowercased() }) {
+        if let remoteCategory = template.category {
+            if let match = categories.first(where: { $0.name.lowercased() == remoteCategory.name.lowercased() }) {
+                selectedCategoryId = match.id
+            } else if let remoteType = remoteCategory.type,
+                      let match = categories.first(where: { $0.type == remoteType }) {
                 selectedCategoryId = match.id
             }
         }
