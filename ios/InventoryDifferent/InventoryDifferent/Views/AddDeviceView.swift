@@ -238,8 +238,8 @@ struct AddDeviceView: View {
                     applyExternalTemplate(template)
                 } label: {
                     templateRow(name: template.name, additionalName: template.additionalName,
-                                categoryName: template.manufacturer ?? "",
-                                manufacturer: nil,
+                                categoryName: template.category?.name ?? "",
+                                manufacturer: template.manufacturer,
                                 isExternal: true)
                 }
             }
@@ -733,7 +733,11 @@ struct AddDeviceView: View {
         }
         isWifiEnabled = (template.isWifiEnabled ?? 0) != 0
         if let r = template.rarity, let rarityVal = Rarity(rawValue: r) { rarity = rarityVal }
-        if let catId = template.categoryId { selectedCategoryId = catId }
+        if let remoteName = template.category?.name {
+            if let match = categories.first(where: { $0.name.lowercased() == remoteName.lowercased() }) {
+                selectedCategoryId = match.id
+            }
+        }
         if let url = template.externalUrl, !url.isEmpty {
             let label = "Reference"
             localLinks.removeAll { $0.url == url }

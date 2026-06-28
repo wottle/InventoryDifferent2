@@ -5,6 +5,12 @@
 
 import Foundation
 
+struct ExternalTemplateCategory: Codable {
+    let id: Int
+    let name: String
+    let type: String?
+}
+
 struct ExternalTemplateImage: Codable {
     let url: String
     let type: String // "LIGHT" | "DARK"
@@ -33,6 +39,7 @@ struct ExternalTemplate: Codable, Identifiable {
     let isWifiEnabled: Int?
     let rarity: String?
     let categoryId: Int?
+    let category: ExternalTemplateCategory?
     let images: [ExternalTemplateImage]?
     let status: String?
 }
