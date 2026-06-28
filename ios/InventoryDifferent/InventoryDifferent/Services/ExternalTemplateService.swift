@@ -62,25 +62,39 @@ actor ExternalTemplateService {
     }
 
     func loadTemplates() async -> [ExternalTemplate] {
-        guard let syncURL = URL(string: "\(apiBaseURL)/sync"),
-              let (syncData, _) = try? await URLSession.shared.data(from: syncURL),
-              let sync = try? JSONDecoder().decode(ExternalSyncResponse.self, from: syncData) else {
-            return cachedTemplates() ?? []
+        let cachedSchema = defaults.string(forKey: cacheSchemaKey)
+        let cachedAt = defaults.double(forKey: cacheDateKey)
+        let cacheAge = Date().timeIntervalSince1970 - cachedAt
+        let existing = cachedTemplates()
+
+        // If we have a non-expired, schema-valid cache, check remote version before using it
+        if cachedSchema == cacheSchemaVersion, cacheAge < cacheTTL, let existing, !existing.isEmpty {
+            if let remoteVersion = await fetchSyncVersion() {
+                let cachedVersion = defaults.string(forKey: cacheVersionKey)
+                if remoteVersion == cachedVersion {
+                    return existing // Cache is current
+                }
+                // Version changed — fall through to re-fetch
+            } else {
+                // Sync check failed — return stale cache rather than blocking the user
+                return existing
+            }
         }
 
-        let remoteVersion = sync.version
-        let cachedVersion = defaults.string(forKey: cacheVersionKey)
-        let cachedSchema  = defaults.string(forKey: cacheSchemaKey)
-        let cachedAt      = defaults.double(forKey: cacheDateKey)
-        let cacheAge      = Date().timeIntervalSince1970 - cachedAt
+        // No cache, expired, or version changed — fetch fresh from remote
+        return await fetchAndCache(fallback: existing ?? [])
+    }
 
-        if cachedVersion == remoteVersion,
-           cachedSchema == cacheSchemaVersion,
-           cacheAge < cacheTTL,
-           let cached = cachedTemplates() {
-            return cached
+    private func fetchSyncVersion() async -> String? {
+        guard let url = URL(string: "\(apiBaseURL)/sync"),
+              let (data, _) = try? await URLSession.shared.data(from: url),
+              let sync = try? JSONDecoder().decode(ExternalSyncResponse.self, from: data) else {
+            return nil
         }
+        return sync.version
+    }
 
+    private func fetchAndCache(fallback: [ExternalTemplate]) async -> [ExternalTemplate] {
         var all: [ExternalTemplate] = []
         var cursor: String? = nil
         var pageCount = 0
@@ -98,8 +112,11 @@ actor ExternalTemplateService {
             pageCount += 1
         } while cursor != nil && pageCount < 50
 
+        guard !all.isEmpty else { return fallback }
+
         if let encoded = try? JSONEncoder().encode(all) {
-            defaults.set(remoteVersion, forKey: cacheVersionKey)
+            let version = await fetchSyncVersion() ?? UUID().uuidString
+            defaults.set(version, forKey: cacheVersionKey)
             defaults.set(cacheSchemaVersion, forKey: cacheSchemaKey)
             defaults.set(Date().timeIntervalSince1970, forKey: cacheDateKey)
             defaults.set(encoded, forKey: cacheDataKey)
