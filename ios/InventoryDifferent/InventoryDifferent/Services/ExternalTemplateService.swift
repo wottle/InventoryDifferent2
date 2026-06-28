@@ -11,7 +11,7 @@ struct ExternalTemplateImage: Codable {
 }
 
 struct ExternalTemplate: Codable, Identifiable {
-    let id: String
+    let id: Int
     let name: String
     let additionalName: String?
     let manufacturer: String?
