@@ -19,7 +19,7 @@ ENV BUILD_VERSION=${BUILD_VERSION}
 COPY package*.json ./
 
 RUN --mount=type=cache,target=/root/.npm \
-    npm install --legacy-peer-deps
+    npm install --legacy-peer-deps || npm install --legacy-peer-deps || npm install --legacy-peer-deps
 
 COPY . .
 

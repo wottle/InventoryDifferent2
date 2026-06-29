@@ -11,7 +11,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 RUN --mount=type=cache,target=/root/.npm \
-    npm install
+    npm install || npm install || npm install
 
 COPY . .
 

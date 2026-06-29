@@ -5,8 +5,8 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN --mount=type=cache,target=/root/.npm \
-    npm install --legacy-peer-deps && \
-    npm install full-icu --no-save --legacy-peer-deps
+    (npm install --legacy-peer-deps || npm install --legacy-peer-deps || npm install --legacy-peer-deps) && \
+    (npm install full-icu --no-save --legacy-peer-deps || npm install full-icu --no-save --legacy-peer-deps || npm install full-icu --no-save --legacy-peer-deps)
 
 COPY . .
 
