@@ -23,6 +23,7 @@ All notable changes to InventoryDifferent will be documented here.
 - Applying a remote template to a new device now automatically imports the template's thumbnail image(s) as the device thumbnail (light/dark variants respected)
 
 ### Fixed
+- Built-in (seeded) templates are now correctly marked in the database on upgrade so they hide properly when the remote catalog is enabled
 - Template image import now correctly assigns LIGHT and DARK thumbnail modes when a remote template has both variants; previously createImage ignored the requested thumbnailMode and always stored BOTH
 - External template picker now shows both local and remote templates even when they share a name, so you can apply either
 - External template picker no longer shows duplicate entries when the remote catalog itself contains duplicate records

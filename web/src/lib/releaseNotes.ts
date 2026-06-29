@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Built-in (seeded) templates are now correctly marked in the database on upgrade so they hide properly when the remote catalog is enabled',
+    ],
   },
   {
     version: '2.9.1',
