@@ -16,6 +16,8 @@ export const releaseNotes: ReleaseEntry[] = [
     changed: [],
     fixed: [
       'Built-in (seeded) templates are now correctly marked in the database on upgrade so they hide properly when the remote catalog is enabled',
+      'Twentieth Anniversary Macintosh (ID 87) was missing from the seeded template list and now correctly hides when the remote catalog is active',
+      'External template catalog toggle in Settings is now a real on/off switch stored in the database; the EXTERNAL_TEMPLATES_ENABLED env var still works as a default for fresh installs',
     ],
   },
   {

@@ -294,9 +294,14 @@ export async function createApp(prismaOverride?: PrismaClient) {
     // Auth status endpoint
     app.get('/auth/status', async (req, res) => {
         try {
-            const setting = await prisma.systemSetting.findUnique({ where: { key: 'guestAccessEnabled' } });
-            const guestAccessEnabled = setting?.value !== 'false';
-            const externalTemplatesEnabled = process.env.EXTERNAL_TEMPLATES_ENABLED !== 'false';
+            const [guestSetting, extSetting] = await Promise.all([
+                prisma.systemSetting.findUnique({ where: { key: 'guestAccessEnabled' } }),
+                prisma.systemSetting.findUnique({ where: { key: 'externalTemplatesEnabled' } }),
+            ]);
+            const guestAccessEnabled = guestSetting?.value !== 'false';
+            const externalTemplatesEnabled = extSetting
+                ? extSetting.value !== 'false'
+                : process.env.EXTERNAL_TEMPLATES_ENABLED !== 'false';
             return res.json({
                 authenticated: req.isAuthenticated ?? false,
                 authRequired: isAuthConfigured(),

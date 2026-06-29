@@ -24,6 +24,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 - Built-in (seeded) templates are now correctly marked in the database on upgrade so they hide properly when the remote catalog is enabled
+- Twentieth Anniversary Macintosh (ID 87) was missing from the seeded template list and now correctly hides when the remote catalog is active
+- External template catalog toggle in Settings is now a real on/off switch stored in the database; the EXTERNAL_TEMPLATES_ENABLED env var still works as a default for fresh installs
 - Template image import now correctly assigns LIGHT and DARK thumbnail modes when a remote template has both variants; previously createImage ignored the requested thumbnailMode and always stored BOTH
 - External template picker now shows both local and remote templates even when they share a name, so you can apply either
 - External template picker no longer shows duplicate entries when the remote catalog itself contains duplicate records
