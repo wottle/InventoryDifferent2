@@ -1716,7 +1716,7 @@ export const en: Translations = {
       deleteConfirm: "Delete this template?",
       linkLabel: "Link Label",
       linkLabelPlaceholder: "e.g. EveryMac",
-      seededHiddenNote: "{count} built-in templates are hidden because the remote catalog is enabled. Set EXTERNAL_TEMPLATES_ENABLED=false on the server to use local templates only.",
+      seededHiddenNote: "{count} built-in templates are hidden because the remote catalog is enabled. To show them, turn off the remote catalog in Settings.",
     },
     backup: {
       title: "Export Devices",

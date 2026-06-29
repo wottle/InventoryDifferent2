@@ -689,7 +689,7 @@ export const es: Translations = {
       deleteConfirm: "¿Eliminar esta plantilla?",
       linkLabel: "Etiqueta del enlace",
       linkLabelPlaceholder: "p.ej. EveryMac",
-      seededHiddenNote: "{count} plantillas integradas están ocultas porque el catálogo remoto está habilitado. Establece EXTERNAL_TEMPLATES_ENABLED=false en el servidor para usar solo plantillas locales.",
+      seededHiddenNote: "{count} plantillas integradas están ocultas porque el catálogo remoto está habilitado. Para mostrarlas, desactiva el catálogo remoto en Ajustes.",
     },
     backup: {
       title: "Exportar dispositivos",

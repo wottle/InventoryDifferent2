@@ -689,7 +689,7 @@ export const fr: Translations = {
       deleteConfirm: "Supprimer ce modèle ?",
       linkLabel: "Libellé du lien",
       linkLabelPlaceholder: "ex. EveryMac",
-      seededHiddenNote: "{count} modèles intégrés sont masqués car le catalogue distant est activé. Définissez EXTERNAL_TEMPLATES_ENABLED=false sur le serveur pour utiliser uniquement les modèles locaux.",
+      seededHiddenNote: "{count} modèles intégrés sont masqués car le catalogue distant est activé. Pour les afficher, désactivez le catalogue distant dans Paramètres.",
     },
     backup: {
       title: "Exporter les appareils",
