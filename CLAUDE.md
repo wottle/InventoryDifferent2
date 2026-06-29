@@ -466,7 +466,7 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 
 **Categories** (`/categories`): view, create, edit categories with type and sort order
 
-**Templates** (`/templates`): view, create, edit, delete templates; one-click device creation from template; when `EXTERNAL_TEMPLATES_ENABLED` is on, seeded templates are hidden (count banner shown) so only user-created templates appear
+**Templates** (`/templates`): view, create, edit, delete templates; one-click device creation from template; when the remote catalog is enabled (Settings toggle, default on), seeded templates are hidden (count banner shown) so only user-created templates appear
 
 **Custom Fields** (`/customFields`): create, edit, delete fields; toggle public/private; set sort order
 
@@ -610,7 +610,7 @@ Open `docs/architecture/flows.html` directly in a browser. No server required. C
 
 ## Related Project: TemplatesDifferent
 
-A standalone Cloudflare-hosted template catalog for vintage Apple devices. Integration is live: when `EXTERNAL_TEMPLATES_ENABLED=true` (server default), the remote catalog is fetched and merged into the Add Device template picker on both iOS and web. Seeded local templates are hidden when the remote catalog is loaded; user-created local templates always appear.
+A standalone Cloudflare-hosted template catalog for vintage Apple devices. Integration is live by default. The on/off toggle is stored as a `systemSetting` DB key (`externalTemplatesEnabled`) and controlled from the web Settings page; the `EXTERNAL_TEMPLATES_ENABLED` env var only applies as the initial default when no DB record exists yet. Seeded local templates are hidden when the remote catalog is loaded; user-created local templates always appear.
 
 **Full documentation:** `/Users/wottle/Documents/Development/TemplatesDifferent/CLAUDE.md`
 
@@ -620,7 +620,7 @@ Key facts for integration:
 - **Read templates:** `GET /templates?sort=name|year|rarity&cursor=&limit=` → `{ templates[], nextCursor, total }` — public, no auth required
 - **Get single template:** `GET /templates/:id` → full object merged with parent, includes `variants[]` and `images[]`
 - **Sync detection:** `GET /sync` → `{ version }` — poll cheaply; only pull full catalog on version change
-- **Enabled flag delivery:** `externalTemplatesEnabled: bool` is returned by the local API's `GET /auth/status` endpoint; both iOS (`AuthService.shared.externalTemplatesEnabled`) and web (`useAuth().externalTemplatesEnabled`) read it from there on startup — no extra round-trip needed
+- **Enabled flag delivery:** `externalTemplatesEnabled: bool` is returned by the local API's `GET /auth/status` endpoint; both iOS (`AuthService.shared.externalTemplatesEnabled`) and web (`useAuth().externalTemplatesEnabled`) read it from there on startup — no extra round-trip needed. Source of truth is the `externalTemplatesEnabled` `systemSetting` DB key; `EXTERNAL_TEMPLATES_ENABLED` env var is the fallback when no DB record exists
 - **Field names match exactly** — all fields on InvDifferent2's local `Template` model exist on the remote with the same camelCase names; remote adds more fields (codename, gestaltId, ramSlots, ports, etc.)
 - **Integration hook:** `applyTemplateData()` in `web/src/components/DeviceForm.tsx` and `applyExternalTemplate()` in `AddDeviceView.swift` handle applying remote template data
 - **Image auto-import (web only):** when a remote template is applied on the create-device form, its thumbnail image(s) are fetched from the remote URL and uploaded as the new device's thumbnail; LIGHT/DARK modes are preserved; a single image gets `thumbnailMode: BOTH`; iOS does not yet do this

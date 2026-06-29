@@ -174,7 +174,7 @@ acme:
 | `ANTHROPIC_API_KEY` | Enables the AI chat assistant |
 | `MCP_TOKEN` | Optional token for the MCP server (token required for auth MCP server from AI agent) |
 | `CONTACT_EMAIL` | Email shown on the storefront contact button (default: `store@example.com`) |
-| `EXTERNAL_TEMPLATES_ENABLED` | Controls the remote template catalog (default: `true`). Set to `false` to use local templates only — see [Template Catalog](#template-catalog) below. |
+| `EXTERNAL_TEMPLATES_ENABLED` | Initial default for the remote template catalog (`true` by default). Once toggled in the web Settings page the DB value takes precedence and this env var is ignored. |
 
 ### Traefik / Domain (prod deployment only)
 
@@ -449,11 +449,9 @@ By default, the Add Device form connects to the remote [TemplatesDifferent](http
 - Seeded (built-in) local templates are hidden from the `/templates` admin page to avoid duplication
 - The first launch fetches and caches the full catalog locally; subsequent launches use the cache (refreshed hourly or on catalog version change)
 
-**To disable the remote catalog** and use only local templates, set:
+**To disable the remote catalog**, go to **Settings → External Templates** and toggle it off. The change takes effect immediately for both the web app and the iOS app.
 
-```env
-EXTERNAL_TEMPLATES_ENABLED=false
-```
+Alternatively, set `EXTERNAL_TEMPLATES_ENABLED=false` in your environment before the first launch — this acts as the initial default if the setting has never been saved from the Settings page.
 
 When disabled, all local templates (including seeded ones) appear on the `/templates` admin page, and no remote catalog is fetched.
 
