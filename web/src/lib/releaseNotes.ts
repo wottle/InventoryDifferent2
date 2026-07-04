@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'iOS: date fields (Date Acquired, Sold Date, Last Power On) now show "Not Set" instead of today\'s date when no date has been entered; Date Acquired also no longer pre-fills to today on new devices',
+    ],
   },
   {
     version: '2.9.2',

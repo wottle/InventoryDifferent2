@@ -18,6 +18,7 @@ struct AddDeviceView: View {
 
     // Optional prefill values (from wishlist "Mark as Acquired" or barcode scanner)
     var prefillTemplateId: Int?
+    var prefillExternalTemplateId: Int?
     var prefillSerialNumber: String?
     var prefillName: String?
     var prefillAdditionalName: String?
@@ -62,7 +63,7 @@ struct AddDeviceView: View {
     @State private var showAddAccessorySheet = false
     @State private var showAddLinkSheet = false
     
-    @State private var dateAcquired: Date? = Date()
+    @State private var dateAcquired: Date? = nil
     @State private var whereAcquired = ""
     @State private var priceAcquired = ""
     @State private var estimatedValue = ""
@@ -185,8 +186,12 @@ struct AddDeviceView: View {
                     externalTemplates = await ExternalTemplateService.shared.loadTemplates()
                 }
                 // Auto-apply matched template from barcode decoder (before other prefills
-                // so that prefill values take precedence over template defaults)
-                if let id = prefillTemplateId, let template = templates.first(where: { $0.id == id }) {
+                // so that prefill values take precedence over template defaults).
+                // External template (from TemplatesDifferent remote lookup) takes priority
+                // over a local fuzzy match when both are present.
+                if let id = prefillExternalTemplateId, let template = externalTemplates.first(where: { $0.id == id }) {
+                    applyExternalTemplate(template)
+                } else if let id = prefillTemplateId, let template = templates.first(where: { $0.id == id }) {
                     applyTemplate(template)
                 }
                 // Apply prefill values from wishlist "Mark as Acquired"
@@ -484,11 +489,18 @@ struct AddDeviceView: View {
     private var acquisitionSection: some View {
         let t = lm.t
         return Section {
-            DatePicker(t.addEditDevice.dateAcquired, selection: Binding(
-                get: { dateAcquired ?? Date() },
-                set: { dateAcquired = $0 }
-            ), displayedComponents: .date)
-
+            if let acquired = dateAcquired {
+                DatePicker(t.addEditDevice.dateAcquired, selection: Binding(
+                    get: { acquired },
+                    set: { dateAcquired = $0 }
+                ), displayedComponents: .date)
+            } else {
+                HStack {
+                    Text(t.addEditDevice.dateAcquired)
+                    Spacer()
+                    Text(t.addEditDevice.notSet).foregroundColor(.secondary)
+                }
+            }
             Button(dateAcquired == nil ? t.addEditDevice.setDateAcquired : t.addEditDevice.clearDateAcquired) {
                 dateAcquired = dateAcquired == nil ? Date() : nil
             }
@@ -512,22 +524,36 @@ struct AddDeviceView: View {
             if status == .SOLD {
                 LabeledField(label: t.addEditDevice.soldPrice, text: $soldPrice, prompt: "0.00", keyboardType: .decimalPad)
 
-                DatePicker(t.addEditDevice.soldDate, selection: Binding(
-                    get: { soldDate ?? Date() },
-                    set: { soldDate = $0 }
-                ), displayedComponents: .date)
-
+                if let sold = soldDate {
+                    DatePicker(t.addEditDevice.soldDate, selection: Binding(
+                        get: { sold },
+                        set: { soldDate = $0 }
+                    ), displayedComponents: .date)
+                } else {
+                    HStack {
+                        Text(t.addEditDevice.soldDate)
+                        Spacer()
+                        Text(t.addEditDevice.notSet).foregroundColor(.secondary)
+                    }
+                }
                 Button(soldDate == nil ? t.addEditDevice.setSoldDate : t.addEditDevice.clearSoldDate) {
                     soldDate = soldDate == nil ? Date() : nil
                 }
                 .foregroundColor(.accentColor)
             }
             else if status == .DONATED {
-                DatePicker(t.addEditDevice.donatedDate, selection: Binding(
-                    get: { soldDate ?? Date() },
-                    set: { soldDate = $0 }
-                ), displayedComponents: .date)
-
+                if let donated = soldDate {
+                    DatePicker(t.addEditDevice.donatedDate, selection: Binding(
+                        get: { donated },
+                        set: { soldDate = $0 }
+                    ), displayedComponents: .date)
+                } else {
+                    HStack {
+                        Text(t.addEditDevice.donatedDate)
+                        Spacer()
+                        Text(t.addEditDevice.notSet).foregroundColor(.secondary)
+                    }
+                }
                 Button(soldDate == nil ? t.addEditDevice.setDonatedDate : t.addEditDevice.clearDonatedDate) {
                     soldDate = soldDate == nil ? Date() : nil
                 }
@@ -587,10 +613,18 @@ struct AddDeviceView: View {
             }
             Toggle(t.addEditDevice.wifiEnabled, isOn: $isWifiEnabled)
             Toggle(t.addEditDevice.pramBatteryInstalled, isOn: $pramBatteryInstalled)
-            DatePicker(t.addEditDevice.lastPowerOn, selection: Binding(
-                get: { lastPowerOnDate ?? Date() },
-                set: { lastPowerOnDate = $0 }
-            ), displayedComponents: .date)
+            if let powerOn = lastPowerOnDate {
+                DatePicker(t.addEditDevice.lastPowerOn, selection: Binding(
+                    get: { powerOn },
+                    set: { lastPowerOnDate = $0 }
+                ), displayedComponents: .date)
+            } else {
+                HStack {
+                    Text(t.addEditDevice.lastPowerOn)
+                    Spacer()
+                    Text(t.addEditDevice.notSet).foregroundColor(.secondary)
+                }
+            }
             Button(lastPowerOnDate == nil ? t.addEditDevice.setLastPowerOn : t.addEditDevice.clearLastPowerOn) {
                 lastPowerOnDate = lastPowerOnDate == nil ? Date() : nil
             }
