@@ -9,7 +9,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Changed
 
 ### Fixed
-- iOS: date fields (Date Acquired, Sold Date, Last Power On) now show "Not Set" instead of today's date when no date has been entered; Date Acquired also no longer pre-fills to today on new devices
+- iOS: date fields (Sold Date, Last Power On) now show "Not Set" instead of today's date when no date has been entered; Date Acquired still defaults to today on new devices
 
 ---
 
