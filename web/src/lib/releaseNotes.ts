@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Storefront container fails to start with "Could not find a production build" due to a stale Docker build cache; the build cache is now correctly invalidated on each release',
+    ],
   },
   {
     version: '2.9.3',

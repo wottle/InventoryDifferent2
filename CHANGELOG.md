@@ -10,6 +10,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 
+- Storefront container fails to start with "Could not find a production build" due to a stale Docker build cache; the build cache is now correctly invalidated on each release
+
 ---
 
 ## [2.9.3] - 2026-07-04

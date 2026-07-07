@@ -39,7 +39,10 @@ actor SerialLookupService {
     private let apiBase = "https://api.templates.inventorydifferent.com"
 
     func lookup(serial: String) async -> SerialLookupResult? {
-        let encoded = serial.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? serial
+        // Use alphanumerics only — serial numbers are alphanumeric, and this prevents
+        // path traversal if unexpected input reaches this function.
+        let allowed = CharacterSet.alphanumerics
+        let encoded = serial.addingPercentEncoding(withAllowedCharacters: allowed) ?? serial
         guard let url = URL(string: "\(apiBase)/serial-lookup/\(encoded)") else { return nil }
         guard let (data, response) = try? await URLSession.shared.data(from: url),
               (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }

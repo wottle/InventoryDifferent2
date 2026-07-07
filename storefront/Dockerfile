@@ -9,7 +9,10 @@ RUN --mount=type=cache,target=/root/.npm \
 
 COPY . .
 
-RUN npm run build
+ARG BUILD_VERSION=dev
+ENV BUILD_VERSION=${BUILD_VERSION}
+
+RUN npm run build && test -f .next/BUILD_ID
 
 EXPOSE 3001
 
