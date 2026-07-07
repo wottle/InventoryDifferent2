@@ -122,6 +122,7 @@ func runTests() {
         // --- Modern: should route to modern decoder ---
         TestCase(serial: "SG303054C2C",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: nil,                        expectsWarning: false, note: "Color Classic — 11-char modern (SG factory)"),
         TestCase(serial: "XB3296HGCA8",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: nil,                        expectsWarning: false, note: "Quadra 650 — 11-char modern"),
+        TestCase(serial: "SG6426D18KS",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: "Performa 5440",            expectsWarning: false, note: "Performa 5440 — 11-char modern (SG factory)"),
         TestCase(serial: "SYM9363YW9G6",  expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: nil,                        expectsWarning: false, note: "Mac Mini 2009 — 12-char modern"),
         TestCase(serial: "F5KRT08HF9VN",  expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: "Mac Pro (Late 2013)",      expectsWarning: false, note: "Mac Pro 2013 — 12-char modern"),
 

@@ -26,7 +26,8 @@ struct BarcodeScannerView: View {
     @State private var decodedModelName: String?
     @State private var decodedFactory: String?
     @State private var decodedYear: Int?
-    @State private var matchedTemplateId: Int?
+    @State private var matchedTemplateId: Int?         // local InvDifferent template ID
+    @State private var matchedExternalTemplateId: Int? // TemplatesDifferent catalog ID
     @State private var cameraActive = true
 
     private var scanFrameSize: CGFloat {
@@ -114,6 +115,7 @@ struct BarcodeScannerView: View {
                     },
                     onAddDeviceUnmatched: {
                         matchedTemplateId = nil
+                        matchedExternalTemplateId = nil
                         decodedModelName = nil
                         decodedFactory = nil
                         decodedYear = nil
@@ -137,9 +139,10 @@ struct BarcodeScannerView: View {
             }) {
                 AddDeviceView(
                     prefillTemplateId: matchedTemplateId,
+                    prefillExternalTemplateId: matchedExternalTemplateId,
                     prefillSerialNumber: notFoundSerial,
-                    prefillName: matchedTemplateId == nil ? decodedModelName : nil,
-                    prefillManufacturer: matchedTemplateId == nil && decodedModelName != nil ? "Apple" : nil
+                    prefillName: (matchedTemplateId == nil && matchedExternalTemplateId == nil) ? decodedModelName : nil,
+                    prefillManufacturer: (matchedTemplateId == nil && matchedExternalTemplateId == nil && decodedModelName != nil) ? "Apple" : nil
                 )
                 .environmentObject(deviceStore)
                 .environmentObject(lm)
@@ -249,28 +252,51 @@ struct BarcodeScannerView: View {
         }
         
         print("[Scanner] No device found for: \(serialNumber)")
-        let decoded = AppleSerialDecoder.decode(serialNumber)
+
         var modelName: String? = nil
         var factory: String? = nil
         var year: Int? = nil
-        switch decoded {
-        case .vintage(let r):
-            modelName = r.modelName
-            factory = r.factory
-            year = r.year
-        case .modern(let r):
-            modelName = r.modelName
-        default:
-            break
+        var localTemplateId: Int? = nil
+        var externalTemplateId: Int? = nil
+
+        // Try remote lookup first when external templates are enabled.
+        if AuthService.shared.externalTemplatesEnabled,
+           let result = await SerialLookupService.shared.lookup(serial: serialNumber),
+           let match = result.matches.first {
+            print("[Scanner] Remote lookup matched: \(match.name) (id \(match.templateId))")
+            modelName = match.name
+            year = match.manufactureYear
+            factory = result.parsed.factory
+            externalTemplateId = match.templateId
         }
-        let templateId = modelName != nil ? await findMatchingTemplate(modelName: modelName!) : nil
+
+        // Fall back to the local decoder when remote is disabled or returned no matches.
+        if modelName == nil {
+            print("[Scanner] Falling back to local decoder")
+            let decoded = AppleSerialDecoder.decode(serialNumber)
+            switch decoded {
+            case .vintage(let r):
+                modelName = r.modelName
+                factory = r.factory
+                year = r.year
+            case .modern(let r):
+                modelName = r.modelName
+            default:
+                break
+            }
+            if let name = modelName {
+                localTemplateId = await findMatchingTemplate(modelName: name)
+            }
+        }
+
         await MainActor.run {
             isSearching = false
             notFoundSerial = serialNumber
             decodedModelName = modelName
             decodedFactory = factory
             decodedYear = year
-            matchedTemplateId = templateId
+            matchedTemplateId = localTemplateId
+            matchedExternalTemplateId = externalTemplateId
             showNotFoundSheet = true
         }
     }

@@ -251,6 +251,7 @@ private let _modernModelChunk01: [String: ModernModelEntry] = [
     "1NV": ("iMac7,1", "iMac (20-inch, Mid 2007)"),
     "1NW": ("iMac7,1", "iMac (24-inch, Mid 2007)"),
     "1P1": ("", "iPod nano (4th generation)"),
+    "1PT": ("", "Macintosh LC II / Performa 405"),
     "1PX": ("MacBook4,1", "MacBook (13-inch, Early 2008)"),
     "1Q2": ("MacBook4,1", "MacBook (13-inch, Early 2008)"),
     "1Q3": ("MacBookPro4,1", "MacBook Pro (17-inch, Early 2008)"),
@@ -504,10 +505,10 @@ private let _modernModelChunk01: [String: ModernModelEntry] = [
     "644": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
     "64B": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
     "64C": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
-    "663": ("MacBookPro4,1", "MacBook Pro (17-inch, Late 2008)"),
 ]
 
 private let _modernModelChunk02: [String: ModernModelEntry] = [
+    "663": ("MacBookPro4,1", "MacBook Pro (17-inch, Late 2008)"),
     "664": ("MacBookPro4,1", "MacBook Pro (17-inch, Late 2008)"),
     "666": ("MacBookPro4,1", "MacBook Pro (17-inch, Late 2008)"),
     "668": ("MacBookPro4,1", "MacBook Pro (17-inch, Late 2008)"),
@@ -660,6 +661,7 @@ private let _modernModelChunk02: [String: ModernModelEntry] = [
     "8FY": ("MacBookPro5,2", "MacBook Pro (17-inch, Early 2009)"),
     "8FZ": ("MacBookPro5,2", "MacBook Pro (17-inch, Early 2009)"),
     "8G0": ("MacBookPro5,2", "MacBook Pro (17-inch, Early 2009)"),
+    "8KS": ("Performa5440", "Performa 5440"),
     "8KW": ("", "Apple Remote Desktop 3.X"),
     "8KY": ("", "Apple Remote Desktop 3.X"),
     "8L0": ("", "iPhone 3G (China)"),
@@ -873,6 +875,7 @@ private let _modernModelChunk02: [String: ModernModelEntry] = [
     "ALN": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
     "ALP": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
     "ALQ": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
+    "AM5": ("M4405", "Power Mac G3 Minitower"),
     "AMF": ("MacBookPro5,4", "MacBook Pro (15-inch, 2.53GHz, Mid 2009)"),
     "AMG": ("MacBookPro5,4", "MacBook Pro (15-inch, 2.53GHz, Mid 2009)"),
     "AMH": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
@@ -938,7 +941,6 @@ private let _modernModelChunk02: [String: ModernModelEntry] = [
     "CAP": ("", "Power Mac G3 Minitower"),
     "CCD": ("", "Power Mac G3 Minitower"),
     "CG9": ("", "Power Mac G3 Minitower"),
-    "AM5": ("M4405", "Power Mac G3 Minitower"),
     "CJ1": ("MacBookPro5,3", "MacBook Pro (15-inch, Mid 2009)"),
     "CJ6": ("MacBook6,1", "MacBook (13-inch, Late 2009)"),
     "CJ7": ("", "iMac DV (Slot Loading)"),
@@ -974,6 +976,7 @@ private let _modernModelChunk02: [String: ModernModelEntry] = [
     "CZ2": ("MacPro4,1", "Mac Pro (Early 2009)"),
     "CZ3": ("MacPro4,1", "Mac Pro (Early 2009)"),
     "CZ4": ("MacPro4,1", "Mac Pro (Early 2009)"),
+    "D39": ("", "Macintosh Classic II / Performa 200"),
     "D4V": ("iMac11,1", "iMac (27-inch, Late 2009)"),
     "D5G": ("Xserve3,1", "Xserve (Early 2009)"),
     "D6C": ("", "Apple Studio Display 21 inch CRT"),
@@ -1005,12 +1008,12 @@ private let _modernModelChunk02: [String: ModernModelEntry] = [
     "DDJV": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
     "DDJW": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
     "DDJX": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
-    "DDJY": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
-    "DDK0": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
-    "DDK1": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
 ]
 
 private let _modernModelChunk03: [String: ModernModelEntry] = [
+    "DDJY": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
+    "DDK0": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
+    "DDK1": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
     "DDK2": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
     "DDK3": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
     "DDK4": ("MacBookPro6,1", "MacBook Pro (17-inch, Mid 2010)"),
@@ -1508,12 +1511,12 @@ private let _modernModelChunk03: [String: ModernModelEntry] = [
     "DYL0": ("MacBookPro8,1", "MacBook Pro (13-inch, Late 2011)"),
     "DYL1": ("MacBookPro8,1", "MacBook Pro (13-inch, Late 2011)"),
     "DYL2": ("MacBookPro8,1", "MacBook Pro (13-inch, Late 2011)"),
-    "DYQJ": ("Macmini5,1", "Mac mini (Mid 2011)"),
-    "DYR1": ("MacBookPro8,2", "MacBook Pro (15-inch, Late 2011)"),
-    "DZZ": ("", "iPhone 4"),
 ]
 
 private let _modernModelChunk04: [String: ModernModelEntry] = [
+    "DYQJ": ("Macmini5,1", "Mac mini (Mid 2011)"),
+    "DYR1": ("MacBookPro8,2", "MacBook Pro (15-inch, Late 2011)"),
+    "DZZ": ("", "iPhone 4"),
     "E00": ("", "iPhone 4"),
     "E1B": ("iMac9,1", "iMac (24-inch, Early 2009)"),
     "E1C": ("MacPro4,1", "Mac Pro (Early 2009)"),
@@ -2011,12 +2014,12 @@ private let _modernModelChunk04: [String: ModernModelEntry] = [
     "FLFV": ("", "iPhone 5c"),
     "FLFW": ("", "iPhone 5c"),
     "FLFY": ("", "iPhone 5c"),
-    "FLG0": ("", "iPhone 5c"),
-    "FLG2": ("", "iPhone 5c"),
-    "FLHH": ("iMac14,2", "iMac (27-inch, Late 2013)"),
 ]
 
 private let _modernModelChunk05: [String: ModernModelEntry] = [
+    "FLG0": ("", "iPhone 5c"),
+    "FLG2": ("", "iPhone 5c"),
+    "FLHH": ("iMac14,2", "iMac (27-inch, Late 2013)"),
     "FLMH": ("iMac13,3", "iMac (21.5-inch, Early 2013)"),
     "FLMJ": ("", "iPad mini 2 WiFi + Cellular"),
     "FLMK": ("", "iPad mini 2 WiFi + Cellular"),
@@ -2514,12 +2517,12 @@ private let _modernModelChunk05: [String: ModernModelEntry] = [
     "G5MQ": ("", "iPhone 6"),
     "G5MR": ("", "iPhone 6"),
     "G5MT": ("", "iPhone 6"),
-    "G5MV": ("", "iPhone 6"),
-    "G5MW": ("", "iPhone 6"),
-    "G5MY": ("", "iPhone 6"),
 ]
 
 private let _modernModelChunk06: [String: ModernModelEntry] = [
+    "G5MV": ("", "iPhone 6"),
+    "G5MW": ("", "iPhone 6"),
+    "G5MY": ("", "iPhone 6"),
     "G5N0": ("", "iPhone 6"),
     "G5QF": ("", "iPhone 6 Plus"),
     "G5QG": ("", "iPhone 6 Plus"),
@@ -3017,12 +3020,12 @@ private let _modernModelChunk06: [String: ModernModelEntry] = [
     "GCVV": ("Macmini7,1", "Mac mini (Late 2014)"),
     "GCVW": ("Macmini7,1", "Mac mini (Late 2014)"),
     "GCVY": ("Macmini7,1", "Mac mini (Late 2014)"),
-    "GCW0": ("Macmini7,1", "Mac mini (Late 2014)"),
-    "GCW1": ("Macmini7,1", "Mac mini (Late 2014)"),
-    "GD6": ("MacBookPro6,2", "MacBook Pro (15-inch, Mid 2010)"),
 ]
 
 private let _modernModelChunk07: [String: ModernModelEntry] = [
+    "GCW0": ("Macmini7,1", "Mac mini (Late 2014)"),
+    "GCW1": ("Macmini7,1", "Mac mini (Late 2014)"),
+    "GD6": ("MacBookPro6,2", "MacBook Pro (15-inch, Mid 2010)"),
     "GDJL": ("MacBookPro9,2", "MacBook Pro (13-inch, Mid 2012)"),
     "GDJM": ("MacBookPro11,1", "MacBook Pro (Retina, 13-inch, Mid 2014)"),
     "GDL2": ("MacBookPro9,2", "MacBook Pro (13-inch, Mid 2012)"),
@@ -3520,12 +3523,12 @@ private let _modernModelChunk07: [String: ModernModelEntry] = [
     "H03Y": ("MacBookPro13,3", "MacBook Pro (15-inch, 2016)"),
     "H040": ("MacBookPro13,3", "MacBook Pro (15-inch, 2016)"),
     "H0B": ("iMac11,3", "iMac (27-inch, Mid 2010)"),
-    "H0C": ("iMac11,2", "iMac (21.5-inch, Mid 2010)"),
-    "H0E": ("", "Apple Studio Display 21 inch CRT"),
-    "H0HJ": ("iMac14,1", "iMac (21.5-inch, Late 2013)"),
 ]
 
 private let _modernModelChunk08: [String: ModernModelEntry] = [
+    "H0C": ("iMac11,2", "iMac (21.5-inch, Mid 2010)"),
+    "H0E": ("", "Apple Studio Display 21 inch CRT"),
+    "H0HJ": ("iMac14,1", "iMac (21.5-inch, Late 2013)"),
     "H0KF": ("iMac16,2", "iMac (Retina 4K, 21.5-inch, Late 2015)"),
     "H0N6": ("iMac16,1", "iMac (21.5-inch, Late 2015)"),
     "H0P6": ("iMac16,1", "iMac (21.5-inch, Late 2015)"),
@@ -4023,12 +4026,12 @@ private let _modernModelChunk08: [String: ModernModelEntry] = [
     "HH22": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
     "HH23": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
     "HH24": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
-    "HH25": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
-    "HH26": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
-    "HH27": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
 ]
 
 private let _modernModelChunk09: [String: ModernModelEntry] = [
+    "HH25": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
+    "HH26": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
+    "HH27": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
     "HH28": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
     "HH29": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
     "HH2C": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
@@ -4526,12 +4529,12 @@ private let _modernModelChunk09: [String: ModernModelEntry] = [
     "J5X4": ("", "Apple Watch Series 3 GPS Aluminum 42mm (3rd gen)"),
     "J5X5": ("", "Apple Watch Series 3 GPS Aluminum 42mm (3rd gen)"),
     "J5X6": ("", "Apple Watch Series 3 GPS Nike+ 42mm (3rd gen)"),
-    "J608": ("iMac18,2", "iMac (Retina 4K, 21.5-inch, 2017)"),
-    "J609": ("iMac18,3", "iMac (Retina 5K, 27-inch, 2017)"),
-    "J60C": ("iMac18,3", "iMac (Retina 5K, 27-inch, 2017)"),
 ]
 
 private let _modernModelChunk10: [String: ModernModelEntry] = [
+    "J608": ("iMac18,2", "iMac (Retina 4K, 21.5-inch, 2017)"),
+    "J609": ("iMac18,3", "iMac (Retina 5K, 27-inch, 2017)"),
+    "J60C": ("iMac18,3", "iMac (Retina 5K, 27-inch, 2017)"),
     "J64G": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
     "J64H": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
     "J64J": ("MacBook10,1", "MacBook (Retina, 12-inch, 2017)"),
@@ -5029,12 +5032,12 @@ private let _modernModelChunk10: [String: ModernModelEntry] = [
     "JYM5": ("", "Smart Keyboard"),
     "JYM6": ("", "Smart Keyboard"),
     "JYM7": ("", "Smart Keyboard"),
-    "JYM8": ("", "Smart Keyboard"),
-    "JYM9": ("", "Smart Keyboard"),
-    "JYMC": ("", "Smart Keyboard"),
 ]
 
 private let _modernModelChunk11: [String: ModernModelEntry] = [
+    "JYM8": ("", "Smart Keyboard"),
+    "JYM9": ("", "Smart Keyboard"),
+    "JYMC": ("", "Smart Keyboard"),
     "JYN": ("", "Power Mac G4 Server (Gigabit)"),
     "JYVW": ("Macmini8,1", "Mac mini (2018)"),
     "JYVX": ("Macmini8,1", "Mac mini (2018)"),
@@ -5532,12 +5535,12 @@ private let _modernModelChunk11: [String: ModernModelEntry] = [
     "L2V": ("", "iBook (14.1 LCD)"),
     "L2W": ("", "iMac (Early 2001)"),
     "L2Z": ("", "iMac DV (Summer 2000)"),
-    "L30": ("", "iMac (Early 2001)"),
-    "L31": ("", "iMac (Early 2001)"),
-    "L36": ("", "iMac (Early 2001)"),
 ]
 
 private let _modernModelChunk12: [String: ModernModelEntry] = [
+    "L30": ("", "iMac (Early 2001)"),
+    "L31": ("", "iMac (Early 2001)"),
+    "L36": ("", "iMac (Early 2001)"),
     "L37": ("", "iMac (Early 2001)"),
     "L38": ("", "iMac (Early 2001)"),
     "L39": ("", "iMac (Early 2001)"),
@@ -6035,12 +6038,12 @@ private let _modernModelChunk12: [String: ModernModelEntry] = [
     "MB6": ("", "iMac (Summer 2001)"),
     "MBG": ("", "Power Mac Server G4 (Mirrored Drive Doors)"),
     "MBQ": ("", "iMac (Summer 2001)"),
-    "MBR": ("", "iMac (Summer 2001)"),
-    "MBS": ("", "iMac (Summer 2001)"),
-    "MBW": ("", "iMac (Summer 2001)"),
 ]
 
 private let _modernModelChunk13: [String: ModernModelEntry] = [
+    "MBR": ("", "iMac (Summer 2001)"),
+    "MBS": ("", "iMac (Summer 2001)"),
+    "MBW": ("", "iMac (Summer 2001)"),
     "MC9H": ("iMacPro1,1", "iMac Pro (2017)"),
     "MC9J": ("iMac19,1", "iMac (Retina 5K, 27-inch, 2019)"),
     "MC9K": ("iMac19,1", "iMac (Retina 5K, 27-inch, 2019)"),
@@ -6538,12 +6541,12 @@ private let _modernModelChunk13: [String: ModernModelEntry] = [
     "N710": ("", "iPhone 11 Pro Max"),
     "N711": ("", "iPhone 11 Pro Max"),
     "N712": ("", "iPhone 11 Pro Max"),
-    "N713": ("", "iPhone 11 Pro Max"),
-    "N714": ("", "iPhone 11 Pro Max"),
-    "N715": ("", "iPhone 11 Pro Max"),
 ]
 
 private let _modernModelChunk14: [String: ModernModelEntry] = [
+    "N713": ("", "iPhone 11 Pro Max"),
+    "N714": ("", "iPhone 11 Pro Max"),
+    "N715": ("", "iPhone 11 Pro Max"),
     "N71C": ("MacBookPro15,4", "MacBook Pro (13-inch, 2019, Two Thunderbolt 3 ports)"),
     "N71D": ("MacBookPro15,4", "MacBook Pro (13-inch, 2019, Two Thunderbolt 3 ports)"),
     "N71F": ("MacBookPro15,4", "MacBook Pro (13-inch, 2019, Two Thunderbolt 3 ports)"),
@@ -7041,12 +7044,12 @@ private let _modernModelChunk14: [String: ModernModelEntry] = [
     "PG8X": ("MacBookPro16,1", "MacBook Pro (16-inch, 2019)"),
     "PG8Y": ("MacBookPro16,1", "MacBook Pro (16-inch, 2019)"),
     "PG9": ("", "iBook (Opaque 16VRAM)"),
-    "PG90": ("MacBookPro16,1", "MacBook Pro (16-inch, 2019)"),
-    "PG91": ("MacBookPro16,1", "MacBook Pro (16-inch, 2019)"),
-    "PGA": ("", "Power Mac G5"),
 ]
 
 private let _modernModelChunk15: [String: ModernModelEntry] = [
+    "PG90": ("MacBookPro16,1", "MacBook Pro (16-inch, 2019)"),
+    "PG91": ("MacBookPro16,1", "MacBook Pro (16-inch, 2019)"),
+    "PGA": ("", "Power Mac G5"),
     "PGB": ("", "Power Mac G5"),
     "PGC": ("", "Power Mac G5"),
     "PGH": ("", "iBook (800 MHZ 32 VRAM)"),
@@ -7544,12 +7547,12 @@ private let _modernModelChunk15: [String: ModernModelEntry] = [
     "QWH": ("", "Xserve G5"),
     "QWJ": ("", "Xserve G5"),
     "QWK": ("", "Xserve G5"),
-    "QWN": ("", "Xserve RAID (SFP)"),
-    "QXD": ("", "Power Mac G5"),
-    "QY0": ("", "Power Mac G5 (June 2004)"),
 ]
 
 private let _modernModelChunk16: [String: ModernModelEntry] = [
+    "QWN": ("", "Xserve RAID (SFP)"),
+    "QXD": ("", "Power Mac G5"),
+    "QY0": ("", "Power Mac G5 (June 2004)"),
     "QY1": ("", "Power Mac G5 (June 2004)"),
     "QYP": ("", "iBook (800 MHZ 32 VRAM)"),
     "QYT": ("", "Power Mac G5 (Late 2004)"),
@@ -8047,12 +8050,12 @@ private let _modernModelChunk16: [String: ModernModelEntry] = [
     "T2W": ("", "iPod Hi-Fi"),
     "T2X": ("", "iBook G4 (14-inch Late 2004)"),
     "T39": ("", "Power Mac G5 (Late 2005)"),
-    "T3U": ("", "Xserve G5 (January 2005)"),
-    "T3V": ("", "Power Mac G5 (June 2004)"),
-    "T40": ("", "eMac (USB 2.0)"),
 ]
 
 private let _modernModelChunk17: [String: ModernModelEntry] = [
+    "T3U": ("", "Xserve G5 (January 2005)"),
+    "T3V": ("", "Power Mac G5 (June 2004)"),
+    "T40": ("", "eMac (USB 2.0)"),
     "T41": ("", "PowerBook G4 (15-inch 1.67/1.5GHZ)"),
     "T52": ("", "iMac G5 ALS (17-Inch)"),
     "T53": ("", "iMac G5 ALS (17-Inch)"),
@@ -8550,12 +8553,12 @@ private let _modernModelChunk17: [String: ModernModelEntry] = [
     "W3N": ("MacBookPro1,1", "MacBook Pro (15-inch Glossy)"),
     "W3P": ("MacBookPro1,2", "MacBook Pro (17-inch)"),
     "W3Q": ("MacBookPro1,2", "MacBook Pro (17-inch)"),
-    "W3R": ("MacBookPro1,2", "MacBook Pro (17-inch)"),
-    "W4F": ("", "iBook G4 (12-inch Mid 2005)"),
-    "W4K": ("MacBookPro2,2", "MacBook Pro (15-inch Core 2 Duo)"),
 ]
 
 private let _modernModelChunk18: [String: ModernModelEntry] = [
+    "W3R": ("MacBookPro1,2", "MacBook Pro (17-inch)"),
+    "W4F": ("", "iBook G4 (12-inch Mid 2005)"),
+    "W4K": ("MacBookPro2,2", "MacBook Pro (15-inch Core 2 Duo)"),
     "W4L": ("MacBookPro2,2", "MacBook Pro (15-inch Core 2 Duo)"),
     "W4M": ("MacBookPro2,1", "MacBook Pro (17-inch Core 2 Duo)"),
     "W4N": ("", "iPod touch (1st Generation)"),
@@ -9053,12 +9056,12 @@ private let _modernModelChunk18: [String: ModernModelEntry] = [
     "ZA9": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
     "ZAP": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
     "ZAQ": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
-    "ZAS": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
-    "ZAU": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
-    "ZAV": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
 ]
 
 private let _modernModelChunk19: [String: ModernModelEntry] = [
+    "ZAS": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
+    "ZAU": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
+    "ZAV": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
     "ZAW": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
     "ZAX": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
     "ZAY": ("MacBook2,1", "MacBook (13-inch Mid 2007)"),
@@ -9103,12 +9106,10 @@ private let _modernModelChunk19: [String: ModernModelEntry] = [
     "ZP8": ("", "AirPort Express 802.11n (1st Generation)"),
     "ZTM": ("", "AirPort Time Capsule 802.11n (1st Generation)"),
     "ZTN": ("", "AirPort Time Capsule 802.11n (1st Generation)"),
-    "1PT": ("", "Macintosh LC II / Performa 405"),
-    "D39": ("", "Macintosh Classic II / Performa 200"),
 ]
 
 let modernModelCodes: [String: ModernModelEntry] = {
-    var d = [String: ModernModelEntry](minimumCapacity: 9096)
+    var d = [String: ModernModelEntry](minimumCapacity: 9097)
     for (k, v) in _modernModelChunk01 { d[k] = v }
     for (k, v) in _modernModelChunk02 { d[k] = v }
     for (k, v) in _modernModelChunk03 { d[k] = v }
