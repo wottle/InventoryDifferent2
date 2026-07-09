@@ -120,9 +120,11 @@ func runTests() {
         TestCase(serial: "f438-1c3-m0001",expectedFormat: "vintage", expectedModelCode: "M0001",   expectedModelName: "Macintosh 128K",           expectsWarning: false, note: "Lowercase + dashes — should normalize"),
 
         // --- Modern: should route to modern decoder ---
-        TestCase(serial: "SG303054C2C",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: nil,                        expectsWarning: false, note: "Color Classic — 11-char modern (SG factory)"),
+        TestCase(serial: "SG303054C2C",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: "Macintosh Color Classic",   expectsWarning: false, note: "Color Classic — C2C config code"),
         TestCase(serial: "XB3296HGCA8",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: nil,                        expectsWarning: false, note: "Quadra 650 — 11-char modern"),
         TestCase(serial: "SG6426D18KS",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: "Performa 5440",            expectsWarning: false, note: "Performa 5440 — 11-char modern (SG factory)"),
+        TestCase(serial: "TY7152747ZQ",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: "PowerBook 3400c/180",       expectsWarning: false, note: "PowerBook 3400c — 7ZQ config code"),
+        TestCase(serial: "SG1230C1C52",   expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: "Macintosh IIsi",            expectsWarning: false, note: "Macintosh IIsi — C52 config code"),
         TestCase(serial: "SYM9363YW9G6",  expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: nil,                        expectsWarning: false, note: "Mac Mini 2009 — 12-char modern"),
         TestCase(serial: "F5KRT08HF9VN",  expectedFormat: "modern",  expectedModelCode: nil,       expectedModelName: "Mac Pro (Late 2013)",      expectsWarning: false, note: "Mac Pro 2013 — 12-char modern"),
 
