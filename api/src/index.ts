@@ -308,7 +308,7 @@ export async function createApp(prismaOverride?: PrismaClient) {
                 usernameRequired: !!getAdminUsername(),
                 guestAccessEnabled,
                 externalTemplatesEnabled,
-                apiVersion: '2.9.3',
+                apiVersion: '3.0.0',
             });
         } catch {
             return res.json({
@@ -317,7 +317,7 @@ export async function createApp(prismaOverride?: PrismaClient) {
                 usernameRequired: !!getAdminUsername(),
                 guestAccessEnabled: true,
                 externalTemplatesEnabled: process.env.EXTERNAL_TEMPLATES_ENABLED !== 'false',
-                apiVersion: '2.9.3',
+                apiVersion: '3.0.0',
             });
         }
     });
