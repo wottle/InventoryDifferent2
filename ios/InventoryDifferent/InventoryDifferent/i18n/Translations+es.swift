@@ -11,7 +11,8 @@ extension Translations {
             SOLD: "Vendido",
             DONATED: "Donado",
             RETURNED: "Devuelto",
-            LOANED: "Prestado"
+            LOANED: "Prestado",
+            unknown: "Desconocido"
         ),
         functionalStatus: .init(
             YES: "Funcional",

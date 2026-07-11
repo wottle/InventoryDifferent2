@@ -476,6 +476,8 @@ struct ValueSaleInfo: View {
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(Color(red: 0.6, green: 0.4, blue: 0.85))
                 }
+            case .unknown:
+                EmptyView()
             }
         }
     }
@@ -530,6 +532,8 @@ struct StatusBadge: View {
             return .red
         case .LOANED:
             return Color(red: 0.6, green: 0.4, blue: 0.85)
+        case .unknown:
+            return .gray
         }
     }
 }

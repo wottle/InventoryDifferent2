@@ -9,11 +9,13 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var deviceStore: DeviceStore
+    @EnvironmentObject var auth: AuthService
     @Binding var deepLinkDeviceId: Int?
     @Binding var deepLinkLocationId: Int?
     @Binding var deepLinkToStats: Bool
     @State private var navigationPath = NavigationPath()
-    
+    @State private var serverWarningDismissed = false
+
     var body: some View {
         NavigationStack(path: $navigationPath) {
             DeviceListView(navigationPath: $navigationPath)
@@ -72,6 +74,29 @@ struct ContentView: View {
             if newValue {
                 navigationPath.append(MenuDestination.stats)
                 deepLinkToStats = false
+            }
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if auth.serverOutdated && !serverWarningDismissed {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.black)
+                    Text("Your server may be outdated. Update it for the best experience.")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.black)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                    Button {
+                        serverWarningDismissed = true
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.black)
+                            .font(.system(size: 12, weight: .bold))
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.yellow.opacity(0.85))
             }
         }
     }

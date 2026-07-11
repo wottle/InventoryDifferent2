@@ -173,6 +173,7 @@ class DeviceStore: ObservableObject {
                     case .SOLD: return 6
                     case .DONATED: return 7
                     case .LOANED: return 8
+                    case .unknown: return 9
                     }
                 }
                 let aRank = statusRank(a.status)

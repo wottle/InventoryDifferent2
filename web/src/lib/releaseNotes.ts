@@ -12,7 +12,10 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'iOS: defensive API decoding — the app no longer crashes if the server returns missing or null fields, unknown enum values, or empty arrays; a yellow warning banner appears when the server is older than the app',
+      'iOS: app is now App Store ready — custom URL scheme (inventorydifferent://) enables deep linking on any server deployment; Apple-associated-domains file updated with correct Team ID for the primary domain',
+    ],
     changed: [],
     fixed: [
       'Storefront container fails to start with "Could not find a production build" due to a stale Docker build cache; the build cache is now correctly invalidated on each release',
