@@ -139,8 +139,8 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                       cpuType
                       cpuSpeed
                       ram
-                      storage
-                      operatingSystem
+                      storageEntries { value }
+                      osEntries { value }
                       location {
                         id
                         name
@@ -259,10 +259,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
               functionalStatus: d.functionalStatus,
               category: d.category?.name,
               categoryType: d.category?.type,
-              cpu: d.cpuType,
+              cpu: [d.cpuType, d.cpuSpeed].filter(Boolean).join(' ') || null,
               ram: d.ram,
-              storage: d.storage,
-              operatingSystem: d.operatingSystem,
+              storage: d.storageEntries?.map((s: any) => s.value).join(', ') || null,
+              operatingSystem: d.osEntries?.map((o: any) => o.value).join(', ') || null,
               location: d.location?.name ?? null,
               estimatedValue: decimalToNumber(d.estimatedValue),
               listPrice: decimalToNumber(d.listPrice),
@@ -327,8 +327,8 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                       ram
                       graphicsChip
                       screenSize
-                      storage
-                      operatingSystem
+                      storageEntries { value }
+                      osEntries { value }
                       isWifiEnabled
                       pramBatteryInstalled
                       pramBatteryExpiryDate
@@ -388,12 +388,11 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
               isAssetTagged: device.isAssetTagged,
               category: device.category,
               specs: {
-                cpu: device.cpuType,
-                cpuSpeed: device.cpuSpeed,
+                cpu: [device.cpuType, device.cpuSpeed].filter(Boolean).join(' ') || null,
                 ram: device.ram,
                 graphics: device.graphicsChip,
-                storage: device.storage,
-                operatingSystem: device.operatingSystem,
+                storage: device.storageEntries?.map((s: any) => s.value).join(', ') || null,
+                operatingSystem: device.osEntries?.map((o: any) => o.value).join(', ') || null,
                 isWifiEnabled: device.isWifiEnabled,
                 pramBatteryInstalled: device.pramBatteryInstalled,
                 pramBatteryExpiryDate: device.pramBatteryExpiryDate,
@@ -587,8 +586,8 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                       cpuType
                       cpuSpeed
                       ram
-                      storage
-                      operatingSystem
+                      storageEntries { value }
+                      osEntries { value }
                       estimatedValue
                       category { name type }
                       tags { name }
@@ -621,10 +620,10 @@ Be enthusiastic about vintage computing while staying concise and helpful!`,
                 condition: d.functionalStatus,
                 category: d.category?.name,
                 categoryType: d.category?.type,
-                cpu: d.cpuType,
+                cpu: [d.cpuType, d.cpuSpeed].filter(Boolean).join(' ') || null,
                 ram: d.ram,
-                storage: d.storage,
-                os: d.operatingSystem,
+                storage: d.storageEntries?.map((s: any) => s.value).join(', ') || null,
+                os: d.osEntries?.map((o: any) => o.value).join(', ') || null,
                 estimatedValue: d.estimatedValue ? decimalToNumber(d.estimatedValue) : null,
                 tags: d.tags?.length > 0 ? d.tags.map((t: any) => t.name) : undefined,
               })),

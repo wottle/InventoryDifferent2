@@ -25,6 +25,7 @@ export const releaseNotes: ReleaseEntry[] = [
     ],
     changed: [],
     fixed: [
+      'Web and iOS chat: fixed empty collection responses caused by invalid GraphQL field names (storage, operatingSystem, cpu, graphics) that were removed when the data model was restructured into relation arrays',
       'Storefront container fails to start with "Could not find a production build" due to a stale Docker build cache; the build cache is now correctly invalidated on each release',
     ],
   },
