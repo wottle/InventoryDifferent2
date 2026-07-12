@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Privacy policy pages now readable in dark mode on web and storefront',
+    ],
   },
   {
     version: '3.0.0',
