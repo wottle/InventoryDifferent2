@@ -1,8 +1,8 @@
 export default function PrivacyPage() {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12 font-sans text-gray-800">
+    <div className="max-w-2xl mx-auto px-6 py-12 text-gray-900 dark:text-gray-100">
       <h1 className="text-3xl font-bold mb-2">Privacy Policy</h1>
-      <p className="text-sm text-gray-500 mb-8">Last updated: July 11, 2026</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">Last updated: July 11, 2026</p>
 
       <p className="mb-6">
         InventoryDifferent is a self-hosted application. This means your inventory
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
       <p className="mb-4">
         The optional TemplatesDifferent remote template catalog is operated by the
         developer at{' '}
-        <code className="text-sm bg-gray-100 px-1 rounded">
+        <code className="text-sm bg-gray-100 dark:bg-gray-800 px-1 rounded">
           api.templates.inventorydifferent.com
         </code>
         . When enabled, your server (not the iOS app directly) makes requests to
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
       <h2 className="text-xl font-semibold mt-8 mb-3">Contact</h2>
       <p className="mb-4">
         Questions about this policy can be directed to{' '}
-        <a href="mailto:mike@wottle.com" className="text-blue-600 hover:underline">
+        <a href="mailto:mike@wottle.com" className="text-blue-600 dark:text-blue-400 hover:underline">
           mike@wottle.com
         </a>
         .

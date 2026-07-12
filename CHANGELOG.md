@@ -11,6 +11,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Fixed
 
 - Web and iOS chat: fixed empty collection responses caused by invalid GraphQL field names (storage, operatingSystem, cpu, graphics) that were removed when the data model was restructured into relation arrays
+- Privacy policy pages now readable in dark mode on web and storefront
 
 ---
 
