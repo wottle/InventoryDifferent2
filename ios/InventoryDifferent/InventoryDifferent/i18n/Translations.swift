@@ -6,6 +6,7 @@ struct Translations {
 
     struct StatusT {
         let COLLECTION, FOR_SALE, PENDING_SALE, IN_REPAIR, REPAIRED, SOLD, DONATED, RETURNED, LOANED: String
+        let unknown: String
     }
     struct FunctionalStatusT {
         let YES, PARTIAL, NO, UNKNOWN: String

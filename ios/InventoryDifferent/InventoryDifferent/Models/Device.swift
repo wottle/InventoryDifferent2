@@ -107,6 +107,12 @@ enum Status: String, Codable, CaseIterable {
     case SOLD
     case DONATED
     case RETURNED
+    case unknown
+
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = Status(rawValue: raw) ?? .unknown
+    }
 
     var displayName: String {
         let t = LocalizationManager.shared.t
@@ -120,6 +126,7 @@ enum Status: String, Codable, CaseIterable {
         case .REPAIRED: return t.status.REPAIRED
         case .RETURNED: return t.status.RETURNED
         case .LOANED: return t.status.LOANED
+        case .unknown: return t.status.unknown
         }
     }
 
@@ -134,6 +141,7 @@ enum Status: String, Codable, CaseIterable {
         case .REPAIRED: return "mint"
         case .RETURNED: return "gray"
         case .LOANED: return "violet"
+        case .unknown: return "gray"
         }
     }
 }
@@ -204,6 +212,8 @@ struct Category: Codable, Identifiable, Hashable {
     let name: String
     let type: String
     let sortOrder: Int
+
+    static let unknown = Category(id: -1, name: "Unknown", type: "OTHER", sortOrder: Int.max)
 }
 
 struct LocationRef: Codable, Identifiable, Hashable {
@@ -339,6 +349,21 @@ struct Device: Codable, Identifiable, Hashable {
     let relationsFrom: [DeviceRelationship]?
     let relationsTo: [DeviceRelationship]?
 
+    enum CodingKeys: String, CodingKey {
+        case id, name, additionalName, manufacturer, modelNumber, serialNumber
+        case releaseYear, location, info, historicalNotes, searchText, isFavorite
+        case status, functionalStatus, condition, rarity
+        case lastPowerOnDate, isAssetTagged
+        case dateAcquired, whereAcquired, priceAcquired, estimatedValue
+        case listPrice, soldPrice, soldDate
+        case cpuType, cpuSpeed, ram, graphicsChip, screenSize, displayType
+        case displayVariant, nativeResolution, isWifiEnabled, isRetroBrited, isRecapped
+        case pramBatteryInstalled, pramBatteryExpiryDate
+        case storageEntries, osEntries
+        case category, images, notes, maintenanceTasks, tags, customFieldValues
+        case accessories, links, relationsFrom, relationsTo
+    }
+
     var displayName: String {
         if let additional = additionalName, !additional.isEmpty {
             return "\(name) (\(additional))"
@@ -362,6 +387,62 @@ struct Device: Codable, Identifiable, Hashable {
 }
 
 extension Device: DeviceRowPresentable {}
+
+extension Device {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(Int.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        isFavorite = (try? c.decode(Bool.self, forKey: .isFavorite)) ?? false
+        isAssetTagged = (try? c.decode(Bool.self, forKey: .isAssetTagged)) ?? false
+        status = (try? c.decode(Status.self, forKey: .status)) ?? .unknown
+        functionalStatus = (try? c.decode(FunctionalStatus.self, forKey: .functionalStatus)) ?? .UNKNOWN
+        condition = (try? c.decodeIfPresent(Condition.self, forKey: .condition)) ?? nil
+        rarity = (try? c.decodeIfPresent(Rarity.self, forKey: .rarity)) ?? nil
+        additionalName = try? c.decodeIfPresent(String.self, forKey: .additionalName)
+        manufacturer = try? c.decodeIfPresent(String.self, forKey: .manufacturer)
+        modelNumber = try? c.decodeIfPresent(String.self, forKey: .modelNumber)
+        serialNumber = try? c.decodeIfPresent(String.self, forKey: .serialNumber)
+        releaseYear = try? c.decodeIfPresent(Int.self, forKey: .releaseYear)
+        location = try? c.decodeIfPresent(LocationRef.self, forKey: .location)
+        info = try? c.decodeIfPresent(String.self, forKey: .info)
+        historicalNotes = try? c.decodeIfPresent(String.self, forKey: .historicalNotes)
+        searchText = try? c.decodeIfPresent(String.self, forKey: .searchText)
+        lastPowerOnDate = try? c.decodeIfPresent(String.self, forKey: .lastPowerOnDate)
+        dateAcquired = try? c.decodeIfPresent(String.self, forKey: .dateAcquired)
+        whereAcquired = try? c.decodeIfPresent(String.self, forKey: .whereAcquired)
+        priceAcquired = try? c.decodeIfPresent(Double.self, forKey: .priceAcquired)
+        estimatedValue = try? c.decodeIfPresent(Double.self, forKey: .estimatedValue)
+        listPrice = try? c.decodeIfPresent(Double.self, forKey: .listPrice)
+        soldPrice = try? c.decodeIfPresent(Double.self, forKey: .soldPrice)
+        soldDate = try? c.decodeIfPresent(String.self, forKey: .soldDate)
+        cpuType = try? c.decodeIfPresent(String.self, forKey: .cpuType)
+        cpuSpeed = try? c.decodeIfPresent(String.self, forKey: .cpuSpeed)
+        ram = try? c.decodeIfPresent(String.self, forKey: .ram)
+        graphicsChip = try? c.decodeIfPresent(String.self, forKey: .graphicsChip)
+        screenSize = try? c.decodeIfPresent(String.self, forKey: .screenSize)
+        displayType = try? c.decodeIfPresent(String.self, forKey: .displayType)
+        displayVariant = try? c.decodeIfPresent(String.self, forKey: .displayVariant)
+        nativeResolution = try? c.decodeIfPresent(String.self, forKey: .nativeResolution)
+        isWifiEnabled = try? c.decodeIfPresent(Bool.self, forKey: .isWifiEnabled)
+        isRetroBrited = try? c.decodeIfPresent(Bool.self, forKey: .isRetroBrited)
+        isRecapped = try? c.decodeIfPresent(Bool.self, forKey: .isRecapped)
+        pramBatteryInstalled = try? c.decodeIfPresent(Bool.self, forKey: .pramBatteryInstalled)
+        pramBatteryExpiryDate = try? c.decodeIfPresent(String.self, forKey: .pramBatteryExpiryDate)
+        category = (try? c.decodeIfPresent(Category.self, forKey: .category)) ?? .unknown
+        storageEntries = (try? c.decodeIfPresent([DeviceStorageEntry].self, forKey: .storageEntries)) ?? []
+        osEntries = (try? c.decodeIfPresent([DeviceOSEntry].self, forKey: .osEntries)) ?? []
+        images = (try? c.decodeIfPresent([DeviceImage].self, forKey: .images)) ?? []
+        notes = (try? c.decodeIfPresent([Note].self, forKey: .notes)) ?? []
+        maintenanceTasks = (try? c.decodeIfPresent([MaintenanceTask].self, forKey: .maintenanceTasks)) ?? []
+        tags = (try? c.decodeIfPresent([Tag].self, forKey: .tags)) ?? []
+        customFieldValues = (try? c.decodeIfPresent([CustomFieldValue].self, forKey: .customFieldValues)) ?? []
+        accessories = (try? c.decodeIfPresent([DeviceAccessory].self, forKey: .accessories)) ?? []
+        links = (try? c.decodeIfPresent([DeviceLink].self, forKey: .links)) ?? []
+        relationsFrom = try? c.decodeIfPresent([DeviceRelationship].self, forKey: .relationsFrom)
+        relationsTo = try? c.decodeIfPresent([DeviceRelationship].self, forKey: .relationsTo)
+    }
+}
 
 struct DeviceListItem: Codable, Identifiable, Hashable {
     let id: Int
@@ -394,6 +475,16 @@ struct DeviceListItem: Codable, Identifiable, Hashable {
     let category: Category
     let thumbnails: [DeviceThumbnail]
 
+    enum CodingKeys: String, CodingKey {
+        case id, name, additionalName, manufacturer, modelNumber, serialNumber
+        case releaseYear, location, searchText, isFavorite
+        case status, functionalStatus, condition, rarity
+        case lastPowerOnDate, isAssetTagged, pramBatteryInstalled, pramBatteryExpiryDate
+        case accessories
+        case dateAcquired, estimatedValue, listPrice, soldPrice, soldDate
+        case category, thumbnails
+    }
+
     var thumbnailImage: DeviceThumbnail? {
         thumbnails.first(where: { $0.isThumbnail && ($0.thumbnailMode == "BOTH" || $0.thumbnailMode == nil) })
             ?? thumbnails.first(where: { $0.isThumbnail })
@@ -410,3 +501,35 @@ struct DeviceListItem: Codable, Identifiable, Hashable {
 }
 
 extension DeviceListItem: DeviceRowPresentable {}
+
+extension DeviceListItem {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(Int.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        isFavorite = (try? c.decode(Bool.self, forKey: .isFavorite)) ?? false
+        isAssetTagged = (try? c.decode(Bool.self, forKey: .isAssetTagged)) ?? false
+        status = (try? c.decode(Status.self, forKey: .status)) ?? .unknown
+        functionalStatus = (try? c.decode(FunctionalStatus.self, forKey: .functionalStatus)) ?? .UNKNOWN
+        condition = (try? c.decodeIfPresent(Condition.self, forKey: .condition)) ?? nil
+        rarity = (try? c.decodeIfPresent(Rarity.self, forKey: .rarity)) ?? nil
+        additionalName = try? c.decodeIfPresent(String.self, forKey: .additionalName)
+        manufacturer = try? c.decodeIfPresent(String.self, forKey: .manufacturer)
+        modelNumber = try? c.decodeIfPresent(String.self, forKey: .modelNumber)
+        serialNumber = try? c.decodeIfPresent(String.self, forKey: .serialNumber)
+        releaseYear = try? c.decodeIfPresent(Int.self, forKey: .releaseYear)
+        location = try? c.decodeIfPresent(LocationRef.self, forKey: .location)
+        searchText = try? c.decodeIfPresent(String.self, forKey: .searchText)
+        lastPowerOnDate = try? c.decodeIfPresent(String.self, forKey: .lastPowerOnDate)
+        pramBatteryInstalled = try? c.decodeIfPresent(Bool.self, forKey: .pramBatteryInstalled)
+        pramBatteryExpiryDate = try? c.decodeIfPresent(String.self, forKey: .pramBatteryExpiryDate)
+        dateAcquired = try? c.decodeIfPresent(String.self, forKey: .dateAcquired)
+        estimatedValue = try? c.decodeIfPresent(Double.self, forKey: .estimatedValue)
+        listPrice = try? c.decodeIfPresent(Double.self, forKey: .listPrice)
+        soldPrice = try? c.decodeIfPresent(Double.self, forKey: .soldPrice)
+        soldDate = try? c.decodeIfPresent(String.self, forKey: .soldDate)
+        category = (try? c.decodeIfPresent(Category.self, forKey: .category)) ?? .unknown
+        accessories = (try? c.decodeIfPresent([DeviceAccessory].self, forKey: .accessories)) ?? []
+        thumbnails = (try? c.decodeIfPresent([DeviceThumbnail].self, forKey: .thumbnails)) ?? []
+    }
+}

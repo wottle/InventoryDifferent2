@@ -24,6 +24,7 @@ class AuthService: ObservableObject {
     @Published var usernameRequired: Bool = false
     @Published var isLoading: Bool = true
     @Published var externalTemplatesEnabled: Bool = true
+    @Published var serverOutdated: Bool = false
 
     // Token refresh buffer (5 minutes before expiry)
     private let refreshBufferSeconds: TimeInterval = 5 * 60
@@ -52,6 +53,11 @@ class AuthService: ObservableObject {
                 authRequired = json["authRequired"] as? Bool ?? true
                 usernameRequired = json["usernameRequired"] as? Bool ?? false
                 externalTemplatesEnabled = json["externalTemplatesEnabled"] as? Bool ?? true
+                if let v = json["apiVersion"] as? String {
+                    serverOutdated = !AuthService.isVersion(v, atLeast: AuthService.minimumCompatibleApiVersion)
+                } else {
+                    serverOutdated = true
+                }
 
                 if !authRequired {
                     // Auth not required, everyone is authenticated
@@ -268,6 +274,23 @@ class AuthService: ObservableObject {
                 }
             }
         }
+    }
+
+    // MARK: - API Compatibility
+
+    /// Raise this when a schema change ships that older servers cannot satisfy without crashing the app.
+    /// See the "iOS compatibility" section in CLAUDE.md for the criteria.
+    static let minimumCompatibleApiVersion = "3.0.0"
+
+    static func isVersion(_ version: String, atLeast minimum: String) -> Bool {
+        let v = version.split(separator: ".").compactMap { Int($0) }
+        let m = minimum.split(separator: ".").compactMap { Int($0) }
+        guard v.count == 3, m.count == 3 else { return false }
+        for i in 0..<3 {
+            if v[i] > m[i] { return true }
+            if v[i] < m[i] { return false }
+        }
+        return true
     }
 
     // MARK: - Keychain Helpers

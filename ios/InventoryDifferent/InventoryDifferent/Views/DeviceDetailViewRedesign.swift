@@ -503,6 +503,7 @@ struct DeviceDetailRedesignView: View {
             case .REPAIRED:     return (t.status.REPAIRED, .mint)
             case .RETURNED:     return (t.status.RETURNED, .gray)
             case .LOANED:       return (t.status.LOANED, Color(red: 0.6, green: 0.4, blue: 0.85))
+            case .unknown:      return (t.status.unknown, .gray)
             }
         }()
         return Text(label)

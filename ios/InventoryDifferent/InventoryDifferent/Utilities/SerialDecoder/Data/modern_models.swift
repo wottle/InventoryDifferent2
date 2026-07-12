@@ -9289,8 +9289,140 @@ private let _modernModelChunk19: [String: ModernModelEntry] = [
     "ZTN": ("", "AirPort Time Capsule 802.11n (1st Generation)"),
 ]
 
+private let _modernModelChunk20: [String: ModernModelEntry] = [
+    "7ZQ":  ("PowerBook3400c180", "PowerBook 3400c/180"),
+    "C2C":  ("MacintoshColorClassic", "Macintosh Color Classic"),
+    "C1C":  ("MacintoshIIsi", "Macintosh IIsi"),
+    "VA3":  ("MacintoshLCIII", "Macintosh LC III"),
+    "D22":  ("MacintoshClassicII", "Macintosh Classic II"),
+    "DE7":  ("PowerBookDuo230", "PowerBook Duo 230"),
+    "F28":  ("MacintoshLCII", "Macintosh LC II"),
+    "FPZ":  ("PowerMacintoshG3BlueWhite", "Power Macintosh G3 Blue & White"),
+    "GJ4":  ("PowerMacintoshG3BlueWhite", "Power Macintosh G3 Blue & White"),
+    "GSM":  ("PowerMacintoshG3BlueWhite", "Power Macintosh G3 Blue & White"),
+    "K02":  ("MacintoshSE30", "Macintosh SE/30"),
+    "SQU":  ("PowerMacintosh610060", "Power Macintosh 6100/60"),
+    "W9G6": ("MacminiG4", "Mac mini G4"),
+]
+
+private let _modernModelChunk21: [String: ModernModelEntry] = [
+    "055":  ("MacintoshLCIII", "Macintosh LC III"),
+    "154":  ("PowerBook520c", "PowerBook 520c"),
+    "1DF":  ("PowerBookDuo270c", "PowerBook Duo 270c"),
+    "1GS":  ("PowerBook165", "PowerBook 165"),
+    "1GT":  ("PowerBook165", "PowerBook 165"),
+    "1UX":  ("PowerMacintosh710066", "Power Macintosh 7100/66"),
+    "24D":  ("PowerBookDuo270c", "PowerBook Duo 270c"),
+    "35C":  ("MacintoshLC630", "Macintosh LC 630"),
+    "3FV":  ("PowerMacintosh7600", "Power Macintosh 7600"),
+    "3JY":  ("MacintoshLC630", "Macintosh LC 630"),
+    "441":  ("PowerBook180c", "PowerBook 180c"),
+    "452":  ("PowerBook160", "PowerBook 160"),
+    "465":  ("PowerBook145", "PowerBook 145"),
+    "490":  ("PowerBook165c", "PowerBook 165c"),
+    "4FV":  ("PowerBook5300cs100", "PowerBook 5300cs/100"),
+    "5825": ("MacintoshIIx", "Macintosh IIx"),
+    "63N":  ("PowerBook190", "PowerBook 190"),
+    "6LC":  ("PowerMacintosh5200LC", "Power Macintosh 5200 LC"),
+    "6RH":  ("PowerBookDuo2300c", "PowerBook Duo 2300c"),
+    "705":  ("PowerBook170", "PowerBook 170"),
+    "706":  ("PowerBook140", "PowerBook 140"),
+    "81Q":  ("PowerMacintosh5260", "Power Macintosh 5260"),
+    "8FD":  ("PowerMacintosh7200120PC", "Power Macintosh 7200/120 (PC)"),
+    "8JX":  ("PowerBook1400cs117", "PowerBook 1400cs/117"),
+    "8JY":  ("PowerBook1400cs117", "PowerBook 1400cs/117"),
+    "99R":  ("Performa6300", "Performa 6300"),
+    "9AZ":  ("PowerMacintosh6500", "Power Macintosh 6500"),
+    "ACM":  ("PowerMacintosh8600", "Power Macintosh 8600"),
+    "ACQ":  ("PowerMacintosh9600", "Power Macintosh 9600"),
+    "AN9":  ("PowerBook1400cs133", "PowerBook 1400cs/133"),
+    "BBV":  ("PowerMacintoshG3Desktop", "Power Macintosh G3 Desktop"),
+    "C77":  ("PowerBookDuo230", "PowerBook Duo 230"),
+    "C78":  ("PowerBookDuo230", "PowerBook Duo 230"),
+    "CD5":  ("MacintoshQuadra840AV", "Macintosh Quadra 840AV"),
+    "CT9":  ("PowerMacintoshG3AllInOne", "Power Macintosh G3 All-In-One"),
+    "CWH":  ("PowerBookG3Series", "PowerBook G3 Series"),
+    "CY3":  ("PowerMacintoshG3Desktop", "Power Macintosh G3 Desktop"),
+    "E6A":  ("PowerBookG3PDQ", "PowerBook G3 (PDQ)"),
+    "E6D":  ("PowerBookG3PDQ", "PowerBook G3 (PDQ)"),
+    "EEV":  ("PowerBookG3PDQ", "PowerBook G3 (PDQ)"),
+    "EXW":  ("PowerBookG3", "PowerBook G3"),
+    "FQ2":  ("PowerMacintoshG3BlueWhite", "Power Macintosh G3 Blue & White"),
+    "G20":  ("MacintoshTV", "Macintosh TV"),
+    "G9C":  ("PowerMacintoshG3BlueWhite", "Power Macintosh G3 Blue & White"),
+    "G9D":  ("PowerMacintoshG3BlueWhite", "Power Macintosh G3 Blue & White"),
+]
+
+private let _modernModelChunk22: [String: ModernModelEntry] = [
+    "1GQ":  ("AppleNewtonMessagePad110",      "Apple Newton MessagePad 110"),
+    "1GV":  ("PowerMacintosh610060",           "Power Macintosh 6100/60"),
+    "1UV":  ("PowerMacintosh710066",           "Power Macintosh 7100/66"),
+    "20C":  ("PowerBook145",                   "PowerBook 145"),
+    "344":  ("PowerBook520",                   "PowerBook 520"),
+    "47T":  ("PowerMacintosh720090",           "Power Macintosh 7200/90"),
+    "4FU":  ("PowerBook5300cs100",             "PowerBook 5300cs/100"),
+    "50E":  ("PowerBook150",                   "PowerBook 150"),
+    "5BY":  ("PowerMacintosh5200LC",           "Power Macintosh 5200 LC"),
+    "5QT":  ("PowerMacintosh720075",           "Power Macintosh 7200/75"),
+    "6B5":  ("AppleNewtonMessagePad",          "Apple Newton MessagePad"),
+    "724":  ("MacintoshIIci",                  "Macintosh IIci"),
+    "774":  ("MacintoshIIci",                  "Macintosh IIci"),
+    "7P4":  ("PowerMacintosh8500150",          "Power Macintosh 8500/150"),
+    "803":  ("PowerBook170",                   "PowerBook 170"),
+    "8EG":  ("PowerMacintosh5400",             "Power Macintosh 5400"),
+    "8L7":  ("PowerMacintosh9500200",          "Power Macintosh 9500/200"),
+    "8TD":  ("AppleNewtoneMate300",            "Apple Newton eMate 300"),
+    "9PS":  ("PowerMacintosh5400",             "Power Macintosh 5400"),
+    "9ZC":  ("PowerBook1400cs117",             "PowerBook 1400cs/117"),
+    "A9M":  ("PowerBook5300cs100",             "PowerBook 5300cs/100"),
+    "AHW":  ("PowerMacintosh6400",             "Power Macintosh 6400"),
+    "AYK":  ("AppleNewtonMessagePad2100",      "Apple Newton MessagePad 2100"),
+    "AZ3":  ("PowerMacintoshG3Minitower",      "Power Macintosh G3 Minitower"),
+    "B4T":  ("PowerBook1400cs166",             "PowerBook 1400cs/166"),
+    "C84":  ("MacintoshQuadra700",             "Macintosh Quadra 700"),
+    "CTA":  ("PowerMacintoshG3AllInOne",       "Power Macintosh G3 All-In-One"),
+    "D6L":  ("PowerMacintoshG3Desktop",        "Power Macintosh G3 Desktop"),
+    "D8X":  ("PowerMacintoshG3Desktop",        "Power Macintosh G3 Desktop"),
+    "DL4":  ("PowerMacintoshG3Desktop",        "Power Macintosh G3 Desktop"),
+    "EY8":  ("PowerBookG3PDQ",                 "PowerBook G3 (PDQ)"),
+    "FQ0":  ("PowerMacintoshG3BlueWhite",      "Power Macintosh G3 Blue & White"),
+    "G524": ("MacintoshQuadra800",             "Macintosh Quadra 800"),
+]
+
+private let _modernModelChunk23: [String: ModernModelEntry] = [
+    "27X":  ("PowerBook180",                  "PowerBook 180"),
+    "3AM":  ("PowerBook150",                  "PowerBook 150"),
+    "3DN":  ("AppleNewtonMessagePad100",       "Apple Newton MessagePad 100"),
+    "44G":  ("PowerMacintosh710080",           "Power Macintosh 7100/80"),
+    "44H":  ("PowerMacintosh710080",           "Power Macintosh 7100/80"),
+    "44K":  ("PowerMacintosh710080AV",         "Power Macintosh 7100/80AV"),
+    "451":  ("PowerBook160",                   "PowerBook 160"),
+    "6SX":  ("PowerMacintosh5400",             "Power Macintosh 5400"),
+    "6UK":  ("PowerMacintosh7600",             "Power Macintosh 7600"),
+    "6Z1":  ("PowerMacintosh720090",           "Power Macintosh 7200/90"),
+    "7QA":  ("PowerMacintosh7200120PC",        "Power Macintosh 7200/120 (PC)"),
+    "7UC":  ("TwentiethAnniversaryMacintosh",  "Twentieth Anniversary Macintosh"),
+    "8HA":  ("TwentiethAnniversaryMacintosh",  "Twentieth Anniversary Macintosh"),
+    "AM4":  ("PowerMacintoshG3Desktop",        "Power Macintosh G3 Desktop"),
+    "BA01": ("PowerBook160",                   "PowerBook 160"),
+    "CWN":  ("PowerBookG3Series",              "PowerBook G3 Series"),
+    "D2H":  ("PowerMacintoshG3AllInOne",       "Power Macintosh G3 All-In-One"),
+    "D5J":  ("PowerMacintoshG3Minitower",      "Power Macintosh G3 Minitower"),
+    "EUX":  ("PowerMacintoshG3BlueWhite",      "Power Macintosh G3 Blue & White"),
+    "GHX":  ("PowerMacintoshG3BlueWhite",      "Power Macintosh G3 Blue & White"),
+    "GHY":  ("PowerMacintoshG3BlueWhite",      "Power Macintosh G3 Blue & White"),
+    "GHZ":  ("PowerMacintoshG3BlueWhite",      "Power Macintosh G3 Blue & White"),
+    "M61":  ("MacintoshPortable",              "Macintosh Portable"),
+    "SQS":  ("PowerBookG4",                    "PowerBook G4"),
+]
+
+private let _modernModelChunk24: [String: ModernModelEntry] = [
+    "22G": ("PowerBook145B",        "PowerBook 145B"),
+    "86P": ("PowerMacintosh720090", "Power Macintosh 7200/90"),
+]
+
 let modernModelCodes: [String: ModernModelEntry] = {
-    var d = [String: ModernModelEntry](minimumCapacity: 9278)
+    var d = [String: ModernModelEntry](minimumCapacity: 9315)
     for (k, v) in _modernModelChunk01 { d[k] = v }
     for (k, v) in _modernModelChunk02 { d[k] = v }
     for (k, v) in _modernModelChunk03 { d[k] = v }
@@ -9310,6 +9442,11 @@ let modernModelCodes: [String: ModernModelEntry] = {
     for (k, v) in _modernModelChunk17 { d[k] = v }
     for (k, v) in _modernModelChunk18 { d[k] = v }
     for (k, v) in _modernModelChunk19 { d[k] = v }
+    for (k, v) in _modernModelChunk20 { d[k] = v }
+    for (k, v) in _modernModelChunk21 { d[k] = v }
+    for (k, v) in _modernModelChunk22 { d[k] = v }
+    for (k, v) in _modernModelChunk23 { d[k] = v }
+    for (k, v) in _modernModelChunk24 { d[k] = v }
     return d
 }()
 

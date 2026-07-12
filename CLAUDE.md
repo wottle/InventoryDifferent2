@@ -140,6 +140,33 @@ cd mcp-server && npx tsc --noEmit   # must pass
 cd web && npm run build              # must pass
 ```
 
+### iOS compatibility and `minimumCompatibleApiVersion`
+
+The iOS app connects to user-deployed backends that may not be updated immediately after a release. Two rules apply to every data model change:
+
+**1. Ensure the iOS app handles the change without crashing.**
+All device field decoding goes through the defensive custom `init(from:)` on `Device` and `DeviceListItem` in `ios/.../Models/Device.swift`. This means:
+- New optional fields added to the API require no iOS change — they decode to `nil` automatically.
+- New required (non-optional) fields are risky. Add them to `Device.CodingKeys` and the custom `init` with a safe fallback (e.g. `(try? c.decodeIfPresent(...)) ?? defaultValue`).
+- New enum cases must be handled — add a `case unknown` fallback and a custom `init(from:)` on the enum so unrecognized values degrade gracefully instead of crashing.
+- Removed fields are safe — the iOS decoder silently ignores keys it asks for but doesn't receive.
+
+**2. Update `minimumCompatibleApiVersion` when a breaking change ships.**
+`minimumCompatibleApiVersion` is defined in `ios/.../Services/AuthService.swift`. The iOS app compares the server's reported `apiVersion` (from `GET /auth/status`) against this constant and shows a non-blocking warning banner if the server is too old.
+
+Raise `minimumCompatibleApiVersion` to the current release version when a change meets **any** of these criteria:
+- A new field is added that is **required** (non-optional) in the GraphQL response and has no safe default value.
+- A field type changes in a way that would cause existing decoders to fail (e.g. `Int` → `String`).
+- A relation is added whose absence would leave a view broken or empty in a confusing way.
+- A new enum value is added **and** it has no `unknown` fallback in the iOS model yet.
+
+Do **not** raise `minimumCompatibleApiVersion` for:
+- New optional fields (safe, decode to `nil`).
+- New enum cases when the iOS enum already has a `.unknown` fallback.
+- Web-only or API-internal changes with no iOS surface.
+
+The `apiVersion` string returned by `GET /auth/status` in `api/src/index.ts` should always match the current release version. Update it as part of the same commit as the schema change.
+
 ## GraphQL Patterns
 
 Filtering uses `DeviceWhereInput`:

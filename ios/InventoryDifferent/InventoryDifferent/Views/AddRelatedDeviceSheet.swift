@@ -215,6 +215,7 @@ struct AddRelatedDeviceSheet: View {
             case .IN_REPAIR: return .teal
             case .REPAIRED: return .mint
             case .LOANED: return Color(red: 0.6, green: 0.4, blue: 0.85)
+            case .unknown: return .gray
             }
         }()
         Text(status.displayName)
