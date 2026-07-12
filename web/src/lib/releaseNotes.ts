@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Web and iOS chat: fixed empty collection responses caused by invalid GraphQL field names (storage, operatingSystem, cpu, graphics) that were removed when the data model was restructured into relation arrays',
+    ],
   },
   {
     version: '3.0.0',
