@@ -9421,6 +9421,44 @@ private let _modernModelChunk24: [String: ModernModelEntry] = [
     "86P": ("PowerMacintosh720090", "Power Macintosh 7200/90"),
 ]
 
+private let _modernModelChunk25: [String: ModernModelEntry] = [
+    "26V":  ("PowerBook180c",         "PowerBook 180c"),
+    "3FX":  ("PowerMacintosh7500100", "Power Macintosh 7500/100"),
+    "096":  ("AppleIIc",              "Apple IIc"),
+    "0VRQ": ("AppleIIe",              "Apple IIe"),
+    "1SXN": ("AppleIIe",              "Apple IIe"),
+    "7141": ("AppleIIe",              "Apple IIe"),
+    "913":  ("AppleIIe",              "Apple IIe"),
+    "B01":  ("MacintoshSEFDHD",       "Macintosh SE FDHD"),
+    "FDVN": ("MacPro6,1",             "Mac Pro (Late 2013)"),
+]
+
+private let _modernModelChunk26: [String: ModernModelEntry] = [
+    "08A":  ("AppleNewtonMessagePad",         "Apple Newton MessagePad"),
+    "0AX":  ("PowerBook145B",                 "PowerBook 145B"),
+    "187":  ("AppleIIPlus",                   "Apple II Plus"),
+    "2TK":  ("PowerBook5300c100",             "PowerBook 5300c/100"),
+    "40VA": ("PowerBookG417inch",             "PowerBook G4 (17-inch)"),
+    "5115": ("MacintoshSE",                   "Macintosh SE"),
+    "57X":  ("PowerBookDuo2300c",             "PowerBook Duo 2300c"),
+    "797":  ("PowerBook180c",                 "PowerBook 180c"),
+    "8FB":  ("PowerMacintosh8500120",         "Power Macintosh 8500/120"),
+    "953":  ("AppleIIe",                      "Apple IIe"),
+    "ADDF": ("TwentiethAnniversaryMacintosh", "Twentieth Anniversary Macintosh"),
+    "AWM":  ("PowerMacintosh6500250",         "Power Macintosh 6500/250"),
+    "AWQ":  ("PowerMacintosh6500300",         "Power Macintosh 6500/300"),
+    "AXY":  ("PowerMacintosh9500132",         "Power Macintosh 9500/132"),
+    "C42":  ("MacintoshIIfx",                 "Macintosh IIfx"),
+    "D21":  ("MacintoshClassicII",            "Macintosh Classic II / Performa 200"),
+    "F5J":  ("PowerMacintoshG3Desktop",       "Power Macintosh G3 (Beige)"),
+    "JKU":  ("iBookG3Clamshell",             "iBook G3 (Clamshell)"),
+    "JMJ":  ("PowerMacintoshG4Sawtooth",      "Power Macintosh G4 (Sawtooth)"),
+    "JQ4":  ("iBookG3Clamshell",             "iBook G3 (Clamshell)"),
+    "LPS":  ("PowerBookG4Titanium",           "PowerBook G4 (Titanium)"),
+    "TT1H": ("Macintosh512k",                 "Macintosh 512k"),
+    "XD8X": ("PowerMacintoshG3Desktop",       "Power Macintosh G3 (Beige)"),
+]
+
 let modernModelCodes: [String: ModernModelEntry] = {
     var d = [String: ModernModelEntry](minimumCapacity: 9315)
     for (k, v) in _modernModelChunk01 { d[k] = v }
@@ -9447,6 +9485,8 @@ let modernModelCodes: [String: ModernModelEntry] = {
     for (k, v) in _modernModelChunk22 { d[k] = v }
     for (k, v) in _modernModelChunk23 { d[k] = v }
     for (k, v) in _modernModelChunk24 { d[k] = v }
+    for (k, v) in _modernModelChunk25 { d[k] = v }
+    for (k, v) in _modernModelChunk26 { d[k] = v }
     return d
 }()
 

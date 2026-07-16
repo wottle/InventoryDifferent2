@@ -415,7 +415,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = InventoryDifferent/InventoryDifferent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = XLY3EERM8Z;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = InventoryDifferent/Info.plist;
@@ -450,7 +450,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = InventoryDifferent/InventoryDifferent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = XLY3EERM8Z;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = InventoryDifferent/Info.plist;
