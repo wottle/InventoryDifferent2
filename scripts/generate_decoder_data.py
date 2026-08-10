@@ -122,7 +122,7 @@ def main():
 
     print("Copying JSON for web...")
     _write(os.path.join(WEB_LIB, "modern_models.json"),
-           json.dumps(modern, separators=(',', ':')) + "\n")
+           json.dumps(modern, indent=2) + "\n")
     _write(os.path.join(WEB_LIB, "vintage_model_codes.json"),
            json.dumps(vintage, indent=2, sort_keys=True) + "\n")
 

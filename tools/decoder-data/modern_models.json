@@ -1505,6 +1505,11 @@
     "MacBook Air (Late 2008)"
   ],
   [
+    "22G",
+    "PowerBook145B",
+    "PowerBook 145B"
+  ],
+  [
     "24B",
     "Xserve2,1",
     "Xserve (Early 2008)"
@@ -1553,6 +1558,11 @@
     "27P",
     "Xserve2,1",
     "Xserve (Early 2008)"
+  ],
+  [
+    "27X",
+    "PowerBook180",
+    "PowerBook 180"
   ],
   [
     "289",
@@ -2030,6 +2040,11 @@
     "iMac (24-inch, Early 2008)"
   ],
   [
+    "3AM",
+    "PowerBook150",
+    "PowerBook 150"
+  ],
+  [
     "3BH",
     "MacintoshIIvx",
     "Macintosh IIvx"
@@ -2053,6 +2068,11 @@
     "3DF",
     "MacBookPro4,1",
     "MacBook Pro (17-inch, Early 2008)"
+  ],
+  [
+    "3DN",
+    "AppleNewtonMessagePad100",
+    "Apple Newton MessagePad 100"
   ],
   [
     "3F9",
@@ -2320,12 +2340,32 @@
     "PowerBook 180c"
   ],
   [
+    "44G",
+    "PowerMacintosh710080",
+    "Power Macintosh 7100/80"
+  ],
+  [
+    "44H",
+    "PowerMacintosh710080",
+    "Power Macintosh 7100/80"
+  ],
+  [
+    "44K",
+    "PowerMacintosh710080AV",
+    "Power Macintosh 7100/80AV"
+  ],
+  [
     "44L",
     "MacintoshLC630",
     "Macintosh LC 630"
   ],
   [
     "450",
+    "PowerBook160",
+    "PowerBook 160"
+  ],
+  [
+    "451",
     "PowerBook160",
     "PowerBook 160"
   ],
@@ -3200,6 +3240,11 @@
     "PowerBook Duo 2300c"
   ],
   [
+    "6SX",
+    "PowerMacintosh5400",
+    "Power Macintosh 5400"
+  ],
+  [
     "6T5",
     "MacBookAir1,1",
     "MacBook Air"
@@ -3208,6 +3253,11 @@
     "6T6",
     "MacBookAir1,1",
     "MacBook Air"
+  ],
+  [
+    "6UK",
+    "PowerMacintosh7600",
+    "Power Macintosh 7600"
   ],
   [
     "6V9",
@@ -3248,6 +3298,11 @@
     "6YP",
     "MacBook4,1",
     "MacBook (13-inch, Late 2008)"
+  ],
+  [
+    "6Z1",
+    "PowerMacintosh720090",
+    "Power Macintosh 7200/90"
   ],
   [
     "6ZB",
@@ -3525,6 +3580,16 @@
     "Power Macintosh 8500/150"
   ],
   [
+    "7QA",
+    "PowerMacintosh7200120PC",
+    "Power Macintosh 7200/120 (PC)"
+  ],
+  [
+    "7UC",
+    "TwentiethAnniversaryMacintosh",
+    "Twentieth Anniversary Macintosh"
+  ],
+  [
     "7WU",
     "MacBook5,1",
     "MacBook (13-inch, Aluminum, Late 2008)"
@@ -3675,6 +3740,11 @@
     "MacBook (13-inch, Aluminum, Late 2008)"
   ],
   [
+    "86P",
+    "PowerMacintosh720090",
+    "Power Macintosh 7200/90"
+  ],
+  [
     "87K",
     "MacBookPro5,2",
     "MacBook Pro (17-inch, Early 2009)"
@@ -3793,6 +3863,11 @@
     "8G0",
     "MacBookPro5,2",
     "MacBook Pro (17-inch, Early 2009)"
+  ],
+  [
+    "8HA",
+    "TwentiethAnniversaryMacintosh",
+    "Twentieth Anniversary Macintosh"
   ],
   [
     "8JX",
@@ -4990,6 +5065,11 @@
     "MacBook Pro (15-inch, Mid 2009)"
   ],
   [
+    "AM4",
+    "PowerMacintoshG3Desktop",
+    "Power Macintosh G3 Desktop"
+  ],
+  [
     "AM5",
     "M4405",
     "Power Mac G3 Minitower"
@@ -5248,6 +5328,11 @@
     "B9X",
     "Macmini3,1",
     "Mac mini (Late 2009)"
+  ],
+  [
+    "BA01",
+    "PowerBook160",
+    "PowerBook 160"
   ],
   [
     "BAH",
@@ -5590,6 +5675,11 @@
     "PowerBook G3 Series"
   ],
   [
+    "CWN",
+    "PowerBookG3Series",
+    "PowerBook G3 Series"
+  ],
+  [
     "CY3",
     "PowerMacintoshG3Desktop",
     "Power Macintosh G3 Desktop"
@@ -5630,6 +5720,11 @@
     "Macintosh Classic II"
   ],
   [
+    "D2H",
+    "PowerMacintoshG3AllInOne",
+    "Power Macintosh G3 All-In-One"
+  ],
+  [
     "D39",
     "",
     "Macintosh Classic II / Performa 200"
@@ -5643,6 +5738,11 @@
     "D5G",
     "Xserve3,1",
     "Xserve (Early 2009)"
+  ],
+  [
+    "D5J",
+    "PowerMacintoshG3Minitower",
+    "Power Macintosh G3 Minitower"
   ],
   [
     "D6C",
@@ -8468,6 +8568,11 @@
     "EUH",
     "MacPro5,1",
     "Mac Pro (Mid 2010)"
+  ],
+  [
+    "EUX",
+    "PowerMacintoshG3BlueWhite",
+    "Power Macintosh G3 Blue & White"
   ],
   [
     "EXW",
@@ -16423,6 +16528,21 @@
     "GHV0",
     "",
     "Studio (2nd generation)"
+  ],
+  [
+    "GHX",
+    "PowerMacintoshG3BlueWhite",
+    "Power Macintosh G3 Blue & White"
+  ],
+  [
+    "GHY",
+    "PowerMacintoshG3BlueWhite",
+    "Power Macintosh G3 Blue & White"
+  ],
+  [
+    "GHZ",
+    "PowerMacintoshG3BlueWhite",
+    "Power Macintosh G3 Blue & White"
   ],
   [
     "GJ4",
@@ -30615,6 +30735,11 @@
     "Power Mac G4 (QuickSilver)"
   ],
   [
+    "M61",
+    "MacintoshPortable",
+    "Macintosh Portable"
+  ],
+  [
     "M6KG",
     "MacBookAir9,1",
     "MacBook Air (Retina, 13-inch, 2020)"
@@ -40585,6 +40710,11 @@
     "PowerBook G4 (15-inch 1.67/1.5GHZ)"
   ],
   [
+    "SQS",
+    "PowerBookG4",
+    "PowerBook G4"
+  ],
+  [
     "SQU",
     "PowerMacintosh610060",
     "Power Macintosh 6100/60"
@@ -46138,5 +46268,225 @@
     "ZTN",
     "",
     "AirPort Time Capsule 802.11n (1st Generation)"
+  ],
+  [
+    "26V",
+    "PowerBook180c",
+    "PowerBook 180c"
+  ],
+  [
+    "3FX",
+    "PowerMacintosh7500100",
+    "Power Macintosh 7500/100"
+  ],
+  [
+    "096",
+    "AppleIIc",
+    "Apple IIc"
+  ],
+  [
+    "0VRQ",
+    "AppleIIe",
+    "Apple IIe"
+  ],
+  [
+    "1SXN",
+    "AppleIIe",
+    "Apple IIe"
+  ],
+  [
+    "7141",
+    "AppleIIe",
+    "Apple IIe"
+  ],
+  [
+    "913",
+    "AppleIIe",
+    "Apple IIe"
+  ],
+  [
+    "B01",
+    "MacintoshSEFDHD",
+    "Macintosh SE FDHD"
+  ],
+  [
+    "FDVN",
+    "MacPro6,1",
+    "Mac Pro (Late 2013)"
+  ],
+  [
+    "08A",
+    "AppleNewtonMessagePad",
+    "Apple Newton MessagePad"
+  ],
+  [
+    "0AX",
+    "PowerBook145B",
+    "PowerBook 145B"
+  ],
+  [
+    "187",
+    "AppleIIPlus",
+    "Apple II Plus"
+  ],
+  [
+    "2TK",
+    "PowerBook5300c100",
+    "PowerBook 5300c/100"
+  ],
+  [
+    "40VA",
+    "PowerBookG417inch",
+    "PowerBook G4 (17-inch)"
+  ],
+  [
+    "5115",
+    "MacintoshSE",
+    "Macintosh SE"
+  ],
+  [
+    "57X",
+    "PowerBookDuo2300c",
+    "PowerBook Duo 2300c"
+  ],
+  [
+    "797",
+    "PowerBook180c",
+    "PowerBook 180c"
+  ],
+  [
+    "8FB",
+    "PowerMacintosh8500120",
+    "Power Macintosh 8500/120"
+  ],
+  [
+    "953",
+    "AppleIIe",
+    "Apple IIe"
+  ],
+  [
+    "ADDF",
+    "TwentiethAnniversaryMacintosh",
+    "Twentieth Anniversary Macintosh"
+  ],
+  [
+    "AWM",
+    "PowerMacintosh6500250",
+    "Power Macintosh 6500/250"
+  ],
+  [
+    "AWQ",
+    "PowerMacintosh6500300",
+    "Power Macintosh 6500/300"
+  ],
+  [
+    "AXY",
+    "PowerMacintosh9500132",
+    "Power Macintosh 9500/132"
+  ],
+  [
+    "C42",
+    "MacintoshIIfx",
+    "Macintosh IIfx"
+  ],
+  [
+    "D21",
+    "MacintoshClassicII",
+    "Macintosh Classic II / Performa 200"
+  ],
+  [
+    "F5J",
+    "PowerMacintoshG3Desktop",
+    "Power Macintosh G3 (Beige)"
+  ],
+  [
+    "JKU",
+    "iBookG3Clamshell",
+    "iBook G3 (Clamshell)"
+  ],
+  [
+    "JMJ",
+    "PowerMacintoshG4Sawtooth",
+    "Power Macintosh G4 (Sawtooth)"
+  ],
+  [
+    "JQ4",
+    "iBookG3Clamshell",
+    "iBook G3 (Clamshell)"
+  ],
+  [
+    "LPS",
+    "PowerBookG4Titanium",
+    "PowerBook G4 (Titanium)"
+  ],
+  [
+    "TT1H",
+    "Macintosh512k",
+    "Macintosh 512k"
+  ],
+  [
+    "XD8X",
+    "PowerMacintoshG3Desktop",
+    "Power Macintosh G3 (Beige)"
+  ],
+  [
+    "28V",
+    "PowerBook540c",
+    "PowerBook 540c"
+  ],
+  [
+    "440",
+    "PowerBook180",
+    "PowerBook 180"
+  ],
+  [
+    "49H",
+    "PowerBook520c",
+    "PowerBook 520c"
+  ],
+  [
+    "4ZM",
+    "PowerBook190",
+    "PowerBook 190"
+  ],
+  [
+    "5795",
+    "MacintoshIIx",
+    "Macintosh IIx"
+  ],
+  [
+    "AD1",
+    "PowerMacintosh8600",
+    "Power Macintosh 8600"
+  ],
+  [
+    "BSQ",
+    "PowerMacintoshG3Minitower",
+    "Power Macintosh G3 Minitower"
+  ],
+  [
+    "CB3",
+    "MacintoshIIsi",
+    "Macintosh IIsi"
+  ],
+  [
+    "12V",
+    "MacintoshLC475",
+    "Macintosh LC 475"
+  ],
+  [
+    "599",
+    "PowerBook100",
+    "PowerBook 100"
+  ],
+  [
+    "VA2",
+    "MacintoshLCIII",
+    "Macintosh LC III"
+  ],
+  [
+    "C1C",
+    "MacintoshIIsi",
+    "Macintosh IIsi"
   ]
 ]
