@@ -196,13 +196,16 @@ enum Status {
   SOLD
   DONATED
   IN_REPAIR
+  REPAIRED
   RETURNED
+  LOANED
 }
 
 enum FunctionalStatus {
   YES
   PARTIAL
   NO
+  UNKNOWN
 }
 
 enum Condition {
