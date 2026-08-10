@@ -60,6 +60,8 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:4000/graphql
       API_URL: http://api:4000
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LANGUAGE: ${LANGUAGE:-en}
+      CURRENCY: ${CURRENCY:-USD}
       # Note: Client-side calls need public URL, Server-side calls use internal API_URL
       # Set UMAMI_URL and UMAMI_WEBSITE_ID directly on the container for analytics
     depends_on:

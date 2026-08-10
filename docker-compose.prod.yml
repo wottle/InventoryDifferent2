@@ -78,6 +78,7 @@ services:
     environment:
       NODE_ENV: production
       LANGUAGE: ${LANGUAGE:-en}
+      CURRENCY: ${CURRENCY:-USD}
       API_URL: http://api:4000
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       UMAMI_URL: ${UMAMI_URL:-}
