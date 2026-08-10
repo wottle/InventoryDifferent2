@@ -170,6 +170,7 @@ acme:
 | Variable | Description |
 |----------|-------------|
 | `LANGUAGE` | Language for the web app, storefront, and showcase (default: `en`, supported: `de`, `fr`, `es`) |
+| `CURRENCY` | Currency for financial values in the web app (default: follows language — `USD` for `en`, `EUR` for `de`/`fr`/`es`). Set independently to use a different currency with any language, e.g. `CURRENCY=EUR` with `LANGUAGE=en` for English UI with euros. Supported: `USD`, `EUR`, `GBP`, `CAD`, `AUD`, `JPY`, `MXN`, `ARS`, `CLP` |
 | `OPENAI_API_KEY` | Enables AI product image generation|
 | `ANTHROPIC_API_KEY` | Enables the AI chat assistant |
 | `MCP_TOKEN` | Optional token for the MCP server (token required for auth MCP server from AI agent) |
@@ -218,6 +219,17 @@ docker compose -f docker-compose.simple.yml up -d
 ```
 
 The language is applied at runtime — no rebuild required.
+
+### Currency (Web App)
+
+By default, currency follows the language setting — English uses USD ($), German/French/Spanish use EUR (€). To use a different currency independently of language, set the `CURRENCY` variable:
+
+```env
+LANGUAGE=en
+CURRENCY=EUR
+```
+
+Supported values: `USD`, `EUR`, `GBP`, `CAD`, `AUD`, `JPY`, `MXN`, `ARS`, `CLP`.
 
 ### iOS App
 

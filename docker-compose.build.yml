@@ -82,6 +82,7 @@ services:
     environment:
       NODE_ENV: production
       LANGUAGE: ${LANGUAGE:-}
+      CURRENCY: ${CURRENCY:-USD}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       api:
