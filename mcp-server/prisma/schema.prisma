@@ -22,7 +22,7 @@ model Device {
   isFavorite          Boolean   @default(false)
 
   status              Status    @default(COLLECTION)
-  functionalStatus    FunctionalStatus @default(YES)
+  functionalStatus    FunctionalStatus @default(UNKNOWN)
   condition           Condition?
   rarity              Rarity?
   lastPowerOnDate     DateTime?
@@ -47,8 +47,8 @@ model Device {
   displayVariant      String?
   nativeResolution    String?
   isWifiEnabled       Boolean?
-  isRetroBrited       Boolean   @default(false)
-  isRecapped          Boolean   @default(false)
+  isRetroBrited       Boolean?
+  isRecapped          Boolean?
   pramBatteryInstalled  Boolean?
   pramBatteryExpiryDate DateTime?
   deleted             Boolean   @default(false)
@@ -68,6 +68,9 @@ model Device {
   links               DeviceLink[]
   storageEntries      DeviceStorage[]
   osEntries           DeviceOS[]
+  customFieldValues   CustomFieldValue[]
+  relationsFrom       DeviceRelationship[] @relation("RelationFrom")
+  relationsTo         DeviceRelationship[] @relation("RelationTo")
 }
 
 model DeviceStorage {
@@ -154,13 +157,42 @@ model MaintenanceTask {
   label         String
   dateCompleted DateTime
   notes         String?  @db.Text
-  cost          Float?
+  cost          Decimal?  @db.Decimal(10, 2)
 }
 
 model Tag {
   id      Int      @id @default(autoincrement())
   name    String   @unique
   devices Device[]
+}
+
+model CustomField {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isPublic  Boolean  @default(false)
+  sortOrder Int      @default(0)
+  values    CustomFieldValue[]
+}
+
+model CustomFieldValue {
+  id            Int         @id @default(autoincrement())
+  customFieldId Int
+  customField   CustomField @relation(fields: [customFieldId], references: [id], onDelete: Cascade)
+  deviceId      Int
+  device        Device      @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  value         String
+  @@unique([customFieldId, deviceId])
+}
+
+model DeviceRelationship {
+  id            Int      @id @default(autoincrement())
+  fromDeviceId  Int
+  fromDevice    Device   @relation("RelationFrom", fields: [fromDeviceId], references: [id], onDelete: Cascade)
+  toDeviceId    Int
+  toDevice      Device   @relation("RelationTo", fields: [toDeviceId], references: [id], onDelete: Cascade)
+  type          String
+  createdAt     DateTime @default(now())
+  @@unique([fromDeviceId, toDeviceId, type])
 }
 
 model Template {
@@ -179,10 +211,14 @@ model Template {
   displayType     String?
   displayVariant  String?
   nativeResolution String?
+  storage         String?
+  operatingSystem String?
   externalUrl     String?
+  externalLinkLabel String?
   isWifiEnabled       Boolean?
-  pramBatteryInstalled Boolean?
+  isPramBatteryRemoved Boolean?
   rarity          Rarity?
+  historicalNotes String?   @db.Text
   isSeeded        Boolean   @default(false)
 
   categoryId  Int
