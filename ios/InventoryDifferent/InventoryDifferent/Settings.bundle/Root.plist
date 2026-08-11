@@ -28,6 +28,7 @@
                 <string>LANGUAGE_DE</string>
                 <string>LANGUAGE_FR</string>
                 <string>LANGUAGE_ES</string>
+                <string>LANGUAGE_IT</string>
             </array>
             <key>Values</key>
             <array>
@@ -36,6 +37,7 @@
                 <string>de</string>
                 <string>fr</string>
                 <string>es</string>
+                <string>it</string>
             </array>
         </dict>
         <dict>

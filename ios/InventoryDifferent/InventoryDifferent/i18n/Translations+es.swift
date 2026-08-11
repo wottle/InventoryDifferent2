@@ -590,7 +590,8 @@ extension Translations {
             english: "English",
             german: "Deutsch",
             french: "Français",
-            spanish: "Español"
+            spanish: "Español",
+            italian: "Italiano"
         ),
         locationsList: .init(
             title: "Ubicaciones",

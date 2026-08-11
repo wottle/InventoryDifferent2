@@ -30,7 +30,7 @@ final class LocalizationManager: ObservableObject {
     static let currencyDefaultsKey = "app_currency"
 
     /// Languages the app has full translations for.
-    static let supported = ["en", "de", "fr", "es"]
+    static let supported = ["en", "de", "fr", "es", "it"]
 
     /// Currency codes available in Settings (first entry means "use language default").
     static let supportedCurrencies = ["system", "USD", "EUR", "GBP", "CAD", "AUD", "JPY", "MXN", "ARS", "CLP"]
@@ -76,6 +76,7 @@ final class LocalizationManager: ObservableObject {
         case "de": return .de
         case "fr": return .fr
         case "es": return .es
+        case "it": return .it
         default: return .en
         }
     }

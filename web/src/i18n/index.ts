@@ -2,10 +2,11 @@ import { en } from "./translations/en";
 import { de } from "./translations/de";
 import { fr } from "./translations/fr";
 import { es } from "./translations/es";
+import { it } from "./translations/it";
 
 export type { Translations } from "./translations/en";
 
-const translations = { en, de, fr, es } as const;
+const translations = { en, de, fr, es, it } as const;
 
 export type SupportedLanguage = keyof typeof translations;
 

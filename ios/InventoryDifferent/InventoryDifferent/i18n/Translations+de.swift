@@ -591,7 +591,8 @@ extension Translations {
             english: "Englisch",
             german: "Deutsch",
             french: "Français",
-            spanish: "Español"
+            spanish: "Español",
+            italian: "Italiano"
         ),
         locationsList: .init(
             title: "Standorte",
