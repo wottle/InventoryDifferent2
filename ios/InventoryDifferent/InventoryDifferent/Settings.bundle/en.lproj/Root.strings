@@ -10,6 +10,7 @@
 "LANGUAGE_DE" = "Deutsch";
 "LANGUAGE_FR" = "Français";
 "LANGUAGE_ES" = "Español";
+"LANGUAGE_IT" = "Italiano";
 
 /* Currency picker label */
 "CURRENCY_TITLE" = "Currency";

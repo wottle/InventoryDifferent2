@@ -342,7 +342,7 @@ struct Translations {
     // MARK: - Settings (in-app label for Settings app entry)
 
     struct SettingsT {
-        let languageLabel, system_, english, german, french, spanish: String
+        let languageLabel, system_, english, german, french, spanish, italian: String
     }
 
     // MARK: - Root

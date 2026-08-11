@@ -10,8 +10,22 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 
-- Web and iOS chat: fixed empty collection responses caused by invalid GraphQL field names (storage, operatingSystem, cpu, graphics) that were removed when the data model was restructured into relation arrays
+---
+
+## [3.0.1] - 2026-08-10
+
+### Added
+
+- Italian (it) language support on web and iOS
+- Apple serial decoder: added PowerBook 540c, 520c, 180, 190, Macintosh IIx, IIsi, LC 475, LC III, PowerBook 100, Power Mac 8600, G3 Minitower, and 6500/250
+- Docker Compose files now include CURRENCY env variable mapping (default: USD) so users can set their currency via .env without editing compose files
+
+### Changed
+
+### Fixed
+
 - Privacy policy pages now readable in dark mode on web and storefront
+- MCP server schema now correctly mirrors the API schema — REPAIRED and LOANED status values, UNKNOWN functional status, custom fields, device relationships, and updated Template fields are all now present
 
 ---
 

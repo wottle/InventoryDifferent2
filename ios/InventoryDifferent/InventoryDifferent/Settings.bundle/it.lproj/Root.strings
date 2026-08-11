@@ -1,0 +1,28 @@
+/* Settings group title */
+"APP_SETTINGS_GROUP" = "InventoryDifferent";
+
+/* Language picker label */
+"LANGUAGE_TITLE" = "Lingua";
+
+/* Language options */
+"LANGUAGE_SYSTEM" = "Predefinito di sistema";
+"LANGUAGE_EN" = "English";
+"LANGUAGE_DE" = "Deutsch";
+"LANGUAGE_FR" = "Français";
+"LANGUAGE_ES" = "Español";
+"LANGUAGE_IT" = "Italiano";
+
+/* Currency picker label */
+"CURRENCY_TITLE" = "Valuta";
+
+/* Currency options */
+"CURRENCY_SYSTEM" = "Segui la lingua";
+"CURRENCY_USD" = "Dollaro statunitense ($)";
+"CURRENCY_EUR" = "Euro (€)";
+"CURRENCY_GBP" = "Sterlina britannica (£)";
+"CURRENCY_CAD" = "Dollaro canadese (C$)";
+"CURRENCY_AUD" = "Dollaro australiano (A$)";
+"CURRENCY_JPY" = "Yen giapponese (¥)";
+"CURRENCY_MXN" = "Peso messicano (MX$)";
+"CURRENCY_ARS" = "Peso argentino (ARS$)";
+"CURRENCY_CLP" = "Peso cileno (CLP$)";
