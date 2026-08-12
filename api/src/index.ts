@@ -1796,8 +1796,12 @@ RESTART IDENTITY CASCADE;
                         return;
                     }
 
-                    console.log(`[${ts()}] [generate-image] Converting source image to PNG`);
-                    const pngBuffer = await sharp(sourceFilePath).rotate().png().toBuffer();
+                    console.log(`[${ts()}] [generate-image] Converting source image to PNG (max 1024px)`);
+                    const pngBuffer = await sharp(sourceFilePath)
+                        .rotate()
+                        .resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true })
+                        .png()
+                        .toBuffer();
                     console.log(`[${ts()}] [generate-image] PNG buffer size:`, pngBuffer.length, 'bytes');
                     const imageFile = await OpenAI.toFile(pngBuffer, 'image.png', { type: 'image/png' });
 
