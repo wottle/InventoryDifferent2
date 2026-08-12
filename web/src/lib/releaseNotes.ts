@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'AI image generation: text-description-only mode no longer returns a 400 "Unknown parameter: response_format" error — the model setting is now honoured and response_format is only sent for dall-e models',
+    ],
   },
   {
     version: '3.0.1',

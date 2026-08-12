@@ -10,6 +10,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 
+- AI image generation: text-description-only mode no longer returns a 400 "Unknown parameter: response_format" error — the model setting is now honoured and response_format is only sent for dall-e models
+
 ---
 
 ## [3.0.1] - 2026-08-10
