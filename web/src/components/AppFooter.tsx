@@ -35,6 +35,22 @@ function ReleaseNotesModal({ onClose }: { onClose: () => void }) {
 }
 
 function ReleaseSection({ release }: { release: ReleaseEntry }) {
+    if (release.isArchive) {
+        return (
+            <div className="rounded border border-[var(--border)] bg-[var(--muted)]/30 px-4 py-3">
+                <div className="flex items-baseline gap-3 mb-1">
+                    <span className="font-semibold text-[var(--apple-blue)]">{release.version}</span>
+                    {release.dateRange && (
+                        <span className="text-xs text-[var(--muted-foreground)]">{release.dateRange}</span>
+                    )}
+                </div>
+                {release.summary && (
+                    <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{release.summary}</p>
+                )}
+            </div>
+        );
+    }
+
     return (
         <div>
             <div className="flex items-baseline gap-3 mb-3">
