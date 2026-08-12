@@ -166,6 +166,22 @@ export default function GenerateImagesPage() {
           throw new Error(data.error || `Server error ${res.status}`);
         }
 
+        const { jobId } = await res.json();
+
+        // Poll for completion (max 5 minutes at 2s intervals)
+        let done = false;
+        for (let i = 0; i < 150 && !cancelRef.current; i++) {
+          await new Promise((r) => setTimeout(r, 2000));
+          const statusRes = await fetch(`${API_BASE_URL}/generate-image/status/${jobId}`, {
+            headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          });
+          if (!statusRes.ok) throw new Error("Failed to check generation status");
+          const jobStatus = await statusRes.json();
+          if (jobStatus.status === "done") { done = true; break; }
+          if (jobStatus.status === "error") throw new Error(jobStatus.error || "Image generation failed");
+        }
+        if (!done && !cancelRef.current) throw new Error("Generation timed out. Check the gallery in a moment.");
+
         setStatuses((prev) => new Map(prev).set(deviceId, "done"));
       } catch (err: any) {
         setStatuses((prev) => new Map(prev).set(deviceId, "error"));

@@ -12,6 +12,7 @@ All notable changes to InventoryDifferent will be documented here.
 
 - AI image generation: text-description-only mode no longer returns a 400 "Unknown parameter: response_format" error — the model setting is now honoured and response_format is only sent for dall-e models
 - AI image generation: reference image is now resized to max 1024×1024 before uploading to OpenAI, preventing connection timeouts caused by large original photos
+- AI image generation: bulk generation page now correctly waits for each job to complete before marking it Done — previously it marked Done immediately after starting the background job, so no images were ever saved
 
 ---
 
