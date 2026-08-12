@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 import type { PeriodBucket } from "../../../components/PeriodicCashFlowChart";
 
@@ -116,6 +117,7 @@ function aggregateByPeriod(
 
 export default function FinancialsPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { data, loading, error } = useQuery(GET_FINANCIALS, {
     fetchPolicy: "cache-and-network",
   });
@@ -187,6 +189,8 @@ export default function FinancialsPage() {
     const periodicChartData = aggregateByPeriod(transactions, periodMode);
     return { transactionsWithCumulative: withCum, chartData: chartDataPoints, periodicChartData };
   }, [transactions, periodMode]);
+
+  if (redirecting) return <LoadingPanel title={t.nav.financials} />;
 
   return (
     <div className="min-h-screen font-sans">

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
 import { useAuth } from "../../../lib/auth-context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_TEMPLATES = gql`
   query GetTemplates {
@@ -201,6 +202,7 @@ const emptyFormState: TemplateFormState = {
 
 export default function TemplatesPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { externalTemplatesEnabled } = useAuth();
   const { data, loading, error, refetch } = useQuery(GET_TEMPLATES, {
     fetchPolicy: "cache-and-network",
@@ -350,6 +352,8 @@ export default function TemplatesPage() {
     if (activeTemplateId === id) closeModal();
     await refetch();
   };
+
+  if (redirecting) return <LoadingPanel title={t.nav.manageTemplates} />;
 
   return (
     <div className="min-h-screen font-sans">

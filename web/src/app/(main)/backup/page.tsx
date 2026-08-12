@@ -9,6 +9,7 @@ import { DeviceFilterPanel, FilterState, SortColumn } from "../../../components/
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
 import { useAuth } from "../../../lib/auth-context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 import CsvImport from "../../../components/CsvImport";
 import CsvExport from "../../../components/CsvExport";
 
@@ -131,6 +132,7 @@ const defaultFilters: FilterState = {
 
 export default function BackupPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { getAccessToken } = useAuth();
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
@@ -485,6 +487,8 @@ export default function BackupPage() {
     link.click();
     document.body.removeChild(link);
   };
+
+  if (redirecting) return <LoadingPanel title={t.nav.exportImport} />;
 
   return (
     <div className="min-h-screen font-sans">

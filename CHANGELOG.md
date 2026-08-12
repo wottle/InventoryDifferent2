@@ -10,6 +10,9 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 
+- Nav bar now hides admin and financial links for unauthenticated users — only Devices, Stats, Timeline, and Slideshow are shown when not logged in
+- Pages that require login (Financials, Wishlist, Categories, Locations, Custom Fields, Trash, Print, Templates, Usage, Backup, Settings, Dashboard, Generate Images) now redirect to the login page instead of rendering a broken or partially broken view
+
 ---
 
 ## [3.0.2] - 2026-08-12

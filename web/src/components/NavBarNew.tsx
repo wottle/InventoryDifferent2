@@ -16,11 +16,20 @@ const GET_TRASH_COUNT = gql`
   }
 `;
 
+// Shown in the main desktop nav and mobile bottom bar for authenticated users
 const MAIN_NAV = [
   { key: 'devices' as const,    href: '/',            icon: 'devices' },
   { key: 'dashboard' as const,  href: '/dashboard',   icon: 'dashboard' },
   { key: 'financials' as const, href: '/financials',  icon: 'payments' },
   { key: 'wishlist' as const,   href: '/wishlist',    icon: 'auto_awesome_motion' },
+];
+
+// Public items shown in the mobile bottom bar for unauthenticated guests
+const PUBLIC_MOBILE_NAV = [
+  { key: 'devices' as const,   href: '/',          icon: 'devices' },
+  { key: 'stats' as const,     href: '/stats',     icon: 'bar_chart' },
+  { key: 'timeline' as const,  href: '/timeline',  icon: 'timeline' },
+  { key: 'slideshow' as const, href: '/slideshow', icon: 'slideshow' },
 ];
 
 type MoreItem = { key: string; href: string; icon: string };
@@ -30,6 +39,13 @@ const MORE_ITEMS: MoreItem[] = [
   { key: 'timeline',       href: '/timeline',         icon: 'timeline' },
   { key: 'slideshow',      href: '/slideshow',        icon: 'slideshow' },
   { key: 'usage',          href: '/usage',            icon: 'storage' },
+];
+
+// Public subset of MORE_ITEMS shown to guests
+const PUBLIC_MORE_ITEMS: MoreItem[] = [
+  { key: 'stats',          href: '/stats',            icon: 'bar_chart' },
+  { key: 'timeline',       href: '/timeline',         icon: 'timeline' },
+  { key: 'slideshow',      href: '/slideshow',        icon: 'slideshow' },
 ];
 
 const MORE_TOOLS: MoreItem[] = [
@@ -50,6 +66,64 @@ const MORE_ADMIN: MoreItem[] = [
   { key: 'settings',          href: '/settings',     icon: 'settings' },
 ];
 
+function MoreLink({ item, pathname, onClick, trashCount }: {
+  item: MoreItem;
+  pathname: string;
+  onClick: () => void;
+  trashCount: number;
+}) {
+  const t = useT();
+  const isActive = pathname.startsWith(item.href);
+  return (
+    <Link
+      href={item.href}
+      onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+        isActive
+          ? 'text-primary dark:text-[#adc6ff] bg-primary/5 dark:bg-[#adc6ff]/5 font-medium'
+          : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7] hover:bg-surface-container dark:hover:bg-[#282d36]'
+      }`}
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{item.icon}</span>
+      {(t.nav as Record<string, string>)[item.key]}
+      {item.key === 'trash' && trashCount > 0 && (
+        <span className="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+          {trashCount > 99 ? '99+' : trashCount}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function MobileMoreLink({ item, pathname, onClick, trashCount }: {
+  item: MoreItem;
+  pathname: string;
+  onClick: () => void;
+  trashCount: number;
+}) {
+  const t = useT();
+  const isActive = pathname.startsWith(item.href);
+  return (
+    <Link
+      href={item.href}
+      onClick={onClick}
+      className={`flex items-center gap-4 px-2 py-3 rounded-xl text-sm transition-colors ${
+        isActive
+          ? 'text-primary dark:text-[#adc6ff] bg-primary/5 dark:bg-[#adc6ff]/5 font-medium'
+          : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7] hover:bg-surface-container dark:hover:bg-[#282d36]'
+      }`}
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>{item.icon}</span>
+      {(t.nav as Record<string, string>)[item.key]}
+      {item.key === 'trash' && trashCount > 0 && (
+        <span className="ml-auto min-w-[20px] h-[20px] px-1 flex items-center justify-center bg-red-500 text-white text-[11px] font-bold rounded-full">
+          {trashCount > 99 ? '99+' : trashCount}
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function NavBar() {
   const t = useT();
   const pathname = usePathname();
@@ -66,6 +140,9 @@ export function NavBar() {
   const userRef = useRef<HTMLDivElement>(null);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
+  // Guest = auth is required but user is not signed in
+  const isGuest = authRequired && !isAuthenticated;
+
   const isDevicesActive = pathname === '/';
 
   useEffect(() => {
@@ -78,6 +155,9 @@ export function NavBar() {
   }, []);
 
   useEffect(() => { setMobileMoreOpen(false); }, [pathname]);
+
+  const activeMoreItems = isGuest ? PUBLIC_MORE_ITEMS : MORE_ITEMS;
+  const mobileNavItems = isGuest ? PUBLIC_MOBILE_NAV : MAIN_NAV;
 
   return (
     <>
@@ -96,7 +176,8 @@ export function NavBar() {
           </div>
 
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
-            {MAIN_NAV.map(item => {
+            {/* Devices always shown; remaining main nav items only for authenticated users */}
+            {(isGuest ? MAIN_NAV.filter(i => i.key === 'devices') : MAIN_NAV).map(item => {
               const isActive = item.key === 'devices' ? isDevicesActive : pathname.startsWith(item.href);
               return (
                 <Link
@@ -131,74 +212,25 @@ export function NavBar() {
 
               {moreOpen && (
                 <div className="absolute right-0 top-full mt-3 z-50 bg-surface-container-lowest dark:bg-[#1e2129] rounded-xl shadow-[0_8px_32px_-4px_rgba(0,0,0,0.12)] py-2 w-52 border border-outline-variant/10">
-                  {MORE_ITEMS.map(item => (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={() => setMoreOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                        pathname.startsWith(item.href)
-                          ? 'text-primary dark:text-[#adc6ff] bg-primary/5 dark:bg-[#adc6ff]/5 font-medium'
-                          : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7] hover:bg-surface-container dark:hover:bg-[#282d36]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{item.icon}</span>
-                      {(t.nav as Record<string, string>)[item.key]}
-                    </Link>
+                  {activeMoreItems.map(item => (
+                    <MoreLink key={item.key} item={item} pathname={pathname} onClick={() => setMoreOpen(false)} trashCount={trashCount} />
                   ))}
-                  <div className="my-1.5 border-t border-outline-variant/10" />
-                  {MORE_TOOLS.map(item => (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={() => setMoreOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                        pathname.startsWith(item.href)
-                          ? 'text-primary dark:text-[#adc6ff] bg-primary/5 dark:bg-[#adc6ff]/5 font-medium'
-                          : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7] hover:bg-surface-container dark:hover:bg-[#282d36]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{item.icon}</span>
-                      {(t.nav as Record<string, string>)[item.key]}
-                    </Link>
-                  ))}
-                  <div className="my-1.5 border-t border-outline-variant/10" />
-                  {MORE_MANAGE.map(item => (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={() => setMoreOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                        pathname.startsWith(item.href)
-                          ? 'text-primary dark:text-[#adc6ff] bg-primary/5 dark:bg-[#adc6ff]/5 font-medium'
-                          : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7] hover:bg-surface-container dark:hover:bg-[#282d36]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{item.icon}</span>
-                      {(t.nav as Record<string, string>)[item.key]}
-                    </Link>
-                  ))}
-                  <div className="my-1.5 border-t border-outline-variant/10" />
-                  {MORE_ADMIN.map(item => (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={() => setMoreOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                        pathname.startsWith(item.href)
-                          ? 'text-primary dark:text-[#adc6ff] bg-primary/5 dark:bg-[#adc6ff]/5 font-medium'
-                          : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7] hover:bg-surface-container dark:hover:bg-[#282d36]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{item.icon}</span>
-                      {(t.nav as Record<string, string>)[item.key]}
-                      {item.key === 'trash' && trashCount > 0 && (
-                        <span className="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
-                          {trashCount > 99 ? '99+' : trashCount}
-                        </span>
-                      )}
-                    </Link>
-                  ))}
+                  {!isGuest && (
+                    <>
+                      <div className="my-1.5 border-t border-outline-variant/10" />
+                      {MORE_TOOLS.map(item => (
+                        <MoreLink key={item.key} item={item} pathname={pathname} onClick={() => setMoreOpen(false)} trashCount={trashCount} />
+                      ))}
+                      <div className="my-1.5 border-t border-outline-variant/10" />
+                      {MORE_MANAGE.map(item => (
+                        <MoreLink key={item.key} item={item} pathname={pathname} onClick={() => setMoreOpen(false)} trashCount={trashCount} />
+                      ))}
+                      <div className="my-1.5 border-t border-outline-variant/10" />
+                      {MORE_ADMIN.map(item => (
+                        <MoreLink key={item.key} item={item} pathname={pathname} onClick={() => setMoreOpen(false)} trashCount={trashCount} />
+                      ))}
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -247,7 +279,7 @@ export function NavBar() {
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pt-4 md:hidden bg-white/90 dark:bg-[#1a1c1f]/90 backdrop-blur-2xl rounded-t-3xl shadow-[0_-4px_20px_0_rgba(0,0,0,0.04)]" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)' }}>
-        {MAIN_NAV.map(item => {
+        {mobileNavItems.map(item => {
           const isActive = item.key === 'devices' ? isDevicesActive : pathname.startsWith(item.href);
           return (
             <Link
@@ -257,22 +289,24 @@ export function NavBar() {
             >
               <span className="material-symbols-outlined">{item.icon}</span>
               <span className="text-[10px] uppercase tracking-widest font-bold mt-1">
-                {t.nav[item.key as keyof typeof t.nav]}
+                {(t.nav as Record<string, string>)[item.key]}
               </span>
             </Link>
           );
         })}
-        <button
-          onClick={() => setMobileMoreOpen(true)}
-          className={`flex flex-col items-center justify-center ${mobileMoreOpen ? 'text-primary dark:text-[#adc6ff]' : 'text-outline-variant dark:text-[#414755]'} transition-all`}
-        >
-          <span className="material-symbols-outlined">more_horiz</span>
-          <span className="text-[10px] uppercase tracking-widest font-bold mt-1">{t.nav.more}</span>
-        </button>
+        {!isGuest && (
+          <button
+            onClick={() => setMobileMoreOpen(true)}
+            className={`flex flex-col items-center justify-center ${mobileMoreOpen ? 'text-primary dark:text-[#adc6ff]' : 'text-outline-variant dark:text-[#414755]'} transition-all`}
+          >
+            <span className="material-symbols-outlined">more_horiz</span>
+            <span className="text-[10px] uppercase tracking-widest font-bold mt-1">{t.nav.more}</span>
+          </button>
+        )}
       </nav>
 
-      {/* Mobile more sheet */}
-      {mobileMoreOpen && (
+      {/* Mobile more sheet — only rendered for authenticated users */}
+      {!isGuest && mobileMoreOpen && (
         <>
           <div
             className="fixed inset-0 z-40 bg-black/30 md:hidden"
@@ -287,24 +321,7 @@ export function NavBar() {
                 <div key={gi}>
                   {gi > 0 && <div className="my-2 border-t border-outline-variant/10" />}
                   {group.map(item => (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={() => setMobileMoreOpen(false)}
-                      className={`flex items-center gap-4 px-2 py-3 rounded-xl text-sm transition-colors ${
-                        pathname.startsWith(item.href)
-                          ? 'text-primary dark:text-[#adc6ff] bg-primary/5 dark:bg-[#adc6ff]/5 font-medium'
-                          : 'text-on-surface-variant dark:text-[#c1c6d7] hover:text-on-surface dark:hover:text-[#e2e2e7] hover:bg-surface-container dark:hover:bg-[#282d36]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>{item.icon}</span>
-                      {(t.nav as Record<string, string>)[item.key]}
-                      {item.key === 'trash' && trashCount > 0 && (
-                        <span className="ml-auto min-w-[20px] h-[20px] px-1 flex items-center justify-center bg-red-500 text-white text-[11px] font-bold rounded-full">
-                          {trashCount > 99 ? '99+' : trashCount}
-                        </span>
-                      )}
-                    </Link>
+                    <MobileMoreLink key={item.key} item={item} pathname={pathname} onClick={() => setMobileMoreOpen(false)} trashCount={trashCount} />
                   ))}
                 </div>
               ))}
@@ -313,14 +330,16 @@ export function NavBar() {
         </>
       )}
 
-      {/* Desktop FAB */}
-      <div className="fixed bottom-12 right-12 hidden md:block z-40">
-        <Link href="/devices/new">
-          <button className="w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined">add</span>
-          </button>
-        </Link>
-      </div>
+      {/* Desktop FAB — only for authenticated users */}
+      {!isGuest && (
+        <div className="fixed bottom-12 right-12 hidden md:block z-40">
+          <Link href="/devices/new">
+            <button className="w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined">add</span>
+            </button>
+          </Link>
+        </div>
+      )}
     </>
   );
 }

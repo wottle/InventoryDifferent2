@@ -7,6 +7,7 @@ import Link from "next/link";
 import { API_BASE_URL } from "../../../lib/config";
 import { useAuth } from "../../../lib/auth-context";
 import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
 import { useT } from "../../../i18n/context";
@@ -52,6 +53,7 @@ interface DeviceRow {
 }
 
 export default function GenerateImagesPage() {
+  const redirecting = useRequireAuth();
   const { isAuthenticated, isLoading: authLoading, getAccessToken } = useAuth();
   const t = useT();
   const { data, loading: devicesLoading } = useQuery(GET_DEVICES);
@@ -202,19 +204,8 @@ export default function GenerateImagesPage() {
     setTimeout(() => setSavedPrompt(false), 2000);
   }
 
-  if (authLoading || openaiEnabled === null) {
+  if (redirecting || authLoading || openaiEnabled === null) {
     return <LoadingPanel title={t.pages.generateImages.loading} />;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-[var(--muted-foreground)] mb-4">{t.pages.generateImages.authRequired}</p>
-          <Link href="/login" className="text-[var(--apple-blue)] hover:underline">{t.pages.generateImages.logIn}</Link>
-        </div>
-      </div>
-    );
   }
 
   return (

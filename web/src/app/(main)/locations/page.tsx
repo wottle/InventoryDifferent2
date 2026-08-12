@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import Link from "next/link";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_LOCATIONS = gql`
   query GetLocations {
@@ -57,6 +58,7 @@ type Location = {
 
 export default function LocationsPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { data, loading, error, refetch } = useQuery(GET_LOCATIONS, {
     fetchPolicy: "cache-and-network",
   });
@@ -133,6 +135,8 @@ export default function LocationsPage() {
       alert(errMsg);
     }
   };
+
+  if (redirecting) return <LoadingPanel title={t.nav.manageLocations} />;
 
   return (
     <div className="min-h-screen font-sans">

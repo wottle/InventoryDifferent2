@@ -5,6 +5,8 @@ import gql from 'graphql-tag';
 import Link from 'next/link';
 import { useAuth } from '../../../lib/auth-context';
 import { useT } from '../../../i18n/context';
+import { useRequireAuth } from '../../../lib/useRequireAuth';
+import { LoadingPanel } from '../../../components/LoadingPanel';
 import { useIsDarkMode } from '../../../lib/useIsDarkMode';
 import { pickThumbnail } from '../../../lib/pickThumbnail';
 
@@ -162,6 +164,7 @@ function activityContent(entry: ActivityEntry): { title: string; subtitle: strin
 
 export default function DashboardPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { isAuthenticated } = useAuth();
   const { data, loading } = useQuery(DASHBOARD_QUERY, { fetchPolicy: 'cache-and-network' });
 
@@ -184,6 +187,8 @@ export default function DashboardPage() {
       </div>
     );
   }
+
+  if (redirecting) return <LoadingPanel title={t.nav.dashboard} />;
 
   return (
     <div className="min-h-screen font-sans p-8 lg:p-12">
