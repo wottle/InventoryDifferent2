@@ -41,7 +41,7 @@ export function ProgressBar({ duration, paused, slideKey }: ProgressBarProps) {
   }, [paused, duration]);
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10">
+    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10" style={{ zIndex: 20 }}>
       <div
         ref={fillRef}
         className="h-full"

@@ -18,6 +18,9 @@ export const releaseNotes: ReleaseEntry[] = [
       'nav bar now hides admin and financial links for unauthenticated users — only Devices, Stats, Timeline, and Slideshow are shown when not logged in',
       'pages that require login (Financials, Wishlist, Categories, Locations, Custom Fields, Trash, Print, Templates, Usage, Backup, Settings, Dashboard, Generate Images) now redirect to the login page instead of rendering a broken or partially broken view',
       'slideshow control bar buttons are now clickable — the active slide was rendering above the controls due to missing z-index; controls also correctly pass through pointer events when hidden so mouse-move detection always works',
+      'slideshow controls now auto-hide after 3 seconds of inactivity and reappear on any mouse movement',
+      'slideshow progress bar now renders correctly — a broken wrapper div with position:relative was collapsing to zero height and hiding it',
+      'slideshow historical notes now load reliably — notes are fetched with the initial device list instead of via a fragile lazy-query chain',
     ],
   },
   {

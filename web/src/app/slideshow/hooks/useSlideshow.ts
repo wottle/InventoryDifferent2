@@ -10,6 +10,7 @@ export interface SlideDevice {
   releaseYear?: number | null;
   isFavorite: boolean;
   status?: string | null;
+  historicalNotes?: string | null;
   category?: { name: string } | null;
   images: Array<{
     id: string;
