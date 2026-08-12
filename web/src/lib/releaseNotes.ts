@@ -21,6 +21,7 @@ export const releaseNotes: ReleaseEntry[] = [
       'slideshow controls now auto-hide after 3 seconds of inactivity and reappear on any mouse movement',
       'slideshow progress bar now renders correctly — a broken wrapper div with position:relative was collapsing to zero height and hiding it',
       'slideshow historical notes now load reliably — notes are fetched with the initial device list instead of via a fragile lazy-query chain',
+      'export/import now preserves historicalNotes, storage entries, and OS entries — these three fields were silently dropped in every export; device relationships were already correctly exported and restored',
     ],
   },
   {

@@ -13,6 +13,10 @@ All notable changes to InventoryDifferent will be documented here.
 - Nav bar now hides admin and financial links for unauthenticated users — only Devices, Stats, Timeline, and Slideshow are shown when not logged in
 - Pages that require login (Financials, Wishlist, Categories, Locations, Custom Fields, Trash, Print, Templates, Usage, Backup, Settings, Dashboard, Generate Images) now redirect to the login page instead of rendering a broken or partially broken view
 - Slideshow control bar buttons are now clickable — the active slide was rendering above the controls due to missing z-index
+- Slideshow controls now auto-hide after 3 seconds of inactivity and reappear on any mouse movement
+- Slideshow progress bar now renders correctly — a broken wrapper div with position:relative was collapsing to zero height and hiding it
+- Slideshow historical notes now load reliably — notes are fetched with the initial device list instead of via a fragile lazy-query chain
+- Export/import now preserves historicalNotes, storage entries, and OS entries — these three fields were silently dropped in every export; device relationships were already correctly exported and restored
 
 ---
 

@@ -525,6 +525,7 @@ RESTART IDENTITY CASCADE;
             isRetroBrited: deviceData.isRetroBrited ?? false,
             isRecapped: deviceData.isRecapped ?? false,
             lastPowerOnDate: deviceData.lastPowerOnDate ? new Date(deviceData.lastPowerOnDate) : null,
+            historicalNotes: deviceData.historicalNotes ?? null,
             categoryId: category!.id,
         };
 
@@ -749,6 +750,24 @@ RESTART IDENTITY CASCADE;
                     data: {
                         tags: { connect: { id: tag.id } }
                     }
+                });
+            }
+        }
+
+        // Import storage entries
+        if (deviceData.storageEntries && deviceData.storageEntries.length > 0) {
+            for (const entry of deviceData.storageEntries) {
+                await (prisma as any).deviceStorage.create({
+                    data: { deviceId: actualDeviceId, value: entry.value, sortOrder: entry.sortOrder ?? 0 },
+                });
+            }
+        }
+
+        // Import OS entries
+        if (deviceData.osEntries && deviceData.osEntries.length > 0) {
+            for (const entry of deviceData.osEntries) {
+                await (prisma as any).deviceOS.create({
+                    data: { deviceId: actualDeviceId, value: entry.value, sortOrder: entry.sortOrder ?? 0 },
                 });
             }
         }
@@ -1035,6 +1054,8 @@ RESTART IDENTITY CASCADE;
                         accessories: true,
                         links: true,
                         customFieldValues: { include: { customField: true } },
+                        storageEntries: { orderBy: { sortOrder: 'asc' } },
+                        osEntries: { orderBy: { sortOrder: 'asc' } },
                         relationsFrom: { include: { toDevice: { select: { id: true } } } },
                     }
                 });
@@ -1052,7 +1073,7 @@ RESTART IDENTITY CASCADE;
 
                 const exportData: any = {
                     exportDate: new Date().toISOString(),
-                    exportVersion: "2.0",
+                    exportVersion: "2.1",
                     deviceCount: allDevices.length,
                     includesImages: includeImages,
                     compressedImages: compressImages,
@@ -1151,6 +1172,7 @@ RESTART IDENTITY CASCADE;
                         isRetroBrited: device.isRetroBrited,
                         isRecapped: device.isRecapped,
                         lastPowerOnDate: device.lastPowerOnDate,
+                        historicalNotes: device.historicalNotes ?? null,
                         category: {
                             id: device.category.id,
                             name: device.category.name,
@@ -1184,6 +1206,14 @@ RESTART IDENTITY CASCADE;
                         customFields: (device as any).customFieldValues.map((cfv: any) => ({
                             fieldName: cfv.customField.name,
                             value: cfv.value,
+                        })),
+                        storageEntries: (device as any).storageEntries.map((s: any) => ({
+                            value: s.value,
+                            sortOrder: s.sortOrder,
+                        })),
+                        osEntries: (device as any).osEntries.map((o: any) => ({
+                            value: o.value,
+                            sortOrder: o.sortOrder,
                         })),
                     };
 
