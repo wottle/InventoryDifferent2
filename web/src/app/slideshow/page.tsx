@@ -212,14 +212,18 @@ export default function SlideshowPage() {
 
       {/* Progress bar */}
       {currentDevice && settings.showProgressBar && (
-        <ProgressBar duration={settings.duration} paused={paused} slideKey={currentIndex} />
+        <div style={{ position: 'relative', zIndex: 20 }}>
+          <ProgressBar duration={settings.duration} paused={paused} slideKey={currentIndex} />
+        </div>
       )}
 
       {/* Top controls — fade in on mouse move */}
       <div
         className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-5 transition-opacity duration-200"
         style={{
+          zIndex: 20,
           opacity: controlsVisible || settingsOpen ? 1 : 0,
+          pointerEvents: controlsVisible || settingsOpen ? 'auto' : 'none',
           background: 'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)',
         }}
       >

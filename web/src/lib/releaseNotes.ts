@@ -17,6 +17,7 @@ export const releaseNotes: ReleaseEntry[] = [
     fixed: [
       'nav bar now hides admin and financial links for unauthenticated users — only Devices, Stats, Timeline, and Slideshow are shown when not logged in',
       'pages that require login (Financials, Wishlist, Categories, Locations, Custom Fields, Trash, Print, Templates, Usage, Backup, Settings, Dashboard, Generate Images) now redirect to the login page instead of rendering a broken or partially broken view',
+      'slideshow control bar buttons are now clickable — the active slide was rendering above the controls due to missing z-index; controls also correctly pass through pointer events when hidden so mouse-move detection always works',
     ],
   },
   {
