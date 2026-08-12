@@ -12,6 +12,18 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [3.0.4] - 2026-08-12
+
+### Added
+
+### Changed
+
+- Release notes modal now groups older major versions (1.x, 2.x) into collapsible sections — expanded by default for the current major version only; full history preserved and accessible by clicking the section header
+
+### Fixed
+
+---
+
 ## [3.0.3] - 2026-08-12
 
 ### Added

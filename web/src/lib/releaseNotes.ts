@@ -1,4 +1,4 @@
-export const APP_VERSION = '3.0.3';
+export const APP_VERSION = '3.0.4';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,15 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '3.0.4',
+    date: '2026-08-12',
+    added: [],
+    changed: [
+      'release notes modal now groups older major versions (1.x, 2.x) into collapsible sections — expanded by default for the current major version only; full history preserved and accessible by clicking the section header',
+    ],
     fixed: [],
   },
   {
