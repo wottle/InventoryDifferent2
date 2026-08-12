@@ -1819,14 +1819,15 @@ RESTART IDENTITY CASCADE;
                     }
                     const deviceDesc = [device.manufacturer, device.name, device.releaseYear].filter(Boolean).join(' ');
                     const textPrompt = `${deviceDesc} — ${finalPrompt}`;
+                    const isDallE = imageModel.startsWith('dall-e');
                     const response = await openai.images.generate({
-                        model: 'dall-e-3',
+                        model: imageModel,
                         prompt: textPrompt,
                         size: '1024x1024',
-                        response_format: 'b64_json',
-                    });
+                        ...(isDallE ? { response_format: 'b64_json' } : {}),
+                    } as any);
                     console.log(`[${ts()}] [generate-image] OpenAI images.generate complete`);
-                    imageBase64 = response.data![0].b64_json as string;
+                    imageBase64 = (response.data![0] as any).b64_json as string;
                 }
 
                 console.log(`[${ts()}] [generate-image] Writing PNG to disk...`);
