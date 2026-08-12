@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import dynamic from "next/dynamic";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 // StatsCharts dynamic import — loading text is static (component renders before t is available)
 const StatsCharts = dynamic(() => import("../../../components/StatsCharts"), {
@@ -36,6 +37,7 @@ const GET_COLLECTION_STATS = gql`
 
 export default function StatsPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { data, loading, error } = useQuery(GET_COLLECTION_STATS, {
     fetchPolicy: "cache-and-network",
   });
@@ -53,6 +55,8 @@ export default function StatsPage() {
     if (value === null || value === undefined) return "—";
     return new Intl.NumberFormat(t.common.locale, { style: "currency", currency: t.common.currencyCode }).format(Number(value));
   };
+
+  if (redirecting) return <LoadingPanel title={t.nav.stats} />;
 
   return (
     <div className="min-h-screen font-sans">

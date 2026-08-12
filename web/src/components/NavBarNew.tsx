@@ -27,7 +27,6 @@ const MAIN_NAV = [
 // Public items shown in the mobile bottom bar for unauthenticated guests
 const PUBLIC_MOBILE_NAV = [
   { key: 'devices' as const,   href: '/',          icon: 'devices' },
-  { key: 'stats' as const,     href: '/stats',     icon: 'bar_chart' },
   { key: 'timeline' as const,  href: '/timeline',  icon: 'timeline' },
   { key: 'slideshow' as const, href: '/slideshow', icon: 'slideshow' },
 ];
@@ -43,7 +42,6 @@ const MORE_ITEMS: MoreItem[] = [
 
 // Public subset of MORE_ITEMS shown to guests
 const PUBLIC_MORE_ITEMS: MoreItem[] = [
-  { key: 'stats',          href: '/stats',            icon: 'bar_chart' },
   { key: 'timeline',       href: '/timeline',         icon: 'timeline' },
   { key: 'slideshow',      href: '/slideshow',        icon: 'slideshow' },
 ];
