@@ -30,12 +30,13 @@ export function SettingsDrawer({ settings, onUpdate, onClose }: SettingsDrawerPr
   return (
     <>
       {/* Backdrop — clicking outside closes drawer */}
-      <div className="absolute inset-0" onClick={onClose} />
+      <div className="absolute inset-0" style={{ zIndex: 20 }} onClick={onClose} />
 
       {/* Drawer panel */}
       <div
-        className="absolute top-0 right-0 bottom-0 w-72 flex flex-col z-10 overflow-y-auto"
+        className="absolute top-0 right-0 bottom-0 w-72 flex flex-col overflow-y-auto"
         style={{
+          zIndex: 21,
           background: 'rgba(20,20,22,0.92)',
           backdropFilter: 'blur(24px)',
           borderLeft: '1px solid rgba(255,255,255,0.1)',

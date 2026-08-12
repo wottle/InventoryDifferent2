@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_CUSTOM_FIELDS = gql`
   query GetCustomFields {
@@ -54,6 +55,7 @@ type CustomField = {
 
 export default function CustomFieldsPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { data, loading, error, refetch } = useQuery(GET_CUSTOM_FIELDS, {
     fetchPolicy: "cache-and-network",
   });
@@ -144,6 +146,8 @@ export default function CustomFieldsPage() {
     setDeleteConfirmText("");
     await refetch();
   };
+
+  if (redirecting) return <LoadingPanel title={t.nav.manageCustomFields} />;
 
   return (
     <div className="min-h-screen font-sans">

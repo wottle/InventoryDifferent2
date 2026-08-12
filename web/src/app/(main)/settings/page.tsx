@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { API_BASE_URL } from '../../../lib/config';
 import { useAuth } from '../../../lib/auth-context';
 import { useT } from '../../../i18n/context';
+import { useRequireAuth } from '../../../lib/useRequireAuth';
 
 const SET_SYSTEM_SETTING = gql`
   mutation SetSystemSetting($key: String!, $value: String!) {
@@ -19,6 +20,7 @@ type ImageModel = (typeof MODELS)[number];
 export default function SettingsPage() {
   const t = useT();
   const ts = t.pages.settings;
+  const redirecting = useRequireAuth();
   const { isAuthenticated, isLoading: authLoading, getAccessToken, authRequired } = useAuth();
   const [setSystemSetting] = useMutation(SET_SYSTEM_SETTING);
 
@@ -103,7 +105,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (authLoading || loading) {
+  if (redirecting || authLoading || loading) {
     return (
       <div className="max-w-2xl mx-auto px-6 py-12">
         <div className="text-on-surface-variant text-sm animate-pulse">{t.pages.generateImages.loading}</div>

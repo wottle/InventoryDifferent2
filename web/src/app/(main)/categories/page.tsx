@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -58,6 +59,7 @@ const CATEGORY_TYPES = ["COMPUTER", "PERIPHERAL", "ACCESSORY", "OTHER"] as const
 
 export default function CategoriesPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { data, loading, error, refetch } = useQuery(GET_CATEGORIES, {
     fetchPolicy: "cache-and-network",
   });
@@ -141,6 +143,8 @@ export default function CategoriesPage() {
       }
     }
   };
+
+  if (redirecting) return <LoadingPanel title={t.nav.manageCategories} />;
 
   return (
     <div className="min-h-screen font-sans">

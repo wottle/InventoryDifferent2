@@ -7,6 +7,7 @@ import Link from "next/link";
 import { API_BASE_URL } from "../../../lib/config";
 import { useAuth } from "../../../lib/auth-context";
 import { LoadingPanel } from "../../../components/LoadingPanel";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
 import { useT } from "../../../i18n/context";
@@ -52,6 +53,7 @@ interface DeviceRow {
 }
 
 export default function GenerateImagesPage() {
+  const redirecting = useRequireAuth();
   const { isAuthenticated, isLoading: authLoading, getAccessToken } = useAuth();
   const t = useT();
   const { data, loading: devicesLoading } = useQuery(GET_DEVICES);
@@ -166,6 +168,22 @@ export default function GenerateImagesPage() {
           throw new Error(data.error || `Server error ${res.status}`);
         }
 
+        const { jobId } = await res.json();
+
+        // Poll for completion (max 5 minutes at 2s intervals)
+        let done = false;
+        for (let i = 0; i < 150 && !cancelRef.current; i++) {
+          await new Promise((r) => setTimeout(r, 2000));
+          const statusRes = await fetch(`${API_BASE_URL}/generate-image/status/${jobId}`, {
+            headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          });
+          if (!statusRes.ok) throw new Error("Lost connection while waiting for the image. Check your network and try again.");
+          const jobStatus = await statusRes.json();
+          if (jobStatus.status === "done") { done = true; break; }
+          if (jobStatus.status === "error") throw new Error(jobStatus.error || "Image generation failed");
+        }
+        if (!done && !cancelRef.current) throw new Error("Generation timed out. Check the gallery in a moment.");
+
         setStatuses((prev) => new Map(prev).set(deviceId, "done"));
       } catch (err: any) {
         setStatuses((prev) => new Map(prev).set(deviceId, "error"));
@@ -186,19 +204,8 @@ export default function GenerateImagesPage() {
     setTimeout(() => setSavedPrompt(false), 2000);
   }
 
-  if (authLoading || openaiEnabled === null) {
+  if (redirecting || authLoading || openaiEnabled === null) {
     return <LoadingPanel title={t.pages.generateImages.loading} />;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-[var(--muted-foreground)] mb-4">{t.pages.generateImages.authRequired}</p>
-          <Link href="/login" className="text-[var(--apple-blue)] hover:underline">{t.pages.generateImages.logIn}</Link>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -435,7 +442,14 @@ export default function GenerateImagesPage() {
                         {rowStatus === "done" && <span className="text-green-600">{t.pages.generateImages.statusDone}</span>}
                         {rowStatus === "skipped" && <span className="text-[var(--muted-foreground)]">{t.pages.generateImages.statusSkipped}</span>}
                         {rowStatus === "error" && (
-                          <span className="text-red-600" title={errMsg || ""}>{t.pages.generateImages.statusError}</span>
+                          <div className="flex flex-col items-end gap-0.5">
+                            <span className="text-red-600 font-medium">{t.pages.generateImages.statusError}</span>
+                            {errMsg && (
+                              <span className="text-xs text-red-500 max-w-[200px] text-right leading-tight line-clamp-2" title={errMsg}>
+                                {errMsg}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
                     </tr>

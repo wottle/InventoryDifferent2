@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useQuery, useLazyQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import { useT } from '../../i18n/context';
@@ -22,6 +22,7 @@ const GET_DEVICES = gql`
       releaseYear
       isFavorite
       status
+      historicalNotes
       category { name }
       images {
         id
@@ -30,15 +31,6 @@ const GET_DEVICES = gql`
         isThumbnail
         thumbnailMode
       }
-    }
-  }
-`;
-
-const GET_DEVICE_NOTES = gql`
-  query SlideshowGetDeviceNotes($where: DeviceWhereInput!) {
-    device(where: $where) {
-      id
-      historicalNotes
     }
   }
 `;
@@ -109,39 +101,21 @@ export default function SlideshowPage() {
     img.src = `${API_BASE_URL}${thumb.path ?? thumb.thumbnailPath}`;
   }, [currentIndex, slides]);
 
-  // Historical notes: cache by deviceId
-  const notesCache = useRef<Record<string, string | null>>({});
-  const [, setNotesVersion] = useState(0);
-  const [fetchNotes] = useLazyQuery(GET_DEVICE_NOTES);
-
-  // Lazy-fetch notes for current and next slide
-  useEffect(() => {
-    if (!settings.showHistoricalNotes || slides.length === 0) return;
-    const ids = [
-      slides[currentIndex]?.id,
-      slides[(currentIndex + 1) % slides.length]?.id,
-    ].filter((id): id is string => !!id && !(id in notesCache.current));
-
-    ids.forEach(id => {
-      fetchNotes({ variables: { where: { id } } }).then(({ data: d }) => {
-        notesCache.current[id] = d?.device?.historicalNotes ?? null;
-        setNotesVersion(v => v + 1);
-      });
-    });
-  }, [currentIndex, slides, settings.showHistoricalNotes, fetchNotes]);
-
   const currentDevice = (activeSlot === 'a' ? slotA : slotB)?.device ?? null;
-  const currentNotes = currentDevice ? (notesCache.current[currentDevice.id] ?? undefined) : undefined;
+  const currentNotes = currentDevice?.historicalNotes ?? undefined;
 
-  // Show controls on mouse move, hide after 3s
-  const handleMouseMove = () => {
+  // Show controls on mouse move, hide after 3s of inactivity.
+  // Also start the timer immediately on mount so controls hide even without mouse movement.
+  const showControls = () => {
     setControlsVisible(true);
     if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
     controlsTimerRef.current = setTimeout(() => setControlsVisible(false), 3000);
   };
 
   useEffect(() => {
+    showControls(); // kick off the initial hide countdown
     return () => { if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
@@ -156,7 +130,7 @@ export default function SlideshowPage() {
     <div
       className="fixed inset-0 bg-black overflow-hidden z-50"
       style={{ cursor: controlsVisible ? 'default' : 'none' }}
-      onMouseMove={handleMouseMove}
+      onMouseMove={showControls}
     >
       {/* Slot A — z-index tracks which slot is active so background stays visible but below */}
       <div className="absolute inset-0" style={{ zIndex: activeSlot === 'a' ? 1 : 0 }}>
@@ -219,7 +193,9 @@ export default function SlideshowPage() {
       <div
         className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-5 transition-opacity duration-200"
         style={{
+          zIndex: 20,
           opacity: controlsVisible || settingsOpen ? 1 : 0,
+          pointerEvents: controlsVisible || settingsOpen ? 'auto' : 'none',
           background: 'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)',
         }}
       >

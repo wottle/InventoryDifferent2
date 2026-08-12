@@ -7,6 +7,7 @@ import { DeviceFilterPanel, FilterState, SortColumn } from "../../../components/
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { API_BASE_URL } from "../../../lib/config";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_DEVICES = gql`
   query GetDevices($where: DeviceWhereInput) {
@@ -109,6 +110,7 @@ const defaultFilters: FilterState = {
 
 export default function PrintListPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortColumn, setSortColumn] = useState<SortColumn>('category');
@@ -448,6 +450,8 @@ export default function PrintListPage() {
       </div>
     );
   }
+
+  if (redirecting) return <LoadingPanel title={t.nav.printList} />;
 
   // Selection view
   return (

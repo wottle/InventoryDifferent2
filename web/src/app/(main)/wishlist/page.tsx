@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_WISHLIST = gql`
   query GetWishlistItems {
@@ -599,6 +600,7 @@ function WishlistItemCard({
 
 export default function WishlistPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
 
@@ -676,6 +678,8 @@ export default function WishlistPage() {
     pramBatteryInstalled: editingItem.pramBatteryInstalled ?? true,
     pramBatteryExpiryDate: editingItem.pramBatteryExpiryDate ?? "",
   } : undefined;
+
+  if (redirecting) return <LoadingPanel title={t.pages.wishlist.title} />;
 
   return (
     <div className="min-h-screen font-sans">

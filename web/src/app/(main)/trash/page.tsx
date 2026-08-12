@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import { API_BASE_URL } from "../../../lib/config";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_DELETED_DEVICES = gql`
   query GetDeletedDevices {
@@ -46,6 +47,7 @@ const PERMANENTLY_DELETE_DEVICE = gql`
 
 export default function TrashPage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
   const apolloClient = useApolloClient();
@@ -86,6 +88,8 @@ export default function TrashPage() {
       alert("Failed to permanently delete device. Please try again.");
     }
   };
+
+  if (redirecting) return <LoadingPanel title={t.nav.trash} />;
 
   return (
     <div className="min-h-screen font-sans">

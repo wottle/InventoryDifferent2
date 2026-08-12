@@ -6,6 +6,7 @@ import { useState } from "react";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { useT } from "../../../i18n/context";
 import { useAuth } from "../../../lib/auth-context";
+import { useRequireAuth } from "../../../lib/useRequireAuth";
 import { API_BASE_URL } from "../../../lib/config";
 
 const IMAGE_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
@@ -54,6 +55,7 @@ function formatBytes(bytes: number): string {
 
 export default function UsagePage() {
   const t = useT();
+  const redirecting = useRequireAuth();
   const { isAuthenticated } = useAuth();
   const { loading, error, data } = useQuery(GET_SYSTEM_USAGE);
 
@@ -140,6 +142,8 @@ export default function UsagePage() {
   }
 
   const usage = data?.systemUsage;
+
+  if (redirecting) return <LoadingPanel title={t.nav.usage} />;
 
   return (
     <div className="min-h-screen bg-[var(--background)] p-4 sm:p-6">
