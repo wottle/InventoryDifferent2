@@ -1773,7 +1773,9 @@ RESTART IDENTITY CASCADE;
 
         // Run generation in the background — respond immediately so proxies don't timeout
         const finalPrompt = prompt || DEFAULT_IMAGE_PROMPT;
-        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        // 3-minute hard timeout — under the 5-minute client poll window so the client
+        // always sees a real error message rather than a generic poll-timeout.
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 3 * 60 * 1000, maxRetries: 0 });
 
         (async () => {
             try {
@@ -1814,6 +1816,7 @@ RESTART IDENTITY CASCADE;
                     } as any);
                     console.log(`[${ts()}] [generate-image] OpenAI images.edit complete`);
                     imageBase64 = (response.data![0] as any).b64_json as string;
+                    if (!imageBase64) throw new Error('OpenAI returned a response but no image data. The model may not support the requested parameters.');
                 } else {
                     console.log(`[${ts()}] [generate-image] Starting text-to-image mode`);
                     const device = await prisma.device.findUnique({ where: { id: Number(deviceId) } });
@@ -1832,6 +1835,7 @@ RESTART IDENTITY CASCADE;
                     } as any);
                     console.log(`[${ts()}] [generate-image] OpenAI images.generate complete`);
                     imageBase64 = (response.data![0] as any).b64_json as string;
+                    if (!imageBase64) throw new Error('OpenAI returned a response but no image data. The model may not support the requested parameters.');
                 }
 
                 console.log(`[${ts()}] [generate-image] Writing PNG to disk...`);
@@ -1919,8 +1923,27 @@ RESTART IDENTITY CASCADE;
                 console.log(`[${ts()}] [generate-image] Job complete, DB id:`, newImage.id);
                 generationJobs.set(jobId, { status: 'done', result: newImage, startTime: Date.now() });
             } catch (err: any) {
-                console.error(`[${ts()}] [generate-image] ERROR:`, err?.message, err?.stack);
-                generationJobs.set(jobId, { status: 'error', error: err?.message || 'Image generation failed', startTime: Date.now() });
+                let errorMessage: string;
+                if (err instanceof OpenAI.APIError) {
+                    if (err.status === 429) {
+                        errorMessage = 'OpenAI rate limit reached. Wait a moment and try again.';
+                    } else if (err.status === 400) {
+                        // Covers content-policy rejections and bad parameter errors
+                        errorMessage = `OpenAI rejected the request: ${err.message}`;
+                    } else if (err.status === 401) {
+                        errorMessage = 'OpenAI API key is invalid or has expired. Check your OPENAI_API_KEY.';
+                    } else if (err.status === 413) {
+                        errorMessage = 'The reference image is too large for the OpenAI API. Try a smaller image.';
+                    } else {
+                        errorMessage = `OpenAI API error (${err.status}): ${err.message}`;
+                    }
+                } else if (err?.name === 'APIConnectionTimeoutError' || /timed? ?out|timeout/i.test(err?.message ?? '')) {
+                    errorMessage = 'Request to OpenAI timed out after 3 minutes. Try text-only mode, or wait a moment and try again.';
+                } else {
+                    errorMessage = err?.message || 'Image generation failed';
+                }
+                console.error(`[${ts()}] [generate-image] ERROR:`, errorMessage, err?.stack);
+                generationJobs.set(jobId, { status: 'error', error: errorMessage, startTime: Date.now() });
             }
         })();
 

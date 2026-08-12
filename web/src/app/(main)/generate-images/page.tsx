@@ -175,7 +175,7 @@ export default function GenerateImagesPage() {
           const statusRes = await fetch(`${API_BASE_URL}/generate-image/status/${jobId}`, {
             headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
           });
-          if (!statusRes.ok) throw new Error("Failed to check generation status");
+          if (!statusRes.ok) throw new Error("Lost connection while waiting for the image. Check your network and try again.");
           const jobStatus = await statusRes.json();
           if (jobStatus.status === "done") { done = true; break; }
           if (jobStatus.status === "error") throw new Error(jobStatus.error || "Image generation failed");
@@ -451,7 +451,14 @@ export default function GenerateImagesPage() {
                         {rowStatus === "done" && <span className="text-green-600">{t.pages.generateImages.statusDone}</span>}
                         {rowStatus === "skipped" && <span className="text-[var(--muted-foreground)]">{t.pages.generateImages.statusSkipped}</span>}
                         {rowStatus === "error" && (
-                          <span className="text-red-600" title={errMsg || ""}>{t.pages.generateImages.statusError}</span>
+                          <div className="flex flex-col items-end gap-0.5">
+                            <span className="text-red-600 font-medium">{t.pages.generateImages.statusError}</span>
+                            {errMsg && (
+                              <span className="text-xs text-red-500 max-w-[200px] text-right leading-tight line-clamp-2" title={errMsg}>
+                                {errMsg}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
                     </tr>

@@ -51,6 +51,16 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
     }
   }, [done, error]);
 
+  function errorHint(msg: string): string | null {
+    if (/content.policy|safety|rejected|violat/i.test(msg))
+      return "The prompt or image may have been flagged by OpenAI's content policy. Try a different prompt or a different reference image.";
+    if (/rate.limit|429|too many/i.test(msg))
+      return "OpenAI rate limit reached. Wait a minute and try again.";
+    if (/timed? ?out|timeout|connection/i.test(msg))
+      return 'The request timed out. Try "Skip — text description only" mode, or wait a moment and try again.';
+    return null;
+  }
+
   async function handleGenerate() {
     setIsGenerating(true);
     setError(null);
@@ -94,7 +104,7 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
         const statusRes = await fetch(`${API_BASE_URL}/generate-image/status/${jobId}`, {
           headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         });
-        if (!statusRes.ok) throw new Error("Failed to check generation status");
+        if (!statusRes.ok) throw new Error("Lost connection while waiting for the image. Check your network and try again.");
         const status = await statusRes.json();
         if (status.status === "done") {
           setDone(true);
@@ -227,7 +237,12 @@ export function GenerateImageModal({ deviceId, images, onClose, onGenerated }: P
           {/* Actions + result status — kept together so scrollIntoView always shows both */}
           <div ref={actionsRef} className="space-y-3">
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded px-3 py-2">{error}</p>
+              <div className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded px-3 py-2 space-y-1">
+                <p>{error}</p>
+                {errorHint(error) && (
+                  <p className="text-red-500 dark:text-red-400 text-xs">{errorHint(error)}</p>
+                )}
+              </div>
             )}
             {done && (
               <p className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded px-3 py-2">
