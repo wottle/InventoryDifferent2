@@ -213,6 +213,11 @@ export const de: Translations = {
     noImages: "{n} Geräte ohne Bilder",
     noNotes: "{n} Geräte ohne Notizen oder Protokolle",
     missingSpecs: "{n} Geräte mit fehlenden Spezifikationen",
+    justNow: "Gerade eben",
+    hoursAgo: "Vor {n} Std.",
+    yesterday: "Gestern",
+    daysAgo: "Vor {n} T.",
+    weeksAgo: "Vor {n} W.",
   },
   home: {
     search: "Suchen...",

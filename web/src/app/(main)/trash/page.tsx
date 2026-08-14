@@ -5,7 +5,8 @@ import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import { API_BASE_URL } from "../../../lib/config";
 import { LoadingPanel } from "../../../components/LoadingPanel";
-import { useT } from "../../../i18n/context";
+import { useT, useLocale } from "../../../i18n/context";
+import { formatDate } from "../../../lib/formatDate";
 import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_DELETED_DEVICES = gql`
@@ -47,6 +48,7 @@ const PERMANENTLY_DELETE_DEVICE = gql`
 
 export default function TrashPage() {
   const t = useT();
+  const locale = useLocale();
   const redirecting = useRequireAuth();
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
@@ -57,14 +59,7 @@ export default function TrashPage() {
 
   const deletedDevices = data?.devices || [];
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "—";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const fmtDate = (dateString: string | null) => formatDate(dateString, locale) || "—";
 
   const handleRestore = async (id: number) => {
     try {
@@ -203,7 +198,7 @@ export default function TrashPage() {
                         </p>
                       )}
                       <p className="text-xs text-[var(--muted-foreground)]">
-                        {t.pages.trash.acquiredLabel} {formatDate(device.dateAcquired)}
+                        {t.pages.trash.acquiredLabel} {fmtDate(device.dateAcquired)}
                       </p>
                     </div>
 

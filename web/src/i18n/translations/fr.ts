@@ -213,6 +213,11 @@ export const fr: Translations = {
     noImages: "{n} appareils sans images",
     noNotes: "{n} appareils sans notes ni journaux",
     missingSpecs: "{n} appareils avec des spécifications manquantes",
+    justNow: "À l'instant",
+    hoursAgo: "Il y a {n}h",
+    yesterday: "Hier",
+    daysAgo: "Il y a {n}j",
+    weeksAgo: "Il y a {n} sem.",
   },
   home: {
     search: "Rechercher...",

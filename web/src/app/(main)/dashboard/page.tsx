@@ -71,23 +71,23 @@ type ActivityEntry = {
   device: { id: number; name: string; images: DeviceImage[] };
 };
 
-function relativeTime(dateStr: string): string {
+function relativeTime(dateStr: string, d: { justNow: string; hoursAgo: string; yesterday: string; daysAgo: string; weeksAgo: string }): string {
   const now = new Date();
   const date = new Date(dateStr);
   const diff = now.getTime() - date.getTime();
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  return `${Math.floor(days / 7)}w ago`;
+  if (hours < 1) return d.justNow;
+  if (hours < 24) return d.hoursAgo.replace('{n}', String(hours));
+  if (days === 1) return d.yesterday;
+  if (days < 7) return d.daysAgo.replace('{n}', String(days));
+  return d.weeksAgo.replace('{n}', String(Math.floor(days / 7)));
 }
 
-function fmtCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
+function fmtCurrency(n: number, locale: string, currency: string): string {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'USD',
+    currency,
     maximumFractionDigits: 0,
   }).format(n);
 }
@@ -112,7 +112,7 @@ function DeviceThumbnail({ images, size = 'size-16' }: { images: DeviceImage[]; 
   );
 }
 
-function activityContent(entry: ActivityEntry): { title: string; subtitle: string | null } {
+function activityContent(entry: ActivityEntry, locale: string, currencyCode: string): { title: string; subtitle: string | null } {
   const d = entry.device;
   const meta: Record<string, any> = entry.metadata ? JSON.parse(entry.metadata) : {};
 
@@ -121,20 +121,20 @@ function activityContent(entry: ActivityEntry): { title: string; subtitle: strin
       const to = String(meta.to ?? '');
       const from = String(meta.from ?? '');
       if (to === 'FOR_SALE') {
-        const title = meta.listPrice ? `Listed ${d.name} for ${fmtCurrency(meta.listPrice)}` : `Listed ${d.name}`;
+        const title = meta.listPrice ? `Listed ${d.name} for ${fmtCurrency(meta.listPrice, locale, currencyCode)}` : `Listed ${d.name}`;
         return { title, subtitle: 'Moved to For Sale' };
       }
       if (to === 'PENDING_SALE') {
-        const title = meta.listPrice ? `${d.name} sale pending at ${fmtCurrency(meta.listPrice)}` : `${d.name} sale pending`;
+        const title = meta.listPrice ? `${d.name} sale pending at ${fmtCurrency(meta.listPrice, locale, currencyCode)}` : `${d.name} sale pending`;
         return { title, subtitle: 'Status changed to Pending Sale' };
       }
       if (to === 'SOLD') {
-        const title = meta.soldPrice ? `Sold ${d.name} for ${fmtCurrency(meta.soldPrice)}` : `Sold ${d.name}`;
+        const title = meta.soldPrice ? `Sold ${d.name} for ${fmtCurrency(meta.soldPrice, locale, currencyCode)}` : `Sold ${d.name}`;
         return { title, subtitle: 'Sale completed' };
       }
       if (to === 'DONATED') return { title: `Donated ${d.name}`, subtitle: 'Status changed to Donated' };
       if (to === 'RETURNED') {
-        const title = meta.soldPrice ? `${d.name} returned from repair — Fee: ${fmtCurrency(meta.soldPrice)}` : `${d.name} returned from repair`;
+        const title = meta.soldPrice ? `${d.name} returned from repair — Fee: ${fmtCurrency(meta.soldPrice, locale, currencyCode)}` : `${d.name} returned from repair`;
         return { title, subtitle: 'Repair return logged' };
       }
       if (to === 'LOANED') return { title: `Loaned out ${d.name}`, subtitle: 'Status changed to Loaned' };
@@ -146,7 +146,7 @@ function activityContent(entry: ActivityEntry): { title: string; subtitle: strin
     case 'NOTE_ADDED':
       return { title: `Added a note to ${d.name}`, subtitle: meta.preview || null };
     case 'MAINTENANCE_LOGGED': {
-      const subtitle = meta.cost ? `${meta.label} — ${fmtCurrency(meta.cost)}` : String(meta.label ?? '');
+      const subtitle = meta.cost ? `${meta.label} — ${fmtCurrency(meta.cost, locale, currencyCode)}` : String(meta.label ?? '');
       return { title: `Logged maintenance on ${d.name}`, subtitle };
     }
     case 'POWERED_ON':
@@ -154,7 +154,7 @@ function activityContent(entry: ActivityEntry): { title: string; subtitle: strin
     case 'DEVICE_ACQUIRED': {
       let title = `Acquired ${d.name}`;
       if (meta.whereAcquired) title += ` from ${meta.whereAcquired}`;
-      if (meta.priceAcquired) title += ` for ${fmtCurrency(meta.priceAcquired)}`;
+      if (meta.priceAcquired) title += ` for ${fmtCurrency(meta.priceAcquired, locale, currencyCode)}`;
       return { title, subtitle: 'New addition to collection' };
     }
     default:
@@ -212,22 +212,22 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col gap-3 transition-all hover:bg-white hover:shadow-[0px_32px_32px_rgba(0,0,0,0.02)]">
                 <span className="text-sm font-medium text-on-surface-variant">{t.dashboard.spentThisMonth}</span>
-                <span className="text-3xl font-bold leading-none text-on-surface">{fmtCurrency(financial.spentThisMonth)}</span>
+                <span className="text-3xl font-bold leading-none text-on-surface">{fmtCurrency(financial.spentThisMonth, t.common.locale, t.common.currencyCode)}</span>
               </div>
               <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col gap-3 transition-all hover:bg-white hover:shadow-[0px_32px_32px_rgba(0,0,0,0.02)]">
                 <span className="text-sm font-medium text-on-surface-variant">{t.dashboard.revenueThisMonth}</span>
-                <span className="text-3xl font-bold leading-none text-on-surface">{fmtCurrency(financial.revenueThisMonth)}</span>
+                <span className="text-3xl font-bold leading-none text-on-surface">{fmtCurrency(financial.revenueThisMonth, t.common.locale, t.common.currencyCode)}</span>
               </div>
               <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col gap-3 transition-all hover:bg-white hover:shadow-[0px_32px_32px_rgba(0,0,0,0.02)]">
                 <span className="text-sm font-medium text-on-surface-variant">{t.dashboard.netThisMonth}</span>
                 <span className={`text-3xl font-bold leading-none ${financial.netThisMonth >= 0 ? 'text-on-surface' : 'text-error'}`}>
-                  {fmtCurrency(financial.netThisMonth)}
+                  {fmtCurrency(financial.netThisMonth, t.common.locale, t.common.currencyCode)}
                 </span>
               </div>
               {/* Collection Value — gold accent card */}
               <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col gap-3 transition-all hover:bg-white hover:shadow-[0px_32px_32px_rgba(0,0,0,0.02)] border-l-4 border-tertiary">
                 <span className="text-sm font-medium text-on-surface-variant">{t.dashboard.collectionValue}</span>
-                <span className="text-3xl font-bold leading-none text-on-surface">{fmtCurrency(financial.collectionValue)}</span>
+                <span className="text-3xl font-bold leading-none text-on-surface">{fmtCurrency(financial.collectionValue, t.common.locale, t.common.currencyCode)}</span>
                 <span className="inline-flex self-start px-2 py-0.5 rounded-sm bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold uppercase tracking-wider">
                   {t.dashboard.premium}
                 </span>
@@ -248,7 +248,7 @@ export default function DashboardPage() {
             ) : (
               <div className="flex flex-col gap-2">
                 {activity.map((entry) => {
-                  const { title, subtitle } = activityContent(entry);
+                  const { title, subtitle } = activityContent(entry, t.common.locale, t.common.currencyCode);
                   return (
                     <Link
                       key={entry.id}
@@ -265,7 +265,7 @@ export default function DashboardPage() {
                         )}
                       </div>
                       <span className="text-xs font-medium text-on-surface-variant whitespace-nowrap flex-shrink-0">
-                        {relativeTime(entry.createdAt)}
+                        {relativeTime(entry.createdAt, t.dashboard)}
                       </span>
                     </Link>
                   );

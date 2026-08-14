@@ -6,7 +6,8 @@ import { API_BASE_URL } from "../lib/config";
 import { SortColumn } from "./DeviceFilterPanel";
 import { useIsDarkMode } from "../lib/useIsDarkMode";
 import { pickThumbnail } from "../lib/pickThumbnail";
-import { useT } from "../i18n/context";
+import { useT, useLocale } from "../i18n/context";
+import { formatDate } from "../lib/formatDate";
 
 interface DeviceTableProps {
   devices: any[];
@@ -19,15 +20,9 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
   const router = useRouter();
   const isDark = useIsDarkMode();
   const t = useT();
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      timeZone: 'UTC',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+  const locale = useLocale();
+  const fmtDate = (dateString: string) =>
+    formatDate(dateString, locale, { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' });
 
   const formatCurrency = (value: number | null | undefined) => {
     if (value === null || value === undefined) return '';
@@ -534,7 +529,7 @@ export function DeviceTable({ devices, sortColumn, sortDirection, onSortChange }
                     {device.manufacturer} {device.modelNumber}
                   </td>
                   <td className="px-4 py-3 text-sm text-[var(--foreground)] hidden sm:table-cell">
-                    {formatDate(device.dateAcquired)}
+                    {fmtDate(device.dateAcquired)}
                   </td>
                   <td className="px-4 py-3 text-sm text-[var(--foreground)] hidden sm:table-cell">
                     {formatCurrency(device.estimatedValue)}

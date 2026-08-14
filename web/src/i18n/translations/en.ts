@@ -211,6 +211,11 @@ export type Translations = {
     noImages: string;
     noNotes: string;
     missingSpecs: string;
+    justNow: string;
+    hoursAgo: string;
+    yesterday: string;
+    daysAgo: string;
+    weeksAgo: string;
   };
   home: {
     search: string;
@@ -1240,6 +1245,11 @@ export const en: Translations = {
     noImages: "{n} devices with no images",
     noNotes: "{n} devices with no notes or logs",
     missingSpecs: "{n} devices with missing specs",
+    justNow: "Just now",
+    hoursAgo: "{n}h ago",
+    yesterday: "Yesterday",
+    daysAgo: "{n}d ago",
+    weeksAgo: "{n}w ago",
   },
   home: {
     search: "Search...",
