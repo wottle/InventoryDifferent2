@@ -90,9 +90,14 @@ app.get('/uploads/*', async (req, res) => {
     const SAFE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
     const baseCt = ct.split(';')[0].trim().toLowerCase();
     if (!SAFE_IMAGE_TYPES.includes(baseCt)) return res.status(403).end();
+    // Reject oversized files before buffering to prevent memory exhaustion
+    const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+    const contentLength = parseInt(upstream.headers.get('content-length') || '0', 10);
+    if (contentLength > MAX_IMAGE_BYTES) return res.status(413).end();
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Disposition', 'inline');
     let buf = Buffer.from(await upstream.arrayBuffer());
+    if (buf.length > MAX_IMAGE_BYTES) return res.status(413).end();
     // Transcode WebP to JPEG for browsers that don't advertise WebP support
     const acceptsWebp = (req.headers['accept'] || '').includes('image/webp');
     if (baseCt === 'image/webp' && !acceptsWebp) {
