@@ -6,6 +6,16 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+---
+
+## [3.0.5] - 2026-08-14
+
+### Added
+
 - The Archive: login icon in nav links to admin login (or admin journeys page when already logged in)
 
 ### Changed

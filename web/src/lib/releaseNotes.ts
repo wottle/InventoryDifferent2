@@ -1,4 +1,4 @@
-export const APP_VERSION = '3.0.4';
+export const APP_VERSION = '3.0.5';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '3.0.5',
+    date: '2026-08-14',
     added: [
       'The Archive: login icon in nav links to admin login (or admin journeys page when already logged in)',
     ],
