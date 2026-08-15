@@ -1,0 +1,201 @@
+<%- include('../partials/header') %>
+
+<p class="breadcrumb"><a href="/devices">&laquo; All Devices</a></p>
+
+<div class="window">
+  <div class="title-bar"><%= device.name %><% if (device.additionalName) { %> &mdash; <%= device.additionalName %><% } %></div>
+  <div class="window-body">
+
+    <% var mainImage = device.images && device.images.find(function(i) { return i.isThumbnail; }) || (device.images && device.images[0]); %>
+    <% if (mainImage) { %>
+      <img src="/uploads/<%= mainImage.path || mainImage.thumbnailPath %>" alt="<%= device.name %>" class="detail-image">
+    <% } %>
+
+    <table class="detail-specs" cellspacing="1" cellpadding="3" border="0">
+      <% if (device.manufacturer) { %>
+        <tr><td>Manufacturer</td><td><%= device.manufacturer %></td></tr>
+      <% } %>
+      <% if (device.modelNumber) { %>
+        <tr><td>Model Number</td><td><%= device.modelNumber %></td></tr>
+      <% } %>
+      <% if (device.releaseYear) { %>
+        <tr><td>Year</td><td><%= device.releaseYear %></td></tr>
+      <% } %>
+      <% if (device.serialNumber) { %>
+        <tr><td>Serial Number</td><td><code><%= device.serialNumber %></code></td></tr>
+      <% } %>
+      <% if (device.category) { %>
+        <tr><td>Category</td><td><%= device.category.name %></td></tr>
+      <% } %>
+      <% if (device.location) { %>
+        <tr><td>Location</td><td><%= device.location.name %></td></tr>
+      <% } %>
+      <% if (device.status) { %>
+        <tr><td>Status</td><td><span class="status-badge"><%= STATUS_LABELS[device.status] || device.status %></span></td></tr>
+      <% } %>
+      <% if (device.functionalStatus) { %>
+        <tr><td>Condition</td><td><%= FUNCTIONAL_LABELS[device.functionalStatus] || device.functionalStatus %></td></tr>
+      <% } %>
+      <% if (device.condition) { %>
+        <tr><td>Physical Condition</td><td><%= CONDITION_LABELS[device.condition] || device.condition %></td></tr>
+      <% } %>
+      <% if (device.rarity) { %>
+        <tr><td>Rarity</td><td><%= RARITY_LABELS[device.rarity] || device.rarity %></td></tr>
+      <% } %>
+      <% if (device.dateAcquired) { %>
+        <tr><td>Date Acquired</td><td><%= formatDate(device.dateAcquired) %></td></tr>
+      <% } %>
+      <% if (device.lastPowerOnDate) { %>
+        <tr><td>Last Powered On</td><td><%= formatDate(device.lastPowerOnDate) %></td></tr>
+      <% } %>
+      <% if (device.estimatedValue) { %>
+        <tr><td>Estimated Value</td><td>$<%= device.estimatedValue.toFixed(2) %></td></tr>
+      <% } %>
+      <% if (device.listPrice) { %>
+        <tr><td>List Price</td><td>$<%= device.listPrice.toFixed(2) %></td></tr>
+      <% } %>
+    </table>
+
+    <div style="clear:both"></div>
+  </div>
+</div>
+
+<% if (device.info) { %>
+  <div class="window">
+    <div class="title-bar">About this Device</div>
+    <div class="window-body">
+      <p class="device-info"><%= device.info %></p>
+    </div>
+  </div>
+<% } %>
+
+<% if (device.historicalNotes) { %>
+  <div class="window">
+    <div class="title-bar">Historical Notes</div>
+    <div class="window-body">
+      <p class="device-info"><%= device.historicalNotes %></p>
+    </div>
+  </div>
+<% } %>
+
+<% var hasSpecs = device.cpuType || device.cpuSpeed || device.ram || device.graphicsChip || device.screenSize || device.displayType || device.nativeResolution || (device.storageEntries && device.storageEntries.length) || (device.osEntries && device.osEntries.length); %>
+<% if (hasSpecs) { %>
+  <div class="window">
+    <div class="title-bar">Specifications</div>
+    <div class="window-body">
+      <table class="detail-specs" cellspacing="1" cellpadding="3" border="0">
+        <% if (device.cpuType) { %><tr><td>CPU</td><td><%= device.cpuType %><% if (device.cpuSpeed) { %> &mdash; <%= device.cpuSpeed %><% } %></td></tr><% } %>
+        <% if (device.ram) { %><tr><td>RAM</td><td><%= device.ram %></td></tr><% } %>
+        <% if (device.graphicsChip) { %><tr><td>Graphics</td><td><%= device.graphicsChip %></td></tr><% } %>
+        <% if (device.screenSize) { %><tr><td>Screen Size</td><td><%= device.screenSize %></td></tr><% } %>
+        <% if (device.displayType) { %><tr><td>Display Type</td><td><%= device.displayType %><% if (device.displayVariant) { %> (<%= device.displayVariant %>)<% } %></td></tr><% } %>
+        <% if (device.nativeResolution) { %><tr><td>Resolution</td><td><%= device.nativeResolution %></td></tr><% } %>
+        <% if (device.storageEntries && device.storageEntries.length) { %>
+          <tr><td>Storage</td><td><%= device.storageEntries.sort(function(a,b){return a.sortOrder-b.sortOrder;}).map(function(e){return e.value;}).join(', ') %></td></tr>
+        <% } %>
+        <% if (device.osEntries && device.osEntries.length) { %>
+          <tr><td>OS</td><td><%= device.osEntries.sort(function(a,b){return a.sortOrder-b.sortOrder;}).map(function(e){return e.value;}).join(', ') %></td></tr>
+        <% } %>
+        <% if (device.isWifiEnabled) { %><tr><td>Wi-Fi</td><td>Yes</td></tr><% } %>
+        <% if (device.hasOriginalBox) { %><tr><td>Original Box</td><td>Yes</td></tr><% } %>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+<% if (device.tags && device.tags.length) { %>
+  <div class="window">
+    <div class="title-bar">Tags</div>
+    <div class="window-body tags-list">
+      <% device.tags.forEach(function(tag) { %><span class="tag"><%= tag.name %></span><% }); %>
+    </div>
+  </div>
+<% } %>
+
+<% if (device.accessories && device.accessories.length) { %>
+  <div class="window">
+    <div class="title-bar">Accessories</div>
+    <div class="window-body">
+      <ul class="notes-list">
+        <% device.accessories.forEach(function(acc) { %>
+          <li><%= acc.name %></li>
+        <% }); %>
+      </ul>
+    </div>
+  </div>
+<% } %>
+
+<% if (device.maintenanceTasks && device.maintenanceTasks.length) { %>
+  <div class="window">
+    <div class="title-bar">Maintenance History</div>
+    <div class="window-body">
+      <ul class="notes-list">
+        <% device.maintenanceTasks.slice().sort(function(a,b){ return new Date(b.dateCompleted||0) - new Date(a.dateCompleted||0); }).forEach(function(task) { %>
+          <li>
+            <strong><%= task.label %></strong>
+            <% if (task.dateCompleted) { %><span class="note-date"> &mdash; <%= formatDate(task.dateCompleted) %></span><% } %>
+            <% if (task.notes) { %><br><%= task.notes %><% } %>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+  </div>
+<% } %>
+
+<% var publicCustomFields = (device.customFieldValues || []).filter(function(f){ return f.isPublic; }).sort(function(a,b){ return a.sortOrder-b.sortOrder; }); %>
+<% if (publicCustomFields.length) { %>
+  <div class="window">
+    <div class="title-bar">Additional Information</div>
+    <div class="window-body">
+      <table class="detail-specs" cellspacing="1" cellpadding="3" border="0">
+        <% publicCustomFields.forEach(function(f) { %>
+          <tr><td><%= f.customFieldName %></td><td><%= f.value %></td></tr>
+        <% }); %>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+<% if (device.links && device.links.length) { %>
+  <div class="window">
+    <div class="title-bar">External Links</div>
+    <div class="window-body">
+      <ul class="notes-list">
+        <% device.links.forEach(function(link) { %>
+          <li><a href="<%= link.url %>" target="_top"><%= link.label || link.url %></a></li>
+        <% }); %>
+      </ul>
+    </div>
+  </div>
+<% } %>
+
+<% if (device.images && device.images.length > 1) { %>
+  <div class="window">
+    <div class="title-bar">Photos (<%= device.images.length %>)</div>
+    <div class="window-body">
+      <table border="0" cellspacing="4" cellpadding="0">
+        <tr>
+          <% device.images.forEach(function(img, i) { %>
+            <td valign="top" style="text-align:center">
+              <a href="/uploads/<%= img.path %>">
+                <img src="/uploads/<%= img.thumbnailPath || img.path %>" alt="Photo <%= i+1 %>" width="80" height="80" style="object-fit:contain">
+              </a>
+              <% if (img.caption) { %><br><small><%= img.caption %></small><% } %>
+            </td>
+            <% if ((i + 1) % 5 === 0) { %></tr><tr><% } %>
+          <% }); %>
+        </tr>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+<% if (device.externalUrl) { %>
+  <div class="window">
+    <div class="window-body">
+      <a href="<%= device.externalUrl %>" target="_top">More information &raquo;</a>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

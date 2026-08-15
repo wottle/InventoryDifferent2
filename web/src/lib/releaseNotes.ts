@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'Retro web UI: optional new Docker image (`wottle/inventory-retro`) that serves the device inventory as plain server-rendered HTML, compatible with very old browsers — no JavaScript required. Supports three themes (System 7, Early Web, Platinum) configured via the `RETRO_THEME` environment variable.',
+    ],
     changed: [],
     fixed: [
       'iOS: Template decode no longer crashes on unrecognized rarity values or missing category from the remote template catalog',

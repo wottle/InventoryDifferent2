@@ -144,6 +144,27 @@ services:
   #     - "traefik.port=3000"
   #     - "traefik.docker.network=web"
 
+  # Retro web UI (optional — vintage-compatible, no-JavaScript inventory browser)
+  # retro:
+  #   image: ${DOCKERHUB_USER:-wottle}/inventory-retro:latest
+  #   pull_policy: always
+  #   container_name: inventory-retro
+  #   restart: unless-stopped
+  #   environment:
+  #     API_URL: http://api:4000
+  #     RETRO_THEME: system7   # system7 | earlyweb | platinum
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+  #     - web
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.frontend.rule=Host:retro.${DOMAIN}"
+  #     - "traefik.port=3004"
+  #     - "traefik.docker.network=web"
+
   # MCP server (optional — only needed for AI assistant integration)
   # mcp-server:
   #   image: ${DOCKERHUB_USER:-wottle}/inventory-mcp:latest

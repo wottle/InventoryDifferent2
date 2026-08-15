@@ -1,0 +1,14 @@
+{
+  "name": "inventory-retro",
+  "version": "1.0.0",
+  "description": "Vintage-compatible server-rendered inventory browser",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.0"
+  }
+}

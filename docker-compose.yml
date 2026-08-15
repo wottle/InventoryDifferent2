@@ -125,6 +125,22 @@ services:
     networks:
       - inv_network
 
+  # retro:
+  #   build:
+  #     context: ./retro
+  #     dockerfile: Dockerfile
+  #   container_name: invdifferent2-retro
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3004:3004"
+  #   environment:
+  #     API_URL: http://api:4000
+  #     RETRO_THEME: system7   # system7 | earlyweb | platinum
+  #   depends_on:
+  #     - api
+  #   networks:
+  #     - inv_network
+
 networks:
   inv_network:
     driver: bridge

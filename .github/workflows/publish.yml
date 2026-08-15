@@ -45,6 +45,9 @@ jobs:
           - name: Showcase
             context: ./showcase
             image: wottle/inventory-showcase
+          - name: Retro
+            context: ./retro
+            image: wottle/inventory-retro
 
     steps:
       - uses: actions/checkout@v4

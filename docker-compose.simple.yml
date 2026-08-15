@@ -125,6 +125,23 @@ services:
     networks:
       - internal
 
+  # Retro web UI (optional — vintage-compatible, no-JavaScript inventory browser)
+  # retro:
+  #   image: wottle/inventory-retro:latest
+  #   pull_policy: always
+  #   container_name: inventory-retro
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3004:3004"
+  #   environment:
+  #     API_URL: http://api:4000
+  #     RETRO_THEME: system7   # system7 | earlyweb | platinum
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+
   # MCP server (optional — only needed for AI assistant integration)
   # mcp-server:
   #   image: wottle/inventory-mcp:latest

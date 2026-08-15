@@ -1,0 +1,189 @@
+/* Early Web — circa 1996 aesthetic */
+body {
+  margin: 8px 12px;
+  background-color: #c0c0c0;
+  color: #000000;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12pt;
+}
+a { color: #0000ff; text-decoration: underline; }
+a:visited { color: #800080; }
+a:active { color: #ff0000; }
+h1 { font-size: 18pt; font-family: Arial, Helvetica, sans-serif; margin: 8px 0; }
+h2 { font-size: 14pt; font-family: Arial, Helvetica, sans-serif; margin: 6px 0; }
+h3 { font-size: 12pt; font-family: Arial, Helvetica, sans-serif; font-weight: bold; margin: 4px 0; }
+code { font-family: "Courier New", Courier, monospace; font-size: 10pt; }
+
+.rainbow-stripe {
+  height: 5px;
+  background: linear-gradient(to right,
+    #5EBD3E 0%, #5EBD3E 16.66%,
+    #FFB900 16.66%, #FFB900 33.33%,
+    #F78200 33.33%, #F78200 50%,
+    #E23838 50%, #E23838 66.66%,
+    #973999 66.66%, #973999 83.33%,
+    #009CDF 83.33%, #009CDF 100%
+  );
+}
+.container { max-width: 760px; margin: 0 auto; }
+
+/* Navigation */
+.nav-bar {
+  background-color: #000080;
+  color: #ffffff;
+  padding: 5px 8px;
+  margin: 6px 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+}
+.nav-bar a { color: #ffffff; text-decoration: none; margin-right: 12px; }
+.nav-bar a:visited { color: #ccccff; }
+.nav-bar a:hover { text-decoration: underline; }
+.nav-sep { color: #aaaaaa; margin-right: 12px; }
+.breadcrumb { font-size: 10pt; font-family: Arial, Helvetica, sans-serif; margin: 4px 0; }
+
+/* Window / section boxes */
+.window {
+  background-color: #ffffff;
+  border: 2px inset #808080;
+  margin: 8px 0;
+  padding: 0;
+}
+.title-bar {
+  background-color: #000080;
+  color: #ffffff;
+  padding: 3px 8px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+}
+.window-body { padding: 8px; }
+
+/* Search form */
+.search-form {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+}
+.search-form label { margin-right: 4px; }
+.search-form input[type="text"] {
+  border: 2px inset #808080;
+  padding: 2px 4px;
+  font-size: 10pt;
+  background-color: #ffffff;
+}
+.search-form select {
+  border: 2px inset #808080;
+  font-size: 10pt;
+  background-color: #ffffff;
+}
+.btn {
+  background-color: #d4d4d4;
+  border: 2px outset #808080;
+  padding: 2px 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  cursor: default;
+}
+
+/* Device grid */
+.count-info {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #444444;
+  margin: 4px 0 6px 0;
+}
+.devices-table { width: 100%; }
+.device-cell { padding: 4px; vertical-align: top; width: 33%; }
+.device-card {
+  background-color: #ffffff;
+  border: 2px outset #808080;
+  padding: 6px; display: block;
+  text-decoration: none; color: #000000;
+  min-height: 100px; overflow: hidden;
+}
+.device-card:hover { background-color: #ffffcc; }
+.device-thumb {
+  width: 64px; height: 64px; object-fit: contain;
+  float: left; margin-right: 6px;
+  border: 1px solid #808080; background-color: #ffffff;
+}
+.device-thumb-placeholder {
+  width: 64px; height: 64px; float: left; margin-right: 6px;
+  border: 1px solid #808080; background-color: #eeeeee;
+}
+.device-name {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt; font-weight: bold; display: block; margin-bottom: 2px;
+}
+.device-meta {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt; color: #444444; display: block; line-height: 1.4;
+}
+.status-badge {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt; border: 1px solid #808080;
+  padding: 1px 4px; display: inline-block; margin-top: 3px;
+  background-color: #ffffcc;
+}
+
+/* Pagination */
+.pagination {
+  text-align: center; padding: 8px 0;
+  font-family: Arial, Helvetica, sans-serif; font-size: 10pt;
+}
+.pagination a {
+  border: 2px outset #808080; padding: 2px 8px;
+  background-color: #d4d4d4;
+  text-decoration: none; color: #000000; margin: 0 2px;
+}
+.pagination .current {
+  border: 2px inset #808080; padding: 2px 8px;
+  background-color: #ffffff; margin: 0 2px;
+}
+
+/* Device detail */
+.detail-image {
+  float: right; max-width: 200px; max-height: 200px;
+  border: 2px inset #808080; margin: 0 0 8px 8px;
+  background-color: #ffffff; object-fit: contain;
+}
+.detail-specs { width: 100%; font-size: 10pt; }
+.detail-specs td {
+  padding: 3px 6px;
+  border: 1px solid #c0c0c0;
+  vertical-align: top;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.detail-specs td:first-child {
+  font-weight: bold; width: 35%; background-color: #d4d4d4;
+}
+.device-info {
+  font-size: 10pt; line-height: 1.6;
+  white-space: pre-wrap; margin: 0;
+}
+
+/* Lists */
+.notes-list { margin: 0; padding: 0; list-style: none; }
+.notes-list li {
+  border-bottom: 1px solid #c0c0c0; padding: 4px 0;
+  font-family: Arial, Helvetica, sans-serif; font-size: 10pt;
+}
+.notes-list li:last-child { border-bottom: none; }
+.note-date { font-size: 9pt; color: #666666; }
+.tags-list { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; }
+.tag {
+  background-color: #ffffcc;
+  border: 1px solid #808080;
+  padding: 1px 5px; margin: 2px; display: inline-block;
+  font-family: Arial, Helvetica, sans-serif; font-size: 9pt;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt; color: #444444;
+  margin-top: 12px; padding-top: 8px;
+  border-top: 2px inset #808080;
+}

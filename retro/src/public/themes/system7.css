@@ -1,0 +1,156 @@
+/* System 7 — Classic Mac OS aesthetic */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #eeeeee;
+  color: #000000;
+  font-family: Chicago, "Charcoal", Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+}
+a { color: #000077; }
+a:visited { color: #000077; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 14px; margin: 8px 0 4px 0; font-weight: bold; }
+h2 { font-size: 12px; margin: 6px 0 3px 0; font-weight: bold; }
+code { font-family: Monaco, "Courier New", Courier, monospace; font-size: 11px; }
+
+.rainbow-stripe {
+  height: 4px;
+  background: linear-gradient(to right,
+    #5EBD3E 0%, #5EBD3E 16.66%,
+    #FFB900 16.66%, #FFB900 33.33%,
+    #F78200 33.33%, #F78200 50%,
+    #E23838 50%, #E23838 66.66%,
+    #973999 66.66%, #973999 83.33%,
+    #009CDF 83.33%, #009CDF 100%
+  );
+}
+.container { max-width: 780px; margin: 0 auto; padding: 0 8px 16px 8px; }
+
+/* Navigation */
+.nav-bar {
+  background-color: #d4d4d4;
+  border: 1px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 4px 8px;
+  margin: 6px 0;
+  font-size: 11px;
+}
+.nav-bar a { color: #000000; text-decoration: none; margin-right: 10px; }
+.nav-bar a:hover { text-decoration: underline; }
+.nav-sep { color: #808080; margin-right: 10px; }
+.breadcrumb { font-size: 11px; margin: 4px 0; }
+
+/* Window chrome — classic Mac beveled border */
+.window {
+  background-color: #eeeeee;
+  border: 1px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  margin: 8px 0;
+}
+.title-bar {
+  background: repeating-linear-gradient(
+    to bottom,
+    #000000 0px, #000000 1px,
+    #eeeeee 1px, #eeeeee 3px
+  );
+  padding: 2px 8px;
+  font-weight: bold;
+  font-size: 11px;
+  color: #000000;
+}
+.window-body { padding: 8px; }
+
+/* Search form */
+.search-form { font-size: 11px; }
+.search-form label { margin-right: 3px; }
+.search-form input[type="text"] {
+  border: 1px solid; border-color: #808080 #ffffff #ffffff #808080;
+  padding: 1px 3px; font-size: 11px; background-color: #ffffff;
+  font-family: Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.search-form select {
+  border: 1px solid; border-color: #808080 #ffffff #ffffff #808080;
+  font-size: 11px; background-color: #ffffff; padding: 1px;
+}
+.btn {
+  background-color: #d4d4d4;
+  border: 1px solid; border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 2px 10px; font-size: 11px;
+  font-family: Chicago, Geneva, Arial, sans-serif;
+  cursor: default;
+}
+
+/* Device grid */
+.count-info { font-size: 11px; color: #444444; margin: 4px 0 6px 0; }
+.devices-table { width: 100%; border-collapse: collapse; }
+.device-cell { padding: 3px; vertical-align: top; width: 33%; }
+.device-card {
+  background-color: #eeeeee;
+  border: 1px solid; border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 6px;
+  display: block; text-decoration: none; color: #000000;
+  min-height: 100px; overflow: hidden;
+}
+.device-card:hover { background-color: #dddddd; }
+.device-thumb {
+  width: 60px; height: 60px; object-fit: contain;
+  float: left; margin-right: 6px;
+  border: 1px solid #808080; background-color: #ffffff;
+}
+.device-thumb-placeholder {
+  width: 60px; height: 60px; float: left; margin-right: 6px;
+  border: 1px solid #808080; background-color: #ffffff;
+}
+.device-name { font-size: 11px; font-weight: bold; display: block; margin-bottom: 2px; }
+.device-meta { font-size: 10px; color: #444444; display: block; line-height: 1.4; }
+.status-badge {
+  font-size: 10px; border: 1px solid #808080;
+  padding: 1px 4px; display: inline-block;
+  margin-top: 3px; background-color: #eeeeee;
+}
+
+/* Pagination */
+.pagination { text-align: center; padding: 8px 0; font-size: 11px; }
+.pagination a {
+  border: 1px solid; border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 1px 7px; background-color: #d4d4d4;
+  text-decoration: none; color: #000000; margin: 0 2px;
+}
+.pagination .current {
+  border: 1px solid; border-color: #808080 #ffffff #ffffff #808080;
+  padding: 1px 7px; background-color: #ffffff; margin: 0 2px;
+}
+
+/* Device detail */
+.detail-image {
+  float: right; max-width: 220px; max-height: 220px;
+  border: 1px solid #808080; margin: 0 0 8px 8px;
+  background-color: #ffffff; object-fit: contain;
+}
+.detail-specs { width: 100%; border-collapse: collapse; font-size: 11px; }
+.detail-specs td {
+  padding: 2px 6px; border: 1px solid #d4d4d4; vertical-align: top;
+}
+.detail-specs td:first-child {
+  font-weight: bold; width: 35%; background-color: #d4d4d4;
+}
+.device-info { font-size: 11px; line-height: 1.5; white-space: pre-wrap; margin: 0; }
+
+/* Lists */
+.notes-list { margin: 0; padding: 0; list-style: none; font-size: 11px; }
+.notes-list li { border-bottom: 1px solid #d4d4d4; padding: 4px 0; }
+.notes-list li:last-child { border-bottom: none; }
+.note-date { font-size: 10px; color: #666666; }
+.tags-list { font-size: 11px; }
+.tag {
+  background-color: #d4d4d4; border: 1px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 1px 5px; margin: 2px; display: inline-block;
+}
+
+/* Footer */
+.footer {
+  text-align: center; font-size: 10px; color: #666666;
+  margin-top: 12px; padding-top: 8px; border-top: 1px solid #808080;
+}
