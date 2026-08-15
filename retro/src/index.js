@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const sharp = require('sharp');
 const { gql, DEVICES_QUERY, DEVICE_QUERY, CATEGORIES_QUERY } = require('./graphql');
 
 const app = express();
@@ -89,11 +90,18 @@ app.get('/uploads/*', async (req, res) => {
     const SAFE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
     const baseCt = ct.split(';')[0].trim().toLowerCase();
     if (!SAFE_IMAGE_TYPES.includes(baseCt)) return res.status(403).end();
-    res.setHeader('Content-Type', baseCt);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Disposition', 'inline');
-    const buf = await upstream.arrayBuffer();
-    res.end(Buffer.from(buf));
+    let buf = Buffer.from(await upstream.arrayBuffer());
+    // Transcode WebP to JPEG for browsers that don't advertise WebP support
+    const acceptsWebp = (req.headers['accept'] || '').includes('image/webp');
+    if (baseCt === 'image/webp' && !acceptsWebp) {
+      buf = await sharp(buf).jpeg({ quality: 85 }).toBuffer();
+      res.setHeader('Content-Type', 'image/jpeg');
+    } else {
+      res.setHeader('Content-Type', baseCt);
+    }
+    res.end(buf);
   } catch {
     res.status(502).end();
   }
