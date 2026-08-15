@@ -162,7 +162,7 @@
     <div class="window-body">
       <ul class="notes-list">
         <% device.links.forEach(function(link) { %>
-          <li><a href="<%= link.url %>" target="_top"><%= link.label || link.url %></a></li>
+          <li><a href="<%= safeUrl(link.url) %>" target="_top" rel="noopener noreferrer"><%= link.label || link.url %></a></li>
         <% }); %>
       </ul>
     </div>
@@ -193,7 +193,7 @@
 <% if (device.externalUrl) { %>
   <div class="window">
     <div class="window-body">
-      <a href="<%= device.externalUrl %>" target="_top">More information &raquo;</a>
+      <a href="<%= safeUrl(device.externalUrl) %>" target="_top" rel="noopener noreferrer">More information &raquo;</a>
     </div>
   </div>
 <% } %>

@@ -51,6 +51,14 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+function safeUrl(u) {
+  if (!u) return '#';
+  try {
+    const p = new URL(u);
+    return (p.protocol === 'http:' || p.protocol === 'https:' || p.protocol === 'mailto:') ? u : '#';
+  } catch { return '#'; }
+}
+
 // Share helpers with all templates
 app.use((req, res, next) => {
   res.locals.theme = THEME;
@@ -60,15 +68,25 @@ app.use((req, res, next) => {
   res.locals.RARITY_LABELS = RARITY_LABELS;
   res.locals.getThumbnail = getThumbnail;
   res.locals.formatDate = formatDate;
+  res.locals.safeUrl = safeUrl;
   next();
 });
 
 // Proxy uploads to avoid exposing internal API URL to browsers
 app.get('/uploads/*', async (req, res) => {
+  const rel = req.params[0];
+  // Validate: only allow path segments of safe characters, no traversal
+  if (!rel || !/^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*$/.test(rel) || rel.includes('..')) {
+    return res.status(400).end();
+  }
   try {
-    const upstream = await fetch(`${API_URL}${req.path}`);
+    const upstream = await fetch(new URL('/uploads/' + rel, API_URL).href);
     if (!upstream.ok) return res.status(upstream.status).end();
-    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/octet-stream');
+    const ct = upstream.headers.get('content-type') || '';
+    if (!ct.startsWith('image/')) return res.status(403).end();
+    res.setHeader('Content-Type', ct);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Disposition', 'inline');
     const buf = await upstream.arrayBuffer();
     res.end(Buffer.from(buf));
   } catch {
