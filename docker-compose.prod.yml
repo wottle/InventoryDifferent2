@@ -162,6 +162,7 @@ services:
   #   labels:
   #     - "traefik.enable=true"
   #     - "traefik.frontend.rule=Host:retro.${DOMAIN}"
+  #     - "traefik.frontend.entryPoints=http,https"
   #     - "traefik.port=3004"
   #     - "traefik.docker.network=web"
 
