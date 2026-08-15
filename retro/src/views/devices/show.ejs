@@ -177,7 +177,7 @@
         <tr>
           <% device.images.forEach(function(img, i) { %>
             <td valign="top" style="text-align:center">
-              <a href="<%= img.path %>">
+              <a href="<%= safeUrl(img.path) %>">
                 <img src="<%= img.thumbnailPath || img.path %>" alt="Photo <%= i+1 %>" width="80" height="80" style="object-fit:contain">
               </a>
               <% if (img.caption) { %><br><small><%= img.caption %></small><% } %>

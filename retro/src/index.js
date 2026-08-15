@@ -53,6 +53,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 function safeUrl(u) {
   if (!u) return '#';
+  // Allow server-relative paths (can never be javascript:)
+  if (u.startsWith('/')) return u;
   try {
     const p = new URL(u);
     return (p.protocol === 'http:' || p.protocol === 'https:' || p.protocol === 'mailto:') ? u : '#';
