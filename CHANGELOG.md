@@ -6,6 +6,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Added
 
+- The Archive: login icon in nav links to admin login (or admin journeys page when already logged in)
+
 ### Changed
 
 - Italian (i18n): corrected PRAM battery label, wishlist subtitle, and location field terminology (Posizione → Locazione) based on native speaker feedback
