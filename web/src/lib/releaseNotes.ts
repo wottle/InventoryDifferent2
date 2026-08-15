@@ -13,7 +13,9 @@ export const releaseNotes: ReleaseEntry[] = [
     version: 'Unreleased',
     date: '',
     added: [],
-    changed: [],
+    changed: [
+      'Italian (i18n): corrected PRAM battery label, wishlist subtitle, and location field terminology (Posizione → Locazione) based on native speaker feedback',
+    ],
     fixed: [],
   },
   {
