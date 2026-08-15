@@ -27,6 +27,7 @@ code { font-family: "SF Mono", Monaco, "Courier New", monospace; font-size: 12px
     #009CDF 83.33%, #009CDF 100%
   );
 }
+.rainbow-stripe td { height: 4px; font-size: 1px; line-height: 1px; }
 .container { max-width: 1100px; margin: 0 auto; padding: 0 16px 24px 16px; }
 
 /* Navigation */

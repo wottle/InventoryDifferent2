@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "test": "node test/legacy-theme-compatibility.test.js"
   },
   "dependencies": {
     "ejs": "^3.1.10",
