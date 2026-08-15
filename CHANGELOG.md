@@ -10,6 +10,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 
+- iOS: Template decode no longer crashes on unrecognized rarity values or missing category from the remote template catalog
+
 ---
 
 ## [3.0.5] - 2026-08-14

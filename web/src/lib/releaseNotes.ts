@@ -14,7 +14,9 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
-    fixed: [],
+    fixed: [
+      'iOS: Template decode no longer crashes on unrecognized rarity values or missing category from the remote template catalog',
+    ],
   },
   {
     version: '3.0.5',
