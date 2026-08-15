@@ -8,7 +8,7 @@
 
     <% var mainImage = device.images && device.images.find(function(i) { return i.isThumbnail; }) || (device.images && device.images[0]); %>
     <% if (mainImage) { %>
-      <img src="/uploads/<%= mainImage.path || mainImage.thumbnailPath %>" alt="<%= device.name %>" class="detail-image">
+      <img src="<%= mainImage.path || mainImage.thumbnailPath %>" alt="<%= device.name %>" class="detail-image">
     <% } %>
 
     <table class="detail-specs" cellspacing="1" cellpadding="3" border="0">
@@ -177,8 +177,8 @@
         <tr>
           <% device.images.forEach(function(img, i) { %>
             <td valign="top" style="text-align:center">
-              <a href="/uploads/<%= img.path %>">
-                <img src="/uploads/<%= img.thumbnailPath || img.path %>" alt="Photo <%= i+1 %>" width="80" height="80" style="object-fit:contain">
+              <a href="<%= img.path %>">
+                <img src="<%= img.thumbnailPath || img.path %>" alt="Photo <%= i+1 %>" width="80" height="80" style="object-fit:contain">
               </a>
               <% if (img.caption) { %><br><small><%= img.caption %></small><% } %>
             </td>

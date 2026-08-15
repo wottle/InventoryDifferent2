@@ -56,7 +56,7 @@
         <td class="device-cell">
           <a href="/devices/<%= device.id %>" class="device-card">
             <% if (thumb) { %>
-              <img src="/uploads/<%= thumb.thumbnailPath %>" alt="<%= device.name %>" class="device-thumb" width="60" height="60">
+              <img src="<%= thumb.thumbnailPath %>" alt="<%= device.name %>" class="device-thumb" width="60" height="60">
             <% } else { %>
               <div class="device-thumb-placeholder"></div>
             <% } %>
