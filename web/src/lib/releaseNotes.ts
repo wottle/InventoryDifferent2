@@ -1,4 +1,4 @@
-export const APP_VERSION = '3.0.4';
+export const APP_VERSION = '3.0.5';
 
 export interface ReleaseEntry {
   version: string;
@@ -14,6 +14,17 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [],
     changed: [],
+    fixed: [],
+  },
+  {
+    version: '3.0.5',
+    date: '2026-08-14',
+    added: [
+      'The Archive: login icon in nav links to admin login (or admin journeys page when already logged in)',
+    ],
+    changed: [
+      'Italian (i18n): corrected PRAM battery label, wishlist subtitle, and location field terminology (Posizione → Locazione) based on native speaker feedback',
+    ],
     fixed: [],
   },
   {

@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../../../lib/config";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
-import { useT } from "../../../i18n/context";
+import { useT, useLocale } from "../../../i18n/context";
+import { localeFromLang } from "../../../lib/formatDate";
 
 interface Device {
   id: number;
@@ -111,9 +112,9 @@ function buildIconRow(device: Device) {
 
 const CELL = 'bg-transparent dark:bg-[#1e2129] py-3 px-4 transition-colors group-hover:bg-surface-container-low dark:group-hover:bg-[#282d36]';
 
-function formatDate(dateString: string | null | undefined): string {
+function formatDate(dateString: string | null | undefined, lang = 'en'): string {
   if (!dateString) return '—';
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString(localeFromLang(lang), {
     timeZone: 'UTC',
     year: 'numeric',
     month: 'short',
@@ -129,6 +130,7 @@ const DeviceRow = memo(function DeviceRow({ device }: { device: Device }) {
   const router = useRouter();
   const isDark = useIsDarkMode();
   const t = useT();
+  const locale = useLocale();
   const thumbImage = pickThumbnail(device.images, isDark);
   const thumbnail = thumbImage?.thumbnailPath || thumbImage?.path;
 
@@ -190,7 +192,7 @@ const DeviceRow = memo(function DeviceRow({ device }: { device: Device }) {
 
       {/* Date Acquired — xl+ */}
       <td className={`${CELL} hidden xl:table-cell`}>
-        <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] tabular-nums">{formatDate(device.dateAcquired)}</p>
+        <p className="text-xs text-on-surface-variant dark:text-[#c1c6d7] tabular-nums">{formatDate(device.dateAcquired, locale)}</p>
       </td>
 
       {/* Est. Value — md+ */}

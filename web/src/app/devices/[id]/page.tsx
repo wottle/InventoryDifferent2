@@ -14,7 +14,8 @@ import { useAuth } from "../../../lib/auth-context";
 import { useIsDarkMode } from "../../../lib/useIsDarkMode";
 import { pickThumbnail } from "../../../lib/pickThumbnail";
 import { API_BASE_URL } from "../../../lib/config";
-import { useT } from "../../../i18n/context";
+import { useT, useLocale } from "../../../i18n/context";
+import { formatDate, formatDateTime, localeFromLang } from "../../../lib/formatDate";
 import dynamic from "next/dynamic";
 const DeviceValueChart = dynamic(() => import("../../../components/DeviceValueChart"), { ssr: false });
 
@@ -463,17 +464,6 @@ function linkifyText(text: string): React.ReactNode {
   );
 }
 
-function formatDateForDisplay(dateString: string): string {
-  const d = new Date(dateString);
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
-function formatNoteDateForDisplay(dateString: string): string {
-  const d = new Date(dateString);
-  const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0;
-  if (!hasTime) return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  return d.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-}
 
 export default function DeviceDetailNew() {
   const params = useParams();
@@ -482,6 +472,7 @@ export default function DeviceDetailNew() {
   const { isAuthenticated } = useAuth();
   const isDark = useIsDarkMode();
   const t = useT();
+  const locale = useLocale();
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -763,7 +754,7 @@ export default function DeviceDetailNew() {
   );
 
   const chartData = (valueHistoryData?.valueHistory ?? []).map((v: any) => ({
-    date: new Date(v.snapshotDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+    date: new Date(v.snapshotDate).toLocaleDateString(localeFromLang(locale), { month: 'short', year: '2-digit' }),
     dateMs: new Date(v.snapshotDate).getTime(),
     value: v.estimatedValue,
   }));
@@ -1206,7 +1197,7 @@ export default function DeviceDetailNew() {
             {device.manufacturer && <SpecField label={t.detail.manufacturerModel} value={`${device.manufacturer} ${device.modelNumber}`} />}
             {device.serialNumber && <SpecField label={t.detail.serialNumber} value={device.serialNumber} />}
             {device.location && <SpecField label={t.detail.locationLabel} value={device.location.name} />}
-            {device.lastPowerOnDate && <SpecField label={t.detail.lastUsed} value={new Date(device.lastPowerOnDate).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' })} />}
+            {device.lastPowerOnDate && <SpecField label={t.detail.lastUsed} value={new Date(device.lastPowerOnDate).toLocaleDateString(localeFromLang(locale), { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' })} />}
           </div>
           {device.info && <InfoNotes info={device.info} />}
         </section>
@@ -1319,7 +1310,7 @@ export default function DeviceDetailNew() {
                     )}
                     <div className="flex flex-col gap-1 mt-auto">
                       {device.dateAcquired && (
-                        <span className="text-on-surface-variant text-xs">{formatDateForDisplay(device.dateAcquired)}</span>
+                        <span className="text-on-surface-variant text-xs">{formatDate(device.dateAcquired, locale)}</span>
                       )}
                       {device.whereAcquired && (
                         <span className="text-on-surface-variant text-xs">{device.whereAcquired}</span>
@@ -1336,7 +1327,7 @@ export default function DeviceDetailNew() {
                           <>
                             <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.donatedLabel}</span>
                             {device.soldDate ? (
-                              <span className="text-2xl font-bold text-on-surface">{formatDateForDisplay(device.soldDate)}</span>
+                              <span className="text-2xl font-bold text-on-surface">{formatDate(device.soldDate, locale)}</span>
                             ) : (
                               <span className="text-on-surface-variant text-sm">{t.detail.noDateRecorded}</span>
                             )}
@@ -1350,7 +1341,7 @@ export default function DeviceDetailNew() {
                               <span className="text-on-surface-variant text-sm">{t.detail.noFeeCharged}</span>
                             )}
                             {device.soldDate && (
-                              <span className="text-on-surface-variant text-xs block mt-2">{t.detail.returnedPrefix} {formatDateForDisplay(device.soldDate)}</span>
+                              <span className="text-on-surface-variant text-xs block mt-2">{t.detail.returnedPrefix} {formatDate(device.soldDate, locale)}</span>
                             )}
                           </>
                         ) : device.soldPrice != null && !isCollection ? (
@@ -1358,7 +1349,7 @@ export default function DeviceDetailNew() {
                             <span className="text-outline text-[10px] uppercase tracking-widest block mb-1">{t.detail.salePrice}</span>
                             <span className="text-3xl font-bold text-on-surface">{formatCurrency(device.soldPrice, t.common.locale, t.common.currencyCode)}</span>
                             {device.soldDate && (
-                              <span className="text-on-surface-variant text-xs block mt-2">{formatDateForDisplay(device.soldDate)}</span>
+                              <span className="text-on-surface-variant text-xs block mt-2">{formatDate(device.soldDate, locale)}</span>
                             )}
                           </>
                         ) : isForSale ? (
@@ -1429,7 +1420,7 @@ export default function DeviceDetailNew() {
                         )}
                         {chartData.length > 0 && (
                           <p className="text-[10px] text-outline mt-2 text-center">
-                            {chartData.length} {chartData.length !== 1 ? t.detail.snapshots : t.detail.snapshot} · {t.detail.firstRecorded} {new Date(Math.min(...chartData.map((c: any) => c.dateMs))).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                            {chartData.length} {chartData.length !== 1 ? t.detail.snapshots : t.detail.snapshot} · {t.detail.firstRecorded} {new Date(Math.min(...chartData.map((c: any) => c.dateMs))).toLocaleDateString(localeFromLang(locale), { month: 'short', year: 'numeric' })}
                           </p>
                         )}
                       </div>
@@ -1455,7 +1446,7 @@ export default function DeviceDetailNew() {
                 {device.osEntries?.length > 0 && <SpecField label={t.detail.operatingSystem} value={device.osEntries.map((o: any) => o.value).join(', ')} />}
                 {device.isWifiEnabled != null && <SpecField label={t.detail.wifi} value={device.isWifiEnabled ? t.common.yes : t.common.no} />}
                 {device.pramBatteryInstalled != null && <SpecField label={t.detail.pramBattery} value={device.pramBatteryInstalled ? t.detail.pramInstalled : t.detail.pramRemoved} />}
-                {device.pramBatteryExpiryDate && <SpecField label={t.detail.pramExpiry} value={new Date(device.pramBatteryExpiryDate).toLocaleDateString()} />}
+                {device.pramBatteryExpiryDate && <SpecField label={t.detail.pramExpiry} value={new Date(device.pramBatteryExpiryDate).toLocaleDateString(localeFromLang(locale))} />}
               </div>
             </section>
           )}
@@ -1766,7 +1757,7 @@ export default function DeviceDetailNew() {
                     ) : (
                       <>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] text-outline uppercase tracking-tighter">{formatNoteDateForDisplay(note.date)}</span>
+                          <span className="text-[10px] text-outline uppercase tracking-tighter">{formatDateTime(note.date, locale)}</span>
                           {isAuthenticated && (
                             <div className="flex gap-1 opacity-0 group-hover/note:opacity-100 transition-opacity">
                               <button type="button" onClick={() => handleEditNote(note)} className="p-1 text-on-surface-variant hover:text-primary rounded transition-colors" title="Edit note">
@@ -2041,7 +2032,7 @@ export default function DeviceDetailNew() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-1">
                             <span className="font-bold text-sm text-on-surface">{task.label}</span>
-                            <span className="text-[10px] text-outline shrink-0 ml-2">{formatDateForDisplay(task.dateCompleted).toUpperCase()}</span>
+                            <span className="text-[10px] text-outline shrink-0 ml-2">{formatDate(task.dateCompleted, locale).toUpperCase()}</span>
                           </div>
                           {task.notes && <p className="text-xs text-on-surface-variant">{task.notes}</p>}
                           {task.cost != null && <p className="text-xs text-on-surface-variant mt-1">Cost: {formatCurrency(task.cost, t.common.locale, t.common.currencyCode)}</p>}

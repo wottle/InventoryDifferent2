@@ -6,7 +6,8 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { LoadingPanel } from "../../../components/LoadingPanel";
-import { useT } from "../../../i18n/context";
+import { useT, useLocale } from "../../../i18n/context";
+import { localeFromLang } from "../../../lib/formatDate";
 import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 import type { PeriodBucket } from "../../../components/PeriodicCashFlowChart";
@@ -59,9 +60,9 @@ function valueColorClass(value: number | null | undefined) {
   return n > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400";
 }
 
-function formatDate(dateString: string | null | undefined) {
+function formatDate(dateString: string | null | undefined, lang = "en") {
   if (!dateString) return "";
-  return new Date(dateString).toLocaleDateString("en-US", {
+  return new Date(dateString).toLocaleDateString(localeFromLang(lang), {
     timeZone: "UTC",
     year: "numeric",
     month: "short",
@@ -77,7 +78,8 @@ function dateMs(dateString: string | null | undefined) {
 
 function aggregateByPeriod(
   transactions: any[],
-  mode: "monthly" | "yearly"
+  mode: "monthly" | "yearly",
+  lang = "en"
 ): PeriodBucket[] {
   const buckets = new Map<string, { received: number; spent: number }>();
 
@@ -109,7 +111,7 @@ function aggregateByPeriod(
       const d = new Date(key + (mode === "monthly" ? "-01T00:00:00Z" : "-01-01T00:00:00Z"));
       const label =
         mode === "monthly"
-          ? d.toLocaleDateString("en-US", { timeZone: "UTC", month: "short", year: "2-digit" })
+          ? d.toLocaleDateString(localeFromLang(lang), { timeZone: "UTC", month: "short", year: "2-digit" })
           : `${d.getUTCFullYear()}`;
       return { key, label, received, spent, net: received + spent };
     });
@@ -117,6 +119,7 @@ function aggregateByPeriod(
 
 export default function FinancialsPage() {
   const t = useT();
+  const locale = useLocale();
   const redirecting = useRequireAuth();
   const { data, loading, error } = useQuery(GET_FINANCIALS, {
     fetchPolicy: "cache-and-network",
@@ -171,7 +174,7 @@ export default function FinancialsPage() {
     const chartDataPoints = withCum
       .filter((t: any) => t._ms !== null)
       .map((t: any) => ({
-        date: new Date(t.date).toLocaleDateString("en-US", { timeZone: "UTC", month: "short", year: "2-digit" }),
+        date: new Date(t.date).toLocaleDateString(localeFromLang(locale), { timeZone: "UTC", month: "short", year: "2-digit" }),
         dateMs: t._ms,
         cash: t.cumulativeCash,
         value: t.cumulativeValue,
@@ -186,7 +189,7 @@ export default function FinancialsPage() {
       return b._idx - a._idx;
     });
 
-    const periodicChartData = aggregateByPeriod(transactions, periodMode);
+    const periodicChartData = aggregateByPeriod(transactions, periodMode, locale);
     return { transactionsWithCumulative: withCum, chartData: chartDataPoints, periodicChartData };
   }, [transactions, periodMode]);
 
@@ -332,7 +335,7 @@ export default function FinancialsPage() {
                     {transactionsWithCumulative.map((tx: any) => (
                       <tr key={`${tx.type}-${tx.deviceId}-${tx.date ?? "nodate"}-${tx.amount}-${tx.estimatedValue}`} className="border-t border-[var(--border)]">
                         <td className="px-4 py-2 text-[var(--foreground)] tabular-nums">
-                          {formatDate(tx.date)}
+                          {formatDate(tx.date, locale)}
                         </td>
                         <td className="px-4 py-2 text-[var(--foreground)]">
                           {tx.type === "SALE" ? t.pages.financials.txSold : tx.type === "DONATION" ? t.pages.financials.txDonated : tx.type === "MAINTENANCE" ? t.pages.financials.txMaintenance : tx.type === "REPAIR_RETURN" ? t.pages.financials.txRepairFee : t.pages.financials.txAcquired}

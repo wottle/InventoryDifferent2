@@ -6,7 +6,8 @@ import gql from "graphql-tag";
 import { DeviceFilterPanel, FilterState, SortColumn } from "../../../components/DeviceFilterPanel";
 import { LoadingPanel } from "../../../components/LoadingPanel";
 import { API_BASE_URL } from "../../../lib/config";
-import { useT } from "../../../i18n/context";
+import { useT, useLocale } from "../../../i18n/context";
+import { formatDate, localeFromLang } from "../../../lib/formatDate";
 import { useRequireAuth } from "../../../lib/useRequireAuth";
 
 const GET_DEVICES = gql`
@@ -110,6 +111,7 @@ const defaultFilters: FilterState = {
 
 export default function PrintListPage() {
   const t = useT();
+  const locale = useLocale();
   const redirecting = useRequireAuth();
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
@@ -155,15 +157,8 @@ export default function PrintListPage() {
     return result;
   }, [devices, filters]);
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      timeZone: "UTC",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const fmtDate = (dateString: string | null) =>
+    formatDate(dateString, locale, { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' });
 
   const formatCurrency = (value: number | null | undefined) => {
     if (value === null || value === undefined) return "";
@@ -244,7 +239,7 @@ export default function PrintListPage() {
         {/* Title */}
         <h1 className="text-2xl font-bold mb-4 text-center">{t.pages.print.collectionTitle}</h1>
         <p className="text-sm text-gray-600 text-center mb-6">
-          {t.pages.print.generatedOn} {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+          {t.pages.print.generatedOn} {new Date().toLocaleDateString(localeFromLang(locale), { year: "numeric", month: "long", day: "numeric" })}
           {" • "}{filteredDevices.length} {t.home.devices}
         </p>
 
@@ -343,7 +338,7 @@ export default function PrintListPage() {
                 <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1">{t.pages.print.acquisitionSection}</h3>
                 <table className="w-full">
                   <tbody>
-                    <tr><td className="text-gray-500 pr-2">{t.pages.print.dateAcquiredLabel}</td><td>{formatDate(device.dateAcquired) || "—"}</td></tr>
+                    <tr><td className="text-gray-500 pr-2">{t.pages.print.dateAcquiredLabel}</td><td>{fmtDate(device.dateAcquired) || "—"}</td></tr>
                     <tr><td className="text-gray-500 pr-2">{t.pages.print.whereLabel}</td><td>{device.whereAcquired || "—"}</td></tr>
                     <tr><td className="text-gray-500 pr-2">{t.pages.print.pricePaidLabel}</td><td>{formatCurrency(device.priceAcquired) || "—"}</td></tr>
                   </tbody>
@@ -404,7 +399,7 @@ export default function PrintListPage() {
                     {device.maintenanceTasks.map((task: any) => (
                       <tr key={task.id}>
                         <td className="border border-gray-300 px-2 py-1">{task.label}</td>
-                        <td className="border border-gray-300 px-2 py-1">{formatDate(task.dateCompleted)}</td>
+                        <td className="border border-gray-300 px-2 py-1">{fmtDate(task.dateCompleted)}</td>
                         <td className="border border-gray-300 px-2 py-1">{task.notes || ""}</td>
                       </tr>
                     ))}
@@ -419,7 +414,7 @@ export default function PrintListPage() {
                 <h3 className="font-bold text-gray-700 border-b border-gray-200 mb-1 text-sm">{t.detail.notes}</h3>
                 {device.notes.map((note: any) => (
                   <div key={note.id} className="mb-2 text-sm">
-                    <span className="text-gray-500 text-xs">{formatDate(note.date)}</span>
+                    <span className="text-gray-500 text-xs">{fmtDate(note.date)}</span>
                     <p className="whitespace-pre-wrap">{note.content}</p>
                   </div>
                 ))}
