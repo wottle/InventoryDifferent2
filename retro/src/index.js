@@ -82,9 +82,12 @@ app.get('/uploads/*', async (req, res) => {
   try {
     const upstream = await fetch(new URL('/uploads/' + rel, API_URL).href);
     if (!upstream.ok) return res.status(upstream.status).end();
+    // Allowlist only safe raster types — SVG can embed JS so it is excluded
     const ct = upstream.headers.get('content-type') || '';
-    if (!ct.startsWith('image/')) return res.status(403).end();
-    res.setHeader('Content-Type', ct);
+    const SAFE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
+    const baseCt = ct.split(';')[0].trim().toLowerCase();
+    if (!SAFE_IMAGE_TYPES.includes(baseCt)) return res.status(403).end();
+    res.setHeader('Content-Type', baseCt);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Disposition', 'inline');
     const buf = await upstream.arrayBuffer();
