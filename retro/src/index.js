@@ -39,7 +39,11 @@ async function getCategories() {
 
 function getThumbnail(images) {
   if (!images?.length) return null;
-  return images.find(i => i.isThumbnail) || images[0];
+  const thumbs = images.filter(i => i.isThumbnail);
+  return thumbs.find(i => i.thumbnailMode === 'BOTH')
+    || thumbs.find(i => i.thumbnailMode === 'LIGHT')
+    || thumbs.find(i => i.thumbnailMode === 'DARK')
+    || images[0];
 }
 
 function formatDate(dateStr) {

@@ -6,7 +6,8 @@
   <div class="title-bar"><%= device.name %><% if (device.additionalName) { %> &mdash; <%= device.additionalName %><% } %></div>
   <div class="window-body">
 
-    <% var mainImage = device.images && device.images.find(function(i) { return i.isThumbnail; }) || (device.images && device.images[0]); %>
+    <% var thumbs = (device.images || []).filter(function(i) { return i.isThumbnail; }); %>
+    <% var mainImage = thumbs.find(function(i) { return i.thumbnailMode === 'BOTH'; }) || thumbs.find(function(i) { return i.thumbnailMode === 'LIGHT'; }) || thumbs.find(function(i) { return i.thumbnailMode === 'DARK'; }) || (device.images && device.images[0]); %>
     <% if (mainImage) { %>
       <img src="<%= mainImage.path || mainImage.thumbnailPath %>" alt="<%= device.name %>" class="detail-image">
     <% } %>
