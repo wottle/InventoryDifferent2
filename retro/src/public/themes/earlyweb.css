@@ -1,0 +1,178 @@
+/* Early Web — a 1995–96 institutional catalog, compatible with CSS1 browsers */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #6e7278;
+  color: #171717;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14px;
+}
+a { color: #000099; text-decoration: underline; }
+a:visited { color: #663366; }
+a:active { color: #990000; }
+h1 { margin: 8px 0; color: #16265c; font-family: Arial, Helvetica, sans-serif; font-size: 20px; }
+h2 { margin: 7px 0 4px 0; color: #16265c; font-family: Arial, Helvetica, sans-serif; font-size: 16px; }
+h3 { margin: 5px 0 3px 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+code { font-family: "Courier New", Courier, monospace; font-size: 12px; }
+
+.rainbow-stripe { height: 5px; }
+.rainbow-stripe td { width: 17%; height: 5px; font-size: 1px; line-height: 1px; }
+.stripe-green { background-color: #477b48; }
+.stripe-yellow { background-color: #d7b64b; }
+.stripe-orange { background-color: #c87532; }
+.stripe-red { background-color: #a83e3e; }
+.stripe-purple { background-color: #704b79; }
+.stripe-blue { background-color: #356d8b; }
+
+.container {
+  width: 90%;
+  margin: 12px auto 22px auto;
+  padding: 12px 18px 18px 18px;
+  background-color: #f3f0df;
+  border: 1px solid #333333;
+}
+
+/* Museum archive masthead */
+.nav-bar {
+  margin: 0 0 12px 0;
+  padding: 8px 10px 7px 10px;
+  background-color: #18295e;
+  color: #ffffff;
+  border-bottom: 4px solid #8d3135;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+.nav-bar a { margin-right: 13px; color: #ffffff; text-decoration: underline; }
+.nav-bar a:visited { color: #ffffff; }
+.nav-bar .site-name { font-size: 15px; font-weight: bold; text-decoration: none; }
+.nav-sep { margin-right: 13px; color: #c7c9d3; }
+.breadcrumb { margin: 6px 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+
+/* Catalog sections */
+.window {
+  margin: 11px 0;
+  padding: 0;
+  background-color: #fffef7;
+  border: 1px solid #7a786f;
+}
+.title-bar {
+  padding: 4px 8px;
+  background-color: #d9d6c5;
+  color: #18295e;
+  border-bottom: 2px solid #18295e;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.window-body { padding: 9px; }
+
+.search-form { font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 25px; }
+.search-form label { margin-right: 3px; color: #18295e; font-weight: bold; }
+.search-form input { font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+.search-form .search-input { padding: 2px 4px; background-color: #ffffff; border: 1px solid #555555; }
+.search-form select { background-color: #ffffff; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+.btn {
+  padding: 2px 10px;
+  background-color: #d9d6c5;
+  color: #000000;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #555555;
+  border-bottom: 2px solid #555555;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.count-info {
+  margin: 6px 1px;
+  color: #4c4b47;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+.devices-table { width: 100%; border-collapse: collapse; }
+.device-cell { width: 33%; padding: 5px; vertical-align: top; }
+.device-card {
+  display: block;
+  min-height: 106px;
+  padding: 7px;
+  overflow: hidden;
+  background-color: #fffef7;
+  color: #171717;
+  text-decoration: none;
+  border-top: 3px solid #18295e;
+  border-right: 1px solid #aaa794;
+  border-bottom: 1px solid #aaa794;
+  border-left: 1px solid #aaa794;
+}
+.device-card:hover { background-color: #fffbd8; }
+.device-thumb {
+  float: left;
+  width: 64px;
+  height: 64px;
+  margin-right: 8px;
+  background-color: #ffffff;
+  border: 1px solid #777777;
+}
+.device-thumb-placeholder {
+  float: left;
+  width: 64px;
+  height: 64px;
+  margin-right: 8px;
+  background-color: #e5e2d2;
+  border: 1px solid #999688;
+}
+.device-name { display: block; margin-bottom: 3px; color: #000099; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; text-decoration: underline; }
+.device-meta { display: block; color: #4c4b47; font-family: Arial, Helvetica, sans-serif; font-size: 11px; line-height: 15px; }
+.status-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 1px 5px;
+  background-color: #ece6bd;
+  color: #5f2629;
+  border: 1px solid #9c956d;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.pagination { padding: 10px 0 7px 0; text-align: center; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+.pagination a { margin: 0 3px; padding: 2px 7px; background-color: #e4e0cf; color: #000099; border: 1px solid #8e8b80; }
+.pagination .current { margin: 0 3px; padding: 2px 7px; background-color: #18295e; color: #ffffff; border: 1px solid #18295e; font-weight: bold; }
+
+.detail-image {
+  float: right;
+  width: 210px;
+  margin: 0 0 10px 11px;
+  padding: 3px;
+  background-color: #ffffff;
+  border: 1px solid #67655f;
+}
+.detail-specs { width: 100%; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+.detail-specs td { padding: 4px 7px; border-bottom: 1px solid #d1cebd; vertical-align: top; }
+.detail-specs .spec-label { width: 35%; background-color: #e5e2d2; color: #18295e; font-weight: bold; }
+.device-info { margin: 0; font-size: 14px; line-height: 20px; white-space: pre-wrap; }
+
+.notes-list { margin: 0; padding: 0; list-style: none; }
+.notes-list li { padding: 5px 2px; border-bottom: 1px solid #d1cebd; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+.note-date { color: #68665e; font-size: 11px; }
+.tags-list { font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+.tag {
+  display: inline-block;
+  margin: 2px;
+  padding: 2px 6px;
+  background-color: #ece6bd;
+  color: #5f2629;
+  border: 1px solid #9c956d;
+  font-size: 11px;
+}
+.footer {
+  margin-top: 18px;
+  padding-top: 9px;
+  color: #55534e;
+  border-top: 3px double #77746b;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}

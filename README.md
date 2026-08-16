@@ -31,8 +31,9 @@ Pre-built multi-architecture images (amd64 + arm64) are published to Docker Hub:
 ```
 wottle/inventory-api:latest
 wottle/inventory-web:latest
-wottle/inventory-storefront:latest (optional — only is wanting a shop website)
+wottle/inventory-storefront:latest (optional — only if wanting a shop website)
 wottle/inventory-mcp:latest        (optional — AI assistant integration only)
+wottle/inventory-retro:latest      (optional — vintage-compatible, no-JavaScript web UI)
 ```
 
 Database migrations run automatically on every container start — no manual migration step needed when updating.
@@ -72,6 +73,8 @@ Services will be available at:
 > **iOS / remote access:** The web app resolves the API URL from the browser's origin automatically. For the iOS app — or any client on a different device — set `AUTH_URL` in your `.env` or configure the server URL directly in the iOS app settings.
 
 > **MCP server:** If you plan to connect your collection up to an AI agent, you should uncomment the mcp service in the docker-compose file. The MCP server is available at `http://your-host:3002/mcp` and can be used with AI assistants that support MCP servers. You'll also need to set the `MCP_TOKEN` environment variable in your `.env` file.
+
+> **Retro web UI:** For a vintage-compatible, no-JavaScript inventory browser (great for old browsers like Netscape or early IE), uncomment the `retro` service in the docker-compose file. Available at `http://your-host:3004`. Set `RETRO_THEME` to `system7` (default), `earlyweb`, or `platinum` to choose the visual style.
 
 > **Asset tagging note:** If you use the QR code asset tagging feature, the generated codes embed your server's URL. A local IP address (`192.168.x.x`) or a hostname that may change will cause those QR codes to stop working when scanned from a device that isn't on your home network, or after your IP changes. If you plan to use asset tagging, Option 2 (a persistent public domain) is strongly recommended so your QR codes remain valid long-term.
 
@@ -176,6 +179,7 @@ acme:
 | `MCP_TOKEN` | Optional token for the MCP server (token required for auth MCP server from AI agent) |
 | `CONTACT_EMAIL` | Email shown on the storefront contact button (default: `store@example.com`) |
 | `EXTERNAL_TEMPLATES_ENABLED` | Initial default for the remote template catalog (`true` by default). Once toggled in the web Settings page the DB value takes precedence and this env var is ignored. |
+| `RETRO_THEME` | Visual theme for the retro web UI: `system7` (default, Classic Mac look), `earlyweb` (1996 web aesthetic), or `platinum` (matches main web app style). Only applies if the `retro` service is enabled. |
 
 ### Traefik / Domain (prod deployment only)
 
@@ -184,6 +188,7 @@ acme:
 | `DOMAIN` | — | Domain for the admin web app (e.g., `inventory.example.com`) |
 | `SHOP_DOMAIN` | — | Domain for the public storefront (e.g., `shop.example.com`) |
 | `SHOWCASE_DOMAIN` | — | Domain for the public showcase site (e.g., `showcase.example.com`) — only needed if the `showcase` service is enabled |
+| `RETRO_DOMAIN` | — | Domain for the retro web UI (e.g., `retro.example.com`) — only needed if the `retro` service is enabled with Traefik |
 
 ### Analytics (optional)
 
