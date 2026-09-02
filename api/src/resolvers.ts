@@ -984,37 +984,37 @@ export const resolvers = {
                 where: { published: true },
                 include: { chapters: { orderBy: { sortOrder: 'asc' }, include: { devices: { orderBy: { sortOrder: 'asc' }, include: { device: { include: DEVICE_INCLUDE } } } } } },
             });
-            // Sort: explicit sortOrder (>0) first ascending, then auto (sortOrder=0) by publishedAt desc
+            // Sort ascending: explicit sortOrder first (ASC), then auto by publishedAt ASC (oldest = Vol. I)
             journeys.sort((a: any, b: any) => {
-                const aExplicit = a.sortOrder > 0;
-                const bExplicit = b.sortOrder > 0;
-                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
-                if (aExplicit) return -1;
-                if (bExplicit) return 1;
-                return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+                const aEx = a.sortOrder > 0, bEx = b.sortOrder > 0;
+                if (aEx && bEx) return a.sortOrder - b.sortOrder || new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
+                if (aEx) return -1;
+                if (bEx) return 1;
+                return new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
             });
-            return journeys.map((j: any, idx: number) => ({
+            // Assign effectiveVolumeNumber from ascending position, then reverse so newest (Vol. N) is first
+            const mapped = journeys.map((j: any, idx: number) => ({
                 ...j,
                 createdAt: j.createdAt.toISOString(),
                 updatedAt: j.updatedAt.toISOString(),
                 publishedAt: j.publishedAt ? j.publishedAt.toISOString() : null,
                 effectiveVolumeNumber: idx + 1,
             }));
+            return mapped.reverse();
         },
 
         showcaseJourney: async (_parent: any, args: { slug: string }, context: Context) => {
-            // Fetch all published journeys to compute this journey's position
             const allPublished = await (context.prisma as any).showcaseJourney.findMany({
                 where: { published: true },
                 select: { id: true, sortOrder: true, publishedAt: true },
             });
+            // Sort ascending for correct vol numbering (oldest = Vol. I)
             allPublished.sort((a: any, b: any) => {
-                const aExplicit = a.sortOrder > 0;
-                const bExplicit = b.sortOrder > 0;
-                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
-                if (aExplicit) return -1;
-                if (bExplicit) return 1;
-                return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+                const aEx = a.sortOrder > 0, bEx = b.sortOrder > 0;
+                if (aEx && bEx) return a.sortOrder - b.sortOrder || new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
+                if (aEx) return -1;
+                if (bEx) return 1;
+                return new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
             });
             const volumeRank = new Map<string, number>(
                 allPublished.map((j: any, idx: number) => [j.id, idx + 1])
@@ -1062,13 +1062,13 @@ export const resolvers = {
             });
             // Compute effectiveVolumeNumber from published journeys sorted by sortOrder then publishedAt
             const published = journeys.filter((j: any) => j.published);
+            // Sort ascending (oldest = Vol. I) for correct vol numbering
             published.sort((a: any, b: any) => {
-                const aExplicit = a.sortOrder > 0;
-                const bExplicit = b.sortOrder > 0;
-                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
-                if (aExplicit) return -1;
-                if (bExplicit) return 1;
-                return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+                const aEx = a.sortOrder > 0, bEx = b.sortOrder > 0;
+                if (aEx && bEx) return a.sortOrder - b.sortOrder || new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
+                if (aEx) return -1;
+                if (bEx) return 1;
+                return new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
             });
             const volumeRank = new Map<string, number>(
                 published.map((j: any, idx: number) => [j.id, idx + 1])

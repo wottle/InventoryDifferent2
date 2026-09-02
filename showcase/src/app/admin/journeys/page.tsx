@@ -33,15 +33,16 @@ function toRoman(n: number): string {
   return ROMAN[n - 1] ?? String(n);
 }
 
-function sortJourneys(journeys: AdminJourney[]): AdminJourney[] {
+// Sort ascending (oldest = Vol. I), then reverse so newest/highest vol is at the top
+function sortJourneysDesc(journeys: AdminJourney[]): AdminJourney[] {
   return [...journeys].sort((a, b) => {
     const aEx = a.sortOrder > 0, bEx = b.sortOrder > 0;
     if (aEx && bEx) return a.sortOrder - b.sortOrder
-      || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+      || new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
     if (aEx) return -1;
     if (bEx) return 1;
-    return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
-  });
+    return new Date(a.publishedAt ?? 0).getTime() - new Date(b.publishedAt ?? 0).getTime();
+  }).reverse();
 }
 
 export default function AdminJourneysPage() {
@@ -54,7 +55,7 @@ export default function AdminJourneysPage() {
   const [updateJourney] = useMutation(UPDATE_JOURNEY);
   const [deleteJourney] = useMutation(DELETE_JOURNEY);
 
-  const sorted = sortJourneys(data?.showcaseAllJourneys ?? []);
+  const sorted = sortJourneysDesc(data?.showcaseAllJourneys ?? []);
 
   const handleTogglePublished = async (journey: AdminJourney) => {
     await updateJourney({
@@ -86,16 +87,18 @@ export default function AdminJourneysPage() {
 
   // Swap two journeys in the sorted list by assigning them each other's position.
   // Positions are 1-based; auto-sorted (0) journeys get assigned explicit values when moved.
+  // List is displayed DESC (Vol. N at top). Canonical position of displayIdx i = (total - i).
+  // Swapping two rows exchanges their canonical positions.
   const handleMove = async (idx: number, direction: 'up' | 'down') => {
     const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
     if (swapIdx < 0 || swapIdx >= sorted.length) return;
 
     const a = sorted[idx];
     const b = sorted[swapIdx];
+    const total = sorted.length;
 
-    // Assign each journey its new 1-based position in the list
-    const aNewOrder = swapIdx + 1;
-    const bNewOrder = idx + 1;
+    const aNewOrder = total - swapIdx;
+    const bNewOrder = total - idx;
 
     await Promise.all([
       updateJourney({ variables: { id: a.id, input: { title: a.title, slug: a.slug, description: a.description ?? '', sortOrder: aNewOrder } } }),
@@ -138,7 +141,7 @@ export default function AdminJourneysPage() {
           {sorted.map((journey, idx) => {
             const chapterCount = journey.chapters.length;
             const deviceCount = journey.chapters.reduce((acc, c) => acc + c.devices.length, 0);
-            const volLabel = `Vol. ${toRoman(idx + 1)}`;
+            const volLabel = `Vol. ${toRoman(sorted.length - idx)}`;
 
             return (
               <div
