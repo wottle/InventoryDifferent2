@@ -10,6 +10,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Changed
 
+- The Archive: journey list order is now controlled by Sort Order (set in the admin editor) instead of a separate Volume Number field. Journeys with an explicit sort order appear first; the rest sort by publish date. The "Vol. N" label on journey detail pages now reflects actual list position.
+
 ### Fixed
 
 - iOS: Template decode no longer crashes on unrecognized rarity values or missing category from the remote template catalog

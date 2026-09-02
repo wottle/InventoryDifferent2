@@ -236,9 +236,10 @@ export const de: Translations = {
     unfeature: 'Hervorhebung entfernen',
     uploading: 'Hochladen\u2026',
     titleSlugRequired: 'Titel und Slug sind erforderlich.',
-    volumeNumberLabel: 'Bandnummer',
-    volumeNumberHint: 'Leer lassen für automatische Zuordnung basierend auf Veröffentlichungsdatum',
-    autoVolumePreview: 'Wird angezeigt als',
+    sortOrderLabel: 'Reihenfolge',
+    sortOrderHint: 'Leer lassen für automatische Sortierung nach Veröffentlichungsdatum. 1 = ganz oben, 2 = zweite Position usw.',
+    sortOrderAuto: 'Automatisch',
+    currentPosition: 'Aktuelle Position',
   },
   common: {
     share: 'Teilen',

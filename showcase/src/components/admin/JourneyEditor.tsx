@@ -57,7 +57,6 @@ export interface JourneyData {
   published: boolean;
   publishedAt: string | null;
   sortOrder: number;
-  volumeNumber: number | null;
   effectiveVolumeNumber?: number;
   coverImagePath: string | null;
   chapters: Chapter[];
@@ -621,7 +620,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
   const [description, setDescription] = useState(journey?.description ?? '');
   const [coverImagePath, setCoverImagePath] = useState<string | null>(journey?.coverImagePath ?? null);
   const [published, setPublished] = useState(journey?.published ?? false);
-  const [volumeNumber, setVolumeNumber] = useState<number | ''>(journey?.volumeNumber ?? '');
+  const [sortOrderInput, setSortOrderInput] = useState<number | ''>(journey?.sortOrder && journey.sortOrder > 0 ? journey.sortOrder : '');
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!isNew);
@@ -704,8 +703,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               description: description.trim(),
               coverImagePath: coverImagePath || null,
               published,
-              sortOrder: 0,
-              volumeNumber: volumeNumber === '' ? null : volumeNumber,
+              sortOrder: sortOrderInput === '' ? 0 : sortOrderInput,
             },
           },
         });
@@ -722,8 +720,7 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               description: description.trim(),
               coverImagePath: coverImagePath || null,
               published,
-              sortOrder: journey!.sortOrder,
-              volumeNumber: volumeNumber === '' ? null : volumeNumber,
+              sortOrder: sortOrderInput === '' ? 0 : sortOrderInput,
             },
           },
         });
@@ -1060,25 +1057,25 @@ export default function JourneyEditor({ journey }: JourneyEditorProps) {
               {!isNew && (
                 <div>
                   <label className="block text-xs font-medium text-outline mb-1">
-                    {t.adminJourneyEditor.volumeNumberLabel ?? 'Volume Number'}
+                    {t.adminJourneyEditor.sortOrderLabel ?? 'Sort Order'}
                   </label>
                   <p className="text-[0.65rem] text-outline/70 mb-1">
-                    {t.adminJourneyEditor.volumeNumberHint ?? 'Leave blank to auto-assign based on publish date'}
+                    {t.adminJourneyEditor.sortOrderHint ?? 'Leave blank to sort automatically by publish date. Set to 1 to feature first, 2 for second, etc.'}
                   </p>
                   <input
                     type="number"
                     min={1}
-                    value={volumeNumber}
+                    value={sortOrderInput}
                     onChange={(e) => {
                       const val = e.target.value;
-                      setVolumeNumber(val === '' ? '' : parseInt(val, 10));
+                      setSortOrderInput(val === '' ? '' : parseInt(val, 10));
                     }}
-                    placeholder={String(journey?.effectiveVolumeNumber ?? '')}
+                    placeholder={t.adminJourneyEditor.sortOrderAuto ?? 'Auto'}
                     className="w-full px-2.5 py-1.5 rounded-lg border border-outline-variant/40 bg-surface-container-low text-xs text-on-surface focus:outline-none focus:border-primary"
                   />
-                  {volumeNumber === '' && journey?.effectiveVolumeNumber && (
+                  {journey?.effectiveVolumeNumber && (
                     <p className="text-[0.65rem] text-primary mt-1">
-                      {t.adminJourneyEditor.autoVolumePreview ?? 'Will show as'}: {t.journeys.volume} {toRoman(journey.effectiveVolumeNumber)}
+                      {t.adminJourneyEditor.currentPosition ?? 'Current position'}: {t.journeys.volume} {toRoman(journey.effectiveVolumeNumber)}
                     </p>
                   )}
                 </div>

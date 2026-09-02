@@ -234,9 +234,10 @@ export type Translations = {
     unfeature: string;
     uploading: string;
     titleSlugRequired: string;
-    volumeNumberLabel: string;
-    volumeNumberHint: string;
-    autoVolumePreview: string;
+    sortOrderLabel: string;
+    sortOrderHint: string;
+    sortOrderAuto: string;
+    currentPosition: string;
   };
   common: {
     share: string;
@@ -483,9 +484,10 @@ export const en: Translations = {
     unfeature: 'Unfeature',
     uploading: 'Uploading\u2026',
     titleSlugRequired: 'Title and slug are required.',
-    volumeNumberLabel: 'Volume Number',
-    volumeNumberHint: 'Leave blank to auto-assign based on publish date',
-    autoVolumePreview: 'Will show as',
+    sortOrderLabel: 'Sort Order',
+    sortOrderHint: 'Leave blank to sort by publish date. Set 1 to feature first, 2 for second, etc.',
+    sortOrderAuto: 'Auto',
+    currentPosition: 'Current position',
   },
   common: {
     share: 'Share',

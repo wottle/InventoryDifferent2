@@ -980,38 +980,44 @@ export const resolvers = {
         },
 
         showcaseJourneys: async (_parent: any, _args: any, context: Context) => {
-            // Fetch all published journeys once to compute effective volume numbers
-            const allPublished = await (context.prisma as any).showcaseJourney.findMany({
-                where: { published: true },
-                orderBy: [{ publishedAt: { sort: 'asc', nulls: 'last' } }, { sortOrder: 'asc' }],
-                select: { id: true, volumeNumber: true },
-            });
-            const volumeRank = new Map<string, number>(
-                allPublished.map((j: any, idx: number) => [j.id, j.volumeNumber ?? (idx + 1)])
-            );
             const journeys = await (context.prisma as any).showcaseJourney.findMany({
                 where: { published: true },
-                orderBy: [{ publishedAt: { sort: 'desc', nulls: 'last' } }, { sortOrder: 'asc' }],
                 include: { chapters: { orderBy: { sortOrder: 'asc' }, include: { devices: { orderBy: { sortOrder: 'asc' }, include: { device: { include: DEVICE_INCLUDE } } } } } },
             });
-            return journeys.map((j: any) => ({
+            // Sort: explicit sortOrder (>0) first ascending, then auto (sortOrder=0) by publishedAt desc
+            journeys.sort((a: any, b: any) => {
+                const aExplicit = a.sortOrder > 0;
+                const bExplicit = b.sortOrder > 0;
+                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder;
+                if (aExplicit) return -1;
+                if (bExplicit) return 1;
+                return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+            });
+            return journeys.map((j: any, idx: number) => ({
                 ...j,
                 createdAt: j.createdAt.toISOString(),
                 updatedAt: j.updatedAt.toISOString(),
                 publishedAt: j.publishedAt ? j.publishedAt.toISOString() : null,
-                effectiveVolumeNumber: volumeRank.get(j.id) ?? 0,
+                effectiveVolumeNumber: idx + 1,
             }));
         },
 
         showcaseJourney: async (_parent: any, args: { slug: string }, context: Context) => {
-            // Fetch all published journeys to compute effective volume numbers
+            // Fetch all published journeys to compute this journey's position
             const allPublished = await (context.prisma as any).showcaseJourney.findMany({
                 where: { published: true },
-                orderBy: [{ publishedAt: { sort: 'asc', nulls: 'last' } }, { sortOrder: 'asc' }],
-                select: { id: true, volumeNumber: true },
+                select: { id: true, sortOrder: true, publishedAt: true },
+            });
+            allPublished.sort((a: any, b: any) => {
+                const aExplicit = a.sortOrder > 0;
+                const bExplicit = b.sortOrder > 0;
+                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder;
+                if (aExplicit) return -1;
+                if (bExplicit) return 1;
+                return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
             });
             const volumeRank = new Map<string, number>(
-                allPublished.map((j: any, idx: number) => [j.id, j.volumeNumber ?? (idx + 1)])
+                allPublished.map((j: any, idx: number) => [j.id, idx + 1])
             );
             const journey = await (context.prisma as any).showcaseJourney.findFirst({
                 where: { slug: args.slug, published: true },
@@ -1023,7 +1029,7 @@ export const resolvers = {
                 createdAt: journey.createdAt.toISOString(),
                 updatedAt: journey.updatedAt.toISOString(),
                 publishedAt: journey.publishedAt ? journey.publishedAt.toISOString() : null,
-                effectiveVolumeNumber: volumeRank.get(journey.id) ?? 0,
+                effectiveVolumeNumber: volumeRank.get(journey.id) ?? 1,
             };
         },
 
@@ -1051,19 +1057,22 @@ export const resolvers = {
 
         showcaseAllJourneys: async (_parent: any, _args: any, context: Context) => {
             requireAuth(context);
-            // Compute effective volume for admin display: rank published journeys by publishedAt
-            const allPublished = await (context.prisma as any).showcaseJourney.findMany({
-                where: { published: true },
-                orderBy: [{ publishedAt: { sort: 'asc', nulls: 'last' } }, { sortOrder: 'asc' }],
-                select: { id: true, volumeNumber: true },
-            });
-            const volumeRank = new Map<string, number>(
-                allPublished.map((j: any, idx: number) => [j.id, j.volumeNumber ?? (idx + 1)])
-            );
             const journeys = await (context.prisma as any).showcaseJourney.findMany({
-                orderBy: { sortOrder: 'asc' },
                 include: { chapters: { orderBy: { sortOrder: 'asc' }, include: { devices: { orderBy: { sortOrder: 'asc' }, include: { device: { include: DEVICE_INCLUDE } } } } } },
             });
+            // Compute effectiveVolumeNumber from published journeys sorted by sortOrder then publishedAt
+            const published = journeys.filter((j: any) => j.published);
+            published.sort((a: any, b: any) => {
+                const aExplicit = a.sortOrder > 0;
+                const bExplicit = b.sortOrder > 0;
+                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder;
+                if (aExplicit) return -1;
+                if (bExplicit) return 1;
+                return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+            });
+            const volumeRank = new Map<string, number>(
+                published.map((j: any, idx: number) => [j.id, idx + 1])
+            );
             return journeys.map((j: any) => ({
                 ...j,
                 createdAt: j.createdAt.toISOString(),
@@ -2172,7 +2181,6 @@ export const resolvers = {
                     description: args.input.description,
                     coverImagePath: args.input.coverImagePath ?? null,
                     sortOrder: args.input.sortOrder ?? 0,
-                    volumeNumber: args.input.volumeNumber ?? null,
                     published: publishing,
                     publishedAt: publishing ? new Date() : null,
                 },
@@ -2183,7 +2191,7 @@ export const resolvers = {
                 createdAt: journey.createdAt.toISOString(),
                 updatedAt: journey.updatedAt.toISOString(),
                 publishedAt: journey.publishedAt ? journey.publishedAt.toISOString() : null,
-                effectiveVolumeNumber: journey.volumeNumber ?? 0,
+                effectiveVolumeNumber: 0,
             };
         },
 
@@ -2209,7 +2217,6 @@ export const resolvers = {
                 }
             }
             if (args.input.sortOrder !== undefined) data.sortOrder = args.input.sortOrder;
-            if (args.input.volumeNumber !== undefined) data.volumeNumber = args.input.volumeNumber;
             if (args.input.published !== undefined) {
                 data.published = args.input.published;
                 // Set publishedAt on first publish only
@@ -2233,7 +2240,7 @@ export const resolvers = {
                 createdAt: journey.createdAt.toISOString(),
                 updatedAt: journey.updatedAt.toISOString(),
                 publishedAt: journey.publishedAt ? journey.publishedAt.toISOString() : null,
-                effectiveVolumeNumber: journey.volumeNumber ?? 0,
+                effectiveVolumeNumber: 0,
             };
         },
 

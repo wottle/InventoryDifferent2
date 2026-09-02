@@ -236,9 +236,10 @@ export const es: Translations = {
     unfeature: 'Quitar de destacados',
     uploading: 'Subiendo\u2026',
     titleSlugRequired: 'El título y el slug son obligatorios.',
-    volumeNumberLabel: 'Número de volumen',
-    volumeNumberHint: 'Dejar en blanco para asignación automática basada en fecha de publicación',
-    autoVolumePreview: 'Se mostrará como',
+    sortOrderLabel: 'Orden de visualización',
+    sortOrderHint: 'Dejar en blanco para ordenar por fecha de publicación. 1 = destacado, 2 = segunda posición, etc.',
+    sortOrderAuto: 'Automático',
+    currentPosition: 'Posición actual',
   },
   common: {
     share: 'Compartir',

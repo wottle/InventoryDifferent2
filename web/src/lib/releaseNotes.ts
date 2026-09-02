@@ -15,7 +15,9 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [
       'Retro web UI: optional new Docker image (`wottle/inventory-retro`) that serves the device inventory as plain server-rendered HTML, compatible with very old browsers — no JavaScript required. Supports three themes (System 7, Early Web, Platinum) configured via the `RETRO_THEME` environment variable.',
     ],
-    changed: [],
+    changed: [
+      'The Archive: journey list order is now controlled by Sort Order (set in the admin editor) instead of a separate Volume Number field. Journeys with an explicit sort order appear first; the rest sort by publish date. The "Vol. N" label on journey detail pages now reflects actual list position.',
+    ],
     fixed: [
       'iOS: Template decode no longer crashes on unrecognized rarity values or missing category from the remote template catalog',
     ],

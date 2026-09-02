@@ -236,9 +236,10 @@ export const fr: Translations = {
     unfeature: 'Retirer de la vedette',
     uploading: 'Téléversement\u2026',
     titleSlugRequired: 'Le titre et le slug sont obligatoires.',
-    volumeNumberLabel: 'Numéro de volume',
-    volumeNumberHint: 'Laissez vide pour attribution automatique basée sur la date de publication',
-    autoVolumePreview: 'Sera affiché comme',
+    sortOrderLabel: 'Ordre d\'affichage',
+    sortOrderHint: 'Laisser vide pour trier par date de publication. 1 = en vedette, 2 = deuxième position, etc.',
+    sortOrderAuto: 'Automatique',
+    currentPosition: 'Position actuelle',
   },
   common: {
     share: 'Partager',
