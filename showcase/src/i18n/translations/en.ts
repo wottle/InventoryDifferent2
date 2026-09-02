@@ -108,6 +108,8 @@ export type Translations = {
     delete: string;
     emptyTitle: string;
     emptySubtext: string;
+    moveUp: string;
+    moveDown: string;
   };
   adminQuotes: {
     title: string;
@@ -358,6 +360,8 @@ export const en: Translations = {
     delete: 'Delete',
     emptyTitle: 'No journeys yet.',
     emptySubtext: 'Create your first journey to get started.',
+    moveUp: 'Move up',
+    moveDown: 'Move down',
   },
   adminQuotes: {
     title: 'Quotes',

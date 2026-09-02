@@ -110,6 +110,8 @@ export const es: Translations = {
     delete: 'Eliminar',
     emptyTitle: 'Aún no hay travesías.',
     emptySubtext: 'Cree su primera travesía para comenzar.',
+    moveUp: 'Subir',
+    moveDown: 'Bajar',
   },
   adminQuotes: {
     title: 'Citas',

@@ -16,6 +16,7 @@ interface AdminJourney {
   description: string;
   coverImagePath: string | null;
   sortOrder: number;
+  effectiveVolumeNumber: number;
   published: boolean;
   publishedAt: string | null;
   chapters: Array<{
@@ -23,6 +24,24 @@ interface AdminJourney {
     title: string;
     devices: Array<{ id: string }>;
   }>;
+}
+
+const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X',
+  'XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'];
+
+function toRoman(n: number): string {
+  return ROMAN[n - 1] ?? String(n);
+}
+
+function sortJourneys(journeys: AdminJourney[]): AdminJourney[] {
+  return [...journeys].sort((a, b) => {
+    const aEx = a.sortOrder > 0, bEx = b.sortOrder > 0;
+    if (aEx && bEx) return a.sortOrder - b.sortOrder
+      || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+    if (aEx) return -1;
+    if (bEx) return 1;
+    return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+  });
 }
 
 export default function AdminJourneysPage() {
@@ -35,7 +54,7 @@ export default function AdminJourneysPage() {
   const [updateJourney] = useMutation(UPDATE_JOURNEY);
   const [deleteJourney] = useMutation(DELETE_JOURNEY);
 
-  const journeys = data?.showcaseAllJourneys ?? [];
+  const sorted = sortJourneys(data?.showcaseAllJourneys ?? []);
 
   const handleTogglePublished = async (journey: AdminJourney) => {
     await updateJourney({
@@ -65,6 +84,26 @@ export default function AdminJourneysPage() {
     refetch();
   };
 
+  // Swap two journeys in the sorted list by assigning them each other's position.
+  // Positions are 1-based; auto-sorted (0) journeys get assigned explicit values when moved.
+  const handleMove = async (idx: number, direction: 'up' | 'down') => {
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= sorted.length) return;
+
+    const a = sorted[idx];
+    const b = sorted[swapIdx];
+
+    // Assign each journey its new 1-based position in the list
+    const aNewOrder = swapIdx + 1;
+    const bNewOrder = idx + 1;
+
+    await Promise.all([
+      updateJourney({ variables: { id: a.id, input: { title: a.title, slug: a.slug, description: a.description ?? '', sortOrder: aNewOrder } } }),
+      updateJourney({ variables: { id: b.id, input: { title: b.title, slug: b.slug, description: b.description ?? '', sortOrder: bNewOrder } } }),
+    ]);
+    refetch();
+  };
+
   return (
     <div>
       {/* Header */}
@@ -86,7 +125,7 @@ export default function AdminJourneysPage() {
       )}
 
       {/* Empty state */}
-      {!loading && journeys.length === 0 && (
+      {!loading && sorted.length === 0 && (
         <div className="bg-surface-container-lowest rounded-xl p-16 text-center">
           <p className="text-on-surface-variant mb-2">{t.adminJourneys.emptyTitle}</p>
           <p className="text-sm text-outline">{t.adminJourneys.emptySubtext}</p>
@@ -94,17 +133,43 @@ export default function AdminJourneysPage() {
       )}
 
       {/* Journey list */}
-      {!loading && journeys.length > 0 && (
+      {!loading && sorted.length > 0 && (
         <div className="flex flex-col gap-3">
-          {journeys.map((journey) => {
+          {sorted.map((journey, idx) => {
             const chapterCount = journey.chapters.length;
             const deviceCount = journey.chapters.reduce((acc, c) => acc + c.devices.length, 0);
+            const volLabel = `Vol. ${toRoman(idx + 1)}`;
 
             return (
               <div
                 key={journey.id}
                 className="bg-surface-container-lowest rounded-xl px-6 py-4 flex items-center gap-4 hover:bg-surface-container-low transition"
               >
+                {/* Reorder buttons */}
+                <div className="flex flex-col gap-0.5 flex-shrink-0">
+                  <button
+                    onClick={() => handleMove(idx, 'up')}
+                    disabled={idx === 0}
+                    title={t.adminJourneys.moveUp}
+                    className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    onClick={() => handleMove(idx, 'down')}
+                    disabled={idx === sorted.length - 1}
+                    title={t.adminJourneys.moveDown}
+                    className="w-6 h-5 flex items-center justify-center rounded text-outline bg-surface-container-low hover:bg-surface-container hover:text-on-surface transition disabled:opacity-20 disabled:pointer-events-none text-[10px] leading-none"
+                  >
+                    ▼
+                  </button>
+                </div>
+
+                {/* Vol. badge */}
+                <span className="text-[0.65rem] font-bold uppercase tracking-widest text-primary w-10 shrink-0 text-center">
+                  {volLabel}
+                </span>
+
                 {/* Published toggle */}
                 <label className="flex items-center gap-2 cursor-pointer shrink-0">
                   <input

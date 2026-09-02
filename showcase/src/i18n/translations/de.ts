@@ -110,6 +110,8 @@ export const de: Translations = {
     delete: 'Löschen',
     emptyTitle: 'Noch keine Reisen.',
     emptySubtext: 'Erstellen Sie Ihre erste Reise, um zu beginnen.',
+    moveUp: 'Nach oben',
+    moveDown: 'Nach unten',
   },
   adminQuotes: {
     title: 'Zitate',
