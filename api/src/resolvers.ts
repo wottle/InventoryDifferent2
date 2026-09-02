@@ -988,7 +988,7 @@ export const resolvers = {
             journeys.sort((a: any, b: any) => {
                 const aExplicit = a.sortOrder > 0;
                 const bExplicit = b.sortOrder > 0;
-                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder;
+                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
                 if (aExplicit) return -1;
                 if (bExplicit) return 1;
                 return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
@@ -1011,7 +1011,7 @@ export const resolvers = {
             allPublished.sort((a: any, b: any) => {
                 const aExplicit = a.sortOrder > 0;
                 const bExplicit = b.sortOrder > 0;
-                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder;
+                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
                 if (aExplicit) return -1;
                 if (bExplicit) return 1;
                 return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
@@ -1065,7 +1065,7 @@ export const resolvers = {
             published.sort((a: any, b: any) => {
                 const aExplicit = a.sortOrder > 0;
                 const bExplicit = b.sortOrder > 0;
-                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder;
+                if (aExplicit && bExplicit) return a.sortOrder - b.sortOrder || new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
                 if (aExplicit) return -1;
                 if (bExplicit) return 1;
                 return new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
