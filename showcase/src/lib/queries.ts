@@ -134,6 +134,7 @@ export const GET_TIMELINE_DATA = gql`
         devices {
           id
           isFeatured
+          showInTimeline
           device {
             id
             name

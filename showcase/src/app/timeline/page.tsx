@@ -35,6 +35,7 @@ interface RawDevice {
 interface RawShowcaseDevice {
   id: string;
   isFeatured: boolean;
+  showInTimeline: boolean;
   device: RawDevice;
 }
 
@@ -88,6 +89,7 @@ export default async function TimelinePage() {
     for (const journey of journeys) {
       for (const chapter of journey.chapters) {
         for (const sd of chapter.devices) {
+          if (sd.showInTimeline === false) continue;
           if (!deviceMap.has(sd.device.id)) {
             deviceMap.set(sd.device.id, {
               showcaseId: sd.id,
