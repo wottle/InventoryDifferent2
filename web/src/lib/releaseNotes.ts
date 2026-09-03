@@ -1,4 +1,4 @@
-export const APP_VERSION = '3.0.5';
+export const APP_VERSION = '3.1.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '3.1.0',
+    date: '2026-09-03',
     added: [
       'Retro web UI: optional new Docker image (`wottle/inventory-retro`) that serves the device inventory as plain server-rendered HTML, compatible with very old browsers — no JavaScript required. Supports three themes (System 7, Early Web, Platinum) configured via the `RETRO_THEME` environment variable.',
       'The Archive: Journey editor now has a "Show in Timeline" checkbox per chapter device — uncheck to exclude a device from the public showcase timeline without removing it from the journey.',
