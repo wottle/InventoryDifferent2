@@ -517,6 +517,7 @@ export const typeDefs = gql`
     curatorNote: String
     sortOrder: Int!
     isFeatured: Boolean!
+    showInTimeline: Boolean!
   }
 
   type ShowcaseQuote {
@@ -580,6 +581,7 @@ export const typeDefs = gql`
     curatorNote: String
     sortOrder: Int
     isFeatured: Boolean
+    showInTimeline: Boolean
   }
 
   input ShowcaseQuoteInput {

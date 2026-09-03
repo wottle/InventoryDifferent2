@@ -2275,13 +2275,14 @@ export const resolvers = {
 
         upsertShowcaseDevice: async (_parent: any, args: { input: any }, context: Context) => {
             requireAuth(context);
-            const { id, chapterId, deviceId, curatorNote, sortOrder, isFeatured } = args.input;
+            const { id, chapterId, deviceId, curatorNote, sortOrder, isFeatured, showInTimeline } = args.input;
             const data: any = {
                 chapterId,
                 deviceId,
                 curatorNote: curatorNote ?? null,
                 sortOrder: sortOrder ?? 0,
                 isFeatured: isFeatured ?? false,
+                showInTimeline: showInTimeline ?? true,
             };
             if (id) {
                 return (context.prisma as any).showcaseDevice.update({
