@@ -439,6 +439,7 @@ model ShowcaseDevice {
   curatorNote String?
   sortOrder   Int             @default(0)
   isFeatured  Boolean         @default(false)
+  showInTimeline Boolean      @default(true)
 }
 
 model ShowcaseQuote {
