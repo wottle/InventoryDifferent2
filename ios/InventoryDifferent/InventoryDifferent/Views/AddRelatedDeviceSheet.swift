@@ -39,7 +39,8 @@ struct AddRelatedDeviceSheet: View {
             $0.name.lowercased().contains(lower) ||
             ($0.additionalName?.lowercased().contains(lower) ?? false) ||
             ($0.manufacturer?.lowercased().contains(lower) ?? false) ||
-            ($0.location?.name.lowercased().contains(lower) ?? false)
+            ($0.location?.name.lowercased().contains(lower) ?? false) ||
+            ($0.serialNumber?.lowercased().contains(lower) ?? false)
         }
     }
 
@@ -181,6 +182,12 @@ struct AddRelatedDeviceSheet: View {
                             Text(mfr)
                                 .foregroundColor(.secondary)
                                 .font(.caption)
+                        }
+                        if let sn = dev.serialNumber, !sn.isEmpty {
+                            Text(sn)
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                                .fontDesign(.monospaced)
                         }
                         statusChip(dev.status)
                         if let loc = dev.location {

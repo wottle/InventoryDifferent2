@@ -1686,6 +1686,7 @@ class DeviceService {
                 name
                 additionalName
                 manufacturer
+                serialNumber
                 status
                 location { id name }
             }

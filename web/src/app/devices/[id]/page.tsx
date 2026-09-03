@@ -312,6 +312,7 @@ const GET_ALL_DEVICES_SIMPLE = gql`
       name
       additionalName
       manufacturer
+      serialNumber
     }
   }
 `;
@@ -847,6 +848,7 @@ export default function DeviceDetailNew() {
     const allDevices: any[] = allDevicesData?.devices ?? [];
     const matched = allDevices.find(
       (d: any) =>
+        `${d.name}${d.additionalName ? ` · ${d.additionalName}` : ''}${d.manufacturer ? ` (${d.manufacturer})` : ''}${d.serialNumber ? ` [${d.serialNumber}]` : ''}` === relationDeviceName ||
         `${d.name}${d.additionalName ? ` · ${d.additionalName}` : ''}${d.manufacturer ? ` (${d.manufacturer})` : ''}` === relationDeviceName ||
         String(d.id) === relationDeviceName
     );
@@ -1673,7 +1675,7 @@ export default function DeviceDetailNew() {
                       className="w-full px-3 py-2 text-sm bg-[var(--card)] border border-outline-variant/30 rounded-xl text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30" />
                     <datalist id="relation-device-suggestions">
                       {deviceOptions.map((d: any) => (
-                        <option key={d.id} value={`${d.name}${d.additionalName ? ` · ${d.additionalName}` : ''}${d.manufacturer ? ` (${d.manufacturer})` : ''}`} />
+                        <option key={d.id} value={`${d.name}${d.additionalName ? ` · ${d.additionalName}` : ''}${d.manufacturer ? ` (${d.manufacturer})` : ''}${d.serialNumber ? ` [${d.serialNumber}]` : ''}`} />
                       ))}
                     </datalist>
                   </div>

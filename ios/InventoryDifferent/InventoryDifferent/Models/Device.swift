@@ -13,6 +13,7 @@ struct RelationshipDevice: Codable, Identifiable, Hashable {
     let name: String
     let additionalName: String?
     let manufacturer: String?
+    let serialNumber: String?
     let status: Status
     let location: LocationRef?
 
