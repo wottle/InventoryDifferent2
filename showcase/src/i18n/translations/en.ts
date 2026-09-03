@@ -240,6 +240,7 @@ export type Translations = {
     sortOrderHint: string;
     sortOrderAuto: string;
     currentPosition: string;
+    showInTimeline: string;
   };
   common: {
     share: string;
@@ -492,6 +493,7 @@ export const en: Translations = {
     sortOrderHint: 'Leave blank to sort by publish date. Set 1 to feature first, 2 for second, etc.',
     sortOrderAuto: 'Auto',
     currentPosition: 'Current position',
+    showInTimeline: 'Show in Timeline',
   },
   common: {
     share: 'Share',

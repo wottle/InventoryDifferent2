@@ -7,6 +7,7 @@ All notable changes to InventoryDifferent will be documented here.
 ### Added
 
 - Retro web UI: optional new Docker image (`wottle/inventory-retro`) that serves the device inventory as plain server-rendered HTML, compatible with very old browsers — no JavaScript required. Supports three themes (System 7, Early Web, Platinum) configured via the `RETRO_THEME` environment variable.
+- The Archive: Journey editor now has a "Show in Timeline" checkbox per chapter device — uncheck to exclude a device from the public showcase timeline without removing it from the journey.
 
 ### Changed
 

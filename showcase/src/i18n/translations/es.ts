@@ -242,6 +242,7 @@ export const es: Translations = {
     sortOrderHint: 'Dejar en blanco para ordenar por fecha de publicación. 1 = destacado, 2 = segunda posición, etc.',
     sortOrderAuto: 'Automático',
     currentPosition: 'Posición actual',
+    showInTimeline: 'Mostrar en la cronología',
   },
   common: {
     share: 'Compartir',

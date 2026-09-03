@@ -38,6 +38,7 @@ interface ShowcaseDevice {
   curatorNote: string | null;
   sortOrder: number;
   isFeatured: boolean;
+  showInTimeline: boolean;
   device: DeviceRef;
 }
 
@@ -369,6 +370,29 @@ function ChapterCard({
     }
   };
 
+  const handleToggleShowInTimeline = async (sd: ShowcaseDevice) => {
+    if (!sd.id || !chapter.id) return;
+    const newVal = !sd.showInTimeline;
+    try {
+      await upsertShowcaseDevice({
+        variables: {
+          input: {
+            id: sd.id,
+            chapterId: chapter.id,
+            deviceId: sd.device.id,
+            curatorNote: sd.curatorNote ?? '',
+            sortOrder: sd.sortOrder,
+            isFeatured: sd.isFeatured,
+            showInTimeline: newVal,
+          },
+        },
+      });
+      onDeviceUpdate(chapter.tempId, sd.id, { showInTimeline: newVal });
+    } catch (err) {
+      console.error('Failed to toggle showInTimeline:', err);
+    }
+  };
+
   const handleRemoveDevice = async (sd: ShowcaseDevice) => {
     if (!sd.id) return;
     if (!window.confirm(`Remove "${sd.device.name}" from this chapter?`)) return;
@@ -468,6 +492,7 @@ function ChapterCard({
             isLast={idx === sortedDevices.length - 1}
             onNoteBlur={(note) => handleDeviceNoteBlur(sd, note)}
             onToggleFeatured={() => handleToggleFeatured(sd)}
+            onToggleShowInTimeline={() => handleToggleShowInTimeline(sd)}
             onRemove={() => handleRemoveDevice(sd)}
             onMoveUp={() => onDeviceReorder(chapter.tempId, sd.id, 'up')}
             onMoveDown={() => onDeviceReorder(chapter.tempId, sd.id, 'down')}
@@ -512,12 +537,13 @@ interface DeviceRowProps {
   isLast: boolean;
   onNoteBlur: (note: string) => void;
   onToggleFeatured: () => void;
+  onToggleShowInTimeline: () => void;
   onRemove: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
 }
 
-function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove, onMoveUp, onMoveDown }: DeviceRowProps) {
+function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onToggleShowInTimeline, onRemove, onMoveUp, onMoveDown }: DeviceRowProps) {
   const t = useT();
   const [note, setNote] = useState(sd.curatorNote ?? '');
 
@@ -557,6 +583,15 @@ function DeviceRow({ sd, isFirst, isLast, onNoteBlur, onToggleFeatured, onRemove
           placeholder={t.adminJourneyEditor.curatorsNotePlaceholder}
           className="mt-1 w-full text-xs text-primary bg-transparent border-none outline-none placeholder:text-outline/60 focus:ring-0 italic"
         />
+        <label className="flex items-center gap-1.5 mt-1 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={sd.showInTimeline ?? true}
+            onChange={onToggleShowInTimeline}
+            className="w-3.5 h-3.5 accent-primary cursor-pointer"
+          />
+          <span className="text-xs text-on-surface-variant">{t.adminJourneyEditor.showInTimeline}</span>
+        </label>
       </div>
 
       {/* Actions */}

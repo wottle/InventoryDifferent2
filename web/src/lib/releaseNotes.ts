@@ -14,6 +14,7 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [
       'Retro web UI: optional new Docker image (`wottle/inventory-retro`) that serves the device inventory as plain server-rendered HTML, compatible with very old browsers — no JavaScript required. Supports three themes (System 7, Early Web, Platinum) configured via the `RETRO_THEME` environment variable.',
+      'The Archive: Journey editor now has a "Show in Timeline" checkbox per chapter device — uncheck to exclude a device from the public showcase timeline without removing it from the journey.',
     ],
     changed: [
       'The Archive: journey list order is now controlled by Sort Order (set in the admin editor) instead of a separate Volume Number field. Journeys with an explicit sort order appear first; the rest sort by publish date. The "Vol. N" label on journey detail pages now reflects actual list position.',

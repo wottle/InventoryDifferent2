@@ -210,7 +210,7 @@ export const GET_ALL_JOURNEYS_FOR_EDIT = gql`
       chapters {
         id title description sortOrder
         devices {
-          id curatorNote sortOrder isFeatured
+          id curatorNote sortOrder isFeatured showInTimeline
           device { id name additionalName manufacturer releaseYear images { thumbnailPath isThumbnail thumbnailMode } }
         }
       }
@@ -251,7 +251,7 @@ export const DELETE_CHAPTER = gql`
 export const UPSERT_SHOWCASE_DEVICE = gql`
   mutation UpsertShowcaseDevice($input: ShowcaseDeviceInput!) {
     upsertShowcaseDevice(input: $input) {
-      id curatorNote isFeatured sortOrder
+      id curatorNote isFeatured showInTimeline sortOrder
       device { id name additionalName manufacturer releaseYear images { thumbnailPath } }
     }
   }

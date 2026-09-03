@@ -242,6 +242,7 @@ export const de: Translations = {
     sortOrderHint: 'Leer lassen für automatische Sortierung nach Veröffentlichungsdatum. 1 = ganz oben, 2 = zweite Position usw.',
     sortOrderAuto: 'Automatisch',
     currentPosition: 'Aktuelle Position',
+    showInTimeline: 'Im Zeitstrahl anzeigen',
   },
   common: {
     share: 'Teilen',
