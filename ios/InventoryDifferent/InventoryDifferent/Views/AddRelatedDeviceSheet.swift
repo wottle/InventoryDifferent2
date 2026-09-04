@@ -183,12 +183,6 @@ struct AddRelatedDeviceSheet: View {
                                 .foregroundColor(.secondary)
                                 .font(.caption)
                         }
-                        if let sn = dev.serialNumber, !sn.isEmpty {
-                            Text(sn)
-                                .foregroundColor(.secondary)
-                                .font(.caption)
-                                .fontDesign(.monospaced)
-                        }
                         statusChip(dev.status)
                         if let loc = dev.location {
                             HStack(spacing: 2) {
@@ -198,6 +192,12 @@ struct AddRelatedDeviceSheet: View {
                             .foregroundColor(.secondary)
                             .font(.caption)
                         }
+                    }
+                    if let sn = dev.serialNumber, !sn.isEmpty {
+                        Text(sn)
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                            .fontDesign(.monospaced)
                     }
                 }
                 Spacer()
