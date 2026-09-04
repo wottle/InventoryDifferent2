@@ -18,6 +18,7 @@ const GET_EXHIBITION_TEMPLATES = gql`
       id name orgName logoPath layout accentColor footerText
       showQR showManufacturer showModel showSerial showYear showCategory
       showStatus showCondition showLocation showDescription showSpecs showTags showCustomFields
+      showHistoricalNotes showNotes showMaintenanceHistory showStoreQR
       customHtml
     }
   }
@@ -27,14 +28,17 @@ const GET_DEVICES = gql`
   query GetDevicesForExhibition {
     devices(where: { deleted: { equals: false } }) {
       id name additionalName manufacturer modelNumber serialNumber releaseYear
-      info status condition
+      info historicalNotes status condition
       category { id name type sortOrder }
       location { id name }
       cpuType cpuSpeed ram graphicsChip storageEntries { id value sortOrder } osEntries { id value sortOrder }
       images { id path thumbnailPath isThumbnail thumbnailMode }
       tags { id name }
       customFieldValues { id customFieldId customFieldName isPublic value sortOrder }
+      notes { id content date }
+      maintenanceTasks { id label dateCompleted notes cost }
     }
+    publicConfig { shopDomain }
   }
 `;
 
@@ -44,13 +48,14 @@ type ExhibitionTemplate = {
   showQR: boolean; showManufacturer: boolean; showModel: boolean; showSerial: boolean;
   showYear: boolean; showCategory: boolean; showStatus: boolean; showCondition: boolean;
   showLocation: boolean; showDescription: boolean; showSpecs: boolean; showTags: boolean;
-  showCustomFields: boolean; customHtml?: string;
+  showCustomFields: boolean; showHistoricalNotes: boolean; showNotes: boolean;
+  showMaintenanceHistory: boolean; showStoreQR: boolean; customHtml?: string;
 };
 
 type Device = {
   id: number; name: string; additionalName?: string; manufacturer?: string;
   modelNumber?: string; serialNumber?: string; releaseYear?: number; info?: string;
-  status?: string; condition?: string;
+  historicalNotes?: string; status?: string; condition?: string;
   category?: { id: number; name: string; type?: string; sortOrder?: number };
   location?: { id: number; name: string };
   cpuType?: string; cpuSpeed?: string; ram?: string; graphicsChip?: string;
@@ -59,15 +64,22 @@ type Device = {
   images?: { id: number; path: string; thumbnailPath?: string; isThumbnail: boolean; thumbnailMode?: string }[];
   tags?: { id: number; name: string }[];
   customFieldValues?: { id: number; customFieldId: number; customFieldName: string; isPublic: boolean; value: string; sortOrder: number }[];
+  notes?: { id: number; content: string; date: string }[];
+  maintenanceTasks?: { id: number; label: string; dateCompleted?: string; notes?: string; cost?: number }[];
 };
 
 function QRCodeWrapper({ url, size = 80 }: { url: string; size?: number }) {
   return <QRCodeSVG value={url} size={size} />;
 }
 
-function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; template: ExhibitionTemplate; shareBaseUrl: string }) {
+function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain }: {
+  device: Device; template: ExhibitionTemplate; shareBaseUrl: string; shopDomain?: string | null;
+}) {
   const accent = template.accentColor || '#0058bc';
   const qrUrl = `${shareBaseUrl}/devices/${device.id}`;
+  const storefrontUrl = shopDomain && ['FOR_SALE', 'PENDING_SALE'].includes(device.status || '')
+    ? `https://${shopDomain}/item/${device.id}`
+    : null;
   const thumb = pickThumbnail(device.images || [], false);
   const thumbUrl = thumb ? `${API_BASE_URL}${thumb.thumbnailPath || thumb.path}` : null;
 
@@ -96,7 +108,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
       location: device.location,
     });
     return (
-      <div className="exhibition-sheet custom-sheet" style={{ minHeight: '200px', padding: '16px' }}>
+      <div className="exhibition-sheet custom-sheet" style={{ minHeight: '200px', padding: '16px', background: '#fff' }}>
         {/* eslint-disable-next-line react/no-danger */}
         <div dangerouslySetInnerHTML={{ __html: rendered }} />
       </div>
@@ -109,7 +121,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
         width: '5in', height: '3in', border: `2px solid ${accent}`,
         padding: '12px 16px', display: 'flex', flexDirection: 'column',
         justifyContent: 'space-between', fontFamily: 'sans-serif', background: '#fff',
-        boxSizing: 'border-box', overflow: 'hidden',
+        boxSizing: 'border-box', overflow: 'hidden', color: '#000',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ flex: 1, paddingRight: '8px' }}>
@@ -120,7 +132,10 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
             {template.showSerial && device.serialNumber && <div style={{ fontSize: '11px', fontFamily: 'monospace', color: '#444', marginTop: '4px' }}>S/N: {device.serialNumber}</div>}
             {template.showManufacturer && device.manufacturer && <div style={{ fontSize: '12px', color: '#555' }}>{device.manufacturer}</div>}
           </div>
-          {template.showQR && <QRCodeWrapper url={qrUrl} size={72} />}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-end' }}>
+            {template.showQR && <QRCodeWrapper url={qrUrl} size={64} />}
+            {template.showStoreQR && storefrontUrl && <QRCodeWrapper url={storefrontUrl} size={48} />}
+          </div>
         </div>
         {template.footerText && (
           <div style={{ fontSize: '10px', color: '#888', borderTop: `1px solid ${accent}`, paddingTop: '4px', marginTop: '4px' }}>
@@ -136,16 +151,16 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
       <div className="exhibition-sheet" style={{
         width: '7in', height: '5in', border: `3px solid ${accent}`,
         display: 'flex', fontFamily: 'sans-serif', background: '#fff',
-        boxSizing: 'border-box', overflow: 'hidden',
+        boxSizing: 'border-box', overflow: 'hidden', color: '#000',
       }}>
         {thumbUrl && (
-          <div style={{ width: '40%', background: '#111', flexShrink: 0, position: 'relative' }}>
+          <div style={{ width: '40%', background: '#111', flexShrink: 0 }}>
             <img src={thumbUrl} alt={device.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         )}
         <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
           <div>
-            {(template.orgName) && (
+            {template.orgName && (
               <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: accent, marginBottom: '6px' }}>
                 {template.orgName}
               </div>
@@ -166,7 +181,15 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
               {template.footerText && <div style={{ fontSize: '10px', color: '#888' }}>{template.footerText}</div>}
               <div style={{ fontSize: '10px', color: '#aaa' }}>#{device.id}</div>
             </div>
-            {template.showQR && <QRCodeWrapper url={qrUrl} size={72} />}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+              {template.showStoreQR && storefrontUrl && (
+                <div style={{ textAlign: 'center' }}>
+                  <QRCodeWrapper url={storefrontUrl} size={56} />
+                  <div style={{ fontSize: '9px', color: '#888', marginTop: '2px' }}>Shop</div>
+                </div>
+              )}
+              {template.showQR && <QRCodeWrapper url={qrUrl} size={64} />}
+            </div>
           </div>
         </div>
       </div>
@@ -177,7 +200,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
   return (
     <div className="exhibition-sheet a4-sheet" style={{
       width: '8.27in', minHeight: '11.69in', background: '#fff', fontFamily: 'sans-serif',
-      padding: '0.5in', boxSizing: 'border-box', border: `1px solid #ddd`, position: 'relative',
+      padding: '0.5in', boxSizing: 'border-box', border: `1px solid #ddd`, position: 'relative', color: '#000',
     }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `3px solid ${accent}`, paddingBottom: '12px', marginBottom: '16px' }}>
@@ -187,7 +210,15 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
           )}
           {template.orgName && <div style={{ fontSize: '16px', fontWeight: 'bold', color: accent }}>{template.orgName}</div>}
         </div>
-        {template.showQR && <QRCodeWrapper url={qrUrl} size={72} />}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+          {template.showStoreQR && storefrontUrl && (
+            <div style={{ textAlign: 'center' }}>
+              <QRCodeWrapper url={storefrontUrl} size={64} />
+              <div style={{ fontSize: '10px', color: '#888', marginTop: '2px' }}>Shop</div>
+            </div>
+          )}
+          {template.showQR && <QRCodeWrapper url={qrUrl} size={72} />}
+        </div>
       </div>
 
       {/* Device name */}
@@ -249,6 +280,40 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
         </div>
       )}
 
+      {/* Historical Notes */}
+      {template.showHistoricalNotes && device.historicalNotes && (
+        <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>History</div>
+          <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{device.historicalNotes}</div>
+        </div>
+      )}
+
+      {/* Notes */}
+      {template.showNotes && (device.notes || []).length > 0 && (
+        <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Notes</div>
+          {(device.notes || []).map(note => (
+            <div key={note.id} style={{ fontSize: '13px', color: '#333', marginBottom: '6px' }}>
+              <span style={{ color: '#aaa', fontSize: '11px', marginRight: '6px' }}>{new Date(note.date).toLocaleDateString()}</span>
+              {note.content}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Maintenance History */}
+      {template.showMaintenanceHistory && (device.maintenanceTasks || []).filter(t => t.dateCompleted).length > 0 && (
+        <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Maintenance History</div>
+          {(device.maintenanceTasks || []).filter(t => t.dateCompleted).map(task => (
+            <div key={task.id} style={{ fontSize: '12px', color: '#333', marginBottom: '4px', display: 'flex', gap: '8px' }}>
+              <span style={{ color: '#aaa', flexShrink: 0 }}>{new Date(task.dateCompleted!).toLocaleDateString()}</span>
+              <span>{task.label}{task.notes ? ` — ${task.notes}` : ''}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Tags */}
       {template.showTags && (device.tags || []).length > 0 && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
@@ -292,6 +357,7 @@ export default function ExhibitionPage() {
 
   const templates: ExhibitionTemplate[] = templatesData?.exhibitionTemplates || [];
   const allDevices: Device[] = devicesData?.devices || [];
+  const shopDomain: string | null = devicesData?.publicConfig?.shopDomain || null;
 
   const preselectedDeviceId = searchParams.get('deviceId');
 
@@ -352,7 +418,7 @@ export default function ExhibitionPage() {
 
   if (showPrintView && selectedTemplate) {
     return (
-      <div className="exhibition-print bg-white text-black min-h-screen">
+      <div className="exhibition-print min-h-screen" style={{ background: 'var(--surface-bg, #fff)' }}>
         <style jsx global>{`
           @media print {
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -361,25 +427,26 @@ export default function ExhibitionPage() {
             @page { margin: 0; size: auto; }
           }
           @media screen {
-            .exhibition-print { max-width: 960px; margin: 0 auto; padding: 24px; }
+            .exhibition-print { max-width: 1100px; margin: 0 auto; padding: 24px; }
+            .exhibition-sheet { box-shadow: 0 2px 12px rgba(0,0,0,0.12); margin: 0 auto; }
           }
         `}</style>
 
-        <div className="no-print" style={{ display: 'flex', gap: '12px', marginBottom: '24px', alignItems: 'center' }}>
-          <button onClick={() => setShowPrintView(false)} style={{ padding: '8px 16px', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer', background: '#f5f5f5' }}>
+        <div className="no-print" style={{ display: 'flex', gap: '12px', marginBottom: '24px', alignItems: 'center', padding: '12px 16px', background: 'var(--surface-container)', borderRadius: '8px', border: '1px solid var(--outline-variant)' }}>
+          <button onClick={() => setShowPrintView(false)} className="btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, border: '1px solid var(--outline-variant)', background: 'var(--surface)', color: 'var(--on-surface)' }}>
             ← {t.exhibition.back}
           </button>
           <button onClick={() => window.print()} style={{ padding: '8px 20px', background: '#0058bc', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
             🖨 {t.exhibition.print}
           </button>
-          <span style={{ fontSize: '14px', color: '#666' }}>
+          <span style={{ fontSize: '14px', color: 'var(--on-surface-variant)' }}>
             {selectedDevices.length} {t.exhibition.deviceCount}{selectedDevices.length !== 1 ? 's' : ''}
           </span>
         </div>
 
         {selectedDevices.map((device, idx) => (
-          <div key={device.id} className={idx < selectedDevices.length - 1 ? 'page-break' : ''} style={{ marginBottom: '32px' }}>
-            <ExhibitionSheet device={device} template={selectedTemplate} shareBaseUrl={shareBaseUrl} />
+          <div key={device.id} className={idx < selectedDevices.length - 1 ? 'page-break' : ''} style={{ marginBottom: '48px' }}>
+            <ExhibitionSheet device={device} template={selectedTemplate} shareBaseUrl={shareBaseUrl} shopDomain={shopDomain} />
           </div>
         ))}
       </div>
@@ -388,15 +455,15 @@ export default function ExhibitionPage() {
 
   return (
     <div style={{ maxWidth: '960px', margin: '0 auto', padding: '24px' }}>
-      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '24px' }}>{t.exhibition.pageTitle}</h1>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '24px', color: 'var(--on-surface)' }}>{t.exhibition.pageTitle}</h1>
 
       {/* Template selector */}
-      <div style={{ marginBottom: '24px', padding: '16px', border: '1px solid #ddd', borderRadius: '8px' }}>
-        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '8px' }}>
+      <div style={{ marginBottom: '24px', padding: '16px', border: '1px solid var(--outline-variant)', borderRadius: '8px', background: 'var(--surface-container)' }}>
+        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--on-surface)' }}>
           {t.exhibition.selectTemplate}
         </label>
         {templates.length === 0 ? (
-          <div style={{ color: '#888', fontSize: '14px' }}>
+          <div style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>
             {t.exhibition.noTemplateSelected}{' '}
             <a href="/exhibition/templates" style={{ color: '#0058bc' }}>{t.exhibition.newTemplate}</a>
           </div>
@@ -404,7 +471,7 @@ export default function ExhibitionPage() {
           <select
             value={selectedTemplateId}
             onChange={e => setSelectedTemplateId(e.target.value)}
-            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '14px', width: '100%', maxWidth: '400px' }}
+            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', width: '100%', maxWidth: '400px', background: 'var(--surface)', color: 'var(--on-surface)' }}
           >
             {templates.map(tmpl => (
               <option key={tmpl.id} value={tmpl.id}>{tmpl.name}{tmpl.orgName ? ` — ${tmpl.orgName}` : ''}</option>
@@ -416,23 +483,23 @@ export default function ExhibitionPage() {
       {/* Device selection */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 'bold', flex: 1 }}>{t.exhibition.selectDevices}</h2>
+          <h2 style={{ fontSize: '16px', fontWeight: 'bold', flex: 1, color: 'var(--on-surface)' }}>{t.exhibition.selectDevices}</h2>
           <button onClick={selectAll} style={{ fontSize: '12px', color: '#0058bc', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>Select All</button>
-          <button onClick={clearAll} style={{ fontSize: '12px', color: '#666', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>Clear</button>
+          <button onClick={clearAll} style={{ fontSize: '12px', color: 'var(--on-surface-variant)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>Clear</button>
         </div>
         <input
           type="text"
           placeholder="Search devices…"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '14px', marginBottom: '12px', boxSizing: 'border-box' }}
+          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', marginBottom: '12px', boxSizing: 'border-box', background: 'var(--surface)', color: 'var(--on-surface)' }}
         />
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', maxHeight: '400px', overflowY: 'auto' }}>
+        <div style={{ border: '1px solid var(--outline-variant)', borderRadius: '8px', overflow: 'hidden', maxHeight: '400px', overflowY: 'auto' }}>
           {filteredDevices.map((device, idx) => (
             <label key={device.id} style={{
               display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', cursor: 'pointer',
-              background: selectedDeviceIds.has(device.id) ? '#f0f6ff' : idx % 2 === 0 ? '#fff' : '#fafafa',
-              borderBottom: '1px solid #f0f0f0',
+              background: selectedDeviceIds.has(device.id) ? 'color-mix(in srgb, #0058bc 12%, var(--surface))' : idx % 2 === 0 ? 'var(--surface)' : 'var(--surface-container)',
+              borderBottom: '1px solid var(--outline-variant)',
             }}>
               <input
                 type="checkbox"
@@ -441,8 +508,8 @@ export default function ExhibitionPage() {
                 style={{ width: '16px', height: '16px', flexShrink: 0 }}
               />
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 500 }}>{device.name}</div>
-                <div style={{ fontSize: '12px', color: '#888' }}>
+                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--on-surface)' }}>{device.name}</div>
+                <div style={{ fontSize: '12px', color: 'var(--on-surface-variant)' }}>
                   {[device.manufacturer, device.releaseYear, device.category?.name].filter(Boolean).join(' · ')}
                   {device.serialNumber ? ` · S/N: ${device.serialNumber}` : ''}
                 </div>
@@ -450,7 +517,7 @@ export default function ExhibitionPage() {
             </label>
           ))}
         </div>
-        <div style={{ fontSize: '13px', color: '#666', marginTop: '8px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--on-surface-variant)', marginTop: '8px' }}>
           {selectedDeviceIds.size} {t.exhibition.deviceCount}{selectedDeviceIds.size !== 1 ? 's' : ''} selected
         </div>
       </div>
@@ -460,8 +527,9 @@ export default function ExhibitionPage() {
         onClick={() => setShowPrintView(true)}
         disabled={!selectedTemplateId || selectedDeviceIds.size === 0}
         style={{
-          padding: '10px 24px', background: (!selectedTemplateId || selectedDeviceIds.size === 0) ? '#ccc' : '#0058bc',
-          color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold',
+          padding: '10px 24px', background: (!selectedTemplateId || selectedDeviceIds.size === 0) ? 'var(--surface-container)' : '#0058bc',
+          color: (!selectedTemplateId || selectedDeviceIds.size === 0) ? 'var(--on-surface-variant)' : '#fff',
+          border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold',
           cursor: (!selectedTemplateId || selectedDeviceIds.size === 0) ? 'default' : 'pointer',
         }}
       >

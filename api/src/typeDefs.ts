@@ -614,6 +614,10 @@ export const typeDefs = gql`
     showSpecs: Boolean!
     showTags: Boolean!
     showCustomFields: Boolean!
+    showHistoricalNotes: Boolean!
+    showNotes: Boolean!
+    showMaintenanceHistory: Boolean!
+    showStoreQR: Boolean!
     customHtml: String
     createdAt: String!
     updatedAt: String!
@@ -639,6 +643,10 @@ export const typeDefs = gql`
     showSpecs: Boolean
     showTags: Boolean
     showCustomFields: Boolean
+    showHistoricalNotes: Boolean
+    showNotes: Boolean
+    showMaintenanceHistory: Boolean
+    showStoreQR: Boolean
     customHtml: String
   }
 
@@ -662,6 +670,10 @@ export const typeDefs = gql`
     showSpecs: Boolean
     showTags: Boolean
     showCustomFields: Boolean
+    showHistoricalNotes: Boolean
+    showNotes: Boolean
+    showMaintenanceHistory: Boolean
+    showStoreQR: Boolean
     customHtml: String
   }
 

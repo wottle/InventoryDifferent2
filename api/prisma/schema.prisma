@@ -483,9 +483,13 @@ model ExhibitionTemplate {
   showLocation     Boolean  @default(false)
   showDescription  Boolean  @default(true)
   showSpecs        Boolean  @default(true)
-  showTags         Boolean  @default(false)
-  showCustomFields Boolean  @default(false)
-  customHtml       String?  @db.Text
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  showTags              Boolean  @default(false)
+  showCustomFields      Boolean  @default(false)
+  showHistoricalNotes   Boolean  @default(false)
+  showNotes             Boolean  @default(false)
+  showMaintenanceHistory Boolean @default(false)
+  showStoreQR           Boolean  @default(false)
+  customHtml            String?  @db.Text
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }

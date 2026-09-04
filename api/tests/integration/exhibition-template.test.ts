@@ -25,6 +25,7 @@ const TEMPLATE_FIELDS = `
   id name orgName logoPath layout accentColor footerText
   showQR showManufacturer showModel showSerial showYear showCategory
   showStatus showCondition showLocation showDescription showSpecs showTags showCustomFields
+  showHistoricalNotes showNotes showMaintenanceHistory showStoreQR
   customHtml createdAt updatedAt
 `;
 
@@ -106,6 +107,10 @@ describe('createExhibitionTemplate', () => {
         expect(t.showSpecs).toBe(true);
         expect(t.showTags).toBe(false);
         expect(t.showCustomFields).toBe(false);
+        expect(t.showHistoricalNotes).toBe(false);
+        expect(t.showNotes).toBe(false);
+        expect(t.showMaintenanceHistory).toBe(false);
+        expect(t.showStoreQR).toBe(false);
         expect(t.orgName).toBeNull();
         expect(t.logoPath).toBeNull();
         expect(t.customHtml).toBeNull();
@@ -225,5 +230,73 @@ describe('deleteExhibitionTemplate', () => {
             mutation { deleteExhibitionTemplate(id: "any-id") }
         `);
         expect(res.errors).toBeDefined();
+    });
+});
+
+describe('exhibition template extra fields (phase 2)', () => {
+    it('creates a template with showHistoricalNotes, showNotes, showMaintenanceHistory, showStoreQR', async () => {
+        const res = await graphqlQuery(app, `
+            mutation {
+                createExhibitionTemplate(input: {
+                    name: "Enhanced Template",
+                    showHistoricalNotes: true,
+                    showNotes: true,
+                    showMaintenanceHistory: true,
+                    showStoreQR: true,
+                }) {
+                    name showHistoricalNotes showNotes showMaintenanceHistory showStoreQR
+                }
+            }
+        `, undefined, token);
+
+        expect(res.errors).toBeUndefined();
+        const t = res.data.createExhibitionTemplate;
+        expect(t.name).toBe('Enhanced Template');
+        expect(t.showHistoricalNotes).toBe(true);
+        expect(t.showNotes).toBe(true);
+        expect(t.showMaintenanceHistory).toBe(true);
+        expect(t.showStoreQR).toBe(true);
+    });
+
+    it('defaults new fields to false', async () => {
+        const res = await graphqlQuery(app, `
+            mutation {
+                createExhibitionTemplate(input: { name: "Default Check" }) {
+                    showHistoricalNotes showNotes showMaintenanceHistory showStoreQR
+                }
+            }
+        `, undefined, token);
+
+        expect(res.errors).toBeUndefined();
+        const t = res.data.createExhibitionTemplate;
+        expect(t.showHistoricalNotes).toBe(false);
+        expect(t.showNotes).toBe(false);
+        expect(t.showMaintenanceHistory).toBe(false);
+        expect(t.showStoreQR).toBe(false);
+    });
+
+    it('updates new fields via updateExhibitionTemplate', async () => {
+        const prisma = getTestPrismaClient();
+        const tmpl = await (prisma as any).exhibitionTemplate.create({
+            data: { name: 'To Update', layout: 'A4_FULL' },
+        });
+
+        const res = await graphqlQuery(app, `
+            mutation($id: ID!) {
+                updateExhibitionTemplate(id: $id, input: {
+                    showHistoricalNotes: true,
+                    showStoreQR: true,
+                }) {
+                    showHistoricalNotes showNotes showMaintenanceHistory showStoreQR
+                }
+            }
+        `, { id: tmpl.id }, token);
+
+        expect(res.errors).toBeUndefined();
+        const t = res.data.updateExhibitionTemplate;
+        expect(t.showHistoricalNotes).toBe(true);
+        expect(t.showStoreQR).toBe(true);
+        expect(t.showNotes).toBe(false);
+        expect(t.showMaintenanceHistory).toBe(false);
     });
 });

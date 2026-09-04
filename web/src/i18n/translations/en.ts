@@ -1067,6 +1067,10 @@ export type Translations = {
     showSpecs: string;
     showTags: string;
     showCustomFields: string;
+    showHistoricalNotes: string;
+    showNotes: string;
+    showMaintenanceHistory: string;
+    showStoreQR: string;
     customHtmlLabel: string;
     customHtmlHint: string;
     save: string;
@@ -2164,6 +2168,10 @@ export const en: Translations = {
     showSpecs: "Specifications",
     showTags: "Tags",
     showCustomFields: "Custom Fields",
+    showHistoricalNotes: "Historical Notes",
+    showNotes: "Notes",
+    showMaintenanceHistory: "Maintenance History",
+    showStoreQR: "Store QR Code",
     customHtmlLabel: "Custom HTML Template",
     customHtmlHint: "Available placeholders: {{device.name}}, {{device.manufacturer}}, {{device.modelNumber}}, {{device.serialNumber}}, {{device.releaseYear}}, {{device.category}}, {{device.info}}, {{device.condition}}, {{device.status}}, {{device.id}}, {{qr}}",
     save: "Save",

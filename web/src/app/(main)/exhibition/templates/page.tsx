@@ -13,6 +13,7 @@ const TEMPLATE_FRAGMENT = gql`
     id name orgName logoPath layout accentColor footerText
     showQR showManufacturer showModel showSerial showYear showCategory
     showStatus showCondition showLocation showDescription showSpecs showTags showCustomFields
+    showHistoricalNotes showNotes showMaintenanceHistory showStoreQR
     customHtml createdAt
   }
 `;
@@ -56,7 +57,8 @@ type ExhibitionTemplate = {
   showQR: boolean; showManufacturer: boolean; showModel: boolean; showSerial: boolean;
   showYear: boolean; showCategory: boolean; showStatus: boolean; showCondition: boolean;
   showLocation: boolean; showDescription: boolean; showSpecs: boolean; showTags: boolean;
-  showCustomFields: boolean; customHtml?: string; createdAt: string;
+  showCustomFields: boolean; showHistoricalNotes: boolean; showNotes: boolean;
+  showMaintenanceHistory: boolean; showStoreQR: boolean; customHtml?: string; createdAt: string;
 };
 
 type FormState = {
@@ -65,7 +67,8 @@ type FormState = {
   showQR: boolean; showManufacturer: boolean; showModel: boolean; showSerial: boolean;
   showYear: boolean; showCategory: boolean; showStatus: boolean; showCondition: boolean;
   showLocation: boolean; showDescription: boolean; showSpecs: boolean; showTags: boolean;
-  showCustomFields: boolean; customHtml: string;
+  showCustomFields: boolean; showHistoricalNotes: boolean; showNotes: boolean;
+  showMaintenanceHistory: boolean; showStoreQR: boolean; customHtml: string;
 };
 
 const DEFAULT_FORM: FormState = {
@@ -73,7 +76,8 @@ const DEFAULT_FORM: FormState = {
   showQR: true, showManufacturer: true, showModel: true, showSerial: true,
   showYear: true, showCategory: true, showStatus: false, showCondition: true,
   showLocation: false, showDescription: true, showSpecs: true, showTags: false,
-  showCustomFields: false, customHtml: '',
+  showCustomFields: false, showHistoricalNotes: false, showNotes: false,
+  showMaintenanceHistory: false, showStoreQR: false, customHtml: '',
 };
 
 const LAYOUTS = ['A4_FULL', 'DISPLAY_CARD', 'COMPACT_LABEL', 'CUSTOM'] as const;
@@ -92,6 +96,10 @@ const BOOL_FIELDS: { key: keyof FormState; labelKey: keyof ReturnType<typeof use
   { key: 'showSpecs', labelKey: 'showSpecs' },
   { key: 'showTags', labelKey: 'showTags' },
   { key: 'showCustomFields', labelKey: 'showCustomFields' },
+  { key: 'showHistoricalNotes', labelKey: 'showHistoricalNotes' },
+  { key: 'showNotes', labelKey: 'showNotes' },
+  { key: 'showMaintenanceHistory', labelKey: 'showMaintenanceHistory' },
+  { key: 'showStoreQR', labelKey: 'showStoreQR' },
 ];
 
 function formFromTemplate(t: ExhibitionTemplate): FormState {
@@ -102,7 +110,9 @@ function formFromTemplate(t: ExhibitionTemplate): FormState {
     showSerial: t.showSerial, showYear: t.showYear, showCategory: t.showCategory,
     showStatus: t.showStatus, showCondition: t.showCondition, showLocation: t.showLocation,
     showDescription: t.showDescription, showSpecs: t.showSpecs, showTags: t.showTags,
-    showCustomFields: t.showCustomFields, customHtml: t.customHtml || '',
+    showCustomFields: t.showCustomFields, showHistoricalNotes: t.showHistoricalNotes,
+    showNotes: t.showNotes, showMaintenanceHistory: t.showMaintenanceHistory,
+    showStoreQR: t.showStoreQR, customHtml: t.customHtml || '',
   };
 }
 
@@ -176,6 +186,8 @@ export default function ExhibitionTemplatesPage() {
         showStatus: form.showStatus, showCondition: form.showCondition, showLocation: form.showLocation,
         showDescription: form.showDescription, showSpecs: form.showSpecs, showTags: form.showTags,
         showCustomFields: form.showCustomFields,
+        showHistoricalNotes: form.showHistoricalNotes, showNotes: form.showNotes,
+        showMaintenanceHistory: form.showMaintenanceHistory, showStoreQR: form.showStoreQR,
       };
       if (editingId) {
         await updateTemplate({ variables: { id: editingId, input } });
