@@ -84,6 +84,8 @@ function resolveImage(images: Device['images'], mode: ImageMode) {
 function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode = 'thumbnail' }: {
   device: Device; template: ExhibitionTemplate; shareBaseUrl: string; shopDomain?: string | null; imageMode?: ImageMode;
 }) {
+  const t = useT();
+  const ex = t.exhibition;
   const accent = template.accentColor || '#0058bc';
   const qrUrl = `${shareBaseUrl}/devices/${device.id}`;
   const storefrontUrl = shopDomain && ['FOR_SALE', 'PENDING_SALE'].includes(device.status || '')
@@ -142,8 +144,18 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
             {template.showManufacturer && device.manufacturer && <div style={{ fontSize: '12px', color: '#555' }}>{device.manufacturer}</div>}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-end' }}>
-            {template.showQR && <QRCodeWrapper url={qrUrl} size={64} />}
-            {template.showStoreQR && storefrontUrl && <QRCodeWrapper url={storefrontUrl} size={48} />}
+            {template.showQR && (
+              <div style={{ textAlign: 'center' }}>
+                <QRCodeWrapper url={qrUrl} size={64} />
+                <div style={{ fontSize: '9px', color: '#888', marginTop: '2px' }}>{ex.moreInfo}</div>
+              </div>
+            )}
+            {template.showStoreQR && storefrontUrl && (
+              <div style={{ textAlign: 'center' }}>
+                <QRCodeWrapper url={storefrontUrl} size={48} />
+                <div style={{ fontSize: '9px', color: '#888', marginTop: '2px' }}>{ex.buyIt}</div>
+              </div>
+            )}
           </div>
         </div>
         {template.footerText && (
@@ -194,10 +206,15 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
               {template.showStoreQR && storefrontUrl && (
                 <div style={{ textAlign: 'center' }}>
                   <QRCodeWrapper url={storefrontUrl} size={56} />
-                  <div style={{ fontSize: '9px', color: '#888', marginTop: '2px' }}>Shop</div>
+                  <div style={{ fontSize: '9px', color: '#888', marginTop: '2px' }}>{ex.buyIt}</div>
                 </div>
               )}
-              {template.showQR && <QRCodeWrapper url={qrUrl} size={64} />}
+              {template.showQR && (
+                <div style={{ textAlign: 'center' }}>
+                  <QRCodeWrapper url={qrUrl} size={64} />
+                  <div style={{ fontSize: '9px', color: '#888', marginTop: '2px' }}>{ex.moreInfo}</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -212,22 +229,29 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       padding: '0.5in', boxSizing: 'border-box', border: `1px solid #ddd`, color: '#000',
       display: 'flex', flexDirection: 'column',
     }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `3px solid ${accent}`, paddingBottom: '12px', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {/* Header — 3 columns: logo/org | store QR (centered, for-sale only) | device QR */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: `3px solid ${accent}`, paddingBottom: '12px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
           {template.logoPath && (
             <img src={`${API_BASE_URL}${template.logoPath}`} alt="Logo" style={{ height: '48px', objectFit: 'contain' }} />
           )}
           {template.orgName && <div style={{ fontSize: '16px', fontWeight: 'bold', color: accent }}>{template.orgName}</div>}
         </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
-          {template.showStoreQR && storefrontUrl && (
+        {template.showStoreQR && storefrontUrl ? (
+          <div style={{ textAlign: 'center', flex: 1, display: 'flex', justifyContent: 'center' }}>
+            <div>
+              <QRCodeWrapper url={storefrontUrl} size={72} />
+              <div style={{ fontSize: '11px', color: '#555', marginTop: '4px', fontWeight: 'bold' }}>{ex.buyIt}</div>
+            </div>
+          </div>
+        ) : <div style={{ flex: 1 }} />}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          {template.showQR && (
             <div style={{ textAlign: 'center' }}>
-              <QRCodeWrapper url={storefrontUrl} size={64} />
-              <div style={{ fontSize: '10px', color: '#888', marginTop: '2px' }}>Shop</div>
+              <QRCodeWrapper url={qrUrl} size={72} />
+              <div style={{ fontSize: '11px', color: '#555', marginTop: '4px' }}>{ex.moreInfo}</div>
             </div>
           )}
-          {template.showQR && <QRCodeWrapper url={qrUrl} size={72} />}
         </div>
       </div>
 
@@ -250,22 +274,22 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
         )}
         <div style={{ flex: 1, fontSize: '14px' }}>
           {template.showManufacturer && device.manufacturer && (
-            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>Manufacturer</span>{device.manufacturer}</div>
+            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>{ex.fieldManufacturer}</span>{device.manufacturer}</div>
           )}
           {template.showModel && device.modelNumber && (
-            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>Model</span>{device.modelNumber}</div>
+            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>{ex.fieldModel}</span>{device.modelNumber}</div>
           )}
           {template.showSerial && device.serialNumber && (
-            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>Serial</span><span style={{ fontFamily: 'monospace' }}>{device.serialNumber}</span></div>
+            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>{ex.fieldSerial}</span><span style={{ fontFamily: 'monospace' }}>{device.serialNumber}</span></div>
           )}
           {template.showCondition && device.condition && (
-            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>Condition</span>{device.condition}</div>
+            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>{ex.fieldCondition}</span>{(t.condition as Record<string, string>)[device.condition] ?? device.condition}</div>
           )}
           {template.showStatus && device.status && (
-            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>Status</span>{device.status}</div>
+            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>{ex.fieldStatus}</span>{(t.status as Record<string, string>)[device.status] ?? device.status}</div>
           )}
           {template.showLocation && device.location && (
-            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>Location</span>{device.location.name}</div>
+            <div style={{ marginBottom: '6px' }}><span style={{ color: '#888', fontSize: '11px', display: 'block' }}>{ex.fieldLocation}</span>{device.location.name}</div>
           )}
         </div>
       </div>
@@ -273,7 +297,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       {/* Specs */}
       {template.showSpecs && specs.length > 0 && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Specifications</div>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>{ex.fieldSpecs}</div>
           <div style={{ fontSize: '13px', color: '#333', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {specs.map((s, i) => (
               <span key={i} style={{ background: '#f5f5f5', padding: '2px 8px', borderRadius: '4px' }}>{s}</span>
@@ -285,7 +309,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       {/* Description */}
       {template.showDescription && device.info && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Description</div>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>{ex.fieldDescription}</div>
           <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{device.info}</div>
         </div>
       )}
@@ -293,7 +317,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       {/* Historical Notes */}
       {template.showHistoricalNotes && device.historicalNotes && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>History</div>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>{ex.fieldHistory}</div>
           <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{device.historicalNotes}</div>
         </div>
       )}
@@ -301,7 +325,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       {/* Notes */}
       {template.showNotes && (device.notes || []).length > 0 && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Notes</div>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>{ex.fieldNotes}</div>
           {(device.notes || []).map(note => (
             <div key={note.id} style={{ fontSize: '13px', color: '#333', marginBottom: '6px' }}>
               <span style={{ color: '#aaa', fontSize: '11px', marginRight: '6px' }}>{new Date(note.date).toLocaleDateString()}</span>
@@ -314,7 +338,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       {/* Maintenance History */}
       {template.showMaintenanceHistory && (device.maintenanceTasks || []).filter(t => t.dateCompleted).length > 0 && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Maintenance History</div>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>{ex.fieldMaintenance}</div>
           {(device.maintenanceTasks || []).filter(t => t.dateCompleted).map(task => (
             <div key={task.id} style={{ fontSize: '12px', color: '#333', marginBottom: '4px', display: 'flex', gap: '8px' }}>
               <span style={{ color: '#aaa', flexShrink: 0 }}>{new Date(task.dateCompleted!).toLocaleDateString()}</span>
@@ -327,7 +351,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       {/* Tags */}
       {template.showTags && (device.tags || []).length > 0 && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Tags</div>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>{ex.fieldTags}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {(device.tags || []).map(tag => (
               <span key={tag.id} style={{ background: accent, color: '#fff', padding: '2px 10px', borderRadius: '12px', fontSize: '12px' }}>{tag.name}</span>
@@ -339,7 +363,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       {/* Custom fields */}
       {template.showCustomFields && (device.customFieldValues || []).length > 0 && (
         <div style={{ borderTop: `1px solid #eee`, paddingTop: '12px', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Additional Info</div>
+          <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>{ex.fieldCustomFields}</div>
           {(device.customFieldValues || []).map(cfv => (
             <div key={cfv.id} style={{ fontSize: '13px', color: '#333', marginBottom: '4px' }}>
               <span style={{ color: '#888' }}>{cfv.customFieldName}: </span>{cfv.value}
@@ -348,9 +372,8 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
         </div>
       )}
 
-      {/* Footer — flex spacer pushes this to page bottom without absolute positioning */}
-      <div style={{ flex: 1 }} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px', marginTop: '16px' }}>
+      {/* Footer */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px', marginTop: '24px' }}>
         <div>{template.footerText}</div>
         <div>ID: {String(device.id).padStart(5, '0')}</div>
       </div>
@@ -439,8 +462,19 @@ export default function ExhibitionPage() {
           @media print {
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            .page-break { page-break-after: always; }
-            @page { margin: 0; size: auto; }
+            .exhibition-print { padding: 0 !important; }
+            .sheet-wrapper { margin: 0 !important; padding: 0 !important; }
+            .exhibition-sheet {
+              page-break-after: always !important;
+              break-after: page !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              box-shadow: none !important;
+              border: none !important;
+              margin: 0 !important;
+              min-height: 0 !important;
+            }
+            @page { margin: 0.5in; size: A4 portrait; }
           }
           @media screen {
             .exhibition-print { max-width: 1100px; margin: 0 auto; padding: 24px; }
@@ -460,8 +494,8 @@ export default function ExhibitionPage() {
           </span>
         </div>
 
-        {selectedDevices.map((device, idx) => (
-          <div key={device.id} className={idx < selectedDevices.length - 1 ? 'page-break' : ''} style={{ marginBottom: '48px' }}>
+        {selectedDevices.map((device) => (
+          <div key={device.id} className="sheet-wrapper" style={{ marginBottom: '48px' }}>
             <ExhibitionSheet device={device} template={selectedTemplate} shareBaseUrl={shareBaseUrl} shopDomain={shopDomain} imageMode={deviceImageModes.get(device.id) ?? 'thumbnail'} />
           </div>
         ))}
@@ -548,7 +582,7 @@ export default function ExhibitionPage() {
                         cursor: 'pointer',
                       }}
                     >
-                      {mode === 'thumbnail' ? 'Thumb' : mode === 'oldest' ? 'Oldest' : 'Newest'}
+                      {mode === 'thumbnail' ? t.exhibition.imageThumb : mode === 'oldest' ? t.exhibition.imageOldest : t.exhibition.imageNewest}
                     </button>
                   ))}
                 </div>

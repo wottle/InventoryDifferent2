@@ -1089,6 +1089,24 @@ export type Translations = {
     orgNamePlaceholder: string;
     footerTextPlaceholder: string;
     accentColorDefault: string;
+    moreInfo: string;
+    buyIt: string;
+    imageThumb: string;
+    imageOldest: string;
+    imageNewest: string;
+    fieldManufacturer: string;
+    fieldModel: string;
+    fieldSerial: string;
+    fieldCondition: string;
+    fieldStatus: string;
+    fieldLocation: string;
+    fieldSpecs: string;
+    fieldDescription: string;
+    fieldHistory: string;
+    fieldNotes: string;
+    fieldMaintenance: string;
+    fieldTags: string;
+    fieldCustomFields: string;
   };
 };
 
@@ -2190,5 +2208,23 @@ export const en: Translations = {
     orgNamePlaceholder: "e.g. RetroMac Society",
     footerTextPlaceholder: "e.g. On loan from the personal collection of…",
     accentColorDefault: "Default (blue)",
+    moreInfo: "More Info",
+    buyIt: "Buy It",
+    imageThumb: "Thumb",
+    imageOldest: "Oldest",
+    imageNewest: "Newest",
+    fieldManufacturer: "Manufacturer",
+    fieldModel: "Model",
+    fieldSerial: "Serial Number",
+    fieldCondition: "Condition",
+    fieldStatus: "Status",
+    fieldLocation: "Location",
+    fieldSpecs: "Specifications",
+    fieldDescription: "Description",
+    fieldHistory: "History",
+    fieldNotes: "Notes",
+    fieldMaintenance: "Maintenance History",
+    fieldTags: "Tags",
+    fieldCustomFields: "Additional Info",
   },
 };
