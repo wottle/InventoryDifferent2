@@ -226,9 +226,9 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
   // A4_FULL (default)
   return (
     <div className="exhibition-sheet a4-sheet" style={{
-      width: '8.27in', height: '11.69in', background: '#fff', fontFamily: 'sans-serif',
+      width: '8.27in', minHeight: '11.69in', background: '#fff', fontFamily: 'sans-serif',
       padding: '0.5in', boxSizing: 'border-box', border: `1px solid #ddd`, color: '#000',
-      display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
     }}>
       {/* Header — 3 columns: logo/org | store QR (centered, for-sale only) | device QR */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: `3px solid ${accent}`, paddingBottom: '12px', marginBottom: '16px' }}>
@@ -373,8 +373,8 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
         </div>
       )}
 
-      {/* Footer — pushed to bottom of the flex column */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px', marginTop: 'auto' }}>
+      {/* Footer */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px', marginTop: '24px' }}>
         <div>{template.footerText}</div>
         <div>ID: {String(device.id).padStart(5, '0')}</div>
       </div>
@@ -468,7 +468,7 @@ export default function ExhibitionPage() {
 
   if (showPrintView && selectedTemplate) {
     return (
-      <div className="exhibition-print min-h-screen" style={{ background: 'var(--background)' }}>
+      <div className={`exhibition-print min-h-screen layout-${selectedTemplate.layout}`} style={{ background: 'var(--background)' }}>
         <style jsx global>{`
           @media print {
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -484,8 +484,19 @@ export default function ExhibitionPage() {
             body.exhibition-printing .no-print { display: none !important; }
 
             .exhibition-print { padding: 0 !important; background: white !important; }
-            .sheet-wrapper { margin: 0 !important; padding: 0 !important; }
-            .exhibition-sheet {
+
+            /* ── A4 Full Page ────────────────────────────────────────────────────── */
+            /* Let content flow naturally — break-after:page handles pagination.
+               Don't fight the page height; it varies by paper size and browser. */
+            .layout-A4_FULL .sheet-wrapper {
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+            .a4-sheet {
+              height: auto !important;
+              min-height: 0 !important;
+              width: 100% !important;
+              box-sizing: border-box !important;
               page-break-after: always !important;
               break-after: page !important;
               page-break-inside: avoid !important;
@@ -493,34 +504,33 @@ export default function ExhibitionPage() {
               box-shadow: none !important;
               border: none !important;
               margin: 0 !important;
-              min-height: 0 !important;
             }
 
-            /*
-             * Size each layout to exactly its printable area so nothing overflows.
-             * A4: 8.27×11.69in paper, 0.5in @page margin → 7.27×10.69in printable.
-             * DISPLAY_CARD: 7×5in paper, 0.15in @page margin → 6.7×4.7in printable.
-             * COMPACT_LABEL: 5×3in paper, 0.1in @page margin → 4.8×2.8in printable.
-             * Reduce internal padding for A4 since @page margin already provides outer spacing.
-             */
-            .a4-sheet {
-              width: 7.27in !important;
-              height: 10.69in !important;
-              padding: 0.25in !important;
+            /* ── Card layouts (DISPLAY_CARD, COMPACT_LABEL) ─────────────────────── */
+            /* Each wrapper is exactly one page tall and centers the card within it,
+               so the card is centered regardless of whether the browser honors @page
+               size or prints on Letter/A4 instead of 5×7 or 5×3 card stock. */
+            .layout-DISPLAY_CARD .sheet-wrapper,
+            .layout-COMPACT_LABEL .sheet-wrapper {
+              margin: 0 !important;
+              padding: 0 !important;
+              height: 100vh !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              page-break-after: always !important;
+              break-after: page !important;
             }
-            .display-card-sheet {
-              width: 6.7in !important;
-              height: 4.7in !important;
-            }
+            .display-card-sheet,
             .compact-label-sheet {
-              width: 4.8in !important;
-              height: 2.8in !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+              /* Cards keep their explicit width/height from inline styles */
             }
 
             @page {
               size: ${selectedTemplate.layout === 'DISPLAY_CARD' ? '7in 5in' : selectedTemplate.layout === 'COMPACT_LABEL' ? '5in 3in' : 'A4 portrait'};
-              /* Cards: small non-zero margin so content stays clear of the printer's physical non-printable edge */
-              margin: ${selectedTemplate.layout === 'DISPLAY_CARD' ? '0.15in' : selectedTemplate.layout === 'COMPACT_LABEL' ? '0.1in' : '0.5in'};
+              margin: ${selectedTemplate.layout === 'DISPLAY_CARD' || selectedTemplate.layout === 'COMPACT_LABEL' ? '0.15in' : '0.5in'};
             }
           }
           @media screen {
