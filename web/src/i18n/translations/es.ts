@@ -910,6 +910,9 @@ export const es: Translations = {
       externalTemplatesEnabled: "Catálogo remoto activado",
       externalTemplatesDisabled: "Catálogo remoto desactivado",
       externalTemplatesServerNote: "Controlado por EXTERNAL_TEMPLATES_ENABLED en el servidor.",
+      ebaySiteSection: "Mercado eBay",
+      ebaySiteLabel: "Sitio eBay para ventas realizadas",
+      ebaySiteDescription: "Qué mercado eBay usar para buscar precios de venta en las páginas de detalle de dispositivos.",
     },
     slideshow: {
       settings: "Configuración",

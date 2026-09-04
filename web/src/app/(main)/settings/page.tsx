@@ -36,6 +36,8 @@ export default function SettingsPage() {
   const [externalTemplates, setExternalTemplates] = useState(true);
   const [externalTemplatesSaved, setExternalTemplatesSaved] = useState(false);
   const [isSavingExternal, setIsSavingExternal] = useState(false);
+  const [ebaySite, setEbaySite] = useState('ebay.com');
+  const [ebaySiteSaved, setEbaySiteSaved] = useState(false);
   useEffect(() => {
     fetch(`${API_BASE_URL}/generate-image/config`)
       .then(r => r.json())
@@ -71,6 +73,17 @@ export default function SettingsPage() {
     await setSystemSetting({ variables: { key: 'imageModel', value: model } });
     setModelSaved(true);
     setTimeout(() => setModelSaved(false), 2000);
+  };
+
+  useEffect(() => {
+    try { setEbaySite(localStorage.getItem('ebaySite') ?? 'ebay.com'); } catch {}
+  }, []);
+
+  const saveEbaySite = (site: string) => {
+    setEbaySite(site);
+    try { localStorage.setItem('ebaySite', site); } catch {}
+    setEbaySiteSaved(true);
+    setTimeout(() => setEbaySiteSaved(false), 2000);
   };
 
   const saveExternalTemplates = async (enabled: boolean) => {
@@ -218,6 +231,30 @@ export default function SettingsPage() {
           {externalTemplatesSaved && (
             <p className="text-xs text-primary font-medium">{ts.saved}</p>
           )}
+        </div>
+      </section>
+
+      {/* eBay Marketplace */}
+      <section className="space-y-4">
+        <h2 className="text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/30 pb-2">
+          {ts.ebaySiteSection}
+        </h2>
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-on-surface">{ts.ebaySiteLabel}</label>
+          <p className="text-xs text-on-surface-variant">{ts.ebaySiteDescription}</p>
+          <select
+            value={ebaySite}
+            onChange={e => saveEbaySite(e.target.value)}
+            className="w-full rounded-xl border border-outline-variant bg-surface-container px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 dark:bg-[#1e2129] dark:border-[#3a3f4b]"
+          >
+            <option value="ebay.com">ebay.com (US)</option>
+            <option value="ebay.co.uk">ebay.co.uk (UK)</option>
+            <option value="ebay.de">ebay.de (Germany)</option>
+            <option value="ebay.fr">ebay.fr (France)</option>
+            <option value="ebay.es">ebay.es (Spain)</option>
+            <option value="ebay.it">ebay.it (Italy)</option>
+          </select>
+          {ebaySiteSaved && <p className="text-xs text-primary font-medium">{ts.saved}</p>}
         </div>
       </section>
 

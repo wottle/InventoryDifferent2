@@ -516,6 +516,10 @@ export default function DeviceDetailNew() {
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [linkToRemoveId, setLinkToRemoveId] = useState<number | null>(null);
+  const [ebaySite, setEbaySite] = useState('ebay.com');
+  useEffect(() => {
+    try { setEbaySite(localStorage.getItem('ebaySite') ?? 'ebay.com'); } catch {}
+  }, []);
   const [showRelationForm, setShowRelationForm] = useState(false);
   const [relationDeviceName, setRelationDeviceName] = useState('');
   const [relationType, setRelationType] = useState('');
@@ -1398,7 +1402,7 @@ export default function DeviceDetailNew() {
                           </button>
                         )}
                         {isCollection && (
-                          <a href={`https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}&LH_Sold=1&LH_Complete=1`}
+                          <a href={`https://www.${ebaySite}/sch/i.html?_nkw=${ebayQuery}&LH_Sold=1&LH_Complete=1`}
                             target="_blank" rel="noopener noreferrer"
                             className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
                             {t.detail.ebaySold} ↗

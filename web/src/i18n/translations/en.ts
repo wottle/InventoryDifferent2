@@ -901,6 +901,9 @@ export type Translations = {
       externalTemplatesEnabled: string;
       externalTemplatesDisabled: string;
       externalTemplatesServerNote: string;
+      ebaySiteSection: string;
+      ebaySiteLabel: string;
+      ebaySiteDescription: string;
     };
     slideshow: {
       settings: string;
@@ -1942,6 +1945,9 @@ export const en: Translations = {
       externalTemplatesEnabled: "Remote catalog enabled",
       externalTemplatesDisabled: "Remote catalog disabled",
       externalTemplatesServerNote: "Controlled by EXTERNAL_TEMPLATES_ENABLED on the server.",
+      ebaySiteSection: "eBay Marketplace",
+      ebaySiteLabel: "eBay site for sold listings",
+      ebaySiteDescription: "Which eBay marketplace to use when looking up sold prices on device detail pages.",
     },
     slideshow: {
       settings: "Settings",

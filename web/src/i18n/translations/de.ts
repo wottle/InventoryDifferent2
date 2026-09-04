@@ -910,6 +910,9 @@ export const de: Translations = {
       externalTemplatesEnabled: "Externer Katalog aktiviert",
       externalTemplatesDisabled: "Externer Katalog deaktiviert",
       externalTemplatesServerNote: "Wird über EXTERNAL_TEMPLATES_ENABLED auf dem Server gesteuert.",
+      ebaySiteSection: "eBay-Marktplatz",
+      ebaySiteLabel: "eBay-Seite für verkaufte Artikel",
+      ebaySiteDescription: "Welchen eBay-Marktplatz auf Gerätedetailseiten für Preisrecherchen verwenden.",
     },
     slideshow: {
       settings: "Einstellungen",

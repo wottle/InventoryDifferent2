@@ -14,6 +14,7 @@ export const releaseNotes: ReleaseEntry[] = [
     date: '',
     added: [
       'Docker port bindings are now configurable via environment variables (`API_PORT`, `WEB_PORT`, `STOREFRONT_PORT`, `SHOWCASE_PORT`, `MCP_PORT`, `RETRO_PORT`) — defaults remain unchanged.',
+      'Settings: new eBay Marketplace selector lets you choose which regional eBay site (US, UK, DE, FR, ES, IT) is used for sold listing lookups on device detail pages.',
     ],
     changed: [],
     fixed: [],
