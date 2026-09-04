@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import { LoadingPanel } from "../../../../components/LoadingPanel";
 import { useT } from "../../../../i18n/context";
 import { useRequireAuth } from "../../../../lib/useRequireAuth";
+import { useAuth } from "../../../../lib/auth-context";
 import { API_BASE_URL } from "../../../../lib/config";
 
 const TEMPLATE_FRAGMENT = gql`
@@ -121,6 +122,7 @@ export default function ExhibitionTemplatesPage() {
   const ex = t.exhibition;
   const redirecting = useRequireAuth();
 
+  const { getAccessToken } = useAuth();
   const { data, loading } = useQuery(GET_TEMPLATES);
   const [createTemplate] = useMutation(CREATE_TEMPLATE, { refetchQueries: [{ query: GET_TEMPLATES }] });
   const [updateTemplate] = useMutation(UPDATE_TEMPLATE, { refetchQueries: [{ query: GET_TEMPLATES }] });
@@ -164,7 +166,7 @@ export default function ExhibitionTemplatesPage() {
       const res = await fetch(`${API_BASE_URL}/upload/exhibition-logo`, {
         method: 'POST',
         credentials: 'include',
-        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+        headers: { Authorization: `Bearer ${getAccessToken()}` },
         body: fd,
       });
       const json = await res.json();
