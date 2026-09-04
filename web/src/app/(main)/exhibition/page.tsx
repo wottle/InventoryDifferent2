@@ -32,7 +32,7 @@ const GET_DEVICES = gql`
       category { id name type sortOrder }
       location { id name }
       cpuType cpuSpeed ram graphicsChip storageEntries { id value sortOrder } osEntries { id value sortOrder }
-      images { id path thumbnailPath isThumbnail thumbnailMode }
+      images { id path thumbnailPath isThumbnail thumbnailMode mediaType }
       tags { id name }
       customFieldValues { id customFieldId customFieldName isPublic value sortOrder }
       notes { id content date }
@@ -61,7 +61,7 @@ type Device = {
   cpuType?: string; cpuSpeed?: string; ram?: string; graphicsChip?: string;
   storageEntries?: { id: number; value: string; sortOrder: number }[];
   osEntries?: { id: number; value: string; sortOrder: number }[];
-  images?: { id: number; path: string; thumbnailPath?: string; isThumbnail: boolean; thumbnailMode?: string }[];
+  images?: { id: number; path: string; thumbnailPath?: string; isThumbnail: boolean; thumbnailMode?: string; mediaType?: string }[];
   tags?: { id: number; name: string }[];
   customFieldValues?: { id: number; customFieldId: number; customFieldName: string; isPublic: boolean; value: string; sortOrder: number }[];
   notes?: { id: number; content: string; date: string }[];
@@ -77,7 +77,8 @@ type ImageMode = 'thumbnail' | 'oldest' | 'newest';
 function resolveImage(images: Device['images'], mode: ImageMode) {
   const imgs = images || [];
   if (mode === 'thumbnail') return pickThumbnail(imgs, false);
-  const sorted = [...imgs].sort((a, b) => a.id - b.id);
+  const photos = imgs.filter(i => !i.mediaType || i.mediaType === 'IMAGE');
+  const sorted = [...photos].sort((a, b) => a.id - b.id);
   return mode === 'oldest' ? sorted[0] : sorted[sorted.length - 1];
 }
 
