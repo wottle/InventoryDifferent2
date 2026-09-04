@@ -72,16 +72,25 @@ function QRCodeWrapper({ url, size = 80 }: { url: string; size?: number }) {
   return <QRCodeSVG value={url} size={size} />;
 }
 
-function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain }: {
-  device: Device; template: ExhibitionTemplate; shareBaseUrl: string; shopDomain?: string | null;
+type ImageMode = 'thumbnail' | 'oldest' | 'newest';
+
+function resolveImage(images: Device['images'], mode: ImageMode) {
+  const imgs = images || [];
+  if (mode === 'thumbnail') return pickThumbnail(imgs, false);
+  const sorted = [...imgs].sort((a, b) => a.id - b.id);
+  return mode === 'oldest' ? sorted[0] : sorted[sorted.length - 1];
+}
+
+function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode = 'thumbnail' }: {
+  device: Device; template: ExhibitionTemplate; shareBaseUrl: string; shopDomain?: string | null; imageMode?: ImageMode;
 }) {
   const accent = template.accentColor || '#0058bc';
   const qrUrl = `${shareBaseUrl}/devices/${device.id}`;
   const storefrontUrl = shopDomain && ['FOR_SALE', 'PENDING_SALE'].includes(device.status || '')
     ? `https://${shopDomain}/item/${device.id}`
     : null;
-  const thumb = pickThumbnail(device.images || [], false);
-  const thumbUrl = thumb ? `${API_BASE_URL}${thumb.thumbnailPath || thumb.path}` : null;
+  const img = resolveImage(device.images, imageMode);
+  const thumbUrl = img ? `${API_BASE_URL}${img.thumbnailPath || img.path}` : null;
 
   const specs = [
     device.cpuType && `${device.cpuType}${device.cpuSpeed ? ' ' + device.cpuSpeed : ''}`,
@@ -200,7 +209,8 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain }: {
   return (
     <div className="exhibition-sheet a4-sheet" style={{
       width: '8.27in', minHeight: '11.69in', background: '#fff', fontFamily: 'sans-serif',
-      padding: '0.5in', boxSizing: 'border-box', border: `1px solid #ddd`, position: 'relative', color: '#000',
+      padding: '0.5in', boxSizing: 'border-box', border: `1px solid #ddd`, color: '#000',
+      display: 'flex', flexDirection: 'column',
     }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `3px solid ${accent}`, paddingBottom: '12px', marginBottom: '16px' }}>
@@ -338,8 +348,9 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain }: {
         </div>
       )}
 
-      {/* Footer */}
-      <div style={{ position: 'absolute', bottom: '0.4in', left: '0.5in', right: '0.5in', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px' }}>
+      {/* Footer — flex spacer pushes this to page bottom without absolute positioning */}
+      <div style={{ flex: 1 }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px', marginTop: '16px' }}>
         <div>{template.footerText}</div>
         <div>ID: {String(device.id).padStart(5, '0')}</div>
       </div>
@@ -363,6 +374,7 @@ export default function ExhibitionPage() {
 
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<Set<number>>(new Set());
+  const [deviceImageModes, setDeviceImageModes] = useState<Map<number, ImageMode>>(new Map());
   const [searchTerm, setSearchTerm] = useState('');
   const [showPrintView, setShowPrintView] = useState(false);
 
@@ -402,6 +414,10 @@ export default function ExhibitionPage() {
       else next.add(id);
       return next;
     });
+  }
+
+  function setImageMode(id: number, mode: ImageMode) {
+    setDeviceImageModes(prev => new Map(prev).set(id, mode));
   }
 
   function selectAll() {
@@ -446,7 +462,7 @@ export default function ExhibitionPage() {
 
         {selectedDevices.map((device, idx) => (
           <div key={device.id} className={idx < selectedDevices.length - 1 ? 'page-break' : ''} style={{ marginBottom: '48px' }}>
-            <ExhibitionSheet device={device} template={selectedTemplate} shareBaseUrl={shareBaseUrl} shopDomain={shopDomain} />
+            <ExhibitionSheet device={device} template={selectedTemplate} shareBaseUrl={shareBaseUrl} shopDomain={shopDomain} imageMode={deviceImageModes.get(device.id) ?? 'thumbnail'} />
           </div>
         ))}
       </div>
@@ -512,13 +528,31 @@ export default function ExhibitionPage() {
                 onChange={() => toggleDevice(device.id)}
                 style={{ width: '16px', height: '16px', flexShrink: 0 }}
               />
-              <div>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--on-surface)' }}>{device.name}</div>
                 <div style={{ fontSize: '12px', color: 'var(--on-surface-variant)' }}>
                   {[device.manufacturer, device.releaseYear, device.category?.name].filter(Boolean).join(' · ')}
                   {device.serialNumber ? ` · S/N: ${device.serialNumber}` : ''}
                 </div>
               </div>
+              {selectedDeviceIds.has(device.id) && (device.images || []).length > 0 && (
+                <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }} onClick={e => e.preventDefault()}>
+                  {(['thumbnail', 'oldest', 'newest'] as ImageMode[]).map(mode => (
+                    <button
+                      key={mode}
+                      onClick={() => setImageMode(device.id, mode)}
+                      style={{
+                        padding: '2px 7px', fontSize: '11px', borderRadius: '4px', border: '1px solid var(--outline-variant)',
+                        background: (deviceImageModes.get(device.id) ?? 'thumbnail') === mode ? '#0058bc' : 'var(--card)',
+                        color: (deviceImageModes.get(device.id) ?? 'thumbnail') === mode ? '#fff' : 'var(--on-surface-variant)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {mode === 'thumbnail' ? 'Thumb' : mode === 'oldest' ? 'Oldest' : 'Newest'}
+                    </button>
+                  ))}
+                </div>
+              )}
             </label>
           ))}
         </div>
