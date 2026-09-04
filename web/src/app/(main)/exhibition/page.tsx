@@ -234,7 +234,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: `3px solid ${accent}`, paddingBottom: '12px', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
           {template.logoPath && (
-            <img src={`${API_BASE_URL}${template.logoPath}`} alt="Logo" style={{ height: '48px', objectFit: 'contain' }} />
+            <img src={`${API_BASE_URL}${template.logoPath}`} alt="Logo" style={{ height: '88px', objectFit: 'contain' }} />
           )}
           {template.orgName && <div style={{ fontSize: '16px', fontWeight: 'bold', color: accent }}>{template.orgName}</div>}
         </div>
@@ -507,30 +507,30 @@ export default function ExhibitionPage() {
             }
 
             /* ── Card layouts (DISPLAY_CARD, COMPACT_LABEL) ─────────────────────── */
-            /* Each wrapper is exactly one page tall and centers the card within it,
-               so the card is centered regardless of whether the browser honors @page
-               size or prints on Letter/A4 instead of 5×7 or 5×3 card stock. */
+            /* Full-bleed: @page margin:0 so 100vw/100vh = full paper dimensions.
+               The card fills the whole page. The card's own internal padding (20px)
+               keeps content away from the physical printer edge.
+               break-after:page is on the sheet itself; the wrapper is just a passthrough. */
             .layout-DISPLAY_CARD .sheet-wrapper,
             .layout-COMPACT_LABEL .sheet-wrapper {
               margin: 0 !important;
               padding: 0 !important;
-              height: 100vh !important;
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              page-break-after: always !important;
-              break-after: page !important;
             }
             .display-card-sheet,
             .compact-label-sheet {
+              width: 100vw !important;
+              height: 100vh !important;
+              box-sizing: border-box !important;
               box-shadow: none !important;
               margin: 0 !important;
-              /* Cards keep their explicit width/height from inline styles */
+              page-break-after: always !important;
+              break-after: page !important;
+              break-inside: avoid !important;
             }
 
             @page {
               size: ${selectedTemplate.layout === 'DISPLAY_CARD' ? '7in 5in' : selectedTemplate.layout === 'COMPACT_LABEL' ? '5in 3in' : 'A4 portrait'};
-              margin: ${selectedTemplate.layout === 'DISPLAY_CARD' || selectedTemplate.layout === 'COMPACT_LABEL' ? '0.15in' : '0.5in'};
+              margin: ${selectedTemplate.layout === 'DISPLAY_CARD' || selectedTemplate.layout === 'COMPACT_LABEL' ? '0' : '0.5in'};
             }
           }
           @media screen {
