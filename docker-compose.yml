@@ -6,7 +6,7 @@ services:
     container_name: invdifferent2-db
     restart: unless-stopped
     ports:
-      - "5432:5432"  # Exposed for migration scripts - can remove after migration
+      - "${POSTGRES_PORT:-5432}:5432"  # Exposed for migration scripts - can remove after migration
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
@@ -28,7 +28,7 @@ services:
     container_name: invdifferent2-api
     restart: unless-stopped
     ports:
-      - "4000:4000"
+      - "${API_PORT:-4000}:4000"
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-inventory}
@@ -54,7 +54,7 @@ services:
     container_name: invdifferent2-web
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3000}:3000"
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://localhost:4000/graphql
@@ -76,7 +76,7 @@ services:
     container_name: invdifferent2-storefront
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "${STOREFRONT_PORT:-3001}:3001"
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://localhost:4000
@@ -94,7 +94,7 @@ services:
     container_name: invdifferent2-mcp
     restart: unless-stopped
     ports:
-      - "3002:3002"
+      - "${MCP_PORT:-3002}:3002"
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-inventory}
@@ -111,7 +111,7 @@ services:
     container_name: invdifferent2-showcase
     restart: unless-stopped
     ports:
-      - "3003:3000"
+      - "${SHOWCASE_PORT:-3003}:3000"
     environment:
       NODE_ENV: production
       API_URL: http://api:4000
@@ -132,7 +132,7 @@ services:
   #   container_name: invdifferent2-retro
   #   restart: unless-stopped
   #   ports:
-  #     - "3004:3004"
+  #     - "${RETRO_PORT:-3004}:3004"
   #   environment:
   #     API_URL: http://api:4000
   #     RETRO_THEME: system7   # system7 | earlyweb | platinum

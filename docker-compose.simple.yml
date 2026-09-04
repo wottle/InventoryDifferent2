@@ -46,7 +46,7 @@ services:
     container_name: inventory-api
     restart: unless-stopped
     ports:
-      - "4000:4000"
+      - "${API_PORT:-4000}:4000"
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
@@ -75,7 +75,7 @@ services:
     container_name: inventory-web
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3000}:3000"
     environment:
       NODE_ENV: production
       API_URL: http://api:4000
@@ -94,7 +94,7 @@ services:
     container_name: inventory-storefront
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "${STOREFRONT_PORT:-3001}:3001"
     environment:
       NODE_ENV: production
       CONTACT_EMAIL: ${CONTACT_EMAIL:-store@example.com}
@@ -110,7 +110,7 @@ services:
     container_name: inventory-showcase
     restart: unless-stopped
     ports:
-      - "3003:3000"
+      - "${SHOWCASE_PORT:-3003}:3000"
     environment:
       NODE_ENV: production
       API_URL: http://api:4000
@@ -132,7 +132,7 @@ services:
   #   container_name: inventory-retro
   #   restart: unless-stopped
   #   ports:
-  #     - "3004:3004"
+  #     - "${RETRO_PORT:-3004}:3004"
   #   environment:
   #     API_URL: http://api:4000
   #     RETRO_THEME: system7   # system7 | earlyweb | platinum
@@ -148,7 +148,7 @@ services:
   #   container_name: inventory-mcp
   #   restart: unless-stopped
   #   ports:
-  #     - "3002:3002"
+  #     - "${MCP_PORT:-3002}:3002"
   #   environment:
   #     NODE_ENV: production
   #     DATABASE_URL: postgres://${POSTGRES_USER:-inventory}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inventory}
