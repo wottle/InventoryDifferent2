@@ -227,11 +227,9 @@ export default function ExhibitionTemplatesPage() {
     <div style={{ maxWidth: '860px', margin: '0 auto', padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>{ex.templatesPageTitle}</h1>
-        {!isCreating && (
-          <button onClick={openCreate} style={{ padding: '8px 16px', background: '#0058bc', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-            + {ex.newTemplate}
-          </button>
-        )}
+        <button onClick={openCreate} style={{ padding: '8px 16px', background: '#0058bc', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+          + {ex.newTemplate}
+        </button>
       </div>
 
       {/* Create / Edit form */}

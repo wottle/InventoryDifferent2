@@ -418,7 +418,7 @@ export default function ExhibitionPage() {
 
   if (showPrintView && selectedTemplate) {
     return (
-      <div className="exhibition-print min-h-screen" style={{ background: 'var(--surface-bg, #fff)' }}>
+      <div className="exhibition-print min-h-screen" style={{ background: 'var(--background)' }}>
         <style jsx global>{`
           @media print {
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -433,7 +433,7 @@ export default function ExhibitionPage() {
         `}</style>
 
         <div className="no-print" style={{ display: 'flex', gap: '12px', marginBottom: '24px', alignItems: 'center', padding: '12px 16px', background: 'var(--surface-container)', borderRadius: '8px', border: '1px solid var(--outline-variant)' }}>
-          <button onClick={() => setShowPrintView(false)} className="btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, border: '1px solid var(--outline-variant)', background: 'var(--surface)', color: 'var(--on-surface)' }}>
+          <button onClick={() => setShowPrintView(false)} className="btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, border: '1px solid var(--outline-variant)', background: 'var(--card)', color: 'var(--on-surface)' }}>
             ← {t.exhibition.back}
           </button>
           <button onClick={() => window.print()} style={{ padding: '8px 20px', background: '#0058bc', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
@@ -471,7 +471,7 @@ export default function ExhibitionPage() {
           <select
             value={selectedTemplateId}
             onChange={e => setSelectedTemplateId(e.target.value)}
-            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', width: '100%', maxWidth: '400px', background: 'var(--surface)', color: 'var(--on-surface)' }}
+            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', width: '100%', maxWidth: '400px', background: 'var(--input)', color: 'var(--foreground)' }}
           >
             {templates.map(tmpl => (
               <option key={tmpl.id} value={tmpl.id}>{tmpl.name}{tmpl.orgName ? ` — ${tmpl.orgName}` : ''}</option>
@@ -492,13 +492,13 @@ export default function ExhibitionPage() {
           placeholder="Search devices…"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', marginBottom: '12px', boxSizing: 'border-box', background: 'var(--surface)', color: 'var(--on-surface)' }}
+          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', marginBottom: '12px', boxSizing: 'border-box', background: 'var(--input)', color: 'var(--foreground)' }}
         />
         <div style={{ border: '1px solid var(--outline-variant)', borderRadius: '8px', overflow: 'hidden', maxHeight: '400px', overflowY: 'auto' }}>
           {filteredDevices.map((device, idx) => (
             <label key={device.id} style={{
               display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', cursor: 'pointer',
-              background: selectedDeviceIds.has(device.id) ? 'color-mix(in srgb, #0058bc 12%, var(--surface))' : idx % 2 === 0 ? 'var(--surface)' : 'var(--surface-container)',
+              background: selectedDeviceIds.has(device.id) ? 'color-mix(in srgb, #0058bc 15%, var(--card))' : idx % 2 === 0 ? 'var(--card)' : 'var(--surface-container)',
               borderBottom: '1px solid var(--outline-variant)',
             }}>
               <input
