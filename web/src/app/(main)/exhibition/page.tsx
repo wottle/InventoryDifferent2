@@ -468,15 +468,20 @@ export default function ExhibitionPage() {
             <a href="/exhibition/templates" style={{ color: '#0058bc' }}>{t.exhibition.newTemplate}</a>
           </div>
         ) : (
-          <select
-            value={selectedTemplateId}
-            onChange={e => setSelectedTemplateId(e.target.value)}
-            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', width: '100%', maxWidth: '400px', background: 'var(--input)', color: 'var(--foreground)' }}
-          >
-            {templates.map(tmpl => (
-              <option key={tmpl.id} value={tmpl.id}>{tmpl.name}{tmpl.orgName ? ` — ${tmpl.orgName}` : ''}</option>
-            ))}
-          </select>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <select
+              value={selectedTemplateId}
+              onChange={e => setSelectedTemplateId(e.target.value)}
+              style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--outline-variant)', fontSize: '14px', width: '100%', maxWidth: '360px', background: 'var(--input)', color: 'var(--foreground)' }}
+            >
+              {templates.map(tmpl => (
+                <option key={tmpl.id} value={tmpl.id}>{tmpl.name}{tmpl.orgName ? ` — ${tmpl.orgName}` : ''}</option>
+              ))}
+            </select>
+            <a href="/exhibition/templates" style={{ fontSize: '13px', color: '#0058bc', whiteSpace: 'nowrap', textDecoration: 'none' }}>
+              + {t.exhibition.newTemplate}
+            </a>
+          </div>
         )}
       </div>
 

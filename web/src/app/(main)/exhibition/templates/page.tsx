@@ -218,10 +218,10 @@ export default function ExhibitionTemplatesPage() {
   if (redirecting || loading) return <LoadingPanel title={ex.templatesPageTitle} subtitle="" />;
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #ccc',
-    fontSize: '14px', boxSizing: 'border-box',
+    width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)',
+    fontSize: '14px', boxSizing: 'border-box', background: 'var(--input)', color: 'var(--foreground)',
   };
-  const labelStyle: React.CSSProperties = { display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#555' };
+  const labelStyle: React.CSSProperties = { display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: 'var(--muted-foreground)' };
 
   return (
     <div style={{ maxWidth: '860px', margin: '0 auto', padding: '24px' }}>
@@ -234,7 +234,7 @@ export default function ExhibitionTemplatesPage() {
 
       {/* Create / Edit form */}
       {isCreating && (
-        <div style={{ border: '1px solid #0058bc', borderRadius: '8px', padding: '20px', marginBottom: '24px', background: '#f8faff' }}>
+        <div style={{ border: '1px solid #0058bc', borderRadius: '8px', padding: '20px', marginBottom: '24px', background: 'var(--surface-container-low)' }}>
           <h2 style={{ fontSize: '17px', fontWeight: 'bold', marginBottom: '16px' }}>
             {editingId ? ex.editTemplate : ex.newTemplate}
           </h2>
@@ -260,7 +260,7 @@ export default function ExhibitionTemplatesPage() {
             <div>
               <label style={labelStyle}>{ex.accentColor}</label>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input type="color" value={form.accentColor} onChange={e => setField('accentColor', e.target.value)} style={{ width: '40px', height: '36px', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', padding: '2px' }} />
+                <input type="color" value={form.accentColor} onChange={e => setField('accentColor', e.target.value)} style={{ width: '40px', height: '36px', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', padding: '2px' }} />
                 <input style={{ ...inputStyle, flex: 1 }} value={form.accentColor} onChange={e => setField('accentColor', e.target.value)} placeholder="#0058bc" />
               </div>
             </div>
@@ -274,7 +274,7 @@ export default function ExhibitionTemplatesPage() {
               ) : (
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => { if (e.target.files?.[0]) uploadLogo(e.target.files[0]); }} />
-                  <span style={{ padding: '6px 12px', border: '1px solid #ccc', borderRadius: '6px', fontSize: '13px', background: '#fff' }}>
+                  <span style={{ padding: '6px 12px', border: '1px solid var(--border)', borderRadius: '6px', fontSize: '13px', background: 'var(--card)', color: 'var(--foreground)' }}>
                     {logoUploading ? '…' : ex.uploadLogo}
                   </span>
                 </label>
@@ -297,14 +297,14 @@ export default function ExhibitionTemplatesPage() {
                 onChange={e => setField('customHtml', e.target.value)}
                 placeholder="<h1>{{device.name}}</h1><p>{{device.info}}</p>{{qr}}"
               />
-              <div style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>{ex.customHtmlHint}</div>
+              <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '4px' }}>{ex.customHtmlHint}</div>
             </div>
           )}
 
           {/* Field toggles */}
           {form.layout !== 'CUSTOM' && (
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#555' }}>{ex.fieldsSection}</div>
+              <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--muted-foreground)' }}>{ex.fieldsSection}</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px' }}>
                 {BOOL_FIELDS.map(({ key, labelKey }) => (
                   <label key={key} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
@@ -324,7 +324,7 @@ export default function ExhibitionTemplatesPage() {
             <button onClick={save} disabled={saving || !form.name} style={{ padding: '8px 20px', background: !form.name ? '#ccc' : '#0058bc', color: '#fff', border: 'none', borderRadius: '6px', cursor: !form.name ? 'default' : 'pointer', fontWeight: 'bold' }}>
               {saving ? '…' : ex.save}
             </button>
-            <button onClick={cancelEdit} style={{ padding: '8px 16px', background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer' }}>
+            <button onClick={cancelEdit} style={{ padding: '8px 16px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: '6px', cursor: 'pointer', color: 'var(--foreground)' }}>
               {ex.cancel}
             </button>
           </div>
@@ -333,18 +333,18 @@ export default function ExhibitionTemplatesPage() {
 
       {/* Template list */}
       {templates.length === 0 && !isCreating ? (
-        <div style={{ color: '#888', fontSize: '14px', padding: '24px', textAlign: 'center', border: '1px dashed #ddd', borderRadius: '8px' }}>
+        <div style={{ color: 'var(--muted-foreground)', fontSize: '14px', padding: '24px', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '8px' }}>
           {ex.noTemplates}
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {templates.map(tmpl => (
-            <div key={tmpl.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
+            <div key={tmpl.id} style={{ border: '1px solid var(--border)', borderRadius: '8px', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--card)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 {tmpl.logoPath && <img src={`${API_BASE_URL}${tmpl.logoPath}`} alt="" style={{ height: '32px', objectFit: 'contain' }} />}
                 <div>
                   <div style={{ fontWeight: 'bold', fontSize: '15px' }}>{tmpl.name}</div>
-                  <div style={{ fontSize: '12px', color: '#888' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
                     {layoutLabel(tmpl.layout)}{tmpl.orgName ? ` · ${tmpl.orgName}` : ''}
                   </div>
                 </div>
@@ -353,20 +353,20 @@ export default function ExhibitionTemplatesPage() {
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <a href="/exhibition" style={{ padding: '6px 12px', fontSize: '13px', border: '1px solid #ccc', borderRadius: '6px', textDecoration: 'none', color: '#333' }}>
+                <a href="/exhibition" style={{ padding: '6px 12px', fontSize: '13px', border: '1px solid var(--border)', borderRadius: '6px', textDecoration: 'none', color: 'var(--foreground)' }}>
                   Use
                 </a>
-                <button onClick={() => openEdit(tmpl)} style={{ padding: '6px 12px', fontSize: '13px', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer', background: '#fff' }}>
+                <button onClick={() => openEdit(tmpl)} style={{ padding: '6px 12px', fontSize: '13px', border: '1px solid var(--border)', borderRadius: '6px', cursor: 'pointer', background: 'var(--card)', color: 'var(--foreground)' }}>
                   {ex.editTemplate}
                 </button>
                 {confirmDeleteId === tmpl.id ? (
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <span style={{ fontSize: '13px', color: '#c00' }}>{ex.confirmDelete}</span>
                     <button onClick={() => confirmDelete(tmpl.id)} style={{ padding: '4px 10px', background: '#c00', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>Yes</button>
-                    <button onClick={() => setConfirmDeleteId(null)} style={{ padding: '4px 10px', background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>No</button>
+                    <button onClick={() => setConfirmDeleteId(null)} style={{ padding: '4px 10px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', color: 'var(--foreground)' }}>No</button>
                   </div>
                 ) : (
-                  <button onClick={() => setConfirmDeleteId(tmpl.id)} style={{ padding: '6px 12px', fontSize: '13px', border: '1px solid #fcc', borderRadius: '6px', cursor: 'pointer', background: '#fff', color: '#c00' }}>
+                  <button onClick={() => setConfirmDeleteId(tmpl.id)} style={{ padding: '6px 12px', fontSize: '13px', border: '1px solid #fcc', borderRadius: '6px', cursor: 'pointer', background: 'var(--card)', color: '#c00' }}>
                     {ex.delete}
                   </button>
                 )}
