@@ -593,6 +593,78 @@ export const typeDefs = gql`
     sortOrder: Int
   }
 
+  type ExhibitionTemplate {
+    id: ID!
+    name: String!
+    orgName: String
+    logoPath: String
+    layout: String!
+    accentColor: String
+    footerText: String
+    showQR: Boolean!
+    showManufacturer: Boolean!
+    showModel: Boolean!
+    showSerial: Boolean!
+    showYear: Boolean!
+    showCategory: Boolean!
+    showStatus: Boolean!
+    showCondition: Boolean!
+    showLocation: Boolean!
+    showDescription: Boolean!
+    showSpecs: Boolean!
+    showTags: Boolean!
+    showCustomFields: Boolean!
+    customHtml: String
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input ExhibitionTemplateInput {
+    name: String!
+    orgName: String
+    logoPath: String
+    layout: String
+    accentColor: String
+    footerText: String
+    showQR: Boolean
+    showManufacturer: Boolean
+    showModel: Boolean
+    showSerial: Boolean
+    showYear: Boolean
+    showCategory: Boolean
+    showStatus: Boolean
+    showCondition: Boolean
+    showLocation: Boolean
+    showDescription: Boolean
+    showSpecs: Boolean
+    showTags: Boolean
+    showCustomFields: Boolean
+    customHtml: String
+  }
+
+  input ExhibitionTemplateUpdateInput {
+    name: String
+    orgName: String
+    logoPath: String
+    layout: String
+    accentColor: String
+    footerText: String
+    showQR: Boolean
+    showManufacturer: Boolean
+    showModel: Boolean
+    showSerial: Boolean
+    showYear: Boolean
+    showCategory: Boolean
+    showStatus: Boolean
+    showCondition: Boolean
+    showLocation: Boolean
+    showDescription: Boolean
+    showSpecs: Boolean
+    showTags: Boolean
+    showCustomFields: Boolean
+    customHtml: String
+  }
+
   enum ActivityType {
     STATUS_CHANGED
     FUNCTIONAL_STATUS_CHANGED
@@ -664,6 +736,8 @@ export const typeDefs = gql`
     showcaseAllQuotes: [ShowcaseQuote!]!
     showcaseAllJourneys: [ShowcaseJourney!]!
     dashboard: DashboardData!
+    exhibitionTemplates: [ExhibitionTemplate!]!
+    exhibitionTemplate(id: ID!): ExhibitionTemplate
   }
 
   input DeviceCreateInput {
@@ -968,5 +1042,8 @@ export const typeDefs = gql`
     updateDeviceOSEntry(id: Int!, value: String!, sortOrder: Int): DeviceOS!
     removeDeviceOSEntry(id: Int!): Boolean!
     deleteOrphanedFiles(paths: [String!]!): Int!
+    createExhibitionTemplate(input: ExhibitionTemplateInput!): ExhibitionTemplate!
+    updateExhibitionTemplate(id: ID!, input: ExhibitionTemplateUpdateInput!): ExhibitionTemplate!
+    deleteExhibitionTemplate(id: ID!): Boolean!
   }
 `;

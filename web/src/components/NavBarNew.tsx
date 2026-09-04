@@ -48,15 +48,17 @@ const PUBLIC_MORE_ITEMS: MoreItem[] = [
 
 const MORE_TOOLS: MoreItem[] = [
   { key: 'printList',      href: '/print',            icon: 'print' },
+  { key: 'exhibition',     href: '/exhibition',       icon: 'museum' },
   { key: 'exportImport',   href: '/backup',           icon: 'import_export' },
   { key: 'aiProductImages',href: '/generate-images',  icon: 'auto_awesome' },
 ];
 
 const MORE_MANAGE: MoreItem[] = [
-  { key: 'manageCategories',   href: '/categories',   icon: 'category' },
-  { key: 'manageLocations',    href: '/locations',    icon: 'location_on' },
-  { key: 'manageTemplates',    href: '/templates',    icon: 'content_copy' },
-  { key: 'manageCustomFields', href: '/customFields', icon: 'tune' },
+  { key: 'manageCategories',       href: '/categories',          icon: 'category' },
+  { key: 'manageLocations',        href: '/locations',           icon: 'location_on' },
+  { key: 'manageTemplates',        href: '/templates',           icon: 'content_copy' },
+  { key: 'manageCustomFields',     href: '/customFields',        icon: 'tune' },
+  { key: 'exhibitionTemplates',    href: '/exhibition/templates', icon: 'style' },
 ];
 
 const MORE_ADMIN: MoreItem[] = [

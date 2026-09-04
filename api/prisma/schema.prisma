@@ -463,3 +463,29 @@ model ShowcaseConfig {
   narrativeStatement  String  @default("")
   collectionOverview  String  @default("")
 }
+
+model ExhibitionTemplate {
+  id               String   @id @default(uuid())
+  name             String
+  orgName          String?
+  logoPath         String?
+  layout           String   @default("A4_FULL")
+  accentColor      String?
+  footerText       String?
+  showQR           Boolean  @default(true)
+  showManufacturer Boolean  @default(true)
+  showModel        Boolean  @default(true)
+  showSerial       Boolean  @default(true)
+  showYear         Boolean  @default(true)
+  showCategory     Boolean  @default(true)
+  showStatus       Boolean  @default(false)
+  showCondition    Boolean  @default(true)
+  showLocation     Boolean  @default(false)
+  showDescription  Boolean  @default(true)
+  showSpecs        Boolean  @default(true)
+  showTags         Boolean  @default(false)
+  showCustomFields Boolean  @default(false)
+  customHtml       String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

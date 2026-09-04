@@ -12,7 +12,9 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
-    added: [],
+    added: [
+      'Exhibition Sheets: generate printable per-device display labels for conferences and museum exhibitions. Supports named reusable templates with org logo, accent color, field-visibility toggles, four layouts (A4 Full Page, Display Card 5×7, Compact Label, Custom HTML), and optional QR code linking to the device page. Access from the new /exhibition batch page or the per-device Exhibition Sheet button.',
+    ],
     changed: [],
     fixed: [],
   },

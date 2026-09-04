@@ -38,7 +38,8 @@ export async function cleanDatabase(): Promise<void> {
             "Template",
             "Tag",
             "Category",
-            "RefreshToken"
+            "RefreshToken",
+            "ExhibitionTemplate"
         RESTART IDENTITY CASCADE;
     `);
 }

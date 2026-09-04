@@ -150,12 +150,14 @@ export type Translations = {
     timeline: string;
     usage: string;
     printList: string;
+    exhibition: string;
     exportImport: string;
     aiProductImages: string;
     manageCategories: string;
     manageLocations: string;
     manageTemplates: string;
     manageCustomFields: string;
+    exhibitionTemplates: string;
     trash: string;
     settings: string;
     logOut: string;
@@ -1033,6 +1035,57 @@ export type Translations = {
     storageEntryPlaceholder: string;
     osEntryPlaceholder: string;
   };
+  exhibition: {
+    pageTitle: string;
+    templatesPageTitle: string;
+    noTemplates: string;
+    newTemplate: string;
+    editTemplate: string;
+    templateName: string;
+    orgName: string;
+    logo: string;
+    uploadLogo: string;
+    removeLogo: string;
+    layout: string;
+    layoutA4Full: string;
+    layoutDisplayCard: string;
+    layoutCompactLabel: string;
+    layoutCustom: string;
+    accentColor: string;
+    footerText: string;
+    fieldsSection: string;
+    showQR: string;
+    showManufacturer: string;
+    showModel: string;
+    showSerial: string;
+    showYear: string;
+    showCategory: string;
+    showStatus: string;
+    showCondition: string;
+    showLocation: string;
+    showDescription: string;
+    showSpecs: string;
+    showTags: string;
+    showCustomFields: string;
+    customHtmlLabel: string;
+    customHtmlHint: string;
+    save: string;
+    cancel: string;
+    delete: string;
+    confirmDelete: string;
+    selectTemplate: string;
+    noTemplateSelected: string;
+    selectDevices: string;
+    noDevicesSelected: string;
+    previewPrint: string;
+    back: string;
+    print: string;
+    deviceCount: string;
+    exhibitionSheetButton: string;
+    orgNamePlaceholder: string;
+    footerTextPlaceholder: string;
+    accentColorDefault: string;
+  };
 };
 
 export const en: Translations = {
@@ -1187,12 +1240,14 @@ export const en: Translations = {
     timeline: "Timeline",
     usage: "Usage",
     printList: "Print List",
+    exhibition: "Exhibition Sheets",
     exportImport: "Export / Import",
     aiProductImages: "AI Product Images",
     manageCategories: "Manage Categories",
     manageLocations: "Manage Locations",
     manageTemplates: "Manage Templates",
     manageCustomFields: "Manage Custom Fields",
+    exhibitionTemplates: "Exhibition Templates",
     trash: "Trash",
     settings: "Settings",
     logOut: "Log Out",
@@ -2076,5 +2131,56 @@ export const en: Translations = {
     nativeResolutionPlaceholder: "e.g. 640x480",
     storageEntryPlaceholder: "e.g. 1.44 MB Floppy, 40 MB SCSI HD",
     osEntryPlaceholder: "e.g. System 7.5, Mac OS 8.1",
+  },
+  exhibition: {
+    pageTitle: "Exhibition Sheets",
+    templatesPageTitle: "Exhibition Templates",
+    noTemplates: "No exhibition templates yet. Create one to get started.",
+    newTemplate: "New Template",
+    editTemplate: "Edit Template",
+    templateName: "Template Name",
+    orgName: "Organization Name",
+    logo: "Logo",
+    uploadLogo: "Upload Logo",
+    removeLogo: "Remove Logo",
+    layout: "Layout",
+    layoutA4Full: "A4 Full Page",
+    layoutDisplayCard: "Display Card (5×7)",
+    layoutCompactLabel: "Compact Label",
+    layoutCustom: "Custom HTML",
+    accentColor: "Accent Color",
+    footerText: "Footer Text",
+    fieldsSection: "Fields to Show",
+    showQR: "QR Code",
+    showManufacturer: "Manufacturer",
+    showModel: "Model Number",
+    showSerial: "Serial Number",
+    showYear: "Release Year",
+    showCategory: "Category",
+    showStatus: "Status",
+    showCondition: "Condition",
+    showLocation: "Location",
+    showDescription: "Description",
+    showSpecs: "Specifications",
+    showTags: "Tags",
+    showCustomFields: "Custom Fields",
+    customHtmlLabel: "Custom HTML Template",
+    customHtmlHint: "Available placeholders: {{device.name}}, {{device.manufacturer}}, {{device.modelNumber}}, {{device.serialNumber}}, {{device.releaseYear}}, {{device.category}}, {{device.info}}, {{device.condition}}, {{device.status}}, {{device.id}}, {{qr}}",
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    confirmDelete: "Delete this template?",
+    selectTemplate: "Select a template",
+    noTemplateSelected: "Select an exhibition template to continue.",
+    selectDevices: "Select devices to include",
+    noDevicesSelected: "Select at least one device.",
+    previewPrint: "Preview & Print",
+    back: "Back",
+    print: "Print",
+    deviceCount: "device",
+    exhibitionSheetButton: "Exhibition Sheet",
+    orgNamePlaceholder: "e.g. RetroMac Society",
+    footerTextPlaceholder: "e.g. On loan from the personal collection of…",
+    accentColorDefault: "Default (blue)",
   },
 };
