@@ -507,10 +507,10 @@ export default function ExhibitionPage() {
             }
 
             /* ── Card layouts (DISPLAY_CARD, COMPACT_LABEL) ─────────────────────── */
-            /* Full-bleed: @page margin:0 so 100vw/100vh = full paper dimensions.
-               The card fills the whole page. The card's own internal padding (20px)
-               keeps content away from the physical printer edge.
-               break-after:page is on the sheet itself; the wrapper is just a passthrough. */
+            /* @page margin:0 → card's inline inch dimensions (7×5, 5×3) fill the page
+               exactly. DO NOT use vw/vh here — in @media print those units resolve to
+               the screen viewport, not the page dimensions, causing the card to inflate
+               to screen width (~125% oversize). The inline styles are the right values. */
             .layout-DISPLAY_CARD .sheet-wrapper,
             .layout-COMPACT_LABEL .sheet-wrapper {
               margin: 0 !important;
@@ -518,9 +518,6 @@ export default function ExhibitionPage() {
             }
             .display-card-sheet,
             .compact-label-sheet {
-              width: 100vw !important;
-              height: 100vh !important;
-              box-sizing: border-box !important;
               box-shadow: none !important;
               margin: 0 !important;
               page-break-after: always !important;
