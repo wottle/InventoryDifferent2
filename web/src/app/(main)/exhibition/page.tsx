@@ -414,6 +414,16 @@ export default function ExhibitionPage() {
     }
   }, [templates, selectedTemplateId]);
 
+  // Stamp a class on <body> so @media print can hide the nav/layout shell
+  useEffect(() => {
+    if (showPrintView) {
+      document.body.classList.add('exhibition-printing');
+    } else {
+      document.body.classList.remove('exhibition-printing');
+    }
+    return () => { document.body.classList.remove('exhibition-printing'); };
+  }, [showPrintView]);
+
   const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
 
   const filteredDevices = useMemo(() => {
@@ -462,7 +472,17 @@ export default function ExhibitionPage() {
         <style jsx global>{`
           @media print {
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .no-print { display: none !important; }
+
+            /* Hide the entire app shell — nav, layout wrapper, etc. */
+            body.exhibition-printing > * { visibility: hidden !important; }
+
+            /* Reveal only the exhibition print container and everything inside it */
+            body.exhibition-printing .exhibition-print { visibility: visible !important; position: absolute; top: 0; left: 0; width: 100%; }
+            body.exhibition-printing .exhibition-print * { visibility: visible !important; }
+
+            /* Keep the control bar hidden even though it's inside .exhibition-print */
+            body.exhibition-printing .no-print { display: none !important; }
+
             .exhibition-print { padding: 0 !important; }
             .sheet-wrapper { margin: 0 !important; padding: 0 !important; }
             .exhibition-sheet {
@@ -475,7 +495,10 @@ export default function ExhibitionPage() {
               margin: 0 !important;
               min-height: 0 !important;
             }
-            @page { margin: 0.5in; size: A4 portrait; }
+            @page {
+              margin: ${selectedTemplate.layout === 'COMPACT_LABEL' ? '0.2in' : selectedTemplate.layout === 'DISPLAY_CARD' ? '0.25in' : '0.5in'};
+              size: ${selectedTemplate.layout === 'DISPLAY_CARD' ? '7in 5in' : selectedTemplate.layout === 'COMPACT_LABEL' ? '5in 3in' : 'A4 portrait'};
+            }
           }
           @media screen {
             .exhibition-print { max-width: 1100px; margin: 0 auto; padding: 24px; }
