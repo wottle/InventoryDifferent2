@@ -33,7 +33,7 @@ const GET_DEVICES = gql`
       cpuType cpuSpeed ram graphicsChip storageEntries { id value sortOrder } osEntries { id value sortOrder }
       images { id path thumbnailPath isThumbnail thumbnailMode }
       tags { id name }
-      customFieldValues { id customField { name isPublic } value }
+      customFieldValues { id customFieldId customFieldName isPublic value sortOrder }
     }
   }
 `;
@@ -58,7 +58,7 @@ type Device = {
   osEntries?: { id: number; value: string; sortOrder: number }[];
   images?: { id: number; path: string; thumbnailPath?: string; isThumbnail: boolean; thumbnailMode?: string }[];
   tags?: { id: number; name: string }[];
-  customFieldValues?: { id: number; customField: { name: string; isPublic: boolean }; value: string }[];
+  customFieldValues?: { id: number; customFieldId: number; customFieldName: string; isPublic: boolean; value: string; sortOrder: number }[];
 };
 
 function QRCodeWrapper({ url, size = 80 }: { url: string; size?: number }) {
@@ -267,7 +267,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl }: { device: Device; t
           <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Additional Info</div>
           {(device.customFieldValues || []).map(cfv => (
             <div key={cfv.id} style={{ fontSize: '13px', color: '#333', marginBottom: '4px' }}>
-              <span style={{ color: '#888' }}>{cfv.customField.name}: </span>{cfv.value}
+              <span style={{ color: '#888' }}>{cfv.customFieldName}: </span>{cfv.value}
             </div>
           ))}
         </div>
