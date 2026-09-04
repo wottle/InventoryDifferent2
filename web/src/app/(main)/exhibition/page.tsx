@@ -129,7 +129,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
 
   if (template.layout === 'COMPACT_LABEL') {
     return (
-      <div className="exhibition-sheet" style={{
+      <div className="exhibition-sheet compact-label-sheet" style={{
         width: '5in', height: '3in', borderTop: `4px solid ${accent}`,
         padding: '12px 16px', display: 'flex', flexDirection: 'column',
         justifyContent: 'space-between', fontFamily: 'sans-serif', background: '#fff',
@@ -170,7 +170,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
 
   if (template.layout === 'DISPLAY_CARD') {
     return (
-      <div className="exhibition-sheet" style={{
+      <div className="exhibition-sheet display-card-sheet" style={{
         width: '7in', height: '5in', borderTop: `4px solid ${accent}`,
         display: 'flex', fontFamily: 'sans-serif', background: '#fff',
         boxSizing: 'border-box', overflow: 'hidden', color: '#000',
@@ -495,10 +495,32 @@ export default function ExhibitionPage() {
               margin: 0 !important;
               min-height: 0 !important;
             }
+
+            /*
+             * Size each layout to exactly its printable area so nothing overflows.
+             * A4: 8.27×11.69in paper, 0.5in @page margin → 7.27×10.69in printable.
+             * DISPLAY_CARD: 7×5in paper, 0.15in @page margin → 6.7×4.7in printable.
+             * COMPACT_LABEL: 5×3in paper, 0.1in @page margin → 4.8×2.8in printable.
+             * Reduce internal padding for A4 since @page margin already provides outer spacing.
+             */
+            .a4-sheet {
+              width: 7.27in !important;
+              height: 10.69in !important;
+              padding: 0.25in !important;
+            }
+            .display-card-sheet {
+              width: 6.7in !important;
+              height: 4.7in !important;
+            }
+            .compact-label-sheet {
+              width: 4.8in !important;
+              height: 2.8in !important;
+            }
+
             @page {
-              /* Card layouts: 0 margin so the card fills the full page — internal padding provides the visual margin */
-              margin: ${selectedTemplate.layout === 'DISPLAY_CARD' || selectedTemplate.layout === 'COMPACT_LABEL' ? '0' : '0.5in'};
               size: ${selectedTemplate.layout === 'DISPLAY_CARD' ? '7in 5in' : selectedTemplate.layout === 'COMPACT_LABEL' ? '5in 3in' : 'A4 portrait'};
+              /* Cards: small non-zero margin so content stays clear of the printer's physical non-printable edge */
+              margin: ${selectedTemplate.layout === 'DISPLAY_CARD' ? '0.15in' : selectedTemplate.layout === 'COMPACT_LABEL' ? '0.1in' : '0.5in'};
             }
           }
           @media screen {
