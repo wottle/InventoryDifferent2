@@ -130,7 +130,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
   if (template.layout === 'COMPACT_LABEL') {
     return (
       <div className="exhibition-sheet" style={{
-        width: '5in', height: '3in', border: `2px solid ${accent}`,
+        width: '5in', height: '3in', borderTop: `4px solid ${accent}`,
         padding: '12px 16px', display: 'flex', flexDirection: 'column',
         justifyContent: 'space-between', fontFamily: 'sans-serif', background: '#fff',
         boxSizing: 'border-box', overflow: 'hidden', color: '#000',
@@ -171,7 +171,7 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
   if (template.layout === 'DISPLAY_CARD') {
     return (
       <div className="exhibition-sheet" style={{
-        width: '7in', height: '5in', border: `3px solid ${accent}`,
+        width: '7in', height: '5in', borderTop: `4px solid ${accent}`,
         display: 'flex', fontFamily: 'sans-serif', background: '#fff',
         boxSizing: 'border-box', overflow: 'hidden', color: '#000',
       }}>
@@ -226,9 +226,9 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
   // A4_FULL (default)
   return (
     <div className="exhibition-sheet a4-sheet" style={{
-      width: '8.27in', minHeight: '11.69in', background: '#fff', fontFamily: 'sans-serif',
+      width: '8.27in', height: '11.69in', background: '#fff', fontFamily: 'sans-serif',
       padding: '0.5in', boxSizing: 'border-box', border: `1px solid #ddd`, color: '#000',
-      display: 'flex', flexDirection: 'column',
+      display: 'flex', flexDirection: 'column', overflow: 'hidden',
     }}>
       {/* Header — 3 columns: logo/org | store QR (centered, for-sale only) | device QR */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: `3px solid ${accent}`, paddingBottom: '12px', marginBottom: '16px' }}>
@@ -373,8 +373,8 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
         </div>
       )}
 
-      {/* Footer */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px', marginTop: '24px' }}>
+      {/* Footer — pushed to bottom of the flex column */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '11px', color: '#aaa', borderTop: `1px solid #eee`, paddingTop: '8px', marginTop: 'auto' }}>
         <div>{template.footerText}</div>
         <div>ID: {String(device.id).padStart(5, '0')}</div>
       </div>
@@ -477,13 +477,13 @@ export default function ExhibitionPage() {
             body.exhibition-printing > * { visibility: hidden !important; }
 
             /* Reveal only the exhibition print container and everything inside it */
-            body.exhibition-printing .exhibition-print { visibility: visible !important; position: absolute; top: 0; left: 0; width: 100%; }
+            body.exhibition-printing .exhibition-print { visibility: visible !important; position: absolute; top: 0; left: 0; width: 100%; background: white !important; }
             body.exhibition-printing .exhibition-print * { visibility: visible !important; }
 
             /* Keep the control bar hidden even though it's inside .exhibition-print */
             body.exhibition-printing .no-print { display: none !important; }
 
-            .exhibition-print { padding: 0 !important; }
+            .exhibition-print { padding: 0 !important; background: white !important; }
             .sheet-wrapper { margin: 0 !important; padding: 0 !important; }
             .exhibition-sheet {
               page-break-after: always !important;
@@ -496,7 +496,8 @@ export default function ExhibitionPage() {
               min-height: 0 !important;
             }
             @page {
-              margin: ${selectedTemplate.layout === 'COMPACT_LABEL' ? '0.2in' : selectedTemplate.layout === 'DISPLAY_CARD' ? '0.25in' : '0.5in'};
+              /* Card layouts: 0 margin so the card fills the full page — internal padding provides the visual margin */
+              margin: ${selectedTemplate.layout === 'DISPLAY_CARD' || selectedTemplate.layout === 'COMPACT_LABEL' ? '0' : '0.5in'};
               size: ${selectedTemplate.layout === 'DISPLAY_CARD' ? '7in 5in' : selectedTemplate.layout === 'COMPACT_LABEL' ? '5in 3in' : 'A4 portrait'};
             }
           }
