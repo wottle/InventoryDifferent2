@@ -1,4 +1,4 @@
-export const APP_VERSION = '3.1.0';
+export const APP_VERSION = '3.1.1';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '3.1.1',
+    date: '2026-09-03',
     added: [
       'Docker port bindings are now configurable via environment variables (`API_PORT`, `WEB_PORT`, `STOREFRONT_PORT`, `SHOWCASE_PORT`, `MCP_PORT`, `RETRO_PORT`) — defaults remain unchanged.',
       'Settings: new eBay Marketplace selector lets you choose which regional eBay site (US, UK, DE, FR, ES, IT) is used for sold listing lookups on device detail pages.',
