@@ -159,6 +159,11 @@ function ExhibitionSheet({ device, template, shareBaseUrl, shopDomain, imageMode
             )}
           </div>
         </div>
+        {template.showHistoricalNotes && device.historicalNotes && (
+          <div style={{ fontSize: '10px', color: '#444', marginTop: '6px', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+            {device.historicalNotes}
+          </div>
+        )}
         {template.footerText && (
           <div style={{ fontSize: '10px', color: '#888', borderTop: `1px solid ${accent}`, paddingTop: '4px', marginTop: '4px' }}>
             {template.footerText}

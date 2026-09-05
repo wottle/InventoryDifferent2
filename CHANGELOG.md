@@ -16,6 +16,7 @@ All notable changes to InventoryDifferent will be documented here.
 
 - Exhibition Sheets: website navigation no longer appears on the first printed page.
 - Exhibition Sheets: Display Card (5×7) and Compact Label (5×3) layouts now print at the correct card dimensions instead of being forced to A4.
+- Exhibition Sheets: Compact Label layout now renders Historical Notes when enabled in the template.
 
 ---
 
