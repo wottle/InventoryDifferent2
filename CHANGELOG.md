@@ -6,6 +6,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Added
 
+- Exhibition Sheets: status filter chips on the device selection page — toggle one or more statuses (In Collection, For Sale, etc.) to narrow the device list; "Select All" respects the active filter.
+
 ### Changed
 
 ### Fixed
