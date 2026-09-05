@@ -468,16 +468,17 @@ export default function ExhibitionPage() {
 
   if (showPrintView && selectedTemplate) {
     return (
-      <div className={`exhibition-print min-h-screen layout-${selectedTemplate.layout}`} style={{ background: 'var(--background)' }}>
+      <div className={`exhibition-print layout-${selectedTemplate.layout}`} style={{ background: 'var(--background)' }}>
         <style jsx global>{`
           @media print {
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-            /* Hide the entire app shell — nav, layout wrapper, etc. */
-            body.exhibition-printing > * { visibility: hidden !important; }
+            /* White body so any gap around the absolute container is white, not gray */
+            body.exhibition-printing { background: white !important; }
+            /* Collapse normal-flow wrappers so they don't generate blank pages */
+            body.exhibition-printing > * { visibility: hidden !important; min-height: 0 !important; height: auto !important; overflow: hidden !important; }
 
             /* Reveal only the exhibition print container and everything inside it */
-            body.exhibition-printing .exhibition-print { visibility: visible !important; position: absolute; top: 0; left: 0; width: 100%; background: white !important; }
+            body.exhibition-printing .exhibition-print { visibility: visible !important; position: absolute; top: 0; left: 0; width: 100%; background: white !important; min-height: 0 !important; }
             body.exhibition-printing .exhibition-print * { visibility: visible !important; }
 
             /* Keep the control bar hidden even though it's inside .exhibition-print */
@@ -511,13 +512,15 @@ export default function ExhibitionPage() {
                exactly. DO NOT use vw/vh here — in @media print those units resolve to
                the screen viewport, not the page dimensions, causing the card to inflate
                to screen width (~125% oversize). The inline styles are the right values.
-               The position:absolute container is shifted by margin-top/left so the card
-               lands 0.5in down and 0.25in right from the physical paper edge — useful
-               for compensating for printer feed offsets on card stock. */
+               DO NOT use margin-top on the container to shift content — the card element
+               is exactly the page height (e.g. 5in card on 5in page), so any positive
+               margin-top pushes it past the page boundary and break-inside:avoid demotes
+               the entire card to page 2, leaving a blank first page. Instead, use
+               padding on the card element itself: content shifts down within the card
+               while the element stays at top:0, fitting the page perfectly. */
             body.exhibition-printing .layout-DISPLAY_CARD,
             body.exhibition-printing .layout-COMPACT_LABEL {
-              margin-top: 0.5in !important;
-              margin-left: 0.25in !important;
+              margin: 0 !important;
             }
             .layout-DISPLAY_CARD .sheet-wrapper,
             .layout-COMPACT_LABEL .sheet-wrapper {
@@ -531,6 +534,16 @@ export default function ExhibitionPage() {
               page-break-after: always !important;
               break-after: page !important;
               break-inside: avoid !important;
+            }
+            /* Printer calibration: shift content down/right inside the card without
+               moving the card element (which would cause break-inside:avoid blank page) */
+            .display-card-sheet {
+              padding-top: 0.75in !important;
+              padding-left: 0.25in !important;
+            }
+            .compact-label-sheet {
+              padding-top: 0.5in !important;
+              padding-left: 0.25in !important;
             }
 
             @page {
