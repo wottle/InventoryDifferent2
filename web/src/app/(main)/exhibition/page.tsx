@@ -510,7 +510,15 @@ export default function ExhibitionPage() {
             /* @page margin:0 → card's inline inch dimensions (7×5, 5×3) fill the page
                exactly. DO NOT use vw/vh here — in @media print those units resolve to
                the screen viewport, not the page dimensions, causing the card to inflate
-               to screen width (~125% oversize). The inline styles are the right values. */
+               to screen width (~125% oversize). The inline styles are the right values.
+               The position:absolute container is shifted by margin-top/left so the card
+               lands 0.5in down and 0.25in right from the physical paper edge — useful
+               for compensating for printer feed offsets on card stock. */
+            body.exhibition-printing .layout-DISPLAY_CARD,
+            body.exhibition-printing .layout-COMPACT_LABEL {
+              margin-top: 0.5in !important;
+              margin-left: 0.25in !important;
+            }
             .layout-DISPLAY_CARD .sheet-wrapper,
             .layout-COMPACT_LABEL .sheet-wrapper {
               margin: 0 !important;
