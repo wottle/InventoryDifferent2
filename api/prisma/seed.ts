@@ -774,6 +774,39 @@ async function main() {
     }
     console.log('Seeded default showcase quotes.');
 
+    // Seed a default exhibition template so the feature is usable on first install
+    const existingExhibitionTemplates = await (prisma as any).exhibitionTemplate.count();
+    if (existingExhibitionTemplates === 0) {
+        await (prisma as any).exhibitionTemplate.create({
+            data: {
+                id: 'default-exhibition-template',
+                name: 'General Exhibition',
+                orgName: null,
+                layout: 'A4_FULL',
+                accentColor: '#0058bc',
+                footerText: null,
+                showQR: true,
+                showManufacturer: true,
+                showModel: true,
+                showSerial: true,
+                showYear: true,
+                showCategory: true,
+                showStatus: false,
+                showCondition: true,
+                showLocation: false,
+                showDescription: true,
+                showSpecs: true,
+                showTags: false,
+                showCustomFields: false,
+                showHistoricalNotes: false,
+                showNotes: false,
+                showMaintenanceHistory: false,
+                showStoreQR: false,
+            },
+        });
+        console.log('Seeded default exhibition template.');
+    }
+
     console.log('Seeding completed.');
 }
 

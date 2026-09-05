@@ -12,6 +12,24 @@ All notable changes to InventoryDifferent will be documented here.
 
 ---
 
+## [3.2.0] - 2026-09-04
+
+### Added
+
+- Exhibition Sheets: generate printable per-device display labels for conferences and museum exhibitions. Supports named reusable templates with org logo, accent color, field-visibility toggles, four layouts (A4 Full Page, Display Card 5×7, Compact Label, Custom HTML), and optional QR code linking to the device page. Templates can optionally show historical notes, notes, maintenance history, and a store QR code for devices listed for sale. A seeded "General Exhibition" template is created automatically on first run.
+
+### Changed
+
+- Renamed "Manage Templates" nav item to "Device Templates" to distinguish it from Exhibition Templates.
+
+### Fixed
+
+- Exhibition Sheets: website navigation no longer appears on the first printed page.
+- Exhibition Sheets: Display Card (5×7) and Compact Label (5×3) layouts now print at the correct card dimensions instead of being forced to A4.
+- Exhibition Sheets: Compact Label layout now renders Historical Notes when enabled in the template.
+
+---
+
 ## [3.1.1] - 2026-09-03
 
 ### Added

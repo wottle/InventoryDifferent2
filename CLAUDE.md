@@ -133,6 +133,15 @@ When adding, removing, or renaming fields in `api/prisma/schema.prisma`, every l
 - Run `npx prisma generate` in **both** `api/` and `mcp-server/` after schema changes
 - Update seed logic to populate/migrate the relation rows (not just the scalar columns)
 
+**For standalone admin-only models** (e.g. `ExhibitionTemplate`, `ShowcaseJourney`, `ShowcaseConfig`):
+- Only add to `api/prisma/schema.prisma` (NOT `mcp-server/prisma/schema.prisma` — it mirrors only `Device`/`Template`)
+- Add to `api/src/typeDefs.ts` (type, input, queries, mutations)
+- Add resolvers to `api/src/resolvers.ts` following the CRUD pattern
+- Add any REST upload endpoints to `api/src/index.ts` if the model has file/image fields
+- Add web pages under `web/src/app/(main)/` with i18n strings in all 5 language files (`en`, `de`, `fr`, `es`, `it`)
+- Add integration tests in `api/tests/integration/` and add the table name to `cleanDatabase()` in `api/tests/helpers/setup.ts`
+- No iOS or MCP changes needed for web-only admin features
+
 **Verification before committing:**
 ```bash
 cd api && npx tsc --noEmit          # must pass
@@ -498,6 +507,8 @@ A comprehensive list of all implemented features, organized by platform. Use thi
 **Custom Fields** (`/customFields`): create, edit, delete fields; toggle public/private; set sort order
 
 **Print** (`/print`): filtered print-friendly device table
+
+**Exhibition Sheets** (`/exhibition`): printable per-device display labels for museum/conference use. Batch page with device checkboxes + template selector; or launch via per-device "Exhibition Sheet" button (links to `/exhibition?deviceId=X`). Uses browser `window.print()` with `@media print` CSS, one `page-break-after: always` per sheet. Template management at `/exhibition/templates` (CRUD, logo upload to `/app/uploads/exhibition/`). Four layouts: `A4_FULL` (portrait, logo/QR header, photo+fields, footer), `DISPLAY_CARD` (landscape 7×5in, photo left), `COMPACT_LABEL` (index card 5×3in), `CUSTOM` (admin-authored HTML with `{{device.*}}` and `{{qr}}` placeholders). Template config: org name, logo, accent color, footer text, per-field visibility toggles. Model: `ExhibitionTemplate` (standalone, no Device foreign key). Logo upload: `POST /upload/exhibition-logo`. Utility: `web/src/lib/renderCustomTemplate.ts`.
 
 **Backup** (`/backup`): export selected devices to ZIP (with images, progress tracking); bulk import from ZIP (progress polling, error reporting)
 

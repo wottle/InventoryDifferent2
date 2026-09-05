@@ -340,6 +340,32 @@ export async function createApp(prismaOverride?: PrismaClient) {
         res.json({ path: imagePath });
     });
 
+    // Exhibition logo upload
+    const exhibitionLogoStorage = multer.diskStorage({
+        destination: (_req, _file, cb) => {
+            const dir = '/app/uploads/exhibition';
+            fs.mkdirSync(dir, { recursive: true });
+            cb(null, dir);
+        },
+        filename: (_req, file, cb) => {
+            const ext = path.extname(file.originalname);
+            cb(null, `${uuidv4()}${ext}`);
+        },
+    });
+    const imageOnlyFilter = (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+        const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (allowed.includes(file.mimetype)) cb(null, true);
+        else cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.'));
+    };
+    const exhibitionLogoUpload = multer({ storage: exhibitionLogoStorage, fileFilter: imageOnlyFilter, limits: { fileSize: 10 * 1024 * 1024 } });
+
+    app.post('/upload/exhibition-logo', requireAuth, exhibitionLogoUpload.single('image'), (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        res.json({ path: `/uploads/exhibition/${req.file.filename}` });
+    });
+
     // Import endpoint for ZIP files - now with streaming extraction
     // Store uploads to disk instead of memory for large files
     const importStorage = multer.diskStorage({

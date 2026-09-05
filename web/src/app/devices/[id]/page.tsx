@@ -1147,6 +1147,11 @@ export default function DeviceDetailNew() {
             <Icon name="share" className="w-5 h-5" />
           </button>
           {isAuthenticated && (
+            <Link href={`/exhibition?deviceId=${id}`} title={t.exhibition.exhibitionSheetButton} aria-label={t.exhibition.exhibitionSheetButton} className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all">
+              <Icon name="museum" className="w-5 h-5" />
+            </Link>
+          )}
+          {isAuthenticated && (
             <button onClick={() => setDeleteDeviceConfirm(true)} title="Delete device" aria-label="Delete device" className="p-2 text-on-surface-variant hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
               <Icon name="delete" className="w-5 h-5" />
             </button>

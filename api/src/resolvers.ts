@@ -1187,6 +1187,25 @@ export const resolvers = {
                 collectionHealth: { noImages, noNotes, missingSpecs },
             };
         },
+
+        exhibitionTemplates: async (_parent: any, _args: any, context: Context) => {
+            requireAuth(context);
+            const templates = await (context.prisma as any).exhibitionTemplate.findMany({
+                orderBy: { createdAt: 'desc' },
+            });
+            return templates.map((t: any) => ({
+                ...t,
+                createdAt: t.createdAt.toISOString(),
+                updatedAt: t.updatedAt.toISOString(),
+            }));
+        },
+
+        exhibitionTemplate: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            const t = await (context.prisma as any).exhibitionTemplate.findUnique({ where: { id: args.id } });
+            if (!t) return null;
+            return { ...t, createdAt: t.createdAt.toISOString(), updatedAt: t.updatedAt.toISOString() };
+        },
     },
     Mutation: {
         recordDeviceView: async (_parent: any, args: { deviceId: number }, context: Context) => {
@@ -2364,6 +2383,51 @@ export const resolvers = {
         removeDeviceOSEntry: async (_parent: any, args: { id: number }, context: Context) => {
             requireAuth(context);
             await (context.prisma as any).deviceOS.delete({ where: { id: args.id } });
+            return true;
+        },
+
+        createExhibitionTemplate: async (_parent: any, args: { input: any }, context: Context) => {
+            requireAuth(context);
+            const t = await (context.prisma as any).exhibitionTemplate.create({ data: args.input });
+            return { ...t, createdAt: t.createdAt.toISOString(), updatedAt: t.updatedAt.toISOString() };
+        },
+
+        updateExhibitionTemplate: async (_parent: any, args: { id: string; input: any }, context: Context) => {
+            requireAuth(context);
+            // Delete old logo file if it's being replaced
+            if (args.input.logoPath !== undefined) {
+                const current = await (context.prisma as any).exhibitionTemplate.findUnique({
+                    where: { id: args.id },
+                    select: { logoPath: true },
+                });
+                const oldPath = current?.logoPath;
+                if (oldPath && oldPath !== args.input.logoPath) {
+                    const diskPath = path.join('/app/uploads', oldPath);
+                    if (diskPath.startsWith('/app/uploads/') && fs.existsSync(diskPath)) {
+                        try { fs.unlinkSync(diskPath); } catch { /* ignore */ }
+                    }
+                }
+            }
+            const t = await (context.prisma as any).exhibitionTemplate.update({
+                where: { id: args.id },
+                data: args.input,
+            });
+            return { ...t, createdAt: t.createdAt.toISOString(), updatedAt: t.updatedAt.toISOString() };
+        },
+
+        deleteExhibitionTemplate: async (_parent: any, args: { id: string }, context: Context) => {
+            requireAuth(context);
+            const t = await (context.prisma as any).exhibitionTemplate.findUnique({
+                where: { id: args.id },
+                select: { logoPath: true },
+            });
+            if (t?.logoPath) {
+                const diskPath = path.join('/app/uploads', t.logoPath);
+                if (diskPath.startsWith('/app/uploads/') && fs.existsSync(diskPath)) {
+                    try { fs.unlinkSync(diskPath); } catch { /* ignore */ }
+                }
+            }
+            await (context.prisma as any).exhibitionTemplate.delete({ where: { id: args.id } });
             return true;
         },
     },
