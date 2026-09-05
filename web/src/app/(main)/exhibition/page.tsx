@@ -405,7 +405,10 @@ export default function ExhibitionPage() {
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<Set<number>>(new Set());
   const [deviceImageModes, setDeviceImageModes] = useState<Map<number, ImageMode>>(new Map());
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<Set<string>>(new Set());
   const [showPrintView, setShowPrintView] = useState(false);
+
+  const ALL_STATUSES = ['COLLECTION', 'FOR_SALE', 'PENDING_SALE', 'IN_REPAIR', 'SOLD', 'DONATED', 'RETURNED'];
 
   useEffect(() => {
     if (preselectedDeviceId && allDevices.length > 0) {
@@ -432,15 +435,26 @@ export default function ExhibitionPage() {
   const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
 
   const filteredDevices = useMemo(() => {
-    if (!searchTerm) return allDevices;
-    const lower = searchTerm.toLowerCase();
-    return allDevices.filter(d =>
-      d.name.toLowerCase().includes(lower) ||
-      d.additionalName?.toLowerCase().includes(lower) ||
-      d.manufacturer?.toLowerCase().includes(lower) ||
-      d.serialNumber?.toLowerCase().includes(lower)
-    );
-  }, [allDevices, searchTerm]);
+    return allDevices.filter(d => {
+      if (statusFilter.size > 0 && (!d.status || !statusFilter.has(d.status))) return false;
+      if (!searchTerm) return true;
+      const lower = searchTerm.toLowerCase();
+      return (
+        d.name.toLowerCase().includes(lower) ||
+        d.additionalName?.toLowerCase().includes(lower) ||
+        d.manufacturer?.toLowerCase().includes(lower) ||
+        d.serialNumber?.toLowerCase().includes(lower)
+      );
+    });
+  }, [allDevices, searchTerm, statusFilter]);
+
+  function toggleStatus(status: string) {
+    setStatusFilter(prev => {
+      const next = new Set(prev);
+      if (next.has(status)) next.delete(status); else next.add(status);
+      return next;
+    });
+  }
 
   const selectedDevices = allDevices.filter(d => selectedDeviceIds.has(d.id));
 
@@ -621,6 +635,32 @@ export default function ExhibitionPage() {
           <h2 style={{ fontSize: '16px', fontWeight: 'bold', flex: 1, color: 'var(--on-surface)' }}>{t.exhibition.selectDevices}</h2>
           <button onClick={selectAll} style={{ fontSize: '12px', color: '#0058bc', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>Select All</button>
           <button onClick={clearAll} style={{ fontSize: '12px', color: 'var(--on-surface-variant)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>Clear</button>
+        </div>
+        {/* Status filter chips — empty selection = show all statuses */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+          {ALL_STATUSES.map(status => (
+            <button
+              key={status}
+              onClick={() => toggleStatus(status)}
+              style={{
+                padding: '3px 10px', fontSize: '12px', borderRadius: '999px', cursor: 'pointer',
+                border: `1px solid ${statusFilter.has(status) ? '#0058bc' : 'var(--outline-variant)'}`,
+                background: statusFilter.has(status) ? '#0058bc' : 'var(--card)',
+                color: statusFilter.has(status) ? '#fff' : 'var(--on-surface-variant)',
+                fontWeight: statusFilter.has(status) ? 600 : 400,
+              }}
+            >
+              {(t.status as Record<string, string>)[status]}
+            </button>
+          ))}
+          {statusFilter.size > 0 && (
+            <button
+              onClick={() => setStatusFilter(new Set())}
+              style={{ padding: '3px 10px', fontSize: '12px', borderRadius: '999px', cursor: 'pointer', border: '1px solid var(--outline-variant)', background: 'none', color: 'var(--on-surface-variant)' }}
+            >
+              Clear filter
+            </button>
+          )}
         </div>
         <input
           type="text"
