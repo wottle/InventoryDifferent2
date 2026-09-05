@@ -157,7 +157,7 @@ export const de: Translations = {
     aiProductImages: "KI-Produktbilder",
     manageCategories: "Kategorien verwalten",
     manageLocations: "Standorte verwalten",
-    manageTemplates: "Vorlagen verwalten",
+    manageTemplates: "Gerätevorlagen",
     manageCustomFields: "Benutzerdefinierte Felder verwalten",
     exhibitionTemplates: "Ausstellungsvorlagen",
     trash: "Papierkorb",

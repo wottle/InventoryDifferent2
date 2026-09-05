@@ -20,6 +20,9 @@ export const releaseNotes: ReleaseEntry[] = [
       'Exhibition Sheets: website navigation no longer appears on the first printed page.',
       'Exhibition Sheets: Display Card (5×7) and Compact Label (5×3) layouts now print at the correct card dimensions instead of being forced to A4.',
     ],
+    changed: [
+      'Renamed "Manage Templates" nav item to "Device Templates" to distinguish it from Exhibition Templates.',
+    ],
   },
   {
     version: '3.1.1',

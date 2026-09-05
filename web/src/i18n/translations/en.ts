@@ -1267,7 +1267,7 @@ export const en: Translations = {
     aiProductImages: "AI Product Images",
     manageCategories: "Manage Categories",
     manageLocations: "Manage Locations",
-    manageTemplates: "Manage Templates",
+    manageTemplates: "Device Templates",
     manageCustomFields: "Manage Custom Fields",
     exhibitionTemplates: "Exhibition Templates",
     trash: "Trash",
@@ -1787,7 +1787,7 @@ export const en: Translations = {
       deleteFieldBtn: "Delete Field",
     },
     templates: {
-      title: "Manage Templates",
+      title: "Device Templates",
       subtitle: "Add, edit, and delete templates.",
       loading: "Loading templates…",
       loadingSubtitle: "Fetching your saved presets",

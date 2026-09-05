@@ -10,6 +10,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Changed
 
+- Renamed "Manage Templates" nav item to "Device Templates" to distinguish it from Exhibition Templates.
+
 ### Fixed
 
 - Exhibition Sheets: website navigation no longer appears on the first printed page.

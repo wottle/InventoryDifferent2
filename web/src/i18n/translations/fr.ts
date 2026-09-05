@@ -157,7 +157,7 @@ export const fr: Translations = {
     aiProductImages: "Images de produits IA",
     manageCategories: "Gérer les catégories",
     manageLocations: "Gérer les emplacements",
-    manageTemplates: "Gérer les modèles",
+    manageTemplates: "Modèles d'appareils",
     manageCustomFields: "Gérer les champs personnalisés",
     exhibitionTemplates: "Modèles d'exposition",
     trash: "Corbeille",
