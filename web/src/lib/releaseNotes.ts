@@ -1,4 +1,4 @@
-export const APP_VERSION = '3.1.1';
+export const APP_VERSION = '3.2.0';
 
 export interface ReleaseEntry {
   version: string;
@@ -12,6 +12,13 @@ export const releaseNotes: ReleaseEntry[] = [
   {
     version: 'Unreleased',
     date: '',
+    added: [],
+    changed: [],
+    fixed: [],
+  },
+  {
+    version: '3.2.0',
+    date: '2026-09-04',
     added: [
       'Exhibition Sheets: generate printable per-device display labels for conferences and museum exhibitions. Supports named reusable templates with org logo, accent color, field-visibility toggles, four layouts (A4 Full Page, Display Card 5×7, Compact Label, Custom HTML), and optional QR code linking to the device page. Access from the new /exhibition batch page or the per-device Exhibition Sheet button. Templates can optionally show historical notes, notes, maintenance history, and a store QR code for devices listed for sale. A seeded "General Exhibition" template is created automatically on first run.',
     ],
