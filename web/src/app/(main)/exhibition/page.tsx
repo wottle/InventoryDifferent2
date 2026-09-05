@@ -547,7 +547,7 @@ export default function ExhibitionPage() {
               padding-left: 0.25in !important;
             }
             .compact-label-sheet {
-              padding-top: 0.5in !important;
+              padding-top: 0.75in !important;
               padding-left: 0.25in !important;
             }
 
