@@ -15,7 +15,9 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [
       'Exhibition Sheets: status filter chips on the device selection page — toggle one or more statuses (In Collection, For Sale, etc.) to narrow the device list; "Select All" respects the active filter.',
     ],
-    changed: [],
+    changed: [
+      'All buttons, links, and interactive labels now show immediate press feedback (opacity + subtle scale) and respond without the 300ms mobile tap delay.',
+    ],
     fixed: [
       'Add (+) button is now visible in portrait orientation on phones — it was hidden because it only appeared at the md breakpoint (landscape width). The FAB now floats above the mobile bottom nav on all screen sizes.',
     ],
