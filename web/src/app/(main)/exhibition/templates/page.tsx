@@ -252,7 +252,7 @@ export default function ExhibitionTemplatesPage() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '16px' }}>
             <div>
               <label style={labelStyle}>{ex.layout}</label>
               <select style={inputStyle} value={form.layout} onChange={e => setField('layout', e.target.value)}>
@@ -341,20 +341,20 @@ export default function ExhibitionTemplatesPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {templates.map(tmpl => (
-            <div key={tmpl.id} style={{ border: '1px solid var(--border)', borderRadius: '8px', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--card)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                {tmpl.logoPath && <img src={`${API_BASE_URL}${tmpl.logoPath}`} alt="" style={{ height: '32px', objectFit: 'contain' }} />}
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '15px' }}>{tmpl.name}</div>
+            <div key={tmpl.id} style={{ border: '1px solid var(--border)', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '10px', background: 'var(--card)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                {tmpl.logoPath && <img src={`${API_BASE_URL}${tmpl.logoPath}`} alt="" style={{ height: '32px', objectFit: 'contain', flexShrink: 0 }} />}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '15px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tmpl.name}</div>
                   <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
-                    {layoutLabel(tmpl.layout)}{tmpl.orgName ? ` · ${tmpl.orgName}` : ''}
+                    {tmpl.orgName ? tmpl.orgName : ''}
                   </div>
                 </div>
-                <span style={{ padding: '2px 10px', background: tmpl.accentColor || '#0058bc', color: '#fff', borderRadius: '12px', fontSize: '11px' }}>
+                <span style={{ padding: '2px 10px', background: tmpl.accentColor || '#0058bc', color: '#fff', borderRadius: '12px', fontSize: '11px', flexShrink: 0 }}>
                   {layoutLabel(tmpl.layout)}
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', flexShrink: 0 }}>
                 <a href="/exhibition" style={{ padding: '6px 12px', fontSize: '13px', border: '1px solid var(--border)', borderRadius: '6px', textDecoration: 'none', color: 'var(--foreground)' }}>
                   Use
                 </a>

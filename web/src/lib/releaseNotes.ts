@@ -20,6 +20,8 @@ export const releaseNotes: ReleaseEntry[] = [
     ],
     fixed: [
       'Add (+) button is now visible in portrait orientation on phones — it was hidden because it only appeared at the md breakpoint (landscape width). The FAB now floats above the mobile bottom nav on all screen sizes.',
+      'Exhibition Sheets nav item no longer stays highlighted when navigating to Exhibition Templates — the active check now uses exact matching for that entry.',
+      'Exhibition Templates page form and template list now wrap correctly on narrow phone screens instead of overflowing off the right edge.',
     ],
   },
   {
