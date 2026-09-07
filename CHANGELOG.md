@@ -12,6 +12,8 @@ All notable changes to InventoryDifferent will be documented here.
 
 ### Fixed
 
+- Add (+) button is now visible in portrait orientation on phones — it was hidden because it only appeared at the md breakpoint (landscape width). The FAB now floats above the mobile bottom nav on all screen sizes.
+
 ---
 
 ## [3.2.0] - 2026-09-04

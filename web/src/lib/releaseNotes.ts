@@ -16,7 +16,9 @@ export const releaseNotes: ReleaseEntry[] = [
       'Exhibition Sheets: status filter chips on the device selection page — toggle one or more statuses (In Collection, For Sale, etc.) to narrow the device list; "Select All" respects the active filter.',
     ],
     changed: [],
-    fixed: [],
+    fixed: [
+      'Add (+) button is now visible in portrait orientation on phones — it was hidden because it only appeared at the md breakpoint (landscape width). The FAB now floats above the mobile bottom nav on all screen sizes.',
+    ],
   },
   {
     version: '3.2.0',
