@@ -2017,7 +2017,7 @@ export default function DeviceDetailNew() {
                     {editingTaskId === task.id ? (
                       <form onSubmit={handleUpdateTask} className="space-y-2">
                         <datalist id="edit-task-label-suggestions">
-                          {[...new Set(sortedTasks.map((t: any) => t.label))].map((label: any) => (
+                          {[...new Set([...(taskLabelsData?.maintenanceTaskLabels ?? []), ...sortedTasks.map((t: any) => t.label)])].map((label: any) => (
                             <option key={label} value={label} />
                           ))}
                         </datalist>
@@ -2202,7 +2202,7 @@ export default function DeviceDetailNew() {
               <div>
                 <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1">{t.detail.taskLabel} *</label>
                 <datalist id="maintenance-label-suggestions">
-                  {[...new Set(sortedTasks.map((t: any) => t.label))].map((label: any) => (
+                  {[...new Set([...(taskLabelsData?.maintenanceTaskLabels ?? []), ...sortedTasks.map((t: any) => t.label)])].map((label: any) => (
                     <option key={label} value={label} />
                   ))}
                 </datalist>
