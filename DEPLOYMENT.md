@@ -334,6 +334,8 @@ The iOS app is located in `/ios/InventoryDifferent/` and is built with SwiftUI.
    - Submit for review
 3. Once approved, release to App Store
 
+InventoryDifferent is live on the App Store: [apps.apple.com/us/app/inventorydifferent/id6790018425](https://apps.apple.com/us/app/inventorydifferent/id6790018425)
+
 ### Configuration
 
 The iOS app requires:
