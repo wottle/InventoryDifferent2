@@ -253,6 +253,45 @@ body {
   }
 }
 
+/* ── Immediate tap / click feedback ─────────────────────────────────────────
+   touch-action: manipulation removes the 300ms double-tap-to-zoom delay that
+   mobile browsers insert before firing click events. Without it every tap on
+   a phone feels sluggish even before any JS runs.
+
+   The :active rules fire synchronously on mousedown / touchstart — before any
+   JS handler or navigation — so the user sees a response immediately even when
+   the action itself takes hundreds of milliseconds to complete. We use
+   transition: none on :active so the visual change is instant; the return
+   transition (80 ms) keeps the release from feeling abrupt. */
+
+button,
+a,
+[role="button"],
+summary,
+label {
+  touch-action: manipulation;
+}
+
+/* Buttons: scale + opacity so the press feels physical */
+button:active,
+[role="button"]:active {
+  opacity: 0.72;
+  transform: scale(0.97);
+  transition: none !important; /* instant on press */
+}
+
+/* Links / card anchors: opacity only — scaling a full card is jarring */
+a:active {
+  opacity: 0.75;
+  transition: none !important;
+}
+
+/* Clickable labels (e.g. filter rows, checkbox rows) */
+label:active {
+  opacity: 0.80;
+  transition: none !important;
+}
+
 /* Form inputs dark mode */
 input, select, textarea {
   background-color: var(--card);

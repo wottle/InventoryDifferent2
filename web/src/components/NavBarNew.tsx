@@ -31,7 +31,7 @@ const PUBLIC_MOBILE_NAV = [
   { key: 'slideshow' as const, href: '/slideshow', icon: 'slideshow' },
 ];
 
-type MoreItem = { key: string; href: string; icon: string };
+type MoreItem = { key: string; href: string; icon: string; exact?: boolean };
 
 const MORE_ITEMS: MoreItem[] = [
   { key: 'stats',          href: '/stats',            icon: 'bar_chart' },
@@ -48,7 +48,7 @@ const PUBLIC_MORE_ITEMS: MoreItem[] = [
 
 const MORE_TOOLS: MoreItem[] = [
   { key: 'printList',      href: '/print',            icon: 'print' },
-  { key: 'exhibition',     href: '/exhibition',       icon: 'museum' },
+  { key: 'exhibition',     href: '/exhibition',       icon: 'museum', exact: true },
   { key: 'exportImport',   href: '/backup',           icon: 'import_export' },
   { key: 'aiProductImages',href: '/generate-images',  icon: 'auto_awesome' },
 ];
@@ -73,7 +73,7 @@ function MoreLink({ item, pathname, onClick, trashCount }: {
   trashCount: number;
 }) {
   const t = useT();
-  const isActive = pathname.startsWith(item.href);
+  const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href);
   return (
     <Link
       href={item.href}
@@ -102,7 +102,7 @@ function MobileMoreLink({ item, pathname, onClick, trashCount }: {
   trashCount: number;
 }) {
   const t = useT();
-  const isActive = pathname.startsWith(item.href);
+  const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href);
   return (
     <Link
       href={item.href}
@@ -330,11 +330,11 @@ export function NavBar() {
         </>
       )}
 
-      {/* Desktop FAB — only for authenticated users */}
+      {/* FAB — visible on all screen sizes; sits above the mobile bottom nav on portrait phones */}
       {!isGuest && (
-        <div className="fixed bottom-12 right-12 hidden md:block z-40">
+        <div className="fixed bottom-24 right-4 md:bottom-12 md:right-12 z-40">
           <Link href="/devices/new">
-            <button className="w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+            <button className="w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform">
               <span className="material-symbols-outlined">add</span>
             </button>
           </Link>

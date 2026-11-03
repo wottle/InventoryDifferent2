@@ -15,8 +15,15 @@ export const releaseNotes: ReleaseEntry[] = [
     added: [
       'Exhibition Sheets: status filter chips on the device selection page — toggle one or more statuses (In Collection, For Sale, etc.) to narrow the device list; "Select All" respects the active filter.',
     ],
-    changed: [],
-    fixed: [],
+    changed: [
+      'All buttons, links, and interactive labels now show immediate press feedback (opacity + subtle scale) and respond without the 300ms mobile tap delay.',
+    ],
+    fixed: [
+      'Add (+) button is now visible in portrait orientation on phones — it was hidden because it only appeared at the md breakpoint (landscape width). The FAB now floats above the mobile bottom nav on all screen sizes.',
+      'Exhibition Sheets nav item no longer stays highlighted when navigating to Exhibition Templates — the active check now uses exact matching for that entry.',
+      'Exhibition Templates page form and template list now wrap correctly on narrow phone screens instead of overflowing off the right edge.',
+      'Maintenance Log autocomplete now suggests labels used across the whole collection, not just the current device — previously it only showed suggestions if that device already had maintenance tasks of its own.',
+    ],
   },
   {
     version: '3.2.0',
