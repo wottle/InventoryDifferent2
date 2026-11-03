@@ -291,6 +291,8 @@ In Repair → Repaired → Returned
 
 The iOS app connects to your self-hosted API. No App Store account needed for local/TestFlight distribution.
 
+**Download:** [InventoryDifferent on the App Store](https://apps.apple.com/us/app/inventorydifferent/id6790018425)
+
 ### Build from Source
 
 1. Open `ios/InventoryDifferent/InventoryDifferent.xcodeproj` in Xcode
